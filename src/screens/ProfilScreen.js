@@ -1,0 +1,174 @@
+import React, { useState, useEffect } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, ImageBackground, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { GlobalAppBar , supabase } from '../shared';
+
+import { CustomButton } from '../shared';
+import { CustomInput } from '../shared';
+
+export default function ProfilScreen() {
+  const [businessName, setBusinessName] = useState('');
+  const [category, setCategory] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const fetchProfileData = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setEmail(session.user.email || '');
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('business_name, category, phone_number')
+          .eq('id', session.user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching profile data:', error);
+        } else if (data) {
+          setBusinessName(data.business_name || '');
+          setCategory(data.category || 'Diğer');
+          setPhone(data.phone_number || '');
+        }
+      }
+    } catch (err) {
+      console.error('Fetch profile data exception:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      fetchProfileData();
+    }, 0);
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            business_name: businessName,
+            category: category,
+            phone_number: phone
+          })
+          .eq('id', session.user.id);
+
+        if (error) throw error;
+        Alert.alert('Başarılı', 'Profil bilgileriniz güncellendi.');
+      } else {
+        Alert.alert('Hata', 'Oturum bulunamadı.');
+      }
+    } catch (err) {
+      console.error('Error saving profile:', err);
+      Alert.alert('Hata', 'Profil kaydedilemedi: ' + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <View className="flex-1 bg-[#0A0A0B]">
+      <ImageBackground 
+        source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
+        style={StyleSheet.absoluteFillObject}
+        resizeMode="cover"
+      >
+        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(10, 10, 11, 0.8)' }]} />
+      </ImageBackground>
+      <GlobalAppBar level={2} module="genel" title="Profil Ayarları" showProfile={true} />
+      <ScrollView className="flex-1 px-4 pt-4" contentContainerStyle={{ paddingBottom: 40 }}>
+        
+        {/* Main Card */}
+        <View 
+          className="rounded-[24px] p-6 mb-6 mt-4 border border-white/5"
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
+        >
+          {/* Avatar Area */}
+          <View className="items-center mb-8">
+            <View className="relative">
+              <View className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/50 shadow-lg shadow-primary">
+                <Image 
+                  source={{ uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Alex' }} 
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </View>
+              <TouchableOpacity className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary items-center justify-center border-2 border-background">
+                <Ionicons name="pencil" size={16} color="#000" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {loading ? (
+            <View className="py-20 items-center justify-center">
+              <ActivityIndicator size="large" color="#00f0ff" />
+              <Text className="text-gray-400 mt-4 text-sm">Profil yükleniyor...</Text>
+            </View>
+          ) : (
+            <>
+              <CustomInput
+                label="İşletme Adı"
+                value={businessName}
+                onChangeText={setBusinessName}
+                placeholder="İşletmenizin adını girin"
+                containerClassName="mb-4"
+              />
+
+              <CustomInput
+                label="E-posta"
+                value={email}
+                editable={false}
+                containerClassName="mb-4"
+              />
+
+              <CustomInput
+                label="Telefon"
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+                placeholder="Telefon numaranızı girin"
+                containerClassName="mb-4"
+              />
+
+              <CustomInput
+                label="Mağaza Kategorisi"
+                value={category}
+                onChangeText={setCategory}
+                placeholder="Örn: Cafe & Restoran, Kuaför..."
+                containerClassName="mb-8"
+              />
+
+              {/* Gradient Button */}
+              <CustomButton
+                title="Profili Kaydet"
+                onPress={handleSave}
+                isLoading={saving}
+                className="mb-4"
+              />
+
+              {/* Sign Out Button */}
+              <CustomButton
+                title="Çıkış Yap"
+                onPress={async () => {
+                  await supabase.auth.signOut();
+                }}
+                className="bg-[#ff3b30]/10 border border-[#ff3b30]"
+                textClassName="text-[#ff3b30]"
+              />
+            </>
+          )}
+
+        </View>
+
+      </ScrollView>
+    </View>
+  );
+}
+

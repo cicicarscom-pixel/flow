@@ -1,0 +1,25 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/assets/*": ["./assets/*"],
+      "@domain/*": ["./src/modules/muhasebe/domain/*", "./src/modules/sosyal_medya/domain/*"],
+      "@application/*": ["./src/modules/muhasebe/application/*", "./src/modules/sosyal_medya/application/*"],
+      "@infrastructure/*": ["./src/modules/muhasebe/infrastructure/*", "./src/modules/sosyal_medya/infrastructure/*"],
+      "@presentation/*": ["./src/modules/muhasebe/presentation/*", "./src/modules/sosyal_medya/presentation/*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "supabase",
+    ".expo"
+  ]
+}
