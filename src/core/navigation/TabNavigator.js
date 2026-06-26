@@ -9,9 +9,21 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { BotYonetimiScreen, SosyalMedyaScreen } from '../../modules/sosyal_medya';
 import { AiMuhasebeScreen } from '../../modules/muhasebe';
+import RandevuScreen from '../../modules/randevu/presentation/screens/RandevuScreen';
+import HizmetAyarlariScreen from '../../modules/randevu/presentation/screens/HizmetAyarlariScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+function BotYonetimiStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="BotYonetimiMain" component={BotYonetimiScreen} />
+      <Stack.Screen name="RandevuMain" component={RandevuScreen} />
+      <Stack.Screen name="HizmetAyarlari" component={HizmetAyarlariScreen} />
+    </Stack.Navigator>
+  );
+}
 
 function AiMuhasebeStack() {
   return (
@@ -84,7 +96,7 @@ export default function TabNavigator() {
         tabBarInactiveTintColor: '#849495',
       })}
     >
-      <Tab.Screen name="Bot Yönetimi" component={BotYonetimiScreen} />
+      <Tab.Screen name="Bot Yönetimi" component={BotYonetimiStack} />
       <Tab.Screen 
         name="Sosyal Medya" 
         component={SosyalMedyaStack} 

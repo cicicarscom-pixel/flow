@@ -457,3 +457,298 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
 ---
 
 **Tebrikler!** Yapay zeka destekli, Canlı Akışa (Realtime) sahip dijital asistan projenizi sıfırdan başarıyla kurdunuz. 🚀
+
+---
+
+## 📅 Randevu Modülü — Mimari ve Teknik Dokümantasyon
+
+> **Son Güncelleme:** Haziran 2026 — Supabase Realtime entegrasyonu ve Clean Architecture bağlantısı tamamlandı.
+
+### Genel Bakış
+
+Randevu modülü (`src/modules/randevu`), işletme sahiplerinin günlük randevu yönetimini yapabildiği tam çalışan bir dashboard sistemidir. Supabase Realtime üzerinden anlık veri akışı, Clean Architecture prensiplerine uygun katmanlı yapı ve sıfır dekoratörlü manuel DI container kullanır.
+
+---
+
+### 📁 Dosya Yapısı
+
+```
+src/modules/randevu/
+├── application/
+│   └── useCases/
+│       ├── ApproveAppointmentUseCase.ts   — Randevu onaylama (Supabase + WhatsApp)
+│       ├── CancelAppointmentUseCase.ts    — Randevu iptal (Supabase + WhatsApp)
+│       ├── GetAvailableHoursUseCase.ts    — Müsait saat hesaplama
+│       └── StartAppointmentFlowUseCase.ts — WhatsApp randevu akışı başlatma
+│
+├── domain/
+│   ├── entities/
+│   │   └── Appointment.ts                 — Immutable domain entity (private fields + getters)
+│   ├── enums/
+│   │   └── AppointmentStatus.ts           — Pending | Approved | Cancelled | Expired
+│   ├── gateways/
+│   │   └── IWhatsAppGateway.ts            — WhatsApp servis arayüzü
+│   └── repositories/
+│       └── IAppointmentRepository.ts      — Repository arayüzü (7 metod)
+│
+├── infrastructure/
+│   ├── mappers/
+│   │   └── AppointmentMapper.ts           — DB row ↔ Domain Entity dönüşümü
+│   ├── repositories/
+│   │   └── SupabaseAppointmentRepository.ts — Tüm Supabase + Realtime implementasyonları
+│   └── services/
+│       └── WahaRandevuService.ts          — WAHA WhatsApp API entegrasyonu
+│
+└── presentation/
+    ├── hooks/
+    │   └── useAppointments.ts             — Veri + Realtime + isSlotBusy() hook
+    └── screens/
+        ├── RandevuScreen.js               — Dashboard (Calendar + Heatmap + Timeline)
+        └── HizmetAyarlariScreen.js        — Hizmet yönetimi (görüntüle/düzenle)
+```
+
+---
+
+### 🗄️ Supabase Tablo Şeması — `appointments`
+
+```sql
+create table public.appointments (
+  id              uuid primary key default gen_random_uuid(),
+  customer_phone  text not null,
+  customer_name   text,
+  service_id      text not null,
+  employee_id     text,
+  date            text not null,        -- "YYYY-MM-DD" veya ISO datetime
+  status          text not null,        -- 'Pending' | 'Approved' | 'Cancelled' | 'Expired'
+  booking_token   text not null unique,
+  created_at      timestamptz default now(),
+  updated_at      timestamptz default now()
+);
+
+-- Realtime'ı aktif et
+alter publication supabase_realtime add table appointments;
+
+-- RLS — kullanıcı kendi randevularını yönetir
+alter table appointments enable row level security;
+```
+
+---
+
+### 🏛️ Katman Mimarisi ve Veri Akışı
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  PRESENTATION                                                       │
+│                                                                     │
+│  RandevuScreen.js          useAppointments.ts (hook)               │
+│  ├── Calendar Strip        ├── selectedDate (state)                │
+│  ├── Heatmap Grid          ├── appointments (state)                │
+│  │   └── isSlotBusy()      ├── loading / error (state)             │
+│  └── Timeline List         ├── getAppointmentsByDate() → fetch     │
+│                            └── subscribeToAppointments() → realtime│
+└────────────────────────────────────┬────────────────────────────────┘
+                                     │ container.resolve('AppointmentRepository')
+┌────────────────────────────────────▼────────────────────────────────┐
+│  APPLICATION                                                        │
+│  UseCase'ler sadece IAppointmentRepository arayüzüne bağımlıdır.   │
+│  Concrete implementasyonu ASLA doğrudan import etmezler.            │
+└────────────────────────────────────┬────────────────────────────────┘
+                                     │ implements
+┌────────────────────────────────────▼────────────────────────────────┐
+│  INFRASTRUCTURE                                                     │
+│                                                                     │
+│  SupabaseAppointmentRepository                                      │
+│  ├── getAppointmentsByDate(date)                                    │
+│  │   └── supabase.from('appointments').eq('date', date)             │
+│  ├── subscribeToAppointments(date, callback)                        │
+│  │   └── supabase.channel().on('postgres_changes').subscribe()      │
+│  ├── create / approve / cancel / findByToken                        │
+│  └── findAvailableHours (gerçek DB sorgusu)                        │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 💉 Dependency Injection — Manuel Container
+
+Projede `tsyringe` veya herhangi bir IoC framework KULLANILMAMAKTADIR. Tüm bağımlılıklar `src/core/container.ts` içindeki düz JavaScript nesnesiyle yönetilir.
+
+#### `src/core/container.ts`
+
+```typescript
+// Singletonlar elle oluşturulur — hiçbir dekoratör (@injectable vb.) YOK
+const appointmentRepository = new SupabaseAppointmentRepository();
+
+const container = {
+  resolve: (cls: any) => {
+    // String key ile çözümleme (hook'lardan kullanım için)
+    if (cls === 'AppointmentRepository') return appointmentRepository;
+
+    // Class referansı ile çözümleme (UseCase'lerden kullanım için)
+    if (cls === ApproveAppointmentUseCase) return approveAppointmentUseCase;
+    // ...
+  }
+};
+```
+
+#### Kullanım — Hook İçinden
+
+```typescript
+// useAppointments.ts
+const repo = container.resolve('AppointmentRepository') as SupabaseAppointmentRepository;
+```
+
+#### ⚠️ KRITIK KURAL: Asla tsyringe kullanma!
+
+- `@injectable()`, `@inject()`, `reflect-metadata` → **YASAK**
+- Hermes JS Engine bu dekoratörleri desteklemez → Build hataları oluşur
+- Yeni servis/repository eklerken sadece `container.ts` dosyasına singleton ekle ve `resolve()` switch'ine kaydet
+
+---
+
+### 🔴 Supabase Realtime Aboneliği
+
+`subscribeToAppointments` metodu bir Supabase channel oluşturur ve `appointments` tablosundaki tüm değişiklikleri (`INSERT`, `UPDATE`, `DELETE`) dinler.
+
+```typescript
+subscribeToAppointments(date, callback): () => void {
+  const channel = supabase
+    .channel(`appointments-date-${date}`)
+    .on('postgres_changes', {
+      event: '*',           // INSERT | UPDATE | DELETE hepsini dinle
+      schema: 'public',
+      table: 'appointments',
+      filter: `date=eq.${date}`,  // Sadece seçili güne ait değişiklikler
+    }, async () => {
+      // Her değişiklikte tüm listeyi yeniden çek (tutarlılık için)
+      const fresh = await this.getAppointmentsByDate(date);
+      callback(fresh);
+    })
+    .subscribe();
+
+  // Cleanup fonksiyonu döner — useEffect unmount'ta çağrılır
+  return () => supabase.removeChannel(channel);
+}
+```
+
+**Önemli:** Realtime'ın çalışması için Supabase panelinde `appointments` tablosunun `supabase_realtime` publication'ına eklenmiş olması gerekir.
+
+---
+
+### 🎨 UI Bileşenleri — RandevuScreen
+
+#### 1. Sticky Header (Yapışkan Başlık)
+
+`ScrollView`'un `stickyHeaderIndices={[0]}` özelliği kullanılarak Calendar Strip + Heatmap Grid her zaman ekranın üstünde sabit kalır. Randevu listesi kaydırıldıkça bu sticky blokun altına girer.
+
+#### 2. Calendar Strip (Haftalık Takvim Şeridi)
+
+```
+[ Pzt 11 ] [ SAL 12 ] [ Çar 13 ] [ Per 14 ] [ Cum 15 ]  ──►
+                ↑ Aktif gün: Yeşil, büyütülmüş (scale: 1.1)
+```
+
+- Yatay scroll (`horizontal ScrollView`)
+- `activeDay` state ile seçili gün takip edilir
+- Gün seçimi → `setSelectedDate()` → hook yeni tarihi çeker
+
+#### 3. Günlük Müsaitlik Heatmaps (3-Satırlı Isı Haritası)
+
+```
+Sabah  │ 08:00 │ 08:30 │ 09:00 🟢 │ ... ──►
+Öğle   │ 13:00 🟢 │ 13:30 │ 14:00 │ ... ──►
+Akşam  │ 19:00 │ 19:30 │ 20:00 │ ... ──►
+```
+
+- 08:00'den 00:00'a kadar **30 dakikalık** aralıklar (33 slot, otomatik üretilir)
+- Sol etiketler (`Sabah / Öğle / Akşam`) sabit
+- Slotlar yatay kaydırılabilir (tümü birlikte)
+- `isSlotBusy(slot.time)` → DB'deki gerçek randevulara göre yeşil/gri
+
+```javascript
+// isSlotBusy implementasyonu (useAppointments.ts)
+const isSlotBusy = (timeSlot: string): boolean =>
+  appointments.some(appt =>
+    extractTime(appt.date) === timeSlot &&
+    (appt.status === 'Approved' || appt.status === 'Pending')
+  );
+```
+
+#### 4. Appointment Timeline
+
+- `loading` → `ActivityIndicator` göster
+- `appointments.length === 0` → Boş durum ekranı
+- Her randevu kartı: müşteri adı/telefon, hizmet ID, saat bilgisi
+- Renk paleti 4 renkli döngüsel (`CARD_COLORS` dizisi)
+
+---
+
+### 🔧 Hizmet Ayarları Ekranı (HizmetAyarlariScreen)
+
+Randevu ekranının header'ındaki takvim ikonuna basılarak açılır.
+
+| Özellik | Detay |
+|---------|-------|
+| **Görünürlük Toggle** | Switch ile hizmetleri aktif/pasif yap |
+| **Görüntüleme Modu** | Liste görünümü — isim ve fiyat |
+| **Düzenleme Modu** | TextInput'lar açılır — isim, fiyat, birim |
+| **Maks Hizmet** | 10 adet limit |
+| **Silme** | Edit modunda çöp kutusu ikonu |
+
+#### Navigasyon Akışı
+
+```
+BotYonetimiScreen
+    └──► RandevuScreen (stack: "RandevuMain")
+             └──► HizmetAyarlariScreen (stack: "HizmetAyarlari")
+                  ← calendar icon onPress={() => navigation.navigate('HizmetAyarlari')}
+```
+
+---
+
+### 🛣️ Navigation Yapısı (TabNavigator)
+
+```javascript
+// BotYonetimiStack içinde:
+<Stack.Screen name="BotYonetimiMain" component={BotYonetimiScreen} />
+<Stack.Screen name="RandevuMain"     component={RandevuScreen} />
+<Stack.Screen name="HizmetAyarlari"  component={HizmetAyarlariScreen} />
+```
+
+---
+
+### 🔌 IAppointmentRepository Arayüzü (Tam Liste)
+
+```typescript
+export interface IAppointmentRepository {
+  // Temel CRUD
+  create(appointment): Promise<Appointment>;
+  approve(id: string): Promise<Appointment>;
+  cancel(id: string): Promise<Appointment>;
+  findByToken(token: string): Promise<Appointment | null>;
+  findAvailableHours(date: string, serviceId: string): Promise<string[]>;
+
+  // Dashboard için (Haziran 2026 eklendi)
+  getAppointmentsByDate(date: string): Promise<Appointment[]>;
+  subscribeToAppointments(
+    date: string,
+    callback: (appointments: Appointment[]) => void
+  ): () => void;   // ← unsubscribe fonksiyonu döner
+}
+```
+
+---
+
+### ✅ Geliştirme Kontrol Listesi
+
+Yeni geliştirici katılırken veya yeni bir özellik eklerken şu adımları takip et:
+
+- [ ] `appointments` tablosu Supabase'de mevcut ve RLS aktif
+- [ ] `supabase_realtime` publication'ına `appointments` eklenmiş
+- [ ] `.env` dosyasında `EXPO_PUBLIC_SUPABASE_URL` ve `EXPO_PUBLIC_SUPABASE_ANON_KEY` tanımlı
+- [ ] Yeni repository eklenirse `container.ts`'e hem singleton hem string key eklenmeli
+- [ ] Hiçbir dosyaya `@injectable`, `@inject`, `reflect-metadata` ekleme
+- [ ] Expo SDK v56 docs: https://docs.expo.dev/versions/v56.0.0/
+
+---
+

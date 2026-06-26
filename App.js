@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import './src/core/container';
 import './src/core/i18n';
 import { StatusBar } from 'expo-status-bar';

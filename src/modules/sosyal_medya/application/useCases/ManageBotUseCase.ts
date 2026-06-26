@@ -1,11 +1,9 @@
-import { injectable, inject } from 'tsyringe';
 import { IWahaService, IServiceResponse } from '@domain/interfaces/IWahaService';
 
-@injectable()
 export class ManageBotUseCase {
   private wahaService: IWahaService;
 
-  constructor(@inject('IWahaService') wahaService: IWahaService) {
+  constructor(wahaService: IWahaService) {
     this.wahaService = wahaService;
   }
 

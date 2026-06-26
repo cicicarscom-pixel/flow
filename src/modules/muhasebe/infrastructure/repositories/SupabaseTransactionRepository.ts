@@ -1,11 +1,9 @@
-import { injectable } from 'tsyringe';
 import { ITransactionRepository } from '../../domain/repositories/ITransactionRepository';
 import { Transaction } from '../../domain/entities/Transaction';
 import { TransactionMapper } from '../mappers/TransactionMapper';
 import { supabase } from '../../../../shared';
 import { NetworkError } from '../../../../shared/errors/NetworkError';
 
-@injectable()
 export class SupabaseTransactionRepository implements ITransactionRepository {
   async findAll(): Promise<Transaction[]> {
     const { data, error } = await supabase.from('transactions').select('*');

@@ -583,6 +583,24 @@ export default function BotYonetimiScreen() {
                 />
               </AnimatedBorderCard>
             </View>
+
+            {/* Randevu Sistemi Button */}
+            <View className="mb-8 px-[20px]">
+              <AnimatedBorderCard 
+                style={[styles.glowBorderCyan, { shadowColor: '#4edea3', borderColor: 'rgba(78, 222, 163, 0.5)' }]} 
+                colors={['#4edea3', '#131314', '#4edea3', '#131314']}
+                padding={0}
+                borderRadius={12}
+              >
+                <CustomButton
+                  title={"Randevu Yonetimi"}
+                  onPress={() => navigation.navigate('RandevuMain')}
+                  className="bg-transparent py-3 px-4"
+                  textClassName="text-[#4edea3] text-[12px] font-bold uppercase tracking-widest"
+                  leftIcon={<Ionicons name="calendar-outline" size={16} color="#4edea3" />}
+                />
+              </AnimatedBorderCard>
+            </View>
             
           </ScrollView>
         )}

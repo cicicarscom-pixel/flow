@@ -1,10 +1,8 @@
-import { injectable } from 'tsyringe';
 import { supabase } from '../../../../shared';
 import { IWahaService, IServiceResponse } from '../../domain/interfaces/IWahaService';
 
 const WAHA_BASE_URL = 'http://31.97.37.208:3000';
 
-@injectable()
 export class WahaService implements IWahaService {
   /**
    * Esnafın mevcut bot ayarlarını ve promptunu çeker.

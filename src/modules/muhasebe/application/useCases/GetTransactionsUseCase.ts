@@ -1,12 +1,10 @@
-import { injectable, inject } from 'tsyringe';
 import { ITransactionRepository } from '../../domain/repositories/ITransactionRepository';
 import { Transaction } from '../../domain/entities/Transaction';
 import { BusinessRuleError } from '../../../../shared/errors/BusinessRuleError';
 
-@injectable()
 export class GetTransactionsUseCase {
   constructor(
-    @inject('ITransactionRepository') private transactionRepository: ITransactionRepository
+    private transactionRepository: ITransactionRepository
   ) {}
 
   async execute(): Promise<Transaction[]> {
