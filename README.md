@@ -460,12 +460,12 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
     - **TypeScript Path Alias Entegrasyonu:** `tsconfig.json`'daki `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dizinleri eklendi.
     - **Relative Import Temizliği:** `muhasebe`, `randevu` ve `sosyal_medya` modüllerindeki tüm relative import'lar path alias'larına geçirilerek mimari sınır ihlali (Anti-Bypass) hataları giderildi, ESLint kuralları sıfır (0) hata ile yeşile döndü.
 21. **Sistem Talimatı Kartının Temiz Glassmorphism Tasarımına Çekilmesi ve Sabit Yükseklikli Scrollable Giriş Kutusu (UX/UI):**
-    - **Neden:** Kartın arkasında ve kenarında dönen Conic RGB gradyan efektleri sayfa düzenini bozmakta ve arka planda kafa karıştırıcı bir karmaşıklık oluşturmaktaydı. Kullanıcı, bu dönen renkli yapıların tamamen kaldırılmasını ve ekran arka planı ile kart tasarımının diğer ekranlardaki sade ve şık Glassmorphism düzenine getirilmesini talep etti.
+    - **Neden:** Kartın arkasında ve kenarında dönen Conic RGB gradyan efektleri sayfa düzenini bozmakta ve arka planda kafa karıştırıcı bir karmaşıklık oluşturmaktaydı. Kullanıcı, bu dönen renkli yapıların tamamen kaldırılmasını ve ekran arka planı ile kart tasarımının diğer ekranlardaki sade ve şık Glassmorphism düzenine getirilmesini talep etti. Ayrıca AI Karakter Talimatı giriş kutusunun daha geniş bir çalışma alanına sahip olması için 2 kat büyütülmesi istendi.
     - **Çözüm:** `BotYonetimiScreen.js` dosyasında şu düzenlemeler yapıldı:
         - **Dönen Efektlerin Kaldırılması:** Dairesel dönen tüm RGB auralar, dış gölge katmanları ve iç dönen border beam animasyonları tamamen silindi.
         - **Glassmorphism Standartlaştırması:** Kart, uygulamanın genelinde kullanılan sade ve son derece premium `styles.glassCard` sınıfına bağlandı. Arka planı koyu yarı-saydam (`rgba(32, 31, 34, 0.4)`), kenarlığı ise ince saydam mavi (`rgba(0, 240, 255, 0.2)`) olarak sabitlendi.
         - **Save Settings Butonu Unifikasyonu:** Özel tasarlanmış karmaşık dönen kaydetme butonu silinerek yerine uygulamanın diğer ayarlar sayfalarında da kullanılan standart `CustomButton` bileşeni yerleştirildi.
-        - **Sabit ve Kaydırılabilir Giriş:** "AI Karakter Talimatı" kutusu `minHeight: 120` yerine `height: 140` (sabit 140px) yüksekliğe çekildi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip kaydırma çubuğu aktif edildi.
+        - **Sabit ve Kaydırılabilir Giriş:** "AI Karakter Talimatı" kutusunun yüksekliği `280` (sabit 280px, eski boyuta göre 2 kat büyük) yüksekliğe çekildi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip kaydırma çubuğu aktif edildi.
 
 ---
 

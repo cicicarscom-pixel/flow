@@ -595,7 +595,7 @@ Asistan Cevabı:`;
                       placeholderTextColor="#849495"
                       multiline
                       textAlignVertical="top"
-                      style={{ height: 140, color: '#e5e1e4', fontSize: 13, lineHeight: 18 }}
+                      style={{ height: 280, color: '#e5e1e4', fontSize: 13, lineHeight: 18 }}
                       className="font-body-md"
                       showsVerticalScrollIndicator={true}
                     />

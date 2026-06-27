@@ -254,7 +254,8 @@ App.js
     - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartındaki dönen tüm RGB auralar, dış gölgeler, dairesel gradient animasyonları ve conic_glow imaj dosyaları tamamen kaldırıldı.
     - Kart, uygulamanın genel görsel diliyle %100 uyumlu, göz yormayan, sade ve şık `styles.glassCard` (yarı saydam koyu zemin, ince saydam mavi sınır çizgisi) tasarımıyla değiştirildi.
     - Ayarları Kaydet butonu da sadeleştirilerek yerine uygulamanın diğer sayfalarında kullanılan standart `CustomButton` bileşeni yerleştirildi.
-    - "AI Karakter Talimatı" (`botInstruction`) kutusu `height: 140` olarak sabitlendi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip yan kaydırma çubuğu ile gezilebilmesi sağlandı.
+    - "AI Karakter Talimatı" (`botInstruction`) kutusu `height: 280` olarak (eski 140px değerinden 2 kat daha büyük) sabitlendi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip yan kaydırma çubuğu ile gezilebilmesi sağlandı.
+
 
 
 
