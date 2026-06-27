@@ -250,13 +250,14 @@ App.js
 3. **Animated Ref Render Erişimi Çözüldü:** `RandevuScreen.js` ve `AiUretimScreen.js`'deki Animated Value'ların render esnasında ref üzerinden `.current` olarak okunması nedeniyle linter'ın fırlattığı `Cannot access refs during render` hatası, `useState` tabanlı `Animated.Value` tanımlamasına geçilerek tamamen çözüldü.
 4. **TypeScript Path Aliases & Anti-Bypass Entegrasyonu:** `tsconfig.json` dosyasında `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dahil edildi. Projedeki tüm relative path import'lar path alias'larına geçirilerek ESLint'in `no-restricted-imports` (Anti-Bypass) kuralı yeşile çekildi.
 5. **Kapsamlı Linter Kontrolü:** `npm run lint` çalıştırılarak tüm 42 hata giderildi ve linter **0 hata** ile tamamlandı.
-6. **Sistem Talimatı Kartına Gök Mavisi Neon Çerçeve ve Belirgin Aura Gölge Entegrasyonu:** 
-    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, hareketli olmayan, kartın tüm kenarlarını eşit kalınlıkta kaplayan (`borderWidth: 1.5`) solid `#00a2ff` (gök mavisi) renginde sürekli parlayan neon bir sınır çizgisi uygulandı.
-    - Kartın arkasına `shadowColor: '#00a2ff'`, `shadowOpacity: 0.8`, `shadowRadius: 18`, `elevation: 10` değerlerine sahip, kart sınırlarını mükemmel takip eden kalın ve son derece belirgin bir gök mavisi aura gölgesi (glow shadow) yerleştirildi.
+6. **Sistem Talimatı Kartına Gök Mavisi Neon Çerçeve ve Dönen Aura Gölgesi Entegrasyonu:** 
+    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, kartın tüm kenarlarını eşit kalınlıkta kaplayan (`borderWidth: 1.5`) solid `#00a2ff` (gök mavisi) renginde sürekli parlayan neon bir sınır çizgisi uygulandı.
+    - **Dönen Aura Gölgesi (blue_glow):** Yumuşak geçişli gök mavisi, lacivert ve turkuaz tonlarından oluşan dairesel bir conic gradient resim (`blue_glow.png`) üretildi. Bu resim kartın arkasına yerleştirilerek native `blurRadius={12}` ile bulanıklaştırıldı ve 8 saniyelik lineer bir döngüde dönen bir `Animated.View` ile döndürülerek kart etrafında dönen/dolaşan hareketli bir mavi aura gölgesi elde edildi.
     - **Yuvarlatılmış Köşeler ve Boşluk Düzenlemesi:** Ana `ScrollView` bileşenine `contentContainerStyle={{ paddingHorizontal: 16 }}` uygulanarak kartların ekran kenarlarına yapışması önlendi ve mavi çizginin `borderRadius: 20` olan yuvarlatılmış köşeleri görünür kılındı.
     - **İç Çerçeve/Siyah-Gri Gölge Sızıntısının Önlenmesi (Solid Background):** Kartın arka planı yarı saydam yerine tamamen opak koyu gri (`#1c1b1d`) olarak güncellendi. Bu sayede Android shadow motorunun `elevation` nedeniyle kartın arkasında oluşturduğu koyu sistem gölgesinin cam katmanın içinden sızarak mavi çizginin altında ikinci bir koyu çerçeve oluşturması (shadow bleed-through) engellendi.
     - Kart içi hazır rol preset butonlarının aktif kenarlık/yazı renkleri de turkuazdan `#00a2ff` (gök mavisi) tonuna güncellenerek görsel uyum tamamlandı.
     - "AI Karakter Talimatı" (`botInstruction`) kutusu `height: 280` olarak (eski 140px değerinden 2 kat daha büyük) sabitlendi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip yan kaydırma çubuğu ile gezilebilmesi sağlandı.
+
 
 
 
