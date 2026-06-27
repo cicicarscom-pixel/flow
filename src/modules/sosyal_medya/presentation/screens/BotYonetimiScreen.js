@@ -16,7 +16,9 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Modal
+  Modal,
+  Animated,
+  Easing
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -32,6 +34,25 @@ export default function BotYonetimiScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
+
+  // Rotation animation for RGB border
+  const rgbSpinValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(rgbSpinValue, {
+        toValue: 1,
+        duration: 4000,
+        easing: Easing.linear,
+        useNativeDriver: true
+      })
+    ).start();
+  }, [rgbSpinValue]);
+
+  const rgbSpin = rgbSpinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg']
+  });
   
   // Core states
   const [botActive, setBotActive] = useState(true);
@@ -479,9 +500,32 @@ Asistan Cevabı:`;
             </View>
 
             {/* 2. Sistem Talimatı (AI Instructions) */}
-            <View style={{ marginBottom: 16, position: 'relative' }}>
+            <View style={{
+              overflow: 'hidden',
+              padding: 3, // 2 kat kalınlık (3px)
+              borderRadius: 20,
+              marginBottom: 16,
+              shadowColor: '#00a2ff',
+              shadowOpacity: 0.8,
+              shadowRadius: 20,
+              elevation: 10,
+            }}>
+              {/* Spinning RGB Gradient Background */}
+              <Animated.View style={{ 
+                position: 'absolute',
+                top: '-100%', bottom: '-100%', left: '-100%', right: '-100%',
+                transform: [{ rotate: rgbSpin }],
+              }}>
+                <LinearGradient
+                  colors={['#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#00ffff', '#ffff00', '#ff0000']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{ flex: 1 }}
+                />
+              </Animated.View>
 
-              <View style={[styles.glowBorderCyanThick, { margin: 0 }]} className="p-4">
+              {/* Inner Solid Card */}
+              <View style={{ backgroundColor: '#1c1b1d', borderRadius: 17 }} className="p-4">
                 <View className="flex-row items-center justify-between mb-4">
                   <View className="flex-row items-center gap-2">
                     <Ionicons name="sparkles-outline" size={18} color="#4edea3" />
