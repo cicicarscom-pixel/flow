@@ -522,22 +522,22 @@ Asistan Cevabı:`;
               {/* Spinning RGB Shadow/Glow (Soft halo effect behind the card) */}
               <Animated.View style={{ 
                 position: 'absolute',
-                top: -10, bottom: -10, left: -10, right: -10,
-                borderRadius: 26,
+                top: -12, bottom: -12, left: -12, right: -12,
+                borderRadius: 28,
                 opacity: 0.35,
                 transform: [{ rotate: cardSpin }],
                 // iOS Shadow for extra soft halo bleed
                 shadowColor: '#00f0ff',
                 shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.8,
-                shadowRadius: 16,
+                shadowOpacity: 0.9,
+                shadowRadius: 18,
               }}>
                 <LinearGradient
                   colors={['#ff0055', '#00f0ff', '#bc13fe', '#4edea3', '#ff0055']}
                   locations={[0, 0.25, 0.5, 0.75, 1]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  style={{ flex: 1, borderRadius: 26 }}
+                  style={{ flex: 1, borderRadius: 28 }}
                 />
               </Animated.View>
 
@@ -549,20 +549,18 @@ Asistan Cevabı:`;
                 backgroundColor: 'rgba(255,255,255,0.03)',
                 elevation: 4
               }}>
-                {/* Spinning RGB Gradient Background (Border Beam simulation) */}
-                <Animated.View style={{ 
+                {/* Static Gradient Border (Stays constant and glowing like a permanent frame) */}
+                <View style={{ 
                   position: 'absolute',
-                  top: '-150%', bottom: '-150%', left: '-150%', right: '-150%',
-                  transform: [{ rotate: cardSpin }],
+                  top: 0, bottom: 0, left: 0, right: 0,
                 }}>
                   <LinearGradient
-                    colors={['#ff0055', '#00f0ff', '#bc13fe', '#4edea3', '#ff0055']}
-                    locations={[0, 0.25, 0.5, 0.75, 1]}
+                    colors={['#00f0ff', '#bc13fe']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={{ flex: 1 }}
                   />
-                </Animated.View>
+                </View>
 
                 {/* Inner masked container */}
                 <View style={{ flex: 1, backgroundColor: 'rgba(28, 27, 29, 0.98)', borderRadius: 18, padding: 16 }}>
