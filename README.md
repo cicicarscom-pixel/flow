@@ -459,12 +459,11 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
     - **Animated Ref Hatası Çözümü:** `RandevuScreen` ve `AiUretimScreen`'deki render esnasında ref (`useRef().current`) erişiminden kaynaklanan ESLint hataları, `useState` tabanlı `Animated.Value` tanımına geçilerek temizlendi.
     - **TypeScript Path Alias Entegrasyonu:** `tsconfig.json`'daki `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dizinleri eklendi.
     - **Relative Import Temizliği:** `muhasebe`, `randevu` ve `sosyal_medya` modüllerindeki tüm relative import'lar path alias'larına geçirilerek mimari sınır ihlali (Anti-Bypass) hataları giderildi, ESLint kuralları sıfır (0) hata ile yeşile döndü.
-21. **Sistem Talimatı Kartına Mavi Işıklı AnimatedBorderCard ve Kalın Gölge Entegrasyonu (UX/UI):**
-    - **Neden:** Dönen ağır arka plan resimlerinin kaldırılmasının ardından, kullanıcı "Sistem Talimatı" kartının etrafına "Sosyal Medya" ekranında yer alan "Paylaşım Merkezi" butonu gibi zarif, tek bir ışık huzmesinin döndüğü ve sonrasında durduğu bir ışık çerçevesi eklenmesini talep etti. Bu çerçeve ışığının renginin mavi olması ve kartın arkasında kalın/belirgin bir mavi gölge (shadow glow) oluşturması istendi.
+21. **Sistem Talimatı Kartına Standart Kalınlıkta Mavi Neon Çerçeve ve Belirgin Aura Gölgesi (UX/UI):**
+    - **Neden:** Hareketli ışık huzmesinin (AnimatedBorderCard) sadece belirli bir noktayı aydınlatıp zamanla sönmesi yerine; kartın tüm çerçevesinin standart kalınlıkta, sürekli parlayan neon mavi renkli bir sınır çizgisine sahip olması ve arkasında belirgin bir mavi aura gölgesi (shadow glow) oluşturulması istendi.
     - **Çözüm:** `BotYonetimiScreen.js` dosyasında şu düzenlemeler yapıldı:
-        - **AnimatedBorderCard Kullanımı:** Paylaşım Merkezi butonunda da kullanılan paylaşımlı `AnimatedBorderCard` bileşeni "Sistem Talimatı" kartının sarmalayıcısı olarak entegre edildi.
-        - **Kalın Mavi Işık Gölgesi (glowBorderCyanThick):** Karta `borderColor: 'rgba(0, 240, 255, 0.5)'`, `shadowColor: '#00f0ff'`, `shadowOpacity: 0.55`, `shadowRadius: 22`, `elevation: 8` değerlerine sahip kalın ve belirgin bir neon mavi ışık halesi / gölgesi uygulandı.
-        - **Dönüş Rengi:** `colors` prop'u üzerinden `['#00f0ff', '#131314', '#00f0ff', '#131314']` verilerek dönen ışık huzmesinin rengi tamamen mavi/cyan temasına çekildi.
+        - **Mavi Çerçeve ve Belirgin Aura Gölgesi (glowBorderCyanThick):** `glowBorderCyanThick` stili güncellenerek tüm kenarları kaplayan `borderWidth: 1.5` kalınlığında solid `#00f0ff` (neon mavi) renginde bir çerçeve çizgisi çizildi. Kartın arkasına ise `shadowColor: '#00f0ff'`, `shadowOpacity: 0.8`, `shadowRadius: 18` ve `elevation: 10` değerleriyle son derece belirgin, kalın ve göz alıcı bir neon mavi aura gölgesi uygulandı.
+        - **Sarmalayıcı Sadeleştirmesi:** Dönme animasyonlu `AnimatedBorderCard` bileşeni kaldırılarak kart tekrar standart `View` yapısına çekildi; böylece performans artırılırken görsel kararlılık sağlandı.
         - **Sabit ve Kaydırılabilir Giriş:** "AI Karakter Talimatı" kutusunun yüksekliği `280` (sabit 280px, eski boyuta göre 2 kat büyük) yüksekliğe çekildi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip kaydırma çubuğu aktif edildi.
 
 ---
