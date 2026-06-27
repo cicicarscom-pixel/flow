@@ -250,11 +250,12 @@ App.js
 3. **Animated Ref Render Erişimi Çözüldü:** `RandevuScreen.js` ve `AiUretimScreen.js`'deki Animated Value'ların render esnasında ref üzerinden `.current` olarak okunması nedeniyle linter'ın fırlattığı `Cannot access refs during render` hatası, `useState` tabanlı `Animated.Value` tanımlamasına geçilerek tamamen çözüldü.
 4. **TypeScript Path Aliases & Anti-Bypass Entegrasyonu:** `tsconfig.json` dosyasında `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dahil edildi. Projedeki tüm relative path import'lar path alias'larına geçirilerek ESLint'in `no-restricted-imports` (Anti-Bypass) kuralı yeşile çekildi.
 5. **Kapsamlı Linter Kontrolü:** `npm run lint` çalıştırılarak tüm 42 hata giderildi ve linter **0 hata** ile tamamlandı.
-6. **Sistem Talimatı Temiz Glassmorphism Kart & Buton Tasarımı Entegrasyonu:** 
-    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartındaki dönen tüm RGB auralar, dış gölgeler, dairesel gradient animasyonları ve conic_glow imaj dosyaları tamamen kaldırıldı.
-    - Kart, uygulamanın genel görsel diliyle %100 uyumlu, göz yormayan, sade ve şık `styles.glassCard` (yarı saydam koyu zemin, ince saydam mavi sınır çizgisi) tasarımıyla değiştirildi.
-    - Ayarları Kaydet butonu da sadeleştirilerek yerine uygulamanın diğer sayfalarında kullanılan standart `CustomButton` bileşeni yerleştirildi.
+6. **Sistem Talimatı Kartına Mavi Işıklı AnimatedBorderCard ve Kalın Gölge Entegrasyonu:** 
+    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, Sosyal Medya ekranındaki Paylaşım Merkezi butonu gibi zarif ve sade şekilde dönüp duran `AnimatedBorderCard` bileşeni entegre edildi.
+    - Dönen ışık huzmesinin rengi mavi/cyan (`#00f0ff`) olarak ayarlandı.
+    - Karta `borderColor: 'rgba(0, 240, 255, 0.5)'`, `shadowColor: '#00f0ff'`, `shadowOpacity: 0.55`, `shadowRadius: 22`, `elevation: 8` değerlerine sahip kalın ve göz alıcı bir neon mavi ışık halesi / gölgesi uygulandı.
     - "AI Karakter Talimatı" (`botInstruction`) kutusu `height: 280` olarak (eski 140px değerinden 2 kat daha büyük) sabitlendi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip yan kaydırma çubuğu ile gezilebilmesi sağlandı.
+
 
 
 

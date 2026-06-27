@@ -24,7 +24,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { GlobalAppBar, supabase, CustomButton, CustomInput } from '../../../../shared';
+import { GlobalAppBar, supabase, CustomButton, CustomInput, AnimatedBorderCard } from '../../../../shared';
 
 import { container } from '../../../../core/container';
 import { ManageBotUseCase } from '@application/useCases/ManageBotUseCase';
@@ -483,7 +483,13 @@ Asistan Cevabı:`;
             </View>
 
             {/* 2. Sistem Talimatı (AI Instructions) */}
-            <View style={styles.glassCard} className="p-4 mb-4">
+            <AnimatedBorderCard
+              style={styles.glowBorderCyanThick}
+              colors={['#00f0ff', '#131314', '#00f0ff', '#131314']}
+              padding={16}
+              borderRadius={20}
+              marginBottom={16}
+            >
                 <View className="flex-row items-center justify-between mb-4">
                   <View className="flex-row items-center gap-2">
                     <Ionicons name="sparkles-outline" size={18} color="#4edea3" />
@@ -613,7 +619,7 @@ Asistan Cevabı:`;
                   className="w-full mt-2"
                   variant={isSaveBtnActive ? 'primary' : 'disabled'}
                 />
-            </View>
+            </AnimatedBorderCard>
 
             {/* 3. Canlı Test */}
             <View style={styles.glassCard} className="mb-4 overflow-hidden">
@@ -1046,6 +1052,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 2,
+  },
+  glowBorderCyanThick: {
+    borderColor: 'rgba(0, 240, 255, 0.5)',
+    shadowColor: '#00f0ff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.55,
+    shadowRadius: 22,
+    elevation: 8,
   },
   pulseGlow: {
     shadowColor: '#4edea3',
