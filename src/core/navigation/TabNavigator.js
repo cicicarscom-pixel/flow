@@ -46,14 +46,14 @@ export default function TabNavigator() {
 
   return (
     <Tab.Navigator
-      initialRouteName="Bot Yönetimi"
+      initialRouteName="Ai Asistan"
       safeAreaInsets={{ bottom: 0 }}
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarHideOnKeyboard: true,
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          if (route.name === 'Bot Yönetimi') {
+          if (route.name === 'Ai Asistan') {
             iconName = focused ? 'hardware-chip' : 'hardware-chip-outline';
           } else if (route.name === 'AI Muhasebe') {
             iconName = focused ? 'wallet' : 'wallet-outline';
@@ -96,7 +96,7 @@ export default function TabNavigator() {
         tabBarInactiveTintColor: '#849495',
       })}
     >
-      <Tab.Screen name="Bot Yönetimi" component={BotYonetimiStack} />
+      <Tab.Screen name="Ai Asistan" component={BotYonetimiStack} />
       <Tab.Screen 
         name="Sosyal Medya" 
         component={SosyalMedyaStack} 

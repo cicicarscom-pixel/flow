@@ -122,7 +122,7 @@ export default function DigitalAssistantScreen({ route, navigation }) {
         id: Date.now() + 1,
         role: 'ai',
         type: 'error',
-        text: 'Bir hata oluştu. Lütfen AI Hesap sekmesinden Gemini API anahtarınızın doğru girildiğinden emin olun.',
+        text: 'Bir hata oluştu. Lütfen bağlantınızı kontrol edip daha sonra tekrar deneyin.',
         timestamp: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
       }]);
     } finally {

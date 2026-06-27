@@ -193,19 +193,6 @@ ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Kullanici kendi finansal islemlerini gorebilir" ON public.transactions FOR ALL USING (auth.uid() = profile_id);
 CREATE TRIGGER update_transactions_updated_at BEFORE UPDATE ON public.transactions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- ==============================================================================
--- 8. USER API SETTINGS (Gemini BYOK API Key)
--- ==============================================================================
-CREATE TABLE IF NOT EXISTS public.user_api_settings (
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
-  gemini_api_key TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-ALTER TABLE public.user_api_settings ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Kullanicilar kendi API ayarlarini gorebilir" ON public.user_api_settings FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Kullanicilar kendi API ayarlarini guncelleyebilir" ON public.user_api_settings FOR ALL USING (auth.uid() = user_id);
 
 -- ==============================================================================
 -- 9. API USAGE LOGS (Maliyet ve Kullanım Günlüğü)

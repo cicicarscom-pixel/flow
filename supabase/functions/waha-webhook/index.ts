@@ -122,19 +122,8 @@ serve(async (req) => {
           }
         }
 
-        // 3. Gemini API Anahtarını Çek (BYOK)
-        let apiKey = Deno.env.get("GEMINI_API_KEY");
-        if (profile) {
-          const { data: apiSettings } = await supabaseAdmin
-            .from('user_api_settings')
-            .select('gemini_api_key')
-            .eq('user_id', profile.id)
-            .single();
-          
-          if (apiSettings && apiSettings.gemini_api_key) {
-            apiKey = apiSettings.gemini_api_key;
-          }
-        }
+        // 3. Gemini API Anahtarını Çek
+        const apiKey = Deno.env.get("GEMINI_API_KEY");
 
         if (!apiKey) {
           console.warn("Gemini API Key bulunamadı!");

@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import TabNavigator from './TabNavigator';
 import ProfilScreen from '../../screens/ProfilScreen';
-import AiHesapScreen from '../../screens/AiHesapScreen';
 import AiChatScreen from '../../screens/AiChatScreen';
 import AiAssistantScreen from '../../screens/AiAssistantScreen';
 import DigitalAssistantScreen from '../../screens/DigitalAssistantScreen';
@@ -25,7 +24,6 @@ export default function AppNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={TabNavigator} />
       <Stack.Screen name="Profil" component={ProfilScreen} />
-      <Stack.Screen name="AiHesap" component={AiHesapScreen} />
       <Stack.Screen name="OdemeTakvimi" component={OdemeTakvimiScreen} />
       <Stack.Screen name="AiChat" component={AiChatScreen} />
       <Stack.Screen name="AiAssistant" component={AiAssistantScreen} />

@@ -223,21 +223,21 @@ export default function SosyalMedyaScreen({ navigation }) {
 
           <AnimatedBorderCard 
             style={[styles.glowBorderCyan, { flex: 1, marginHorizontal: 4 }]} 
-            colors={['#bc13fe', '#131314', '#bc13fe', '#131314']}
+            colors={['#00f0ff', '#131314', '#00f0ff', '#131314']}
             padding={0}
             borderRadius={12}
           >
             <TouchableOpacity 
               className="py-3 px-1 flex-row items-center justify-center"
-              onPress={() => navigation.navigate('AiUretim')}
+              onPress={() => navigation.navigate('Gönderiler')}
             >
-              <Text className="text-[#00f0ff] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.shareCenter')}</Text>
+              <Text className="text-[#00f0ff] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.allPosts')}</Text>
             </TouchableOpacity>
           </AnimatedBorderCard>
           
           <AnimatedBorderCard 
-            style={[styles.glowBorderMagenta, { flex: 1, marginLeft: 4 }]} 
-            colors={['#ebb2ff', '#131314', '#ebb2ff', '#131314']}
+            style={[styles.glowBorderCyan, { flex: 1, marginLeft: 4 }]} 
+            colors={['#00f0ff', '#131314', '#00f0ff', '#131314']}
             padding={0}
             borderRadius={12}
           >
@@ -267,20 +267,20 @@ export default function SosyalMedyaScreen({ navigation }) {
           />
         </AnimatedBorderCard>
 
-        {/* Posts Button (Full Width) */}
+        {/* Share Center Button (Full Width) */}
         <AnimatedBorderCard 
-          style={styles.glowBorderCyan} 
-          colors={['#00f0ff', '#131314', '#00f0ff', '#131314']}
+          style={styles.glowBorderMagenta} 
+          colors={['#bc13fe', '#131314', '#bc13fe', '#131314']}
           padding={0}
           borderRadius={12}
           marginBottom={24}
         >
           <CustomButton 
-            onPress={() => navigation.navigate('Gönderiler')}
-            title={t('sosyalMedya.ui.allPosts')}
+            onPress={() => navigation.navigate('AiUretim')}
+            title={t('sosyalMedya.ui.shareCenter')}
             className="bg-transparent py-3 px-4"
-            textClassName="text-[#00f0ff] text-[12px] font-bold uppercase tracking-widest"
-            leftIcon={<MaterialIcons name="dynamic-feed" size={16} color="#00f0ff" />}
+            textClassName="text-[#ebb2ff] text-[12px] font-bold uppercase tracking-widest"
+            leftIcon={<MaterialIcons name="auto-awesome" size={16} color="#ebb2ff" />}
           />
         </AnimatedBorderCard>
 

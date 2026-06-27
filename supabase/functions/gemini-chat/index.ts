@@ -32,17 +32,10 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
     if (userError || !user) throw new Error('Unauthorized: Invalid JWT')
 
-    const { data: apiSettings, error: apiError } = await supabaseClient
-      .from('user_api_settings')
-      .select('gemini_api_key')
-      .eq('user_id', user.id)
-      .single()
-
-    if (apiError || !apiSettings || !apiSettings.gemini_api_key) {
-      throw new Error('MISSING_API_KEY: Lütfen AI Hesap sekmesinden Gemini API anahtarınızı girin.')
+    const apiKey = Deno.env.get('GEMINI_API_KEY')
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY is not set in environment variables.')
     }
-    
-    const apiKey = apiSettings.gemini_api_key
 
     const hasImage = !!image;
     const hasRefImage = !!referenceImage;

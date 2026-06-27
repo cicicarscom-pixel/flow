@@ -329,17 +329,11 @@ serve(async (req) => {
             return new Response('OK', { status: 200 });
           }
 
-          // Fetch user's Gemini API Key
-          const { data: apiSettings } = await supabaseAdmin
-            .from('user_api_settings')
-            .select('gemini_api_key')
-            .eq('user_id', profile.id)
-            .single();
-
-          const apiKey = apiSettings?.gemini_api_key || Deno.env.get("GEMINI_API_KEY");
+          // Fetch Gemini API Key from environment
+          const apiKey = Deno.env.get("GEMINI_API_KEY");
           if (!apiKey) {
-            console.warn("No Gemini API key configured for user or platform");
-            await sendWhatsAppReply(businessPhoneNumberId, activeToken, customerPhone, "Lütfen AI Esnaf uygulamasındaki 'AI Hesap' sekmesinden Gemini API anahtarınızı girin.", messageId);
+            console.warn("No Gemini API key configured in system environment");
+            await sendWhatsAppReply(businessPhoneNumberId, activeToken, customerPhone, "Yapay zeka sistemi şu anda yanıt veremiyor. Lütfen daha sonra tekrar deneyin.", messageId);
             return new Response('OK', { status: 200 });
           }
 
