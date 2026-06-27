@@ -251,9 +251,10 @@ App.js
 4. **TypeScript Path Aliases & Anti-Bypass Entegrasyonu:** `tsconfig.json` dosyasında `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dahil edildi. Projedeki tüm relative path import'lar path alias'larına geçirilerek ESLint'in `no-restricted-imports` (Anti-Bypass) kuralı yeşile çekildi.
 5. **Kapsamlı Linter Kontrolü:** `npm run lint` çalıştırılarak tüm 42 hata giderildi ve linter **0 hata** ile tamamlandı.
 6. **Sistem Talimatı RGB Halo Shadow & Statik Çerçeve & Scrollable Giriş Entegrasyonu:** 
-    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, kalıcı olarak yanan bir çerçeve (gradient border) ve onun arkasında aura şeklinde kesintisiz dönen bir RGB gölge (glow shadow) animasyonu uygulandı.
-    - Aura efekti arka planda her yönden `20px` dışa taşacak şekilde genişletildi, opasitesi `0.75`'e yükseltildi ve shadow yarıçapı artırılarak aura görünümü maksimum belirginliğe kavuşturuldu. Static yanan çerçeve kalınlığı 3px'e çıkarıldı.
+    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, kartın yuvarlatılmış köşelerini mükemmel şekilde takip eden bir gölge ışık halesi (halo shadow glow) ve kartın içinde dairesel olarak dönen bir RGB ışık çerçevesi (border beam) uygulandı.
+    - Arkadaki serbest dönen kare gradyanın köşelerinin (kulaklarının) dışa çirkin şekilde taşmasını önlemek amacıyla, en dışa `borderRadius: 20` olan ve soft glow shadow içeren sabit bir dış sarmal `View` yerleştirildi. Dönen ince RGB neon çizgi ise kartın `overflow: 'hidden'` olan sınırları içerisinde kısıtlandı.
     - "AI Karakter Talimatı" (`botInstruction`) kutusu `height: 140` olarak sabitlendi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip yan kaydırma çubuğu ile gezilebilmesi sağlandı.
+
 
 
 
