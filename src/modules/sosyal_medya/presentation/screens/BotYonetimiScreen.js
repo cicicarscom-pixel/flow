@@ -1048,8 +1048,8 @@ const styles = StyleSheet.create({
   },
   glowBorderCyanThick: {
     borderWidth: 1.5,
-    borderColor: '#00f0ff',
-    shadowColor: '#00f0ff',
+    borderColor: '#00a2ff',
+    shadowColor: '#00a2ff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 18,
