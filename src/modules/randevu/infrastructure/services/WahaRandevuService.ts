@@ -1,4 +1,4 @@
-import { IWhatsAppGateway } from '../../domain/gateways/IWhatsAppGateway';
+import { IWhatsAppGateway } from '@domain/gateways/IWhatsAppGateway';
 
 export class WahaRandevuService implements IWhatsAppGateway {
   async sendHourSelection(customerPhone: string, availableHours: string[], bookingToken: string): Promise<void> {

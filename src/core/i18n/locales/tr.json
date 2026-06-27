@@ -239,5 +239,33 @@
         "sun": "PZR"
       }
     }
+  },
+  "randevu": {
+    "hizmetAyarlari": {
+      "title": "Hizmet Ayarları",
+      "visibilityTitle": "Hizmet Görünürlüğü",
+      "visibilitySubtitleActive": "Müşterileriniz randevu alırken hizmetleri bu listeden seçebilir",
+      "visibilitySubtitleInactive": "Profiliniz şu an gizli (Pasif)",
+      "activeServices": "AKTİF HİZMETLER",
+      "inactiveServices": "PASİF HİZMETLER",
+      "serviceNamePlaceholder": "Hizmet adı",
+      "pricePlaceholder": "Fiyat",
+      "unitPlaceholder": "birim",
+      "currencyUnit": "TL /",
+      "addService": "Hizmet Ekle ({{current}}/{{max}})",
+      "edit": "Düzenle",
+      "save": "Kaydet",
+      "noName": "Hizmet adı girilmedi"
+    },
+    "randevuScreen": {
+      "monthYear": "Kasım, 2025",
+      "dailyAvailability": "Günlük Müsaitlik",
+      "busy": "Dolu",
+      "free": "Boş",
+      "morning": "Sabah",
+      "afternoon": "Öğle",
+      "evening": "Akşam",
+      "noAppointments": "Bugün için randevu yok"
+    }
   }
 }

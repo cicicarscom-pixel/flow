@@ -1,1 +1,30 @@
-{}
+{
+  "randevu": {
+    "hizmetAyarlari": {
+      "title": "Diensteinstellungen",
+      "visibilityTitle": "Dienstbarkeit",
+      "visibilitySubtitleActive": "Ihre Kunden können bei der Buchung Dienste aus dieser Liste auswählen",
+      "visibilitySubtitleInactive": "Ihr Profil ist derzeit ausgeblendet (Inaktiv)",
+      "activeServices": "AKTIVE DIENSTE",
+      "inactiveServices": "INAKTIVE DIENSTE",
+      "serviceNamePlaceholder": "Dienstname",
+      "pricePlaceholder": "Preis",
+      "unitPlaceholder": "Einheit",
+      "currencyUnit": "EUR /",
+      "addService": "Dienst hinzufügen ({{current}}/{{max}})",
+      "edit": "Bearbeiten",
+      "save": "Speichern",
+      "noName": "Kein Dienstname eingegeben"
+    },
+    "randevuScreen": {
+      "monthYear": "November, 2025",
+      "dailyAvailability": "Tägliche Verfügbarkeit",
+      "busy": "Belegt",
+      "free": "Frei",
+      "morning": "Morgen",
+      "afternoon": "Mittag",
+      "evening": "Abend",
+      "noAppointments": "Keine Termine für heute"
+    }
+  }
+}

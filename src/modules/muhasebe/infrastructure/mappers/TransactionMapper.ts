@@ -1,4 +1,4 @@
-import { Transaction } from '../../domain/entities/Transaction';
+import { Transaction } from '@domain/entities/Transaction';
 
 export class TransactionMapper {
   static toDomain(raw: any): Transaction {

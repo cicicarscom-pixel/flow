@@ -7,10 +7,26 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/assets/*": ["./assets/*"],
-      "@domain/*": ["./src/modules/muhasebe/domain/*", "./src/modules/sosyal_medya/domain/*"],
-      "@application/*": ["./src/modules/muhasebe/application/*", "./src/modules/sosyal_medya/application/*"],
-      "@infrastructure/*": ["./src/modules/muhasebe/infrastructure/*", "./src/modules/sosyal_medya/infrastructure/*"],
-      "@presentation/*": ["./src/modules/muhasebe/presentation/*", "./src/modules/sosyal_medya/presentation/*"]
+      "@domain/*": [
+        "./src/modules/muhasebe/domain/*",
+        "./src/modules/sosyal_medya/domain/*",
+        "./src/modules/randevu/domain/*"
+      ],
+      "@application/*": [
+        "./src/modules/muhasebe/application/*",
+        "./src/modules/sosyal_medya/application/*",
+        "./src/modules/randevu/application/*"
+      ],
+      "@infrastructure/*": [
+        "./src/modules/muhasebe/infrastructure/*",
+        "./src/modules/sosyal_medya/infrastructure/*",
+        "./src/modules/randevu/infrastructure/*"
+      ],
+      "@presentation/*": [
+        "./src/modules/muhasebe/presentation/*",
+        "./src/modules/sosyal_medya/presentation/*",
+        "./src/modules/randevu/presentation/*"
+      ]
     }
   },
   "include": [

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { container } from '../../../../core/container';
-import { SupabaseAppointmentRepository } from '../../infrastructure/repositories/SupabaseAppointmentRepository';
-import { Appointment } from '../../domain/entities/Appointment';
-import { AppointmentStatus } from '../../domain/enums/AppointmentStatus';
+import { SupabaseAppointmentRepository } from '@infrastructure/repositories/SupabaseAppointmentRepository';
+import { Appointment } from '@domain/entities/Appointment';
+import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
 
 // Appointment'ın date alanından "HH:MM" formatında saat çıkarır
 export function extractTime(dateStr: string): string {

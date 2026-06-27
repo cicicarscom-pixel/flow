@@ -1,5 +1,4 @@
-import { Appointment } from '../entities/Appointment';
-import { AppointmentStatus } from '../enums/AppointmentStatus';
+import { Appointment } from '@domain/entities/Appointment';
 
 export interface IAppointmentRepository {
   create(appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Appointment>;

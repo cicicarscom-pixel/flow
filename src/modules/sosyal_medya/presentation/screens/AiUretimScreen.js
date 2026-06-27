@@ -30,7 +30,7 @@ import { CustomButton } from '../../../../shared';
 const { width } = Dimensions.get('window');
 
 const AnimatedBorderCard = ({ children, style, colors, padding = 20, borderRadius = 16, marginBottom = 0 }) => {
-  const spinValue = useRef(new Animated.Value(0)).current;
+  const [spinValue] = useState(() => new Animated.Value(0));
 
   useFocusEffect(
     useCallback(() => {
@@ -45,7 +45,7 @@ const AnimatedBorderCard = ({ children, style, colors, padding = 20, borderRadiu
       return () => {
         spinValue.stopAnimation();
       };
-    }, [])
+    }, [spinValue])
   );
 
   const spin = spinValue.interpolate({

@@ -23,6 +23,7 @@ Projenin geliştirme sürecinde alınan kritik mimari kararlar ve çözülen sor
 11. **Dinamik Safe Area & Klavye Uyumlu Mesajlaşma Arayüzü:** Eski manuel `KeyboardBottomSpacer` silinerek tamamen standart `react-native-safe-area-context` yapısına geçildi. `ChatInputBar` klavyeyi ve Home Indicator safe area insets değerlerini dinamik dinleyerek klavye açıkken `0`, kapalıyken `insets.bottom` boşluğu bırakacak şekilde yapılandırıldı. Sohbet ekranlarında (`AiChat`, `AiAssistant`, `ChatScreen`, `DigitalAssistant`) `SafeAreaView` `edges={['top', 'left', 'right']}` olarak kısıtlanarak alt boşluk yönetimi tamamen `ChatInputBar`'a bırakıldı.
 12. **Detay Ekranlarında Alt Navigasyon (TabBar) Gizlenmesi:** Tüm detay ekranları (`OdemeTakvimi`, `AiChat`, `AiAssistant`, `DigitalAssistant`, `AiUretim`, `Inbox`, `Analytics`, `Gönderiler`, `ChatScreen`, `PostCommentsScreen`) `TabNavigator.js` içindeki sekme yığıtlarından çıkarılarak root düzeydeki `AppNavigator.js` Stack'ine taşındı. Böylece detay ekranlarına geçildiğinde alt TabBar otomatik olarak gizlenmektedir.
 13. **ESLint Hata Temizliği ve Kod Kalitesi:** Projedeki tüm ESLint hataları (Animated ref render erişimleri, conditional hooks, useEffect cascading state güncellemeleri, displayName eksikliği ve block-scoping declaration hoisting) giderilerek linter taraması 0 hata seviyesine çekildi.
+14. **GitHub Senkronizasyonu & Randevu Modülü i18n & ESLint Hata Çözümü:** GitHub remote üzerindeki son güncellemeler çekilip local workspace güncellendi. Randevu modülü presentation katmanındaki ekranlar (`RandevuScreen.js`, `HizmetAyarlariScreen.js`) tamamen Türkçe, İngilizce ve Almanca olarak yerelleştirildi (i18n). ESLint'in `i18next/no-literal-string` kuralları ve Animated ref render erişim hataları (ref access during render) giderildi. TypeScript path alias'ları (`@domain`, `@application`, `@infrastructure`, `@presentation`) `tsconfig.json` üzerinde `randevu` modülünü de kapsayacak şekilde güncellendi ve tüm relative import'lar bu alias'lara taşınarak mimari sınır güvenlik kuralları (Anti-Bypass) sağlandı. Linter hataları 0'a indirildi.
 
 ---
 
@@ -453,6 +454,11 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
     - **Repository & Evrensel Standartlar:** Veri katmanını soyutlamak için `ITransactionRepository` (Örn: `findAll`, `findById`, `create`) tanımlandı.
     - **Çift Yönlü Mapper:** Altyapı katmanında, veritabanı JSON yanıtı (Supabase Row) ile Domain Entity arasında çift yönlü dönüşüm sağlayan `TransactionMapper` (`toDomain`, `toPersistence`) entegre edildi.
     - **UseCase ve IoC Entegrasyonu:** `SupabaseTransactionRepository` oluşturularak container'a (DI) eklendi. UI ekranlarındaki (`OdemeTakvimiScreen`) tüm doğrudan Supabase çağrıları silinip, yerine Dependency Injection ile kurulan `GetTransactionsUseCase` bağlandı. Mimari refaktör süreci `%100` tamamlandı ve yeni modüller için örnek teşkil edecek Enterprise temel atılmış oldu.
+20. **Randevu Modülü i18n & ESLint Hata Çözümü & Katman Sınırı Entegrasyonu:**
+    - **Çok Dillilik (i18n):** `RandevuScreen.js` ve `HizmetAyarlariScreen.js` ekranlarındaki hardcoded Türkçe metinler sökülüp `tr.json`, `en.json` ve `de.json` dosyalarına bağlandı.
+    - **Animated Ref Hatası Çözümü:** `RandevuScreen` ve `AiUretimScreen`'deki render esnasında ref (`useRef().current`) erişiminden kaynaklanan ESLint hataları, `useState` tabanlı `Animated.Value` tanımına geçilerek temizlendi.
+    - **TypeScript Path Alias Entegrasyonu:** `tsconfig.json`'daki `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dizinleri eklendi.
+    - **Relative Import Temizliği:** `muhasebe`, `randevu` ve `sosyal_medya` modüllerindeki tüm relative import'lar path alias'larına geçirilerek mimari sınır ihlali (Anti-Bypass) hataları giderildi, ESLint kuralları sıfır (0) hata ile yeşile döndü.
 
 ---
 

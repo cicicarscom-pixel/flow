@@ -1,5 +1,5 @@
-import { ITransactionRepository } from '../../domain/repositories/ITransactionRepository';
-import { Transaction } from '../../domain/entities/Transaction';
+import { ITransactionRepository } from '@domain/repositories/ITransactionRepository';
+import { Transaction } from '@domain/entities/Transaction';
 import { TransactionMapper } from '../mappers/TransactionMapper';
 import { supabase } from '../../../../shared';
 import { NetworkError } from '../../../../shared/errors/NetworkError';

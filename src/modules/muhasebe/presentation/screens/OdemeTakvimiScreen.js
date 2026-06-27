@@ -7,7 +7,7 @@ import { CustomButton } from '../../../../shared';
 import { CustomInput } from '../../../../shared';
 import { useTranslation } from 'react-i18next';
 import { container } from '../../../../core/container';
-import { GetTransactionsUseCase } from '../../application/useCases/GetTransactionsUseCase';
+import { GetTransactionsUseCase } from '@application/useCases/GetTransactionsUseCase';
 
 const { width } = Dimensions.get('window');
 

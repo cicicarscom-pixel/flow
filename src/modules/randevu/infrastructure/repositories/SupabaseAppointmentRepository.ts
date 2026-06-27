@@ -1,7 +1,7 @@
-import { IAppointmentRepository } from '../../domain/repositories/IAppointmentRepository';
-import { Appointment } from '../../domain/entities/Appointment';
+import { IAppointmentRepository } from '@domain/repositories/IAppointmentRepository';
+import { Appointment } from '@domain/entities/Appointment';
 import { AppointmentMapper } from '../mappers/AppointmentMapper';
-import { AppointmentStatus } from '../../domain/enums/AppointmentStatus';
+import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
 import { supabase } from '../../../../shared';
 import { NetworkError } from '../../../../shared/errors/NetworkError';
 

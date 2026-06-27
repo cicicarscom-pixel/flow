@@ -1,7 +1,7 @@
 import { container } from '../../../../core/container';
-import { StartAppointmentFlowUseCase } from '../../application/useCases/StartAppointmentFlowUseCase';
-import { ApproveAppointmentUseCase } from '../../application/useCases/ApproveAppointmentUseCase';
-import { CancelAppointmentUseCase } from '../../application/useCases/CancelAppointmentUseCase';
+import { StartAppointmentFlowUseCase } from '@application/useCases/StartAppointmentFlowUseCase';
+import { ApproveAppointmentUseCase } from '@application/useCases/ApproveAppointmentUseCase';
+import { CancelAppointmentUseCase } from '@application/useCases/CancelAppointmentUseCase';
 
 export class AppointmentWebhookController {
   

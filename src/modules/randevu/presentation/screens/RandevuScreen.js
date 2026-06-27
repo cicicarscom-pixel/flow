@@ -7,6 +7,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { useAppointments, extractTime } from '../hooks/useAppointments';
 
 const DAYS = [
@@ -39,13 +40,20 @@ const CARD_COLORS = [
 ];
 
 export default function RandevuScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [activeDay, setActiveDay] = useState(1);
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const [pulseAnim] = useState(() => new Animated.Value(1));
 
   // ── Supabase veri bağlantısı ──
-  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate } = useAppointments();
+  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate } = useAppointments('2025-11-12');
+
+  const handleDaySelect = (index) => {
+    setActiveDay(index);
+    const dayObj = DAYS[index];
+    setSelectedDate(`2025-11-${dayObj.date}`);
+  };
 
   // FAB pulse
   React.useEffect(() => {
@@ -55,7 +63,7 @@ export default function RandevuScreen() {
         Animated.timing(pulseAnim, { toValue: 1, duration: 1500, useNativeDriver: true }),
       ])
     ).start();
-  }, []);
+  }, [pulseAnim]);
 
   const tabBarBottom = Math.max(insets.bottom + 10, 20);
   const tabBarHeight = 64;
@@ -73,7 +81,7 @@ export default function RandevuScreen() {
           <View>
             <Text style={styles.headerLabel}>DASHBOARD</Text>
             <View style={styles.headerDateRow}>
-              <Text style={styles.headerDate}>Kasim, 2025</Text>
+              <Text style={styles.headerDate}>{t('randevu.randevuScreen.monthYear')}</Text>
               <Ionicons name="chevron-down" size={16} color="#4edea3" />
             </View>
           </View>
@@ -108,7 +116,7 @@ export default function RandevuScreen() {
               <TouchableOpacity
                 key={i}
                 style={[styles.dayCard, activeDay === i && styles.dayCardActive]}
-                onPress={() => setActiveDay(i)}
+                onPress={() => handleDaySelect(i)}
               >
                 <Text style={[styles.dayName, activeDay === i && styles.dayNameActive]}>
                   {day.name}
@@ -123,15 +131,15 @@ export default function RandevuScreen() {
           {/* Time Slots — 3-row heatmap */}
           <View style={styles.slotsCard}>
             <View style={styles.slotsHeader}>
-              <Text style={styles.slotsTitle}>Gunluk Musaitlik</Text>
+              <Text style={styles.slotsTitle}>{t('randevu.randevuScreen.dailyAvailability')}</Text>
               <View style={styles.slotsLegend}>
                 <View style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: '#4edea3' }]} />
-                  <Text style={styles.legendText}>Dolu</Text>
+                  <Text style={styles.legendText}>{t('randevu.randevuScreen.busy')}</Text>
                 </View>
                 <View style={styles.legendItem}>
                   <View style={[styles.legendDot, styles.legendDotEmpty]} />
-                  <Text style={styles.legendText}>Bos</Text>
+                  <Text style={styles.legendText}>{t('randevu.randevuScreen.free')}</Text>
                 </View>
               </View>
             </View>
@@ -140,9 +148,9 @@ export default function RandevuScreen() {
             <View style={styles.heatmapWrap}>
               {/* Fixed row labels */}
               <View style={styles.rowLabels}>
-                <Text style={styles.rowLabel}>Sabah</Text>
-                <Text style={styles.rowLabel}>Ogle</Text>
-                <Text style={styles.rowLabel}>Aksam</Text>
+                <Text style={styles.rowLabel}>{t('randevu.randevuScreen.morning')}</Text>
+                <Text style={styles.rowLabel}>{t('randevu.randevuScreen.afternoon')}</Text>
+                <Text style={styles.rowLabel}>{t('randevu.randevuScreen.evening')}</Text>
               </View>
 
               {/* Scrollable 3-row grid */}
@@ -183,7 +191,7 @@ export default function RandevuScreen() {
           ) : appointments.length === 0 ? (
             <View style={styles.emptyState}>
               <Ionicons name="calendar-outline" size={40} color="#3c4a42" />
-              <Text style={styles.emptyText}>Bu gun icin randevu yok</Text>
+              <Text style={styles.emptyText}>{t('randevu.randevuScreen.noAppointments')}</Text>
             </View>
           ) : (
             appointments.map((appt, index) => {

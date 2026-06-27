@@ -1,4 +1,4 @@
-import { AppointmentStatus } from '../enums/AppointmentStatus';
+import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
 
 export class Appointment {
   private readonly _id: string;

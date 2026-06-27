@@ -1,4 +1,4 @@
-import { Transaction } from '../entities/Transaction';
+import { Transaction } from '@domain/entities/Transaction';
 
 export interface ITransactionRepository {
   findAll(): Promise<Transaction[]>;

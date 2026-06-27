@@ -1,5 +1,5 @@
-import { Appointment } from '../../domain/entities/Appointment';
-import { AppointmentStatus } from '../../domain/enums/AppointmentStatus';
+import { Appointment } from '@domain/entities/Appointment';
+import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
 
 export class AppointmentMapper {
   static toDomain(raw: any): Appointment {

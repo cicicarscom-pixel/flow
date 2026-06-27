@@ -1,6 +1,6 @@
 import { container } from '../../../../core/container';
-import { StartAppointmentFlowUseCase } from '../../application/useCases/StartAppointmentFlowUseCase';
-import { ApproveAppointmentUseCase } from '../../application/useCases/ApproveAppointmentUseCase';
+import { StartAppointmentFlowUseCase } from '@application/useCases/StartAppointmentFlowUseCase';
+import { ApproveAppointmentUseCase } from '@application/useCases/ApproveAppointmentUseCase';
 
 export class AppointmentTestController {
   

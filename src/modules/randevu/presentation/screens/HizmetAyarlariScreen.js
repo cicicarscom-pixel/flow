@@ -6,6 +6,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const defaultServices = [
   { name: 'Sac Kesimi', price: '150', unit: 'seans' },
@@ -14,6 +15,7 @@ const defaultServices = [
 ];
 
 export default function HizmetAyarlariScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
@@ -49,7 +51,7 @@ export default function HizmetAyarlariScreen() {
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerLeft} onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={20} color="#4edea3" />
-          <Text style={styles.headerTitle}>Hizmet Ayarlari</Text>
+          <Text style={styles.headerTitle}>{t('randevu.hizmetAyarlari.title')}</Text>
         </TouchableOpacity>
         <View style={styles.avatar}>
           <Ionicons name="person" size={18} color="#bbcabf" />
@@ -63,11 +65,11 @@ export default function HizmetAyarlariScreen() {
         {/* Visibility Toggle */}
         <View style={styles.visibilityCard}>
           <View style={styles.visibilityTextWrap}>
-            <Text style={styles.visibilityTitle}>Hizmet Gorunurlugu</Text>
+            <Text style={styles.visibilityTitle}>{t('randevu.hizmetAyarlari.visibilityTitle')}</Text>
             <Text style={styles.visibilitySubtitle}>
               {isActive
-                ? 'Musterileriniz randevu alirken hizmetleri bu listeden secebilir'
-                : 'Profiliniz su an gizli (Pasif)'}
+                ? t('randevu.hizmetAyarlari.visibilitySubtitleActive')
+                : t('randevu.hizmetAyarlari.visibilitySubtitleInactive')}
             </Text>
           </View>
           <Switch
@@ -82,7 +84,7 @@ export default function HizmetAyarlariScreen() {
         {/* Section Header */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
-            {isActive ? 'AKTIF HIZMETLER' : 'PASIF HIZMETLER'} ({services.length}/10)
+            {isActive ? t('randevu.hizmetAyarlari.activeServices') : t('randevu.hizmetAyarlari.inactiveServices')} ({services.length}/10)
           </Text>
           <Ionicons name="information-circle-outline" size={16} color="#4edea3" />
         </View>
@@ -100,7 +102,7 @@ export default function HizmetAyarlariScreen() {
                       style={[styles.input, { flex: 1 }]}
                       value={service.name}
                       onChangeText={v => updateService(index, 'name', v)}
-                      placeholder="Hizmet adi"
+                      placeholder={t('randevu.hizmetAyarlari.serviceNamePlaceholder')}
                       placeholderTextColor="#3c4a42"
                     />
                     <TouchableOpacity
@@ -115,16 +117,16 @@ export default function HizmetAyarlariScreen() {
                       style={[styles.input, { flex: 1 }]}
                       value={service.price}
                       onChangeText={v => updateService(index, 'price', v)}
-                      placeholder="Fiyat"
+                      placeholder={t('randevu.hizmetAyarlari.pricePlaceholder')}
                       placeholderTextColor="#3c4a42"
                       keyboardType="numeric"
                     />
-                    <Text style={styles.sep}>TL /</Text>
+                    <Text style={styles.sep}>{t('randevu.hizmetAyarlari.currencyUnit')}</Text>
                     <TextInput
                       style={[styles.input, { width: 76 }]}
                       value={service.unit}
                       onChangeText={v => updateService(index, 'unit', v)}
-                      placeholder="birim"
+                      placeholder={t('randevu.hizmetAyarlari.unitPlaceholder')}
                       placeholderTextColor="#3c4a42"
                     />
                   </View>
@@ -133,7 +135,7 @@ export default function HizmetAyarlariScreen() {
                 /* ── VIEW MODE ── */
                 <View style={styles.viewRow}>
                   <Text style={styles.serviceName}>
-                    {service.name || 'Hizmet adi girilmedi'}
+                    {service.name || t('randevu.hizmetAyarlari.noName')}
                   </Text>
                   <Text style={styles.servicePrice}>
                     {service.price ? `${service.price} TL / ${service.unit}` : '—'}
@@ -147,7 +149,7 @@ export default function HizmetAyarlariScreen() {
           {isEditing && services.length < 10 && (
             <TouchableOpacity style={styles.addBtn} onPress={addService}>
               <Ionicons name="add-circle-outline" size={18} color="#4edea3" />
-              <Text style={styles.addBtnText}>Hizmet Ekle ({services.length}/10)</Text>
+              <Text style={styles.addBtnText}>{t('randevu.hizmetAyarlari.addService', { current: services.length, max: 10 })}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -170,7 +172,7 @@ export default function HizmetAyarlariScreen() {
               color="#003824"
             />
             <Text style={styles.mainBtnText}>
-              {isEditing ? 'Kaydet' : 'Duzenle'}
+              {isEditing ? t('randevu.hizmetAyarlari.save') : t('randevu.hizmetAyarlari.edit')}
             </Text>
           </TouchableOpacity>
         </View>

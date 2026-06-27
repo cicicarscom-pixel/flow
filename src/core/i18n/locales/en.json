@@ -220,5 +220,33 @@
         "sun": "SUN"
       }
     }
+  },
+  "randevu": {
+    "hizmetAyarlari": {
+      "title": "Service Settings",
+      "visibilityTitle": "Service Visibility",
+      "visibilitySubtitleActive": "Your customers can choose services from this list when booking",
+      "visibilitySubtitleInactive": "Your profile is currently hidden (Inactive)",
+      "activeServices": "ACTIVE SERVICES",
+      "inactiveServices": "INACTIVE SERVICES",
+      "serviceNamePlaceholder": "Service name",
+      "pricePlaceholder": "Price",
+      "unitPlaceholder": "unit",
+      "currencyUnit": "USD /",
+      "addService": "Add Service ({{current}}/{{max}})",
+      "edit": "Edit",
+      "save": "Save",
+      "noName": "No service name entered"
+    },
+    "randevuScreen": {
+      "monthYear": "November, 2025",
+      "dailyAvailability": "Daily Availability",
+      "busy": "Busy",
+      "free": "Free",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "noAppointments": "No appointments for today"
+    }
   }
 }
