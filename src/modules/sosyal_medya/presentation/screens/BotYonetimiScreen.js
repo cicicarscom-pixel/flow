@@ -524,7 +524,7 @@ Asistan Cevabı:`;
                 </Animated.View>
               </View>
 
-              <View style={[styles.glowBorderCyanThick, { margin: 0, shadowOpacity: 0, elevation: 0 }]} className="p-4">
+              <View style={[styles.glowBorderCyanThick, { margin: 0 }]} className="p-4">
                 <View className="flex-row items-center justify-between mb-4">
                   <View className="flex-row items-center gap-2">
                     <Ionicons name="sparkles-outline" size={18} color="#4edea3" />
@@ -1096,9 +1096,9 @@ const styles = StyleSheet.create({
     borderColor: '#00a2ff',
     shadowColor: '#00a2ff',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 18,
-    elevation: 10,
+    shadowOpacity: 1.0,
+    shadowRadius: 28,
+    elevation: 18,
   },
   pulseGlow: {
     shadowColor: '#4edea3',
