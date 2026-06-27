@@ -320,22 +320,38 @@ export default function SosyalMedyaScreen({ navigation }) {
                 <Ionicons name="logo-linkedin" size={24} color="#b9cacb" />
               </TouchableOpacity>
 
-              {/* Twitter/X (Not supported yet) */}
+              {/* Twitter/X */}
               <TouchableOpacity 
-                onPress={() => Alert.alert(t('sosyalMedya.alerts.info'), t('sosyalMedya.alerts.twitterSoon'))}
-                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3 opacity-60"
+                onPress={() => handleConnectZernio('twitter')}
+                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3"
               >
-                <Ionicons name="close" size={24} color="#b9cacb" />
+                <Ionicons name="logo-twitter" size={24} color="#b9cacb" />
               </TouchableOpacity>
 
-              {/* TikTok (Not supported yet) */}
+              {/* TikTok */}
               <TouchableOpacity 
-                onPress={() => Alert.alert(t('sosyalMedya.alerts.info'), t('sosyalMedya.alerts.tiktokSoon'))}
-                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3 opacity-60"
+                onPress={() => handleConnectZernio('tiktok')}
+                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3"
               >
-                <Ionicons name="musical-notes" size={24} color="#b9cacb" />
+                <Ionicons name="logo-tiktok" size={24} color="#b9cacb" />
               </TouchableOpacity>
-              
+
+              {/* YouTube */}
+              <TouchableOpacity 
+                onPress={() => handleConnectZernio('youtube')}
+                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3"
+              >
+                <Ionicons name="logo-youtube" size={24} color="#b9cacb" />
+              </TouchableOpacity>
+
+              {/* Pinterest */}
+              <TouchableOpacity 
+                onPress={() => handleConnectZernio('pinterest')}
+                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3"
+              >
+                <Ionicons name="logo-pinterest" size={24} color="#b9cacb" />
+              </TouchableOpacity>
+
               {isConnecting && (
                 <View className="ml-2">
                   <ActivityIndicator size="small" color="#00f0ff" />
