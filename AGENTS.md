@@ -250,13 +250,12 @@ App.js
 3. **Animated Ref Render Erişimi Çözüldü:** `RandevuScreen.js` ve `AiUretimScreen.js`'deki Animated Value'ların render esnasında ref üzerinden `.current` olarak okunması nedeniyle linter'ın fırlattığı `Cannot access refs during render` hatası, `useState` tabanlı `Animated.Value` tanımlamasına geçilerek tamamen çözüldü.
 4. **TypeScript Path Aliases & Anti-Bypass Entegrasyonu:** `tsconfig.json` dosyasında `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dahil edildi. Projedeki tüm relative path import'lar path alias'larına geçirilerek ESLint'in `no-restricted-imports` (Anti-Bypass) kuralı yeşile çekildi.
 5. **Kapsamlı Linter Kontrolü:** `npm run lint` çalıştırılarak tüm 42 hata giderildi ve linter **0 hata** ile tamamlandı.
-6. **Sistem Talimatı Conic Gradient RGB Işık Çerçevesi & Aura Gölge Entegrasyonu:** 
-    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, Google Stitch "conic glow frame" efektini birebir yansıtan, pürüzsüz RGB renk geçişli bir dönen ışık çerçevesi ve aura gölgesi uygulandı.
-    - Özel bir conic gradient renk çarkı imajı (`conic_glow.png`) oluşturuldu ve `src/core/assets/images/` dizinine eklendi.
-    - Kartın arkasına `30px` genişliğinde, opasitesi `0.65` olan ve `blurRadius` (iOS: 25, Android: 12) ile yumuşatılmış, dairesel olarak dönen bir `Animated.Image` (conic_glow) yerleştirilerek köşe taşması olmayan pürüzsüz bir RGB aura gölgesi (glow shadow) sağlandı.
-    - Kartın ince kenarlık (border) kısmında ise, `overflow: 'hidden'` olan padding alanının içine yerleştirilen aynı `conic_glow` imajının dairesel olarak dönmesi sağlanarak çerçeve boyunca akan kesintisiz bir conic border beam oluşturuldu.
+6. **Sistem Talimatı Temiz Glassmorphism Kart & Buton Tasarımı Entegrasyonu:** 
+    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartındaki dönen tüm RGB auralar, dış gölgeler, dairesel gradient animasyonları ve conic_glow imaj dosyaları tamamen kaldırıldı.
+    - Kart, uygulamanın genel görsel diliyle %100 uyumlu, göz yormayan, sade ve şık `styles.glassCard` (yarı saydam koyu zemin, ince saydam mavi sınır çizgisi) tasarımıyla değiştirildi.
+    - Ayarları Kaydet butonu da sadeleştirilerek yerine uygulamanın diğer sayfalarında kullanılan standart `CustomButton` bileşeni yerleştirildi.
     - "AI Karakter Talimatı" (`botInstruction`) kutusu `height: 140` olarak sabitlendi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip yan kaydırma çubuğu ile gezilebilmesi sağlandı.
-    - **Yalpalama/Dönen Kart Etkisinin Giderilmesi:** Kartın arkasında dönen gradyanın, kartın dikdörtgen yapısı nedeniyle ovalleşip "dönen bir kart/dikdörtgen" şeklinde yalpalamasını önlemek için, hem arka auranın hem de iç border beam'in `aspectRatio: 1` ile mükemmel kare kalması sağlandı ve `StyleSheet.absoluteFillObject` ile tam merkeze yerleştirilerek kusursuz dairesel simetri sağlandı.
+
 
 
 

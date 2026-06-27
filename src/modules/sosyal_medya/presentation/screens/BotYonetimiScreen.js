@@ -29,8 +29,6 @@ import { GlobalAppBar, supabase, CustomButton, CustomInput } from '../../../../s
 import { container } from '../../../../core/container';
 import { ManageBotUseCase } from '@application/useCases/ManageBotUseCase';
 
-const ConicGlowImage = require('../../../../core/assets/images/conic_glow.png');
-
 const botUseCase = container.resolve(ManageBotUseCase);
 
 export default function BotYonetimiScreen() {
@@ -41,40 +39,6 @@ export default function BotYonetimiScreen() {
   // Core states
   const [botActive, setBotActive] = useState(true);
 
-  // Magical RGB Border Card and Button Animations
-  const cardSpinValue = useRef(new Animated.Value(0)).current;
-  const btnSpinValue = useRef(new Animated.Value(0)).current;
-
-  const triggerBtnSpin = () => {
-    btnSpinValue.setValue(0);
-    Animated.timing(btnSpinValue, {
-      toValue: 2,
-      duration: 2000,
-      easing: Easing.linear,
-      useNativeDriver: true
-    }).start();
-  };
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.timing(cardSpinValue, {
-        toValue: 1,
-        duration: 12000,
-        easing: Easing.linear,
-        useNativeDriver: true
-      })
-    ).start();
-  }, []);
-
-  const cardSpin = cardSpinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg']
-  });
-
-  const btnSpin = btnSpinValue.interpolate({
-    inputRange: [0, 1, 2],
-    outputRange: ['0deg', '360deg', '720deg']
-  });
   const [botRole, setBotRole] = useState('');
   const [botInstruction, setBotInstruction] = useState('');
   const [isSaveBtnActive, setIsSaveBtnActive] = useState(false);
@@ -231,7 +195,6 @@ export default function BotYonetimiScreen() {
           }).catch(err => console.warn('Background drive sync warning:', err));
         }
 
-        triggerBtnSpin();
         setIsSaveBtnActive(false);
       } else {
         Alert.alert(t('sosyalMedya.alerts.error'), t('sosyalMedya.alerts.noSession'));
@@ -519,55 +482,8 @@ Asistan Cevabı:`;
               </Text>
             </View>
 
-            {/* 2. Sistem Talimatı (AI Instructions) - Outer wrapper allowing shadow/glow to bleed */}
-            <View style={{ marginBottom: 16, position: 'relative' }}>
-              
-              {/* Centered Spinning RGB Shadow/Glow (Perfect square with aspectRatio: 1 to prevent card wobbling effect) */}
-              <View style={[StyleSheet.absoluteFillObject, { justifyContent: 'center', alignItems: 'center', overflow: 'visible' }]}>
-                <Animated.View style={{ 
-                  width: '130%', 
-                  aspectRatio: 1, 
-                  position: 'absolute',
-                  opacity: 0.65,
-                  transform: [{ rotate: cardSpin }],
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                  <Image 
-                    source={ConicGlowImage}
-                    style={{ width: '100%', height: '100%', borderRadius: 1000 }}
-                    resizeMode="contain"
-                    blurRadius={Platform.OS === 'ios' ? 25 : 12}
-                  />
-                </Animated.View>
-              </View>
-
-              {/* Inner card with overflow: 'hidden' to clip the rotating RGB border beam */}
-              <View style={{ 
-                overflow: 'hidden', 
-                padding: 2.5, 
-                borderRadius: 20, 
-                backgroundColor: 'rgba(255,255,255,0.03)',
-                elevation: 4
-              }}>
-                {/* Centered Spinning RGB Conic Gradient Background (Border Beam simulation - Perfect square to prevent wobbling) */}
-                <View style={[StyleSheet.absoluteFillObject, { justifyContent: 'center', alignItems: 'center' }]}>
-                  <Animated.View style={{ 
-                    width: '140%', 
-                    aspectRatio: 1, 
-                    position: 'absolute',
-                    transform: [{ rotate: cardSpin }],
-                  }}>
-                    <Image 
-                      source={ConicGlowImage}
-                      style={{ width: '100%', height: '100%', borderRadius: 1000 }}
-                      resizeMode="cover"
-                    />
-                  </Animated.View>
-                </View>
-
-                {/* Inner masked container */}
-                <View style={{ flex: 1, backgroundColor: 'rgba(28, 27, 29, 0.98)', borderRadius: 18, padding: 16 }}>
+            {/* 2. Sistem Talimatı (AI Instructions) */}
+            <View style={styles.glassCard} className="p-4 mb-4">
                 <View className="flex-row items-center justify-between mb-4">
                   <View className="flex-row items-center gap-2">
                     <Ionicons name="sparkles-outline" size={18} color="#4edea3" />
@@ -687,46 +603,17 @@ Asistan Cevabı:`;
                   </View>
                 </View>
 
-                {/* Save settings button designed like shareCenter button */}
-                <View style={{ overflow: 'hidden', padding: 1.5, borderRadius: 12, height: 48, width: '100%', backgroundColor: 'rgba(255,255,255,0.03)', opacity: isSaveBtnActive ? 1 : 0.4 }}>
-                  {/* Spinning Green Gradient Background */}
-                  {isSaveBtnActive && (
-                    <Animated.View style={{ 
-                      position: 'absolute',
-                      top: '-150%', bottom: '-150%', left: '-150%', right: '-150%',
-                      transform: [{ rotate: btnSpin }],
-                    }}>
-                      <LinearGradient
-                        colors={['#4edea3', '#131314', '#4edea3', '#131314']}
-                        locations={[0, 0.4, 0.9, 1]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={{ flex: 1 }}
-                      />
-                    </Animated.View>
-                  )}
-                  
-                  {/* Inner masked TouchableOpacity */}
-                  <TouchableOpacity 
-                    onPress={handleSave}
-                    disabled={saving || !isSaveBtnActive}
-                    style={{ flex: 1, backgroundColor: 'rgba(28, 27, 29, 0.98)', borderRadius: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}
-                  >
-                    {saving ? (
-                      <ActivityIndicator size="small" color="#4edea3" />
-                    ) : (
-                      <>
-                        <Ionicons name="save-outline" size={16} color="#4edea3" />
-                        <Text className="text-[#4edea3] font-bold text-xs">
-                          {t('sosyalMedya.bot.saveSettings')}
-                        </Text>
-                      </>
-                    )}
-                  </TouchableOpacity>
-                </View>
-              </View>
+                {/* Save settings button using CustomButton */}
+                <CustomButton
+                  title={t('sosyalMedya.bot.saveSettings')}
+                  onPress={handleSave}
+                  isLoading={saving}
+                  disabled={!isSaveBtnActive}
+                  leftIcon={<Ionicons name="save-outline" size={16} color={isSaveBtnActive ? '#003824' : '#849495'} />}
+                  className="w-full mt-2"
+                  variant={isSaveBtnActive ? 'primary' : 'disabled'}
+                />
             </View>
-          </View>
 
             {/* 3. Canlı Test */}
             <View style={styles.glassCard} className="mb-4 overflow-hidden">
