@@ -522,22 +522,25 @@ Asistan Cevabı:`;
             {/* 2. Sistem Talimatı (AI Instructions) - Outer wrapper allowing shadow/glow to bleed */}
             <View style={{ marginBottom: 16, position: 'relative' }}>
               
-              {/* Spinning RGB Shadow/Glow (Soft blurry conic halo effect behind the card) */}
-              <Animated.View style={{ 
-                position: 'absolute',
-                top: -30, bottom: -30, left: -30, right: -30,
-                opacity: 0.65,
-                transform: [{ rotate: cardSpin }],
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-                <Image 
-                  source={ConicGlowImage}
-                  style={{ width: '100%', height: '100%', borderRadius: 1000 }}
-                  resizeMode="contain"
-                  blurRadius={Platform.OS === 'ios' ? 25 : 12}
-                />
-              </Animated.View>
+              {/* Centered Spinning RGB Shadow/Glow (Perfect square with aspectRatio: 1 to prevent card wobbling effect) */}
+              <View style={[StyleSheet.absoluteFillObject, { justifyContent: 'center', alignItems: 'center', overflow: 'visible' }]}>
+                <Animated.View style={{ 
+                  width: '130%', 
+                  aspectRatio: 1, 
+                  position: 'absolute',
+                  opacity: 0.65,
+                  transform: [{ rotate: cardSpin }],
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                  <Image 
+                    source={ConicGlowImage}
+                    style={{ width: '100%', height: '100%', borderRadius: 1000 }}
+                    resizeMode="contain"
+                    blurRadius={Platform.OS === 'ios' ? 25 : 12}
+                  />
+                </Animated.View>
+              </View>
 
               {/* Inner card with overflow: 'hidden' to clip the rotating RGB border beam */}
               <View style={{ 
@@ -547,18 +550,21 @@ Asistan Cevabı:`;
                 backgroundColor: 'rgba(255,255,255,0.03)',
                 elevation: 4
               }}>
-                {/* Spinning RGB Conic Gradient Background (Border Beam simulation) */}
-                <Animated.View style={{ 
-                  position: 'absolute',
-                  top: '-50%', bottom: '-50%', left: '-50%', right: '-50%',
-                  transform: [{ rotate: cardSpin }],
-                }}>
-                  <Image 
-                    source={ConicGlowImage}
-                    style={{ width: '100%', height: '100%' }}
-                    resizeMode="cover"
-                  />
-                </Animated.View>
+                {/* Centered Spinning RGB Conic Gradient Background (Border Beam simulation - Perfect square to prevent wobbling) */}
+                <View style={[StyleSheet.absoluteFillObject, { justifyContent: 'center', alignItems: 'center' }]}>
+                  <Animated.View style={{ 
+                    width: '140%', 
+                    aspectRatio: 1, 
+                    position: 'absolute',
+                    transform: [{ rotate: cardSpin }],
+                  }}>
+                    <Image 
+                      source={ConicGlowImage}
+                      style={{ width: '100%', height: '100%', borderRadius: 1000 }}
+                      resizeMode="cover"
+                    />
+                  </Animated.View>
+                </View>
 
                 {/* Inner masked container */}
                 <View style={{ flex: 1, backgroundColor: 'rgba(28, 27, 29, 0.98)', borderRadius: 18, padding: 16 }}>

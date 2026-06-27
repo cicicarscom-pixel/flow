@@ -256,6 +256,8 @@ App.js
     - Kartın arkasına `30px` genişliğinde, opasitesi `0.65` olan ve `blurRadius` (iOS: 25, Android: 12) ile yumuşatılmış, dairesel olarak dönen bir `Animated.Image` (conic_glow) yerleştirilerek köşe taşması olmayan pürüzsüz bir RGB aura gölgesi (glow shadow) sağlandı.
     - Kartın ince kenarlık (border) kısmında ise, `overflow: 'hidden'` olan padding alanının içine yerleştirilen aynı `conic_glow` imajının dairesel olarak dönmesi sağlanarak çerçeve boyunca akan kesintisiz bir conic border beam oluşturuldu.
     - "AI Karakter Talimatı" (`botInstruction`) kutusu `height: 140` olarak sabitlendi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip yan kaydırma çubuğu ile gezilebilmesi sağlandı.
+    - **Yalpalama/Dönen Kart Etkisinin Giderilmesi:** Kartın arkasında dönen gradyanın, kartın dikdörtgen yapısı nedeniyle ovalleşip "dönen bir kart/dikdörtgen" şeklinde yalpalamasını önlemek için, hem arka auranın hem de iç border beam'in `aspectRatio: 1` ile mükemmel kare kalması sağlandı ve `StyleSheet.absoluteFillObject` ile tam merkeze yerleştirilerek kusursuz dairesel simetri sağlandı.
+
 
 
 
