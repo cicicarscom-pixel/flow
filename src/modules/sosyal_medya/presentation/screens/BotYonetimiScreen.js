@@ -42,7 +42,7 @@ export default function BotYonetimiScreen() {
     Animated.loop(
       Animated.timing(rgbSpinValue, {
         toValue: 1,
-        duration: 4000,
+        duration: 8000,
         easing: Easing.linear,
         useNativeDriver: true
       })
