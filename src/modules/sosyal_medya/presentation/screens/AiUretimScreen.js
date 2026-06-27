@@ -187,9 +187,22 @@ export default function AiUretimScreen({ route, navigation }) {
     // Döngü (for...of) ile sadece filtreden geçen uygun platformların Zernio API endpoint'lerine istek atılsın
     for (const acc of allowedPlatforms) {
       try {
-        // Burada Zernio API çağrılarını simüle eden (mock) bir yapı kuruluyor
-        await new Promise(resolve => setTimeout(resolve, 500)); 
-        console.log(`[Mock Zernio API] ${acc.platform} platformuna ${contentType} gönderildi.`);
+        // Gerçek Zernio API çağrısı
+        const { data: postData, error: postError } = await supabase.functions.invoke('zernio-client', {
+          body: { 
+            action: 'create-post', 
+            payload: { 
+              content: contentToShare,
+              platforms: [{ platform: acc.platform, accountId: acc._id || acc.id || acc.accountId || acc.uuid }],
+              publishNow: true,
+              mediaItems: localImage ? [{ type: contentType, url: localImage }] : undefined
+            } 
+          }
+        });
+        
+        if (postError || postData?.error) {
+           throw new Error(postError?.message || postData?.error?.message || "Zernio API hatası");
+        }
       } catch (err) {
         // Zero UI: Kullanıcıya asla hata gösterme
         console.warn(`[Zernio API Hatası] ${acc.platform}:`, err);
