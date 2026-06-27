@@ -16,9 +16,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Modal,
-  Animated,
-  Easing
+  Modal
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -28,34 +26,12 @@ import { GlobalAppBar, supabase, CustomButton, CustomInput } from '../../../../s
 
 import { container } from '../../../../core/container';
 import { ManageBotUseCase } from '@application/useCases/ManageBotUseCase';
-
-const BlueGlowImage = require('../../../../core/assets/images/blue_glow.png');
-
 const botUseCase = container.resolve(ManageBotUseCase);
 
 export default function BotYonetimiScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
-  
-  // Rotation animation for the blue glow aura
-  const [cardSpinValue] = useState(() => new Animated.Value(0));
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.timing(cardSpinValue, {
-        toValue: 1,
-        duration: 8000,
-        easing: Easing.linear,
-        useNativeDriver: true
-      })
-    ).start();
-  }, [cardSpinValue]);
-
-  const cardSpin = cardSpinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg']
-  });
   
   // Core states
   const [botActive, setBotActive] = useState(true);
@@ -504,25 +480,6 @@ Asistan Cevabı:`;
 
             {/* 2. Sistem Talimatı (AI Instructions) */}
             <View style={{ marginBottom: 16, position: 'relative' }}>
-              {/* Spinning blue glow aura shadow behind the card */}
-              <View style={[StyleSheet.absoluteFillObject, { justifyContent: 'center', alignItems: 'center', overflow: 'visible' }]}>
-                <Animated.View style={{ 
-                  width: '120%', 
-                  aspectRatio: 1, 
-                  position: 'absolute',
-                  opacity: 0.6,
-                  transform: [{ rotate: cardSpin }],
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                  <Image 
-                    source={BlueGlowImage}
-                    style={{ width: '100%', height: '100%', borderRadius: 1000 }}
-                    resizeMode="contain"
-                    blurRadius={Platform.OS === 'ios' ? 25 : 12}
-                  />
-                </Animated.View>
-              </View>
 
               <View style={[styles.glowBorderCyanThick, { margin: 0 }]} className="p-4">
                 <View className="flex-row items-center justify-between mb-4">
