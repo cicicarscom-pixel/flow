@@ -10,6 +10,7 @@ import {
   TextInput, 
   Switch,
   ImageBackground, 
+  Image,
   StyleSheet, 
   ActivityIndicator, 
   Alert,
@@ -27,6 +28,8 @@ import { GlobalAppBar, supabase, CustomButton, CustomInput } from '../../../../s
 
 import { container } from '../../../../core/container';
 import { ManageBotUseCase } from '@application/useCases/ManageBotUseCase';
+
+const ConicGlowImage = require('../../../../core/assets/images/conic_glow.png');
 
 const botUseCase = container.resolve(ManageBotUseCase);
 
@@ -516,38 +519,44 @@ Asistan Cevabı:`;
               </Text>
             </View>
 
-            {/* 2. Sistem Talimatı (AI Instructions) - Outer wrapper providing a soft glow shadow following the card's exact rounded shape */}
-            <View style={{ 
-              marginBottom: 16, 
-              borderRadius: 20,
-              backgroundColor: 'transparent',
-              // iOS Shadow following the frame
-              shadowColor: '#00f0ff',
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.85,
-              shadowRadius: 18,
-              // Android shadow
-              elevation: 8
-            }}>
+            {/* 2. Sistem Talimatı (AI Instructions) - Outer wrapper allowing shadow/glow to bleed */}
+            <View style={{ marginBottom: 16, position: 'relative' }}>
+              
+              {/* Spinning RGB Shadow/Glow (Soft blurry conic halo effect behind the card) */}
+              <Animated.View style={{ 
+                position: 'absolute',
+                top: -30, bottom: -30, left: -30, right: -30,
+                opacity: 0.65,
+                transform: [{ rotate: cardSpin }],
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <Image 
+                  source={ConicGlowImage}
+                  style={{ width: '100%', height: '100%', borderRadius: 1000 }}
+                  resizeMode="contain"
+                  blurRadius={Platform.OS === 'ios' ? 25 : 12}
+                />
+              </Animated.View>
+
               {/* Inner card with overflow: 'hidden' to clip the rotating RGB border beam */}
               <View style={{ 
                 overflow: 'hidden', 
                 padding: 2.5, 
                 borderRadius: 20, 
                 backgroundColor: 'rgba(255,255,255,0.03)',
+                elevation: 4
               }}>
-                {/* Spinning RGB Gradient Background (Border Beam simulation) */}
+                {/* Spinning RGB Conic Gradient Background (Border Beam simulation) */}
                 <Animated.View style={{ 
                   position: 'absolute',
-                  top: '-150%', bottom: '-150%', left: '-150%', right: '-150%',
+                  top: '-50%', bottom: '-50%', left: '-50%', right: '-50%',
                   transform: [{ rotate: cardSpin }],
                 }}>
-                  <LinearGradient
-                    colors={['#ff0055', '#00f0ff', '#bc13fe', '#4edea3', '#ff0055']}
-                    locations={[0, 0.25, 0.5, 0.75, 1]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={{ flex: 1 }}
+                  <Image 
+                    source={ConicGlowImage}
+                    style={{ width: '100%', height: '100%' }}
+                    resizeMode="cover"
                   />
                 </Animated.View>
 

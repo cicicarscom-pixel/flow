@@ -250,10 +250,13 @@ App.js
 3. **Animated Ref Render Erişimi Çözüldü:** `RandevuScreen.js` ve `AiUretimScreen.js`'deki Animated Value'ların render esnasında ref üzerinden `.current` olarak okunması nedeniyle linter'ın fırlattığı `Cannot access refs during render` hatası, `useState` tabanlı `Animated.Value` tanımlamasına geçilerek tamamen çözüldü.
 4. **TypeScript Path Aliases & Anti-Bypass Entegrasyonu:** `tsconfig.json` dosyasında `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dahil edildi. Projedeki tüm relative path import'lar path alias'larına geçirilerek ESLint'in `no-restricted-imports` (Anti-Bypass) kuralı yeşile çekildi.
 5. **Kapsamlı Linter Kontrolü:** `npm run lint` çalıştırılarak tüm 42 hata giderildi ve linter **0 hata** ile tamamlandı.
-6. **Sistem Talimatı RGB Halo Shadow & Statik Çerçeve & Scrollable Giriş Entegrasyonu:** 
-    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, kartın yuvarlatılmış köşelerini mükemmel şekilde takip eden bir gölge ışık halesi (halo shadow glow) ve kartın içinde dairesel olarak dönen bir RGB ışık çerçevesi (border beam) uygulandı.
-    - Arkadaki serbest dönen kare gradyanın köşelerinin (kulaklarının) dışa çirkin şekilde taşmasını önlemek amacıyla, en dışa `borderRadius: 20` olan ve soft glow shadow içeren sabit bir dış sarmal `View` yerleştirildi. Dönen ince RGB neon çizgi ise kartın `overflow: 'hidden'` olan sınırları içerisinde kısıtlandı.
+6. **Sistem Talimatı Conic Gradient RGB Işık Çerçevesi & Aura Gölge Entegrasyonu:** 
+    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, Google Stitch "conic glow frame" efektini birebir yansıtan, pürüzsüz RGB renk geçişli bir dönen ışık çerçevesi ve aura gölgesi uygulandı.
+    - Özel bir conic gradient renk çarkı imajı (`conic_glow.png`) oluşturuldu ve `src/core/assets/images/` dizinine eklendi.
+    - Kartın arkasına `30px` genişliğinde, opasitesi `0.65` olan ve `blurRadius` (iOS: 25, Android: 12) ile yumuşatılmış, dairesel olarak dönen bir `Animated.Image` (conic_glow) yerleştirilerek köşe taşması olmayan pürüzsüz bir RGB aura gölgesi (glow shadow) sağlandı.
+    - Kartın ince kenarlık (border) kısmında ise, `overflow: 'hidden'` olan padding alanının içine yerleştirilen aynı `conic_glow` imajının dairesel olarak dönmesi sağlanarak çerçeve boyunca akan kesintisiz bir conic border beam oluşturuldu.
     - "AI Karakter Talimatı" (`botInstruction`) kutusu `height: 140` olarak sabitlendi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip yan kaydırma çubuğu ile gezilebilmesi sağlandı.
+
 
 
 
