@@ -829,10 +829,8 @@ Asistan Cevabı:`;
 
             {/* 7. Özellikler / Modüller */}
             <View style={styles.glassCard} className="p-4 mb-4">
-              <Text className="text-sm font-semibold text-white mb-3">🛠️ Hızlı Modül Yönetimi</Text>
-              
               <View className="space-y-3">
-                {/* Randevu Yönetimi */}
+                {/* Ai Randevu Yönetimi */}
                 <TouchableOpacity 
                   onPress={() => navigation.navigate('RandevuMain')}
                   style={{ backgroundColor: 'rgba(78, 222, 163, 0.1)', borderColor: 'rgba(78, 222, 163, 0.3)', borderWidth: 1 }}
@@ -840,31 +838,22 @@ Asistan Cevabı:`;
                 >
                   <View className="flex-row items-center gap-3">
                     <Ionicons name="calendar-outline" size={18} color="#4edea3" />
-                    <Text className="text-xs text-[#4edea3] font-semibold">{t('sosyalMedya.bot.appointmentManagement')}</Text>
+                    <Text className="text-xs text-[#4edea3] font-semibold">Ai Randevu Yönetimi</Text>
                   </View>
                   <Ionicons name="chevron-forward-outline" size={16} color="#4edea3" />
                 </TouchableOpacity>
 
-                {/* Katalog Modülü */}
+                {/* Ai İşletme Hizmetleri */}
                 <TouchableOpacity 
-                  className="flex-row items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10"
+                  onPress={() => navigation.navigate('HizmetAyarlari')}
+                  style={{ backgroundColor: 'rgba(0, 162, 255, 0.1)', borderColor: 'rgba(0, 162, 255, 0.3)', borderWidth: 1 }}
+                  className="flex-row items-center justify-between p-3.5 rounded-xl"
                 >
                   <View className="flex-row items-center gap-3">
-                    <Ionicons name="book-outline" size={18} color="#e5e1e4" />
-                    <Text className="text-xs text-gray-300 font-semibold">{t('sosyalMedya.bot.catalogMenu')}</Text>
+                    <Ionicons name="briefcase-outline" size={18} color="#00a2ff" />
+                    <Text className="text-xs text-[#00a2ff] font-semibold">Ai İşletme Hizmetleri</Text>
                   </View>
-                  <Ionicons name="chevron-forward-outline" size={16} color="#849495" />
-                </TouchableOpacity>
-
-                {/* Otomatik SSS Modülü */}
-                <TouchableOpacity 
-                  className="flex-row items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10"
-                >
-                  <View className="flex-row items-center gap-3">
-                    <Ionicons name="help-circle-outline" size={18} color="#e5e1e4" />
-                    <Text className="text-xs text-gray-300 font-semibold">{t('sosyalMedya.bot.autoFaq')}</Text>
-                  </View>
-                  <Ionicons name="chevron-forward-outline" size={16} color="#849495" />
+                  <Ionicons name="chevron-forward-outline" size={16} color="#00a2ff" />
                 </TouchableOpacity>
               </View>
             </View>

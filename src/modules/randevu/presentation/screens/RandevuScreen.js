@@ -86,13 +86,7 @@ export default function RandevuScreen() {
             </View>
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.headerBtn}
-          onPress={() => navigation.navigate('HizmetAyarlari')}
-        >
-          <Ionicons name="calendar-outline" size={20} color="#e5e1e4" />
-          <View style={styles.headerDot} />
-        </TouchableOpacity>
+
       </BlurView>
 
       {/* ── MAIN SCROLL with sticky header ── */}
