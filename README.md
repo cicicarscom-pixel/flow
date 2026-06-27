@@ -459,6 +459,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
     - **Animated Ref Hatası Çözümü:** `RandevuScreen` ve `AiUretimScreen`'deki render esnasında ref (`useRef().current`) erişiminden kaynaklanan ESLint hataları, `useState` tabanlı `Animated.Value` tanımına geçilerek temizlendi.
     - **TypeScript Path Alias Entegrasyonu:** `tsconfig.json`'daki `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dizinleri eklendi.
     - **Relative Import Temizliği:** `muhasebe`, `randevu` ve `sosyal_medya` modüllerindeki tüm relative import'lar path alias'larına geçirilerek mimari sınır ihlali (Anti-Bypass) hataları giderildi, ESLint kuralları sıfır (0) hata ile yeşile döndü.
+21. **Sistem Talimatı Kartına Dönen RGB Işık Halesi ve Gölge Desteği (UX/UI):**
+    - **Neden:** `overflow: 'hidden'` olan bir kutu üzerinde static gölge tanımlandığında, React Native render motoru (özellikle iOS) gölgeyi keser. Ayrıca dönen RGB ışık sadece ince bir kenarlık olarak kalıyordu, dışa doğru bir haleli gölge (glow/halo shadow) hissi vermiyordu.
+    - **Çözüm:** `BotYonetimiScreen.js` içindeki Sistem Talimatı kartını `overflow` içermeyen dış bir `<View>` sarmalına aldık. Kartın arkasına (`position: absolute` ve z-index olarak en arkada kalacak şekilde) 10px daha büyük, opacity değeri `0.35` olan ve `shadowRadius: 16` yumuşak gölge özellikleriyle donatılmış ikinci bir `Animated.View` yerleştirdik. Bu sayede kutunun etrafında dışa taşan ve yumuşak bir gölge gibi dönen göz alıcı premium RGB ışık halesi (halo glow) oluşturuldu.
 
 ---
 

@@ -516,36 +516,56 @@ Asistan Cevabı:`;
               </Text>
             </View>
 
-            {/* 2. Sistem Talimatı (AI Instructions) */}
-            <View style={{ 
-              overflow: 'hidden', 
-              padding: 2.5, 
-              borderRadius: 20, 
-              marginBottom: 16, 
-              backgroundColor: 'rgba(255,255,255,0.03)',
-              shadowColor: '#bc13fe',
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.45,
-              shadowRadius: 12,
-              elevation: 8
-            }}>
-              {/* Spinning RGB Gradient Background (Border Beam simulation) */}
+            {/* 2. Sistem Talimatı (AI Instructions) - Outer wrapper allowing shadow to bleed */}
+            <View style={{ marginBottom: 16, position: 'relative' }}>
+              
+              {/* Spinning RGB Shadow/Glow (Soft halo effect behind the card) */}
               <Animated.View style={{ 
                 position: 'absolute',
-                top: '-150%', bottom: '-150%', left: '-150%', right: '-150%',
+                top: -10, bottom: -10, left: -10, right: -10,
+                borderRadius: 26,
+                opacity: 0.35,
                 transform: [{ rotate: cardSpin }],
+                // iOS Shadow for extra soft halo bleed
+                shadowColor: '#00f0ff',
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.8,
+                shadowRadius: 16,
               }}>
                 <LinearGradient
                   colors={['#ff0055', '#00f0ff', '#bc13fe', '#4edea3', '#ff0055']}
                   locations={[0, 0.25, 0.5, 0.75, 1]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, borderRadius: 26 }}
                 />
               </Animated.View>
 
-              {/* Inner masked container */}
-              <View style={{ flex: 1, backgroundColor: 'rgba(28, 27, 29, 0.98)', borderRadius: 18, padding: 16 }}>
+              {/* Main Card with overflow: 'hidden' to crop the border animation */}
+              <View style={{ 
+                overflow: 'hidden', 
+                padding: 2, 
+                borderRadius: 20, 
+                backgroundColor: 'rgba(255,255,255,0.03)',
+                elevation: 4
+              }}>
+                {/* Spinning RGB Gradient Background (Border Beam simulation) */}
+                <Animated.View style={{ 
+                  position: 'absolute',
+                  top: '-150%', bottom: '-150%', left: '-150%', right: '-150%',
+                  transform: [{ rotate: cardSpin }],
+                }}>
+                  <LinearGradient
+                    colors={['#ff0055', '#00f0ff', '#bc13fe', '#4edea3', '#ff0055']}
+                    locations={[0, 0.25, 0.5, 0.75, 1]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{ flex: 1 }}
+                  />
+                </Animated.View>
+
+                {/* Inner masked container */}
+                <View style={{ flex: 1, backgroundColor: 'rgba(28, 27, 29, 0.98)', borderRadius: 18, padding: 16 }}>
                 <View className="flex-row items-center justify-between mb-4">
                   <View className="flex-row items-center gap-2">
                     <Ionicons name="sparkles-outline" size={18} color="#4edea3" />
@@ -703,6 +723,7 @@ Asistan Cevabı:`;
                 </View>
               </View>
             </View>
+          </View>
 
             {/* 3. Canlı Test */}
             <View style={styles.glassCard} className="mb-4 overflow-hidden">

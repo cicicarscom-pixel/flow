@@ -250,4 +250,6 @@ App.js
 3. **Animated Ref Render Erişimi Çözüldü:** `RandevuScreen.js` ve `AiUretimScreen.js`'deki Animated Value'ların render esnasında ref üzerinden `.current` olarak okunması nedeniyle linter'ın fırlattığı `Cannot access refs during render` hatası, `useState` tabanlı `Animated.Value` tanımlamasına geçilerek tamamen çözüldü.
 4. **TypeScript Path Aliases & Anti-Bypass Entegrasyonu:** `tsconfig.json` dosyasında `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dahil edildi. Projedeki tüm relative path import'lar path alias'larına geçirilerek ESLint'in `no-restricted-imports` (Anti-Bypass) kuralı yeşile çekildi.
 5. **Kapsamlı Linter Kontrolü:** `npm run lint` çalıştırılarak tüm 42 hata giderildi ve linter **0 hata** ile tamamlandı.
+6. **Sistem Talimatı RGB Halo Shadow Entegrasyonu:** `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, kartın sınırları dışına taşan ve yumuşak bir gölge gibi dönen premium RGB halo glow animasyonu eklendi. `overflow` kısıtlaması nedeniyle gölgenin kesilmesini önlemek amacıyla kart bir dış sarmal `<View>` içine alındı ve arkasına dönen soft opak bir `LinearGradient` yerleştirildi.
+
 
