@@ -482,7 +482,7 @@ Asistan Cevabı:`;
               </Text>
             </View>
 
-            <View style={[styles.glassCard, styles.glowBorderCyanThick]} className="p-4 mb-4">
+            <View style={styles.glowBorderCyanThick} className="p-4 mb-4">
                 <View className="flex-row items-center justify-between mb-4">
                   <View className="flex-row items-center gap-2">
                     <Ionicons name="sparkles-outline" size={18} color="#4edea3" />
@@ -502,27 +502,27 @@ Asistan Cevabı:`;
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
                     <TouchableOpacity 
                       onPress={() => handlePresetPress('role', 'restoran')}
-                      className={`px-3 py-1.5 rounded-full mr-2 ${selectedRoleKey === 'restoran' ? 'bg-[#00f0ff]/30 border-2 border-[#00f0ff]' : 'bg-white/5 border border-white/10'}`}
+                      className={`px-3 py-1.5 rounded-full mr-2 ${selectedRoleKey === 'restoran' ? 'bg-[#00a2ff]/30 border-2 border-[#00a2ff]' : 'bg-white/5 border border-white/10'}`}
                     >
-                      <Text className={`text-[11px] font-semibold ${selectedRoleKey === 'restoran' ? 'text-[#00f0ff]' : 'text-gray-300'}`}>🍽️ Restoran Asistanı</Text>
+                      <Text className={`text-[11px] font-semibold ${selectedRoleKey === 'restoran' ? 'text-[#00a2ff]' : 'text-gray-300'}`}>🍽️ Restoran Asistanı</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                       onPress={() => handlePresetPress('role', 'berber')}
-                      className={`px-3 py-1.5 rounded-full mr-2 ${selectedRoleKey === 'berber' ? 'bg-[#00f0ff]/30 border-2 border-[#00f0ff]' : 'bg-white/5 border border-white/10'}`}
+                      className={`px-3 py-1.5 rounded-full mr-2 ${selectedRoleKey === 'berber' ? 'bg-[#00a2ff]/30 border-2 border-[#00a2ff]' : 'bg-white/5 border border-white/10'}`}
                     >
-                      <Text className={`text-[11px] font-semibold ${selectedRoleKey === 'berber' ? 'text-[#00f0ff]' : 'text-gray-300'}`}>💈 Berber Asistanı</Text>
+                      <Text className={`text-[11px] font-semibold ${selectedRoleKey === 'berber' ? 'text-[#00a2ff]' : 'text-gray-300'}`}>💈 Berber Asistanı</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                       onPress={() => handlePresetPress('role', 'eticaret')}
-                      className={`px-3 py-1.5 rounded-full mr-2 ${selectedRoleKey === 'eticaret' ? 'bg-[#00f0ff]/30 border-2 border-[#00f0ff]' : 'bg-white/5 border border-white/10'}`}
+                      className={`px-3 py-1.5 rounded-full mr-2 ${selectedRoleKey === 'eticaret' ? 'bg-[#00a2ff]/30 border-2 border-[#00a2ff]' : 'bg-white/5 border border-white/10'}`}
                     >
-                      <Text className={`text-[11px] font-semibold ${selectedRoleKey === 'eticaret' ? 'text-[#00f0ff]' : 'text-gray-300'}`}>🛍️ E-Ticaret Destek</Text>
+                      <Text className={`text-[11px] font-semibold ${selectedRoleKey === 'eticaret' ? 'text-[#00a2ff]' : 'text-gray-300'}`}>🛍️ E-Ticaret Destek</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                       onPress={() => handlePresetPress('role', 'oto')}
-                      className={`px-3 py-1.5 rounded-full ${selectedRoleKey === 'oto' ? 'bg-[#00f0ff]/30 border-2 border-[#00f0ff]' : 'bg-white/5 border border-white/10'}`}
+                      className={`px-3 py-1.5 rounded-full ${selectedRoleKey === 'oto' ? 'bg-[#00a2ff]/30 border-2 border-[#00a2ff]' : 'bg-white/5 border border-white/10'}`}
                     >
-                      <Text className={`text-[11px] font-semibold ${selectedRoleKey === 'oto' ? 'text-[#00f0ff]' : 'text-gray-300'}`}>🚗 Oto Tamir Servisi</Text>
+                      <Text className={`text-[11px] font-semibold ${selectedRoleKey === 'oto' ? 'text-[#00a2ff]' : 'text-gray-300'}`}>🚗 Oto Tamir Servisi</Text>
                     </TouchableOpacity>
                   </ScrollView>
                 </View>
@@ -1047,6 +1047,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   glowBorderCyanThick: {
+    backgroundColor: 'rgba(32, 31, 34, 0.4)',
+    borderRadius: 20,
     borderWidth: 1.5,
     borderColor: '#00a2ff',
     shadowColor: '#00a2ff',
