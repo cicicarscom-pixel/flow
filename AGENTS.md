@@ -253,9 +253,11 @@ App.js
 6. **Sistem Talimatı Kartına Gök Mavisi Neon Çerçeve ve Belirgin Aura Gölge Entegrasyonu:** 
     - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, hareketli olmayan, kartın tüm kenarlarını eşit kalınlıkta kaplayan (`borderWidth: 1.5`) solid `#00a2ff` (gök mavisi) renginde sürekli parlayan neon bir sınır çizgisi uygulandı.
     - Kartın arkasına `shadowColor: '#00a2ff'`, `shadowOpacity: 0.8`, `shadowRadius: 18`, `elevation: 10` değerlerine sahip, kart sınırlarını mükemmel takip eden kalın ve son derece belirgin bir gök mavisi aura gölgesi (glow shadow) yerleştirildi.
-    - Çift çerçeve/alt katman turkuaz renk hatasını gidermek amacıyla, `styles.glassCard` stil birleştirmesi tamamen kaldırılarak `styles.glowBorderCyanThick` bağımsız bir kart stili olarak uygulandı.
+    - **Yuvarlatılmış Köşeler ve Boşluk Düzenlemesi:** Ana `ScrollView` bileşenine `contentContainerStyle={{ paddingHorizontal: 16 }}` uygulanarak kartların ekran kenarlarına yapışması önlendi ve mavi çizginin `borderRadius: 20` olan yuvarlatılmış köşeleri görünür kılındı.
+    - **İç Çerçeve/Siyah-Gri Gölge Sızıntısının Önlenmesi (Solid Background):** Kartın arka planı yarı saydam yerine tamamen opak koyu gri (`#1c1b1d`) olarak güncellendi. Bu sayede Android shadow motorunun `elevation` nedeniyle kartın arkasında oluşturduğu koyu sistem gölgesinin cam katmanın içinden sızarak mavi çizginin altında ikinci bir koyu çerçeve oluşturması (shadow bleed-through) engellendi.
     - Kart içi hazır rol preset butonlarının aktif kenarlık/yazı renkleri de turkuazdan `#00a2ff` (gök mavisi) tonuna güncellenerek görsel uyum tamamlandı.
     - "AI Karakter Talimatı" (`botInstruction`) kutusu `height: 280` olarak (eski 140px değerinden 2 kat daha büyük) sabitlendi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip yan kaydırma çubuğu ile gezilebilmesi sağlandı.
+
 
 
 

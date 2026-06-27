@@ -434,8 +434,7 @@ Asistan Cevabı:`;
           </View>
         ) : (
           <ScrollView 
-            className="px-4 pt-2" 
-            contentContainerStyle={{ paddingBottom: 130 }}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 130 }}
             keyboardShouldPersistTaps="handled"
           >
             {/* 1. Bot Durumu */}
@@ -1047,7 +1046,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   glowBorderCyanThick: {
-    backgroundColor: 'rgba(32, 31, 34, 0.4)',
+    backgroundColor: '#1c1b1d', // Solid opaque dark grey to prevent Android elevation shadow bleed-through
     borderRadius: 20,
     borderWidth: 1.5,
     borderColor: '#00a2ff',
