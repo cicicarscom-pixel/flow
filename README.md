@@ -459,9 +459,12 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
     - **Animated Ref Hatası Çözümü:** `RandevuScreen` ve `AiUretimScreen`'deki render esnasında ref (`useRef().current`) erişiminden kaynaklanan ESLint hataları, `useState` tabanlı `Animated.Value` tanımına geçilerek temizlendi.
     - **TypeScript Path Alias Entegrasyonu:** `tsconfig.json`'daki `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dizinleri eklendi.
     - **Relative Import Temizliği:** `muhasebe`, `randevu` ve `sosyal_medya` modüllerindeki tüm relative import'lar path alias'larına geçirilerek mimari sınır ihlali (Anti-Bypass) hataları giderildi, ESLint kuralları sıfır (0) hata ile yeşile döndü.
-21. **Sistem Talimatı Kartına Kalıcı Işıklı Çerçeve ve Dönen RGB Aura Gölgesi (UX/UI):**
-    - **Neden:** Dönen ince RGB şeridi tek başına hareket ettiğinde kalıcı bir ışıklı çerçeve hissi vermiyordu. Kullanıcı, yanan çerçevenin sabit durmasını, ancak kutunun etrafındaki RGB aura/gölge ışık halesinin dönmesini talep etti.
-    - **Çözüm:** `BotYonetimiScreen.js` dosyasındaki yapıyı güncelledik. Kartın kenarlık alanı (border) artık dönmeyen, sabit duran ve kesintisiz parıldayan `#00f0ff` -> `#bc13fe` geçişli statik bir `LinearGradient` olarak ayarlandı. Bu sayede kalıcı ve parlayan bir çerçeve elde edildi. Kartın en arkasında ise, kutudan daha büyük (`top: -12` vb.) ve opasitesi `0.35` olan dönen bir `Animated.View` konumlandırıldı. Bu arka katman sürekli dönerek kutunun etrafında adeta fütüristik bir RGB aura halesi (glow shadow) oluşturmaktadır.
+21. **Sistem Talimatı Kartına Kalıcı Işıklı Çerçeve, Güçlendirilmiş RGB Aura Gölgesi ve Sabit Yükseklikli Scrollable Giriş Kutusu (UX/UI):**
+    - **Neden:** Dönen ince RGB şeridi tek başına hareket ettiğinde kalıcı bir ışıklı çerçeve hissi vermiyordu. Kullanıcı, yanan çerçevenin sabit durmasını, ancak kutunun etrafındaki RGB aura/gölge ışık halesinin daha belirgin bir şekilde dönmesini talep etti. Ayrıca, asistan talimatı kutusuna uzun yönergeler yapıştırıldığında kutunun kontrolsüz şekilde uzaması yerine, sabit bir yükseklikte kalıp kendi içinde kaydırılabilir (scrollable) olması istendi.
+    - **Çözüm:** `BotYonetimiScreen.js` dosyasında şu düzenlemeler yapıldı:
+        - **Kalıcı Çerçeve:** Kartın kenarlığı 3px genişliğinde statik bir `#00f0ff` -> `#bc13fe` `LinearGradient` maskesine dönüştürülerek kalın ve parlayan sabit bir çerçeve yapıldı.
+        - **Güçlendirilmiş Aura:** Arkadaki dönen RGB gölge katmanının opasitesi `0.75`'e, yayılımı her yönden `20px`'e (`top: -20` vb.) çıkarıldı ve shadow yarıçapı `24` olarak genişletildi. Bu sayede kutunun arkasında çok daha geniş ve parıltısı yüksek bir döner RGB aura/hale efekti elde edildi.
+        - **Sabit ve Kaydırılabilir Giriş:** "AI Karakter Talimatı" kutusu `minHeight: 120` yerine `height: 140` (sabit 140px) yüksekliğe çekildi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip kaydırma çubuğu aktif edildi.
 
 ---
 

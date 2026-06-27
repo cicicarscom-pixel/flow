@@ -250,7 +250,11 @@ App.js
 3. **Animated Ref Render Erişimi Çözüldü:** `RandevuScreen.js` ve `AiUretimScreen.js`'deki Animated Value'ların render esnasında ref üzerinden `.current` olarak okunması nedeniyle linter'ın fırlattığı `Cannot access refs during render` hatası, `useState` tabanlı `Animated.Value` tanımlamasına geçilerek tamamen çözüldü.
 4. **TypeScript Path Aliases & Anti-Bypass Entegrasyonu:** `tsconfig.json` dosyasında `@domain/*`, `@application/*`, `@infrastructure/*` ve `@presentation/*` alias'larına `randevu` modülü dahil edildi. Projedeki tüm relative path import'lar path alias'larına geçirilerek ESLint'in `no-restricted-imports` (Anti-Bypass) kuralı yeşile çekildi.
 5. **Kapsamlı Linter Kontrolü:** `npm run lint` çalıştırılarak tüm 42 hata giderildi ve linter **0 hata** ile tamamlandı.
-6. **Sistem Talimatı RGB Halo Shadow & Statik Çerçeve Entegrasyonu:** `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, kalıcı olarak yanan bir çerçeve (gradient border) ve onun arkasında aura şeklinde kesintisiz dönen bir RGB gölge (glow shadow) animasyonu uygulandı. Çerçevenin sabit durması için 2px padding'li statik bir `LinearGradient` maskesi kullanılırken; aura/gölge efekti için kartın arkasına yerleştirilen daha geniş, opaklığı düşük ve dönen bir `Animated.View` kullanıldı.
+6. **Sistem Talimatı RGB Halo Shadow & Statik Çerçeve & Scrollable Giriş Entegrasyonu:** 
+    - `BotYonetimiScreen.js` içindeki Sistem Talimatı kartına, kalıcı olarak yanan bir çerçeve (gradient border) ve onun arkasında aura şeklinde kesintisiz dönen bir RGB gölge (glow shadow) animasyonu uygulandı.
+    - Aura efekti arka planda her yönden `20px` dışa taşacak şekilde genişletildi, opasitesi `0.75`'e yükseltildi ve shadow yarıçapı artırılarak aura görünümü maksimum belirginliğe kavuşturuldu. Static yanan çerçeve kalınlığı 3px'e çıkarıldı.
+    - "AI Karakter Talimatı" (`botInstruction`) kutusu `height: 140` olarak sabitlendi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip yan kaydırma çubuğu ile gezilebilmesi sağlandı.
+
 
 
 

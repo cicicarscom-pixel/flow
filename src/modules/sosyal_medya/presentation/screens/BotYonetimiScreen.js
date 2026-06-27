@@ -522,32 +522,32 @@ Asistan Cevabı:`;
               {/* Spinning RGB Shadow/Glow (Soft halo effect behind the card) */}
               <Animated.View style={{ 
                 position: 'absolute',
-                top: -12, bottom: -12, left: -12, right: -12,
-                borderRadius: 28,
-                opacity: 0.35,
+                top: -20, bottom: -20, left: -20, right: -20,
+                borderRadius: 32,
+                opacity: 0.75,
                 transform: [{ rotate: cardSpin }],
                 // iOS Shadow for extra soft halo bleed
                 shadowColor: '#00f0ff',
                 shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.9,
-                shadowRadius: 18,
+                shadowOpacity: 1.0,
+                shadowRadius: 24,
               }}>
                 <LinearGradient
                   colors={['#ff0055', '#00f0ff', '#bc13fe', '#4edea3', '#ff0055']}
                   locations={[0, 0.25, 0.5, 0.75, 1]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  style={{ flex: 1, borderRadius: 28 }}
+                  style={{ flex: 1, borderRadius: 32 }}
                 />
               </Animated.View>
 
               {/* Main Card with overflow: 'hidden' to crop the border animation */}
               <View style={{ 
                 overflow: 'hidden', 
-                padding: 2, 
+                padding: 3, 
                 borderRadius: 20, 
                 backgroundColor: 'rgba(255,255,255,0.03)',
-                elevation: 4
+                elevation: 6
               }}>
                 {/* Static Gradient Border (Stays constant and glowing like a permanent frame) */}
                 <View style={{ 
@@ -675,8 +675,9 @@ Asistan Cevabı:`;
                       placeholderTextColor="#849495"
                       multiline
                       textAlignVertical="top"
-                      style={{ minHeight: 120, color: '#e5e1e4', fontSize: 13, lineHeight: 18 }}
+                      style={{ height: 140, color: '#e5e1e4', fontSize: 13, lineHeight: 18 }}
                       className="font-body-md"
+                      showsVerticalScrollIndicator={true}
                     />
                     <Text style={{ position: 'absolute', bottom: 6, right: 10, fontSize: 9, color: 'rgba(255,255,255,0.2)' }}>{"Geist Mono"}</Text>
                   </View>
