@@ -24,6 +24,14 @@ Projenin geliştirme sürecinde alınan kritik mimari kararlar ve çözülen sor
 12. **Detay Ekranlarında Alt Navigasyon (TabBar) Gizlenmesi:** Tüm detay ekranları (`OdemeTakvimi`, `AiChat`, `AiAssistant`, `DigitalAssistant`, `AiUretim`, `Inbox`, `Analytics`, `Gönderiler`, `ChatScreen`, `PostCommentsScreen`) `TabNavigator.js` içindeki sekme yığıtlarından çıkarılarak root düzeydeki `AppNavigator.js` Stack'ine taşındı. Böylece detay ekranlarına geçildiğinde alt TabBar otomatik olarak gizlenmektedir.
 13. **ESLint Hata Temizliği ve Kod Kalitesi:** Projedeki tüm ESLint hataları (Animated ref render erişimleri, conditional hooks, useEffect cascading state güncellemeleri, displayName eksikliği ve block-scoping declaration hoisting) giderilerek linter taraması 0 hata seviyesine çekildi.
 14. **GitHub Senkronizasyonu & Randevu Modülü i18n & ESLint Hata Çözümü:** GitHub remote üzerindeki son güncellemeler çekilip local workspace güncellendi. Randevu modülü presentation katmanındaki ekranlar (`RandevuScreen.js`, `HizmetAyarlariScreen.js`) tamamen Türkçe, İngilizce ve Almanca olarak yerelleştirildi (i18n). ESLint'in `i18next/no-literal-string` kuralları ve Animated ref render erişim hataları (ref access during render) giderildi. TypeScript path alias'ları (`@domain`, `@application`, `@infrastructure`, `@presentation`) `tsconfig.json` üzerinde `randevu` modülünü de kapsayacak şekilde güncellendi ve tüm relative import'lar bu alias'lara taşınarak mimari sınır güvenlik kuralları (Anti-Bypass) sağlandı. Linter hataları 0'a indirildi.
+15. **Omnichannel Router (Clean Architecture):** Gelen mesajları tek merkezden yönetmek için `HandleIncomingMessageUseCase` oluşturuldu. `waha-webhook` ve `zernio-webhook` bu ortak UseCase üzerinden `GeminiClient`, `WahaClient` ve `ZernioClient` adapterlerine bağlandı. Her mesaj `ai_communication_logs` tablosuna raporlandı. Bot Yönetimi ekranına WhatsApp ve Sosyal Medya için ayrı şalterler eklendi ve bu şalterler Supabase üzerinden `bot_settings` tablosundaki ilgili alanlarla (`whatsapp_bot_active`, `social_bot_active`) bağlandı. Son olarak, Gelen Kutusunda iletişimin canlı olarak izlenebilmesi için `CommunicationLogsTable` bileşeni eklendi.
+16. **Zernio Yorum Yanıtlama & Webhook Bug Fix:** Zernio webhook'undan gelen `message.received` ve `comment.received` loglarındaki payload yapısı (iç içe obje hiyerarşisi) dokümantasyona uygun şekilde `payload.message` ve `payload.comment` kullanılacak şekilde düzeltilerek DM'lerin uygulamaya düşmeme sorunu giderildi. Ayrıca `HandleIncomingMessageUseCase` üzerinden Instagram yorumlarına `ZernioClient.replyToComment` uç noktası kullanılarak yapay zekanın yanıt dönmesi sağlandı. İletişim raporları ekranı UX iyileştirmesiyle boş durumda buton görünümüne kavuşturuldu.
+17. **Instagram Yorum Resimleri — 3 Fazlı Yükleme Mimarisi (ÖNEMLİ):** `InboxScreen.js` Yorumlar sekmesi üç fazlı bir yükleme stratejisi ile çalışır. **Faz 1** (~100ms): Yerel Supabase DB'den yorumlar anında gösterilir; `zernio_pic_cache` AsyncStorage'dan 6 günlük TTL önbelleği uygulanır. **Faz 1.5** (~2-3sn): `zernio-client` edge function'ına tek `get-inbox-pictures` çağrısı yapılır; `listInboxComments` API'sinden tüm postların `picture` URL'leri alınır, `post_<postId>` anahtarıyla önbelleğe yazılır ve mevcut liste `zernio_post_id` üzerinden güncellenir. **Faz 2** (~8-9sn, arka planda): `sync-comments` çağrısı yapılır, yeni yorumlar DB'ye eklenir; resimler önbellekten uygulanır. Bu yapı sayesinde Instagram ve Facebook resimleri 2-3 saniyede ekrana gelir. `social_accounts` tablosunda `zernio_account_id` UNIQUE constraint zorunludur (migration: `20260629173000_social_accounts_unique_constraint.sql`).
+18. **Yorum Silme Kalıcılığı ve Realtime Döngü Koruması (ÖNEMLİ):** Kullanıcı bir yorumu sildiğinde hem yerel DB'den kaldırılır hem de `deleted_comments` AsyncStorage'a `{id, deletedAt}` formatında yazılır — 30 günlük TTL ile otomatik temizlenir, eski string[] formatıyla geriye dönük uyumludur. Silmede `item.id` ile birlikte `item.zernio_comment_id` de kaydedilir; böylece Faz 2 (Zernio sync) aynı yorumu geri getirdiğinde her iki anahtar da filtreye takılır ve silinen yorum yeniden görünmez. Realtime döngü koruması: `comments` tablosundaki `INSERT` olayı tam `fetchComments()` tetikler; `UPDATE` olayı (AI cevabı, `media_urls` vb.) ise sadece ilgili satırı state'te günceller — `fetchComments()` ve edge function çağrısı yapılmaz, dolayısıyla sonsuz döngü riski yoktur.
+19. **Zernio Webhook DM Crash Fix:** Gelen kutusuna direkt mesaj (DM) düştüğünde webhook'un `message.received` olayında `conversations` tablosuna yapılan upsert işleminin constraint hatası vermesi ve webhook'un çökmesine/durdurulmasına sebep olması engellendi. Upsert yerine önce "select", yoksa "insert" yapacak güvenli bir akış (Safe Insert) kuruldu.
+20. **Yorumlarda Ağaç Görünümü (Tree-View) Tutarlılığı:** Instagram/Facebook veya YouTube'dan gelen alt yorumların (cevapların) düz liste halinde görünmesi engellendi. UI, bir yorumun cevap olduğunu anlamak için metnin başındaki `↳ @` kalıbına baktığı için; `zernio-webhook` (`comment.received`) ve `zernio-client` (`sync-comments`) güncellenerek Zernio'dan çekilen yanıtlara `parentCommentId` üzerinden üst yazarın adı bulunup `↳ @{KullaniciAdi}:\n` öneki otomatik olarak eklendi.
+21. **Global App Bar Üzerinden Dinamik Senkronizasyon:** `InboxScreen`'deki sekmelerin manuel yenilenmesi (refresh) işlemini daha estetik ve erişilebilir kılmak için `GlobalAppBar`'ın sağ üst köşesine "Sync (Senkronize Et)" butonu konuldu. Tablar (Yorumlar, Mesajlar, Değerlendirmeler) ve Root ekran arasındaki iletişim prop-drilling yerine `DeviceEventEmitter` (`REFRESH_INBOX` yayını) kullanılarak modern ve performanslı bir mimariyle çözüldü.
+
 
 ---
 
@@ -76,8 +84,7 @@ Projenin kalbi Supabase PostgreSQL veritabanıdır. Yapay zekanın otonom çalı
   - `conversations` & `messages`: Canlı gelen kutusu için sohbet ve mesaj kayıtları.
   - `comments` & `reviews`: Gelen kutusundaki yorum ve Google değerlendirme kayıtları.
   - `transactions`: Yapay zeka ile taranıp işlenen gelir/gider / fiş kayıtları.
-  - `user_api_settings`: Esnafların kendi Google Gemini API anahtarlarını saklayan tablo (BYOK modeli).
-  - `api_usage_logs`: Yapay zeka maliyet ve token kullanım raporlama günlüğü.
+  - `user_api_settings`: Esnafların kendi Google Gemini API anahtarlarını saklayan tablo.
 - **Güvenlik Kuralları (Row Level Security - RLS)**: Tüm tablolar RLS ile korunur. Kullanıcılar yalnızca kendi işletmelerine ait verilere erişebilir.
 - **Otomatik Profil Tetikleyicisi (`on_auth_user_created`)**: `auth.users` tablosuna kayıt olan yeni kullanıcıları otomatik olarak `public.profiles` tablosuna kopyalayan SQL tetikleyicisi (Database Trigger) schema dosyasında yer alır ve Foreign Key hatalarını önler.
 - **Güncelleme Tetikleyicileri (Triggers)**: `updated_at` alanlarının otomatik güncellenmesini ve sohbetlerin okunmamış mesaj sayacının yönetilmesini sağlar.
@@ -131,7 +138,7 @@ npx supabase functions deploy meta-auth-callback
 ### Edge Functions Görev Dağılımı
 1. **`zernio-webhook`**: Zernio platformundan gelen Instagram DM'leri, yorumları ve Google yorumlarını dinler, veritabanına kaydeder.
 2. **`zernio-client`**: Mobil uygulamadan gelen gönderi paylaşımı ve sosyal hesap OAuth entegrasyonu isteklerini yönetir.
-3. **`gemini-chat`**: Gemini 2.5 Flash entegrasyonu ile metin üretimi, Imagen 4 entegrasyonu ile görsel üretimi ve Gemini 3.1 Flash Image ile görsel analiz/düzenleme işlemlerini yürütür. Kullanıcı BYOK API anahtarını kullanır ve `api_usage_logs` tablosuna maliyet kaydeder.
+3. **`gemini-chat`**: Gemini 2.5 Flash entegrasyonu ile metin üretimi, Imagen 4 entegrasyonu ile görsel üretimi ve Gemini 3.1 Flash Image ile görsel analiz/düzenleme işlemlerini yürütür.
 4. **`imagen-edit`**: Gemini 3.1 Flash Image modelini kullanarak yüklenen görselleri art direktör seviyesinde yeniden yapılandırır ve tasarlar.
 5. **`whatsapp-webhook`**: Meta WhatsApp Cloud API entegrasyonunu sağlar. Kullanıcıların WhatsApp'tan attığı mesajları yakalar, kullanıcının veritabanındaki dinamik `system_prompt` talimatına göre Gemini ile cevap üretir ve Meta API'si üzerinden geri yanıtlar.
 6. **`drive-webhook`**: Google Drive Push Notifications (Anlık Bildirimler) webhook'unu dinler. Yeni eklenen veya güncellenen dosyaları tespit edip indirme, Gemini ile multimodal içerik/görsel analizi, embedding (vektör) üretimi ve pgvector tablosuna (`company_documents`) yazma adımlarını tetikler.
@@ -271,8 +278,7 @@ Projenin kalbi Supabase PostgreSQL veritabanıdır. Yapay zekanın otonom çalı
   - `conversations` & `messages`: Canlı gelen kutusu için sohbet ve mesaj kayıtları.
   - `comments` & `reviews`: Gelen kutusundaki yorum ve Google değerlendirme kayıtları.
   - `transactions`: Yapay zeka ile taranıp işlenen gelir/gider / fiş kayıtları.
-  - `user_api_settings`: Esnafların kendi Google Gemini API anahtarlarını saklayan tablo (BYOK modeli).
-  - `api_usage_logs`: Yapay zeka maliyet ve token kullanım raporlama günlüğü.
+  - `user_api_settings`: Esnafların kendi Google Gemini API anahtarlarını saklayan tablo.
 - **Güvenlik Kuralları (Row Level Security - RLS)**: Tüm tablolar RLS ile korunur. Kullanıcılar yalnızca kendi işletmelerine ait verilere erişebilir.
 - **Otomatik Profil Tetikleyicisi (`on_auth_user_created`)**: `auth.users` tablosuna kayıt olan yeni kullanıcıları otomatik olarak `public.profiles` tablosuna kopyalayan SQL tetikleyicisi (Database Trigger) schema dosyasında yer alır ve Foreign Key hatalarını önler.
 - **Güncelleme Tetikleyicileri (Triggers)**: `updated_at` alanlarının otomatik güncellenmesini ve sohbetlerin okunmamış mesaj sayacının yönetilmesini sağlar.
@@ -326,7 +332,7 @@ npx supabase functions deploy meta-auth-callback
 ### Edge Functions Görev Dağılımı
 1. **`zernio-webhook`**: Zernio platformundan gelen Instagram DM'leri, yorumları ve Google yorumlarını dinler, veritabanına kaydeder.
 2. **`zernio-client`**: Mobil uygulamadan gelen gönderi paylaşımı ve sosyal hesap OAuth entegrasyonu isteklerini yönetir.
-3. **`gemini-chat`**: Gemini 2.5 Flash entegrasyonu ile metin üretimi, Imagen 4 entegrasyonu ile görsel üretimi ve Gemini 3.1 Flash Image ile görsel analiz/düzenleme işlemlerini yürütür. Kullanıcı BYOK API anahtarını kullanır ve `api_usage_logs` tablosuna maliyet kaydeder.
+3. **`gemini-chat`**: Gemini 2.5 Flash entegrasyonu ile metin üretimi, Imagen 4 entegrasyonu ile görsel üretimi ve Gemini 3.1 Flash Image ile görsel analiz/düzenleme işlemlerini yürütür.
 4. **`imagen-edit`**: Gemini 3.1 Flash Image modelini kullanarak yüklenen görselleri art direktör seviyesinde yeniden yapılandırır ve tasarlar.
 5. **`whatsapp-webhook`**: Meta WhatsApp Cloud API entegrasyonunu sağlar. Kullanıcıların WhatsApp'tan attığı mesajları yakalar, kullanıcının veritabanındaki dinamik `system_prompt` talimatına göre Gemini ile cevap üretir ve Meta API'si üzerinden geri yanıtlar.
 6. **`drive-webhook`**: Google Drive Push Notifications (Anlık Bildirimler) webhook'unu dinler. Yeni eklenen veya güncellenen dosyaları tespit edip indirme, Gemini ile multimodal içerik/görsel analizi, embedding (vektör) üretimi ve pgvector tablosuna (`company_documents`) yazma adımlarını tetikler.
@@ -360,6 +366,17 @@ Yapay zekanın müşterilerle 7/24 konuşabilmesi için Zernio'dan gelen Instagr
    - `review.created`
 
 Bu sayede Zernio, Instagram'dan bir DM aldığında bunu sizin Edge fonksiyonunuza postalar, fonksiyon veritabanına (`messages`) kaydeder ve veritabanı da Supabase Realtime üzerinden anında mobil uygulamadaki cam baloncuklara bu mesajı düşürür.
+
+### ⚠️ ÖNEMLİ: Zernio Payload (Veri Paketi) ve Geri Yanıtlama Mimarisi
+
+Zernio üzerinden gelen mesajlara yapay zeka ile **geri yanıt (reply)** verebilmek için Zernio API'sinin beklediği bazı spesifik verilerin webhook paketinden doğru ayıklanması kritik öneme sahiptir. Geliştirme aşamasında tespit edilen ve çözülen iki ana Zernio webhook kuralı şöyledir:
+
+1. **Direction (Yön) Etiketi Uyuşmazlığı:** Sistemin standartları dışarıdan gelen mesajları `incoming` olarak kabul etse de, Zernio'nun bazı webhook sürümlerinde bu etiket `inbound` olarak gelmektedir. Bu nedenle yapay zeka tetikleyicisindeki koşul şu şekilde esnetilmiştir:
+   `if (direction === 'incoming' || direction === 'inbound')`
+
+2. **Zernio Account ID Gizliliği (Early Return Hatası):** Zernio API üzerinden mesaja yanıt dönebilmek için `accountId` zorunludur. Ancak Zernio bu kimliği `payload.accountId` dizini yerine daha derine gizleyerek `"account": { "id": "..." }` formatında göndermektedir. Eğer bu ID webhook içerisinden çıkartılamazsa sistem veritabanındaki `social_accounts` tablosuna başvurur. Kullanıcının bu tabloda henüz hesabı yoksa, kod `early return` yaparak **hata vermeden sessizce çöker (Silent Crash)**.
+   Bu sorunu kökünden çözmek için Account ID yakalama algoritması derinleştirilmiş ve veritabanı ihtiyacı tamamen ortadan kaldırılmıştır:
+   `const zernioAccountId = payload.account?.id || payload.accountId || payload.data?.accountId || payload.data?.account?.id;`
 
 ---
 
@@ -467,6 +484,10 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
         - **İç Gölgelenme Hatasının Engellenmesi (Solid Background):** `glowBorderCyanThick` stilinin arka planı yarı-saydam yerine opak solid koyu gri (`#1c1b1d`) yapıldı. Bu sayede Android işletim sisteminde `elevation` nedeniyle oluşan sistem gölgesinin içeriden sızarak mavi çizginin altında ikinci bir koyu çerçeve oluşturması tamamen engellendi.
         - **Gök Mavisi Çerçeve:** Kenarları kaplayan `borderWidth: 1.5` kalınlığında solid `#00a2ff` (parlak gök mavisi) sınır çizgisi sağlandı.
         - **Sabit ve Kaydırılabilir Giriş:** "AI Karakter Talimatı" kutusunun yüksekliği `280` (sabit 280px, eski boyuta göre 2 kat büyük) yüksekliğe çekildi ve `showsVerticalScrollIndicator={true}` eklenerek yapıştırılan uzun metinlerde kutunun büyümesi önlenip kaydırma çubuğu aktif edildi.
+22. **SaaS Premium UX ve Stabil RGB Dönen Işık Entegrasyonu (UX/UI):**
+    - **Premium Yeniden Yapılandırma:** `BotYonetimiScreen.js` arayüzü Notion, Linear ve Stripe Dashboard gibi modern SaaS platformlarından ilham alınarak yeniden organize edildi. Görsel karmaşa giderilerek bilgi hiyerarşisi netleştirildi (Aktif/Pasif durumları, AI Kişiliği, Canlı Test, İleri Seviye Ayarlar ve Bağlı Servisler şeklinde ayrıldı).
+    - **Stabil LinearGradient:** Kullanıcıların çok sevdiği ince "RGB Dönen Işık" (LinearGradient) efekti `blue_glow.png` gibi statik görseller yerine tamamen native animasyonlarla geri getirildi.
+    - **Genişlik/Yükseklik (Jitter) Sorunu Çözümü:** Akordeon menüler gibi dinamik yükseklik değiştiren veya dikdörtgen (geniş/kısa) şekilli kartlarda dönen ışığın köşelerden kopması (sabit durmaması/kayması) hatası çözüldü. `LinearGradient` arka planı `top: '-100%'` gibi yüzeysel değerler yerine, `width: 1500, height: 1500` şeklinde devasa bir kare olarak merkeze sabitlendi. Böylece rotasyon esnasında container boyutu ne olursa olsun ışık %100 pürüzsüz ve sabit (titremesiz) dönmektedir.
 
 ---
 
@@ -764,5 +785,83 @@ Yeni geliştirici katılırken veya yeni bir özellik eklerken şu adımları ta
 - [ ] Hiçbir dosyaya `@injectable`, `@inject`, `reflect-metadata` ekleme
 - [ ] Expo SDK v56 docs: https://docs.expo.dev/versions/v56.0.0/
 
+
 ---
+
+## 📱 Sosyal Medya Modülü: InboxScreen Yorum Mimarisi (Güncel)
+
+> ⚠️ **ÖNEMLİ:** Bu bölümü okumadan `InboxScreen.js` veya `zernio-client` edge function'ına dokunmayın.
+
+Sosyal medya modülü yorumlar sekmesi (`InboxScreen.js` → `YorumlarTab`), performans + veri tutarlılığı + silme kalıcılığı için aşağıdaki mimariye sahiptir.
+
+---
+
+### 3 Fazlı Yükleme Akışı
+
+```
+Uygulama açılır
+    │
+    ├─ FAZ 1 (~100ms): Yerel Supabase DB → Anında ekrana yansır
+    │    ├─ AsyncStorage'daki zernio_pic_cache ile resimler uygulanır (6 günlük TTL)
+    │    └─ deleted_comments filtresi çalışır (30 günlük TTL)
+    │
+    ├─ FAZ 1.5 (~2-3sn): get-inbox-pictures edge function çağrısı
+    │    ├─ listInboxComments API'sinden post.picture URL'leri alınır
+    │    ├─ post_<postId> anahtarıyla AsyncStorage'a yazılır
+    │    └─ Mevcut liste zernio_post_id üzerinden güncellenir (flicker yok)
+    │
+    └─ FAZ 2 (~8-9sn, arka plan): sync-comments edge function çağrısı
+         ├─ Yeni yorumlar DB'ye kaydedilir
+         ├─ deleted_comments filtresi tekrar uygulanır (geri gelme yok!)
+         └─ Resimler önbellekten atanır
+```
+
+### Realtime Olay Yönetimi (Döngü Koruması)
+
+```
+comments tablosu INSERT  →  fetchComments() tam çalışır (yeni yorum)
+comments tablosu UPDATE  →  sadece o satır state'te güncellenir
+                             fetchComments() ÇAĞRILMAZ → döngü riski SIFIR
+```
+
+Bu ayrım kritiktir: `sync-comments` DB'yi güncellediğinde `UPDATE` eventi tetikler. Eğer `UPDATE` da `fetchComments()` çağırılsaydı sonsuz döngü oluşurdu.
+
+### Yorum Silme Kalıcılığı
+
+Kullanıcı yorum sildiğinde üç katmanlı kalıcılık sağlanır:
+
+1. **DB silme:** `supabase.from('comments').delete()` — UUID veya zernio_comment_id ile
+2. **AsyncStorage kaydı:** `{id, deletedAt}` formatında her iki ID de yazılır:
+   - `item.id` (local UUID veya zernio_comment_id)
+   - `item.zernio_comment_id` (Zernio'dan gelecek aynı yorum için)
+3. **Faz 2 filtresi:** sync-comments tamamlandığında `filteredLive` üretilirken deleted_comments listesi kontrol edilir
+
+**30 günlük TTL:** `deletedAt` timestamp ile kaydedilir. 30 günden eski kayıtlar otomatik temizlenir.
+
+### AsyncStorage Anahtarları
+
+| Anahtar | Format | TTL | Açıklama |
+|---------|--------|-----|---------|
+| `zernio_pic_cache` | `{entries: {post_<id>: url}, cachedAt: timestamp}` | 6 gün | Post resim URL önbelleği |
+| `deleted_comments` | `[{id: string, deletedAt: timestamp}]` | 30 gün | Silinen yorum ID'leri |
+
+### Kritik ID Eşleştirme Kuralları
+
+| Bağlam | Kullanılacak ID |
+|--------|----------------|
+| Supabase DB sorgusu | UUID (`comments.id`) |
+| Zernio yorumunu eşleştir | `zernio_comment_id` |
+| Gönderi resmini eşleştir | `zernio_post_id` → `post_<id>` önbellek anahtarı |
+| ChatScreen route param | `localConversationId` (UUID) + `conversationId` (Zernio String ID) |
+
+### Veritabanı Gereksinimleri
+
+- `social_accounts.zernio_account_id` sütununda **UNIQUE constraint** zorunludur.
+  - Migration: `supabase/migrations/20260629173000_social_accounts_unique_constraint.sql`
+  - Bu olmadan `upsert(onConflict: 'zernio_account_id')` her çağrıda `42P10` hatası verir.
+- `supabase_realtime` publication'a `comments` tablosunun eklenmiş olması gerekir:
+  ```sql
+  alter publication supabase_realtime add table comments;
+  ```
+
 
