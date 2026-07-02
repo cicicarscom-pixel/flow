@@ -35,4 +35,4 @@ WAHA'dan gelen anlık (POST) webhook isteklerini karşılayan mikroservis `waha-
 
 ### 8.4 Gelen Mesajları Dinleme ve Gemini Yanıtı
 - Payload içinden `session` (merchantId), `from` (müşteri numarası) ve `body` (mesaj metni) ayrıştırılır. Kendi gönderdiğimiz mesajların (isFromMe) sonsuz döngüye girmesi engellenerek 200 OK yanıtı dönülür.
-- Kullanıcının `bot_settings` tablosundaki `system_prompt` yönergesi ve kendi `GEMINI_API_KEY` (BYOK) bilgisi çekilerek Gemini'ye sorulur. Çıkan sonuç WAHA `/api/sendText` endpoint'i üzerinden WhatsApp'a iletilir.
+- Kullanıcının `bot_settings` tablosundaki `system_prompt` yönergesi çekilerek Gemini'ye sorulur. Çıkan sonuç WAHA `/api/sendText` endpoint'i üzerinden WhatsApp'a iletilir.

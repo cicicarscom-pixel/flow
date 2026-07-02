@@ -25,6 +25,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlobalAppBar, supabase, CustomButton, CustomInput } from '../../../../shared';
 
 import { ROLES } from '../../../persona_engine/domain/config/roles';
@@ -44,8 +45,9 @@ export default function BotYonetimiScreen() {
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
 
-  // Rotation animation for RGB border
-  const rgbSpinValue = useRef(new Animated.Value(0)).current;
+  const insets = useSafeAreaInsets();
+  const fabBottom = Math.max(insets.bottom + 10, 20) + 64 + 14;
+  const [rgbSpinValue] = useState(new Animated.Value(0));
 
   useEffect(() => {
     Animated.loop(
@@ -365,20 +367,8 @@ export default function BotYonetimiScreen() {
                     <View className="flex-row items-center gap-2">
                       <View className={`w-3 h-3 rounded-full ${botActive ? 'bg-[#4edea3]' : 'bg-red-500'}`} style={botActive ? styles.pulseGlow : {}} />
                       <Text className="text-white text-base font-bold">Ai Asistan</Text>
-                      {isV2Ready && (
-                        <View className="bg-[#bc13fe]/20 border border-[#bc13fe] px-2 py-0.5 rounded-full ml-2">
-                          <Text className="text-[#ebb2ff] text-[9px] font-bold tracking-widest uppercase">⚡ V2 Engine Aktif</Text>
-                        </View>
-                      )}
                     </View>
-                    <Switch
-                      value={botActive}
-                      onValueChange={(val) => { setBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
-                      trackColor={{ false: '#2c2b2e', true: '#4edea3' }}
-                      thumbColor={'#ffffff'}
-                    />
                   </View>
-                  <Text className="text-[10px] text-gray-400 mt-1 mb-4">Tüm Ai Asistan sistemini devre dışı bırakır.</Text>
 
                   {/* Platform Toggles */}
                   {botActive && (
@@ -413,6 +403,39 @@ export default function BotYonetimiScreen() {
 
               <View style={{ opacity: botActive ? 1 : 0.5 }} pointerEvents={botActive ? 'auto' : 'none'}>
                 
+                {/* SECTION 5: Integrations (Google Drive & WhatsApp ONLY) - Moved to top */}
+                <View style={styles.glassCard} className="p-4 mb-4 mt-2">
+                  <Text className="text-white text-sm font-bold mb-3">Bağlı Servisler</Text>
+                  
+                  {/* Google Drive Compact Item */}
+                  <View className="flex-row items-center justify-between mb-3 bg-black/20 p-3 rounded-xl border border-white/5">
+                     <View className="flex-row items-center gap-3">
+                       <Ionicons name="logo-google" size={20} color={connectedFolderId ? "#4edea3" : "#849495"} />
+                       <View>
+                         <Text className="text-xs font-semibold text-white">Google Drive (Bilgi Bankası)</Text>
+                         <Text className="text-[10px] text-gray-400">{connectedFolderId ? '🟢 Bağlı ve güncel' : '🔴 Bağlı değil'}</Text>
+                       </View>
+                     </View>
+                     <TouchableOpacity onPress={() => setDriveModalVisible(true)} className="bg-white/10 px-4 py-1.5 rounded-full">
+                       <Text className="text-white text-[10px] font-bold">{connectedFolderId ? 'Yönet' : 'Bağla'}</Text>
+                     </TouchableOpacity>
+                  </View>
+
+                  {/* WhatsApp Compact Item */}
+                  <View className="flex-row items-center justify-between bg-black/20 p-3 rounded-xl border border-white/5">
+                     <View className="flex-row items-center gap-3">
+                       <Ionicons name="logo-whatsapp" size={20} color={isWhatsAppConnected ? "#25D366" : "#849495"} />
+                       <View>
+                         <Text className="text-xs font-semibold text-white">WhatsApp</Text>
+                         <Text className="text-[10px] text-gray-400">{isWhatsAppConnected ? '🟢 Asistan aktif' : '🔴 Bağlı değil'}</Text>
+                       </View>
+                     </View>
+                     <TouchableOpacity onPress={() => { setWhatsappModalVisible(true); if(!isWhatsAppConnected) handleRefreshQr(); }} className="bg-white/10 px-4 py-1.5 rounded-full">
+                       <Text className="text-white text-[10px] font-bold">{isWhatsAppConnected ? 'Yönet' : 'Bağla'}</Text>
+                     </TouchableOpacity>
+                  </View>
+                </View>
+
                 {/* SECTION 2: AI Personality */}
                 <View style={{
                   overflow: 'hidden',
@@ -520,97 +543,7 @@ export default function BotYonetimiScreen() {
                 </View>
                 </View>
 
-                {/* SECTION 3: Live AI Preview */}
-                <View style={styles.glassCard} className="mb-4 overflow-hidden">
-                  <View className="p-4 border-b border-white/5 flex-row justify-between items-center bg-white/2">
-                    <View className="flex-row items-center gap-2">
-                      <Ionicons name="chatbubble-ellipses-outline" size={18} color="#4edea3" />
-                      <Text className="text-sm font-semibold text-white">Canlı Test</Text>
-                    </View>
-                    <View className="flex-row items-center gap-1.5">
-                      <View className="w-1.5 h-1.5 rounded-full bg-[#4edea3]" />
-                      <Text className="text-[9px] text-[#4edea3] font-bold uppercase tracking-wider">SİMÜLASYON</Text>
-                    </View>
-                  </View>
-
-                  {/* Chat Simulator View */}
-                  <View className="p-4 bg-black/20" style={{ height: 260 }}>
-                    <ScrollView 
-                      ref={chatListRef}
-                      nestedScrollEnabled={true}
-                      onContentSizeChange={() => chatListRef.current?.scrollToEnd({ animated: true })}
-                      style={{ flex: 1 }}
-                      contentContainerStyle={{ paddingBottom: 10 }}
-                    >
-                      {messages.map((item) => (
-                        <View key={item.id} className={`flex-row ${item.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
-                          {item.sender === 'bot' && (
-                            <View className="w-7 h-7 rounded-full bg-[#bc13fe]/20 items-center justify-center mr-2 flex-shrink-0 border border-[#bc13fe]/30">
-                              <Ionicons name="sparkles" size={12} color="#ebb2ff" />
-                            </View>
-                          )}
-                          <View 
-                            style={{
-                              backgroundColor: item.sender === 'user' ? 'rgba(78, 222, 163, 0.15)' : 'rgba(32, 31, 34, 0.9)',
-                              borderWidth: 1,
-                              borderColor: item.sender === 'user' ? 'rgba(78, 222, 163, 0.3)' : 'rgba(188, 19, 254, 0.3)',
-                              borderRadius: 14,
-                              borderTopRightRadius: item.sender === 'user' ? 2 : 14,
-                              borderTopLeftRadius: item.sender === 'bot' ? 2 : 14,
-                              padding: 10,
-                              maxWidth: '75%',
-                              shadowColor: item.sender === 'bot' ? '#bc13fe' : 'transparent',
-                              shadowOpacity: 0.2,
-                              shadowRadius: 5,
-                              elevation: item.sender === 'bot' ? 3 : 0
-                            }}
-                          >
-                            <Text style={{ color: item.sender === 'bot' ? '#ebb2ff' : '#e5e1e4', fontSize: 12, lineHeight: 16 }}>{item.text}</Text>
-                          </View>
-                        </View>
-                      ))}
-                    </ScrollView>
-                    
-                    {isTyping && (
-                      <View className="flex-row justify-start mb-3 items-center">
-                        <View className="w-7 h-7 rounded-full bg-[#bc13fe]/20 items-center justify-center mr-2 border border-[#bc13fe]/30">
-                          <Ionicons name="sparkles" size={12} color="#ebb2ff" />
-                        </View>
-                        <ActivityIndicator size="small" color="#bc13fe" style={{ marginLeft: 6 }} />
-                      </View>
-                    )}
-
-                    {/* Input Bar */}
-                    <View className="relative mt-2">
-                      <TextInput
-                        value={chatInput}
-                        onChangeText={setChatInput}
-                        placeholder="Test mesajı gönder..."
-                        placeholderTextColor="#849495"
-                        onSubmitEditing={() => sendMessage(chatInput)}
-                        style={{
-                          backgroundColor: 'rgba(32, 31, 34, 0.8)',
-                          borderColor: 'rgba(255, 255, 255, 0.05)',
-                          borderWidth: 1,
-                          borderRadius: 20,
-                          paddingLeft: 16,
-                          paddingRight: 40,
-                          paddingVertical: 8,
-                          color: '#fff',
-                          fontSize: 12
-                        }}
-                      />
-                      <TouchableOpacity 
-                        onPress={() => sendMessage(chatInput)}
-                        style={{ position: 'absolute', right: 8, top: 6 }}
-                      >
-                        <Ionicons name="send" size={18} color="#4edea3" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-
-                {/* SECTION 4: Advanced AI Configuration (Collapsed) */}
+                {/* SECTION 4: Advanced AI Configuration (Collapsed) - Moved here */}
                 <View style={{
                   overflow: 'hidden',
                   padding: 2, 
@@ -708,52 +641,113 @@ export default function BotYonetimiScreen() {
                   </View>
                 </View>
 
-                {/* SECTION 5: Integrations (Google Drive & WhatsApp ONLY) */}
-                <View style={styles.glassCard} className="p-4 mb-4">
-                  <Text className="text-white text-sm font-bold mb-3">Bağlı Servisler</Text>
-                  
-                  {/* Google Drive Compact Item */}
-                  <View className="flex-row items-center justify-between mb-3 bg-black/20 p-3 rounded-xl border border-white/5">
-                     <View className="flex-row items-center gap-3">
-                       <Ionicons name="logo-google" size={20} color={connectedFolderId ? "#4edea3" : "#849495"} />
-                       <View>
-                         <Text className="text-xs font-semibold text-white">Google Drive (Bilgi Bankası)</Text>
-                         <Text className="text-[10px] text-gray-400">{connectedFolderId ? '🟢 Bağlı ve güncel' : '🔴 Bağlı değil'}</Text>
-                       </View>
-                     </View>
-                     <TouchableOpacity onPress={() => setDriveModalVisible(true)} className="bg-white/10 px-4 py-1.5 rounded-full">
-                       <Text className="text-white text-[10px] font-bold">{connectedFolderId ? 'Yönet' : 'Bağla'}</Text>
-                     </TouchableOpacity>
+                {/* INLINE SAVE BUTTON */}
+                {isSaveBtnActive && (
+                  <Animated.View style={{ 
+                    marginBottom: 16,
+                    shadowColor: '#4edea3',
+                    shadowOpacity: 0.5,
+                    shadowRadius: 15,
+                    elevation: 10
+                  }}>
+                    <CustomButton
+                      title="Değişiklikleri Kaydet"
+                      onPress={handleSave}
+                      isLoading={isSavingSettings}
+                      leftIcon={<Ionicons name="save-outline" size={18} color="#003824" />}
+                      className="w-full bg-[#4edea3]"
+                      textClassName="text-[#003824] font-bold text-sm"
+                    />
+                  </Animated.View>
+                )}
+
+                {/* SECTION 3: Live AI Preview */}
+                <View style={styles.glassCard} className="mb-4 overflow-hidden">
+                  <View className="p-4 border-b border-white/5 flex-row justify-between items-center bg-white/2">
+                    <View className="flex-row items-center gap-2">
+                      <Ionicons name="chatbubble-ellipses-outline" size={18} color="#4edea3" />
+                      <Text className="text-sm font-semibold text-white">Canlı Test</Text>
+                    </View>
+                    <View className="flex-row items-center gap-1.5">
+                      <View className="w-1.5 h-1.5 rounded-full bg-[#4edea3]" />
+                      <Text className="text-[9px] text-[#4edea3] font-bold uppercase tracking-wider">SİMÜLASYON</Text>
+                    </View>
                   </View>
 
-                  {/* WhatsApp Compact Item */}
-                  <View className="flex-row items-center justify-between bg-black/20 p-3 rounded-xl border border-white/5">
-                     <View className="flex-row items-center gap-3">
-                       <Ionicons name="logo-whatsapp" size={20} color={isWhatsAppConnected ? "#25D366" : "#849495"} />
-                       <View>
-                         <Text className="text-xs font-semibold text-white">WhatsApp</Text>
-                         <Text className="text-[10px] text-gray-400">{isWhatsAppConnected ? '🟢 Asistan aktif' : '🔴 Bağlı değil'}</Text>
-                       </View>
-                     </View>
-                     <TouchableOpacity onPress={() => { setWhatsappModalVisible(true); if(!isWhatsAppConnected) handleRefreshQr(); }} className="bg-white/10 px-4 py-1.5 rounded-full">
-                       <Text className="text-white text-[10px] font-bold">{isWhatsAppConnected ? 'Yönet' : 'Bağla'}</Text>
-                     </TouchableOpacity>
-                  </View>
-                </View>
+                  {/* Chat Simulator View */}
+                  <View className="p-4 bg-black/20" style={{ height: 260 }}>
+                    <ScrollView 
+                      ref={chatListRef}
+                      nestedScrollEnabled={true}
+                      onContentSizeChange={() => chatListRef.current?.scrollToEnd({ animated: true })}
+                      style={{ flex: 1 }}
+                      contentContainerStyle={{ paddingBottom: 10 }}
+                    >
+                      {messages.map((item) => (
+                        <View key={item.id} className={`flex-row ${item.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
+                          {item.sender === 'bot' && (
+                            <View className="w-7 h-7 rounded-full bg-[#bc13fe]/20 items-center justify-center mr-2 flex-shrink-0 border border-[#bc13fe]/30">
+                              <Ionicons name="sparkles" size={12} color="#ebb2ff" />
+                            </View>
+                          )}
+                          <View 
+                            style={{
+                              backgroundColor: item.sender === 'user' ? 'rgba(78, 222, 163, 0.15)' : 'rgba(32, 31, 34, 0.9)',
+                              borderWidth: 1,
+                              borderColor: item.sender === 'user' ? 'rgba(78, 222, 163, 0.3)' : 'rgba(188, 19, 254, 0.3)',
+                              borderRadius: 14,
+                              borderTopRightRadius: item.sender === 'user' ? 2 : 14,
+                              borderTopLeftRadius: item.sender === 'bot' ? 2 : 14,
+                              padding: 10,
+                              maxWidth: '75%',
+                              shadowColor: item.sender === 'bot' ? '#bc13fe' : 'transparent',
+                              shadowOpacity: 0.2,
+                              shadowRadius: 5,
+                              elevation: item.sender === 'bot' ? 3 : 0
+                            }}
+                          >
+                            <Text style={{ color: item.sender === 'bot' ? '#ebb2ff' : '#e5e1e4', fontSize: 12, lineHeight: 16 }}>{item.text}</Text>
+                          </View>
+                        </View>
+                      ))}
+                    </ScrollView>
+                    
+                    {isTyping && (
+                      <View className="flex-row justify-start mb-3 items-center">
+                        <View className="w-7 h-7 rounded-full bg-[#bc13fe]/20 items-center justify-center mr-2 border border-[#bc13fe]/30">
+                          <Ionicons name="sparkles" size={12} color="#ebb2ff" />
+                        </View>
+                        <ActivityIndicator size="small" color="#bc13fe" style={{ marginLeft: 6 }} />
+                      </View>
+                    )}
 
-                {/* SECTION 6: Statistics */}
-                <View className="flex-row justify-between mb-4">
-                  <View style={styles.glassCard} className="flex-1 p-3 mr-1.5 items-center justify-center text-center">
-                    <Text className="text-gray-400 text-[10px] uppercase font-bold tracking-wider mb-1">Bugünkü Sohbet</Text>
-                    <Text className="text-white text-lg font-bold">{"142"}</Text>
-                  </View>
-                  <View style={styles.glassCard} className="flex-1 p-3 mx-1 items-center justify-center text-center">
-                    <Text className="text-gray-400 text-[10px] uppercase font-bold tracking-wider mb-1">Yanıt Hızı</Text>
-                    <Text className="text-white text-lg font-bold">{"1.1s"}</Text>
-                  </View>
-                  <View style={[styles.glassCard, { borderLeftWidth: 2, borderLeftColor: 'rgba(78, 222, 163, 0.5)' }]} className="flex-1 p-3 items-center justify-center text-center ml-1.5">
-                    <Text className="text-[#4edea3] text-[10px] uppercase font-bold tracking-wider mb-1">Başarı Oranı</Text>
-                    <Text className="text-[#4edea3] text-lg font-bold">{"%98"}</Text>
+                    {/* Input Bar */}
+                    <View className="relative mt-2">
+                      <TextInput
+                        value={chatInput}
+                        onChangeText={setChatInput}
+                        placeholder="Test mesajı gönder..."
+                        placeholderTextColor="#849495"
+                        onSubmitEditing={() => sendMessage(chatInput)}
+                        style={{
+                          backgroundColor: 'rgba(32, 31, 34, 0.8)',
+                          borderColor: 'rgba(255, 255, 255, 0.05)',
+                          borderWidth: 1,
+                          borderRadius: 20,
+                          paddingLeft: 16,
+                          paddingRight: 40,
+                          paddingVertical: 8,
+                          color: '#fff',
+                          fontSize: 12
+                        }}
+                      />
+                      <TouchableOpacity 
+                        onPress={() => sendMessage(chatInput)}
+                        style={{ position: 'absolute', right: 8, top: 6 }}
+                      >
+                        <Ionicons name="send" size={18} color="#4edea3" />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
 
@@ -789,29 +783,7 @@ export default function BotYonetimiScreen() {
               </View>
             </ScrollView>
 
-            {/* FLOATING SAVE BUTTON */}
-            {isSaveBtnActive && (
-              <Animated.View style={{ 
-                position: 'absolute', 
-                bottom: 20, 
-                left: 16, 
-                right: 16, 
-                zIndex: 100,
-                shadowColor: '#4edea3',
-                shadowOpacity: 0.5,
-                shadowRadius: 15,
-                elevation: 10
-              }}>
-                <CustomButton
-                  title="Değişiklikleri Kaydet"
-                  onPress={handleSave}
-                  isLoading={isSavingSettings}
-                  leftIcon={<Ionicons name="save-outline" size={18} color="#003824" />}
-                  className="w-full bg-[#4edea3]"
-                  textClassName="text-[#003824] font-bold text-sm"
-                />
-              </Animated.View>
-            )}
+            {/* FLOATING SAVE BUTTON MOVED INLINE */}
           </View>
         )}
 

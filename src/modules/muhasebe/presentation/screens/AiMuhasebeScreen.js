@@ -135,7 +135,7 @@ export default function AiMuhasebeScreen({ navigation }) {
 
             <AnimatedBorderCard 
               style={{ flex: 1, marginLeft: 8 }} 
-              colors={['#ffb4ab', '#ffffff']} 
+              colors={['#b600f8', '#ffffff']} 
               padding={20} 
               borderRadius={16}
             >
@@ -166,12 +166,7 @@ export default function AiMuhasebeScreen({ navigation }) {
             </View>
 
             {/* Item 1 */}
-            <AnimatedBorderCard 
-              colors={['#00f0ff', '#ffffff']} 
-              padding={16} 
-              borderRadius={16}
-              marginBottom={12}
-            >
+            <View style={[styles.glassCard, { padding: 16, marginBottom: 12 }]}>
               <View className="flex-row items-center">
                 <View className="w-12 h-12 rounded-lg bg-[#353436]/40 border border-white/10 items-center justify-center mr-4">
                   <Text className="text-[#b9cacb] text-[10px] font-bold uppercase">{t('muhasebe.aiMuhasebe.months.jun')}</Text>
@@ -188,14 +183,11 @@ export default function AiMuhasebeScreen({ navigation }) {
                   </View>
                 </View>
               </View>
-            </AnimatedBorderCard>
+            </View>
 
             {/* Item 2 */}
-            <AnimatedBorderCard 
-              colors={['#b600f8', '#ffffff']} 
-              padding={16} 
-              borderRadius={16}
-            >
+            {/* Item 2 */}
+            <View style={[styles.glassCard, { padding: 16 }]}>
               <View className="flex-row items-center">
                 <View className="w-12 h-12 rounded-lg bg-[#353436]/40 border border-white/10 items-center justify-center mr-4">
                   <Text className="text-[#b9cacb] text-[10px] font-bold uppercase">{t('muhasebe.aiMuhasebe.months.jun')}</Text>
@@ -212,43 +204,53 @@ export default function AiMuhasebeScreen({ navigation }) {
                   </View>
                 </View>
               </View>
-            </AnimatedBorderCard>
+            </View>
           </View>
 
           {/* Action Buttons Section */}
           <View className="flex-row justify-between pt-2 pb-6">
-            <CustomButton 
-              onPress={() => navigation.navigate('AiChat', { transactionType: 'income' })}
-              className="flex-1 h-14 rounded-full border border-[#00f0ff] bg-[#00f0ff]/5 mr-2 px-0"
-              leftIcon={<MaterialIcons name="add-circle-outline" size={22} color="#00f0ff" />}
-              title={t('muhasebe.aiMuhasebe.enterIncome')}
-              textClassName="text-[#00f0ff] text-[16px] font-semibold ml-2"
-            />
+            <View style={[styles.glassCard, { flex: 1, borderRadius: 12, marginRight: 6 }]}>
+              <CustomButton 
+                onPress={() => navigation.navigate('AiChat', { transactionType: 'income' })}
+                className="bg-transparent py-3 px-2 h-auto"
+                leftIcon={<MaterialIcons name="add-circle-outline" size={16} color="#00f0ff" />}
+                title={t('muhasebe.aiMuhasebe.enterIncome')}
+                textClassName="text-[#00f0ff] text-[11px] font-bold uppercase tracking-widest ml-1"
+              />
+            </View>
             
-            <CustomButton 
-              onPress={() => navigation.navigate('AiChat', { transactionType: 'expense' })}
-              className="flex-1 h-14 rounded-full border border-[#ffb4ab] bg-[#ffb4ab]/5 ml-2 px-0"
-              leftIcon={<MaterialIcons name="remove-circle-outline" size={22} color="#ffb4ab" />}
-              title={t('muhasebe.aiMuhasebe.enterExpense')}
-              textClassName="text-[#ffb4ab] text-[16px] font-semibold ml-2"
-            />
+            <View style={[styles.glassCard, { flex: 1, borderRadius: 12, marginLeft: 6 }]}>
+              <CustomButton 
+                onPress={() => navigation.navigate('AiChat', { transactionType: 'expense' })}
+                className="bg-transparent py-3 px-2 h-auto"
+                leftIcon={<MaterialIcons name="remove-circle-outline" size={16} color="#b600f8" />}
+                title={t('muhasebe.aiMuhasebe.enterExpense')}
+                textClassName="text-[#b600f8] text-[11px] font-bold uppercase tracking-widest ml-1"
+              />
+            </View>
           </View>
 
           {/* New Bottom Buttons */}
           <View className="pb-10">
-            <CustomButton 
-              onPress={() => navigation.navigate('OdemeTakvimi')}
-              className="w-full h-14 rounded-full border border-[#00f0ff] bg-[#1c1b1c] mb-4 shadow-[0_0_8px_rgba(0,240,255,0.2)]"
-              title={t('muhasebe.aiMuhasebe.paymentCalendar')}
-              textClassName="text-[#00f0ff] text-[16px] font-semibold"
-            />
+            <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 16 }]}>
+              <CustomButton 
+                onPress={() => navigation.navigate('OdemeTakvimi')}
+                className="bg-transparent py-4 px-4 h-auto"
+                title={t('muhasebe.aiMuhasebe.paymentCalendar')}
+                textClassName="text-[#4edea3] text-[12px] font-bold uppercase tracking-widest"
+                leftIcon={<MaterialIcons name="calendar-month" size={16} color="#4edea3" />}
+              />
+            </View>
             
-            <CustomButton 
-              onPress={() => navigation.navigate('AiAssistant', { mode: 'report' })}
-              className="w-full h-14 rounded-full border border-[#00f0ff] bg-[#1c1b1c] shadow-[0_0_8px_rgba(0,240,255,0.2)]"
-              title={t('muhasebe.aiMuhasebe.aiAssistant')}
-              textClassName="text-[#00f0ff] text-[16px] font-semibold"
-            />
+            <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 16 }]}>
+              <CustomButton 
+                onPress={() => navigation.navigate('AiAssistant', { mode: 'report' })}
+                className="bg-transparent py-4 px-4 h-auto"
+                title={t('muhasebe.aiMuhasebe.aiAssistant')}
+                textClassName="text-[#4edea3] text-[12px] font-bold uppercase tracking-widest"
+                leftIcon={<MaterialIcons name="auto-awesome" size={16} color="#4edea3" />}
+              />
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -256,3 +258,15 @@ export default function AiMuhasebeScreen({ navigation }) {
   );
 }
 
+const styles = StyleSheet.create({
+  glassCard: {
+    backgroundColor: 'rgba(32, 31, 34, 0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 240, 255, 0.2)',
+    borderRadius: 20,
+    shadowColor: '#000000',
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 2,
+  }
+});

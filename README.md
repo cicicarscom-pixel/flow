@@ -488,6 +488,10 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
     - **Premium Yeniden Yapılandırma:** `BotYonetimiScreen.js` arayüzü Notion, Linear ve Stripe Dashboard gibi modern SaaS platformlarından ilham alınarak yeniden organize edildi. Görsel karmaşa giderilerek bilgi hiyerarşisi netleştirildi (Aktif/Pasif durumları, AI Kişiliği, Canlı Test, İleri Seviye Ayarlar ve Bağlı Servisler şeklinde ayrıldı).
     - **Stabil LinearGradient:** Kullanıcıların çok sevdiği ince "RGB Dönen Işık" (LinearGradient) efekti `blue_glow.png` gibi statik görseller yerine tamamen native animasyonlarla geri getirildi.
     - **Genişlik/Yükseklik (Jitter) Sorunu Çözümü:** Akordeon menüler gibi dinamik yükseklik değiştiren veya dikdörtgen (geniş/kısa) şekilli kartlarda dönen ışığın köşelerden kopması (sabit durmaması/kayması) hatası çözüldü. `LinearGradient` arka planı `top: '-100%'` gibi yüzeysel değerler yerine, `width: 1500, height: 1500` şeklinde devasa bir kare olarak merkeze sabitlendi. Böylece rotasyon esnasında container boyutu ne olursa olsun ışık %100 pürüzsüz ve sabit (titremesiz) dönmektedir.
+23. **AI Asistan ve Anasayfa (Dashboard) Arayüz Sadeleştirmesi:**
+    - **Dashboard Entegrasyonu:** Anasayfadaki (DashboardScreen) "Ai Asistan" şalteri doğrudan Supabase `bot_settings` tablosuyla (is_active) senkronize edildi. Artık anasayfadan yapılan aç/kapat işlemleri veritabanına yansıyor ve UI durumları anında güncelleniyor.
+    - **Arayüz Sadeleştirmesi:** `BotYonetimiScreen.js` ekranında bulunan mükerrer Ai Asistan şalteri, "V2 Engine Aktif" rozeti ve sayfanın en altındaki kullanılmayan istatistik kutuları tamamen kaldırılarak arayüz daha temiz ve sadece asistanın "Kişilik/Üslup" ayarlarına odaklı hale getirildi. 
+    - **UX Geliştirmeleri (Kaydet Butonu):** Kullanıcı, kişiliğini (İşletme Rolü, Karakter, Üslup) değiştirdiği anda beliren "Değişiklikleri Kaydet" butonu; sayfa düzeni akışında (AI Kişiliği -> İleri Seviye Ayarlar -> Değişiklikleri Kaydet -> Canlı Test) tam araya "inline" olarak yerleştirildi. Alt sekmenin (Tab Bar) arkasında kalma sorunu `useSafeAreaInsets` ile dinamik boşluk bırakılarak kökten çözüldü.
 
 ---
 

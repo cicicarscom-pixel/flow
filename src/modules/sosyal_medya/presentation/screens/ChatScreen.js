@@ -33,47 +33,61 @@ const GlassBubble = ({ children, isOwn, style }) => (
 
 export default function ChatScreen({ route, navigation }) {
   const { t } = useTranslation();
-  const { name = 'Ayşe Kaya', platform = 'instagram', accountId = 'acc_123', conversationId } = route.params || {};
+  const { name = 'Ayşe Kaya', platform = 'instagram', accountId, conversationId, localConversationId } = route.params || {};
   
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [selectedMessage, setSelectedMessage] = useState(null);
+  
+  // Selection State
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
+  
   const flatListRef = useRef(null);
 
   const fetchMessages = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session && conversationId && accountId) {
-        const { data: zernioRes } = await supabase.functions.invoke('zernio-client', {
-          body: { 
-             action: 'sync-chat', 
-             payload: { userId: session.user.id, conversationId, accountId } 
-          }
-        });
-        if (zernioRes?.data?.messages) {
-          const liveMessages = zernioRes.data.messages.map(m => ({
-            id: m.id || Math.random().toString(),
-            content: m.message || '',
-            direction: m.from?.isOwner ? 'outgoing' : 'incoming',
-            created_at: m.createdTime || new Date().toISOString(),
-          }));
-          setMessages(liveMessages); // Zernio returns newest first, keep it for inverted FlatList
-          return;
-        }
-      }
-    } catch (e) {
-      console.log("Live chat fetch error:", e);
-    }
+      // 1. Local fetch
+      const { data: localData, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('conversation_id', localConversationId || conversationId)
+        .order('created_at', { ascending: false });
+      
+      let allMessages = localData || [];
 
-    // Fallback to local
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .eq('conversation_id', conversationId)
-      .order('created_at', { ascending: false });
-    
-    if (!error && data) {
-      setMessages(data);
+      // 2. Live fetch
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && conversationId && accountId) {
+          const { data: zernioRes } = await supabase.functions.invoke('zernio-client', {
+            body: { 
+               action: 'sync-chat', 
+               payload: { userId: session.user.id, conversationId, accountId } 
+            }
+          });
+          if (zernioRes?.data?.messages && zernioRes.data.messages.length > 0) {
+            const liveMessages = zernioRes.data.messages.map(m => ({
+              id: m.id || Math.random().toString(),
+              content: m.message || '',
+              direction: m.from?.isOwner ? 'outgoing' : 'incoming',
+              created_at: m.createdTime || new Date().toISOString(),
+              zernio_message_id: m.id || m._id
+            }));
+            
+            // Merge
+            const localZernioIds = allMessages.map(m => m.zernio_message_id).filter(Boolean);
+            const newLiveMessages = liveMessages.filter(m => !localZernioIds.includes(m.zernio_message_id));
+            allMessages = [...newLiveMessages, ...allMessages].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          }
+        }
+      } catch (e) {
+        console.log("Live chat fetch error:", e);
+      }
+
+      setMessages(allMessages);
+    } catch (e) {
+      console.log("Chat sync error:", e);
     }
   };
 
@@ -102,19 +116,48 @@ export default function ChatScreen({ route, navigation }) {
     const tempText = inputText.trim();
     setInputText('');
 
-    // TODO: In production, call Supabase Edge Function 'zernio-client' to send via API.
-    // For now, insert directly to DB so it shows up in UI via Realtime.
-    const { data: userData } = await supabase.auth.getUser();
-    
-    // We assume there's a profile linked, but for demo we just insert if RLS allows, 
-    // or if we temporarily disable RLS, or if the user is authenticated.
-    await supabase.from('messages').insert({
-      conversation_id: conversationId,
-      zernio_message_id: `mock_${Date.now()}`,
-      direction: 'outgoing',
+    // Optimistic Update
+    const newMsg = {
+      id: Math.random().toString(),
+      conversation_id: localConversationId || conversationId,
       content: tempText,
-      // profile_id: userData?.user?.id 
-    });
+      direction: 'outgoing',
+      created_at: new Date().toISOString(),
+      zernio_message_id: `mock_${Date.now()}`
+    };
+    setMessages(prev => [newMsg, ...prev]);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      let zernioMsgId = newMsg.zernio_message_id;
+
+      if (session && conversationId && accountId) {
+        // Send to Zernio API
+        const { data: zernioRes } = await supabase.functions.invoke('zernio-client', {
+          body: { 
+             action: 'send-message', 
+             payload: { 
+                conversationId: conversationId,
+                accountId: accountId,
+                message: tempText
+             } 
+          }
+        });
+        if (zernioRes?.data?.id) zernioMsgId = zernioRes.data.id;
+      }
+
+      // Save to Supabase local table
+      await supabase.from('messages').insert({
+        conversation_id: localConversationId || conversationId,
+        zernio_message_id: zernioMsgId,
+        direction: 'outgoing',
+        content: tempText,
+        // profile_id: session?.user?.id 
+      });
+    } catch (e) {
+      console.log("Mesaj gönderme hatası:", e);
+      alert("Mesaj Zernio'ya gönderilemedi, sadece yerel olarak eklendi.");
+    }
   };
 
   const handleDelete = () => {
@@ -136,6 +179,41 @@ export default function ChatScreen({ route, navigation }) {
             if (error) {
               console.error("Mesaj silme hatası:", error);
               alert(t('sosyalMedya.alerts.deleteMessageError'));
+            } else {
+              setMessages(prev => prev.filter(m => m.id !== messageId));
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const toggleSelection = (messageId) => {
+    setSelectedItems(prev => 
+      prev.includes(messageId) ? prev.filter(id => id !== messageId) : [...prev, messageId]
+    );
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedItems.length === 0) return;
+    
+    Alert.alert(
+      t('sosyalMedya.chat.delete'), // Veya yeni bir metin "Mesajları Sil"
+      `Seçilen ${selectedItems.length} mesaj yerel veritabanınızdan tamamen silinecektir. Emin misiniz?`,
+      [
+        { text: t('sosyalMedya.alerts.cancel'), style: "cancel" },
+        { 
+          text: t('sosyalMedya.alerts.delete'), 
+          style: "destructive",
+          onPress: async () => {
+            const { error } = await supabase.from('messages').delete().in('id', selectedItems);
+            if (error) {
+              console.error("Toplu mesaj silme hatası:", error);
+              alert(t('sosyalMedya.alerts.deleteMessageError'));
+            } else {
+              setMessages(prev => prev.filter(m => !selectedItems.includes(m.id)));
+              setIsSelectionMode(false);
+              setSelectedItems([]);
             }
           }
         }
@@ -175,13 +253,37 @@ export default function ChatScreen({ route, navigation }) {
 
     return (
       <View style={[styles.messageRow, isOwn ? styles.messageRowOwn : styles.messageRowOther]}>
+        {isSelectionMode && (
+          <TouchableOpacity 
+            onPress={() => toggleSelection(item.id)}
+            className="mr-3 self-center"
+          >
+            <Ionicons 
+              name={selectedItems.includes(item.id) ? "checkmark-circle" : "ellipse-outline"} 
+              size={24} 
+              color={selectedItems.includes(item.id) ? "#bc13fe" : "#849495"} 
+            />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity 
-          onPress={() => setSelectedMessage(item)}
-          onLongPress={() => setSelectedMessage(item)}
-          delayLongPress={250}
+          onPress={() => {
+            if (isSelectionMode) {
+              toggleSelection(item.id);
+            } else {
+              setSelectedMessage(item);
+            }
+          }}
+          onLongPress={() => {
+            if (!isSelectionMode) {
+              setIsSelectionMode(true);
+              toggleSelection(item.id);
+            }
+          }}
+          delayLongPress={500}
           activeOpacity={0.7}
+          style={{ flexShrink: 1, flexDirection: 'row', ...(isSelectionMode ? { flex: 1 } : {}) }}
         >
-          <GlassBubble isOwn={isOwn}>
+          <GlassBubble isOwn={isOwn} style={selectedItems.includes(item.id) ? { borderColor: '#bc13fe', borderWidth: 1 } : {}}>
             <Text className="text-[#e5e2e3] text-[14px] leading-5">{item.content}</Text>
             
             <View className="flex-row justify-end items-center mt-1">
@@ -218,6 +320,25 @@ export default function ChatScreen({ route, navigation }) {
         showProfile={false} 
         actions={[{ icon: 'more-vert', onPress: handleUpdateStatus }]} 
       />
+
+      {isSelectionMode && (
+        <View className="flex-row justify-between items-center bg-[#ff0050]/10 px-5 py-4 border-b border-[#ff0050]/30 z-10">
+          <View className="flex-row items-center">
+            <TouchableOpacity onPress={() => { setIsSelectionMode(false); setSelectedItems([]); }} className="mr-4">
+              <Ionicons name="close" size={24} color="#e5e2e3" />
+            </TouchableOpacity>
+            <Text className="text-[#e5e2e3] font-bold text-[16px]">{selectedItems.length} Seçildi</Text>
+          </View>
+          <TouchableOpacity 
+            onPress={handleDeleteSelected} 
+            disabled={selectedItems.length === 0}
+            className={`flex-row items-center px-4 py-2 rounded-lg border ${selectedItems.length > 0 ? 'bg-[#ff0050]/20 border-[#ff0050]/40' : 'bg-white/5 border-white/10'}`}
+          >
+            <Feather name="trash-2" size={16} color={selectedItems.length > 0 ? "#ff0050" : "#849495"} />
+            <Text className={`ml-2 text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#ff0050]' : 'text-[#849495]'}`}>Sil</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Chat Messages */}
       <KeyboardAvoidingView 

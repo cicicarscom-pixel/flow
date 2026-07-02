@@ -11,13 +11,16 @@ import {
   Animated,
   Easing,
   ActivityIndicator,
-  Alert
+  Alert,
+  RefreshControl,
+  DeviceEventEmitter
 } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase , GlobalAppBar } from '../../../../shared';
 import { CustomButton } from '../../../../shared';
 import { CustomInput } from '../../../../shared';
@@ -88,14 +91,30 @@ const MesajlarTab = ({ navigation }) => {
     try {
       const { data: localData, error } = await supabase
         .from('conversations')
-        .select('*')
+        .select(`
+          *,
+          messages (
+            content,
+            created_at
+          )
+        `)
         .order('updated_at', { ascending: false });
       
       if (error) {
         console.error("Local conversations fetch error:", error);
       }
       
-      setConversations(localData || []);
+      const enhancedData = (localData || []).map(conv => {
+        let lastMessageSnippet = t('sosyalMedya.inbox.tapToViewLastMessage');
+        if (conv.messages && conv.messages.length > 0) {
+          // Sort messages by created_at desc to get the latest
+          const sortedMessages = [...conv.messages].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          lastMessageSnippet = sortedMessages[0].content;
+        }
+        return { ...conv, lastMessageSnippet };
+      });
+      
+      setConversations(enhancedData);
     } catch (e) {
       console.log('Conversations fetch error:', e);
     } finally {
@@ -118,6 +137,13 @@ const MesajlarTab = ({ navigation }) => {
 
     return () => {
       supabase.removeChannel(channel);
+    };
+  }, []);
+
+  useEffect(() => {
+    const listener = DeviceEventEmitter.addListener('REFRESH_INBOX', fetchConversations);
+    return () => {
+      listener.remove();
     };
   }, []);
 
@@ -197,6 +223,7 @@ const MesajlarTab = ({ navigation }) => {
                     name: item.participant_name,
                     platform: item.platform,
                     conversationId: item.zernio_conversation_id,
+                    localConversationId: item.id,
                     accountId: item.accountId
                   });
                 }
@@ -228,7 +255,7 @@ const MesajlarTab = ({ navigation }) => {
                     <View className="flex-1">
                       <Text className="text-[#e5e2e3] font-bold text-[14px]" numberOfLines={1} ellipsizeMode="tail">{item.participant_name}</Text>
                       <Text className={`text-[12px] mt-1 ${item.unread_count > 0 ? 'text-[#00f0ff] font-medium' : 'text-[#849495]'}`} numberOfLines={1} ellipsizeMode="tail">
-                        {t('sosyalMedya.inbox.tapToViewLastMessage')}
+                        {item.lastMessageSnippet}
                       </Text>
                     </View>
                   </View>
@@ -248,6 +275,7 @@ const MesajlarTab = ({ navigation }) => {
                           name: item.participant_name,
                           platform: item.platform,
                           conversationId: item.zernio_conversation_id,
+                          localConversationId: item.id,
                           accountId: item.accountId
                         })}
                         className="w-7 h-7 rounded-full bg-[#bc13fe]/10 items-center justify-center border border-[#bc13fe]/30"
@@ -278,67 +306,311 @@ const YorumlarTab = ({ navigation }) => {
   const { t } = useTranslation();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  
+  // Silinen ID'lerin senkron ref'i — race condition'ı önler
+  // AsyncStorage asenkron, Phase 2 closure eski değeri yakalayabilir.
+  // Bu ref silme anında HEMEN güncellenir, herhangi bir await beklenmez.
+  const deletedIdsRef = useRef(new Set());
 
-  const fetchComments = async () => {
-    try {
-      // 1. Fetch local comments
-      const { data: localData, error } = await supabase
-        .from('comments')
-        .select('*, posts(*)')
-        .order('created_at', { ascending: false });
-      
-      let allComments = localData || [];
+  // Selection State
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
 
-      // 2. Fetch live Zernio comments
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          const { data: zernioRes } = await supabase.functions.invoke('zernio-client', {
-            body: { action: 'sync-comments', payload: { userId: session.user.id } }
-          });
-          
-          if (zernioRes?.data?.comments) {
-             const liveComments = zernioRes.data.comments.map(c => ({
-                id: c.id || c._id || Math.random().toString(),
-                content: c.message || c.content || c.text || '',
-                author_name: c.from?.name || c.from?.username || c.author?.name || 'Kullanıcı',
-                created_at: c.createdTime || c.createdAt || c.timestamp || new Date().toISOString(),
-                zernio_comment_id: c.id || c._id,
-                username: c.from?.username || c.from?.name || c.author?.name || 'user',
-                platform: c.post?.platform || c.platform || 'facebook',
-                posts: {
-                  id: c.post?.id,
-                  accountId: c.post?.accountId,
-                  title: c.post?.content ? c.post.content.substring(0, 50) + '...' : 'Sosyal Medya Gönderisi',
-                  media_urls: c.post?.picture ? [c.post.picture] : []
-                }
-             }));
-             
-             // Merge
-             const localZernioIds = allComments.map(c => c.zernio_comment_id).filter(Boolean);
-             const newLiveComments = liveComments.filter(c => !localZernioIds.includes(c.id));
-             allComments = [...newLiveComments, ...allComments].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  const toggleSelection = (id) => {
+    setSelectedItems(prev => prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]);
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedItems.length === 0) return;
+    Alert.alert(
+      "Yorumları Sil",
+      `Seçilen ${selectedItems.length} yorum tamamen silinecektir. Emin misiniz?`,
+      [
+        { text: "İptal", style: "cancel" },
+        { 
+          text: "Sil", 
+          style: "destructive",
+          onPress: async () => {
+            const uuids = selectedItems.filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id));
+            const zernioIds = selectedItems.filter(id => !uuids.includes(id));
+
+            // Hem item.id hem zernio_comment_id'yi topla
+            const allDeletedIds = [
+              ...selectedItems,
+              ...selectedItems.map(id => {
+                const c = comments.find(cm => cm.id === id);
+                return c?.zernio_comment_id;
+              }).filter(Boolean)
+            ];
+            const uniqueIds = [...new Set(allDeletedIds)];
+
+            // ✔ Önce ref'i SENKRON güncelle (await yok, race condition yok)
+            // Phase 2 hangi noktada olursa olsun, setComments çağrılınca bu set kullanılır.
+            uniqueIds.forEach(id => deletedIdsRef.current.add(id));
+
+            // Ardından AsyncStorage'a yaz (uygulama yeniden açıldığında kalıcılık için)
+            try {
+              const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+              const raw = await AsyncStorage.getItem('deleted_comments');
+              const existing = raw ? JSON.parse(raw) : [];
+              const now = Date.now();
+              const normalized = existing
+                .map(d => typeof d === 'string' ? { id: d, deletedAt: 0 } : d)
+                .filter(d => (now - d.deletedAt) < THIRTY_DAYS);
+              const newItems = uniqueIds.map(id => ({ id, deletedAt: now }));
+              const seen = new Set();
+              const deduped = [...normalized, ...newItems].filter(d => {
+                if (seen.has(d.id)) return false;
+                seen.add(d.id);
+                return true;
+              });
+              await AsyncStorage.setItem('deleted_comments', JSON.stringify(deduped));
+            } catch (_) {}
+
+            if (uuids.length > 0) await supabase.from('comments').delete().in('id', uuids);
+            if (zernioIds.length > 0) await supabase.from('comments').delete().in('zernio_comment_id', zernioIds);
+            
+            setComments(prev => prev.filter(c => !uniqueIds.includes(c.id) && !uniqueIds.includes(c.zernio_comment_id)));
+            setIsSelectionMode(false);
+            setSelectedItems([]);
           }
         }
-      } catch (e) {
-        console.log('Live comments fetch error:', e);
-      }
+      ]
+    );
+  };
 
-      setComments(allComments);
-    } finally {
+  // Deterministik ID — Math.random() yerine kararlı hash
+  // FlatList key tutarlılığını garantiler, her render'da yeniden mount olmaz
+  const makeStableId = (c) => {
+    if (c.id || c._id) return String(c.id || c._id);
+    const str = `${c.post?.id || ''}|${c.from?.username || c.username || ''}|${c.createdTime || c.createdAt || ''}`;
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
+    }
+    return `gen_${Math.abs(hash)}`;
+  };
+
+  const fetchComments = async () => {
+    const CACHE_KEY = 'zernio_pic_cache';
+    const DELETED_KEY = 'deleted_comments';
+    const CACHE_TTL_MS = 6 * 24 * 60 * 60 * 1000;  // 6 gün
+    const THIRTY_DAYS  = 30 * 24 * 60 * 60 * 1000;
+
+    // ── FAZ 1: Yerel DB'yi anında göster ──
+    let cachedPics = {};
+    try {
+      const raw = await AsyncStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.entries && parsed.cachedAt) {
+          // Yeni TTL formatı: { entries, cachedAt }
+          if (Date.now() - parsed.cachedAt < CACHE_TTL_MS) cachedPics = parsed.entries;
+          // else: süresi dolmuş, boş bırak (yeniden çekilecek)
+        } else {
+          cachedPics = parsed; // Eski format: geriye dönük uyumluluk
+        }
+      }
+    } catch (_) {}
+
+    try {
+      const { data: localData } = await supabase
+        .from('comments')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      let localComments = (localData || []).map(c => ({
+        ...c,
+        _pictureUrl: (c.zernio_post_id && cachedPics['post_' + c.zernio_post_id])
+          || (c.zernio_comment_id && cachedPics[c.zernio_comment_id])
+          || null,
+      }));
+
+      // Silinmiş yorumları filtrele
+      localComments = localComments.filter(
+        c => !deletedIdsRef.current.has(c.id) && !deletedIdsRef.current.has(c.zernio_comment_id)
+      );
+
+      setComments(prev => {
+        if (!prev || prev.length === 0) return localComments;
+        
+        // Zernio'dan (Faz 2) gelmiş olan ancak henüz yerel veritabanında olmayan yorumları koru
+        const map = new Map();
+        prev.forEach(c => map.set(c.zernio_comment_id || c.id, c));
+        localComments.forEach(c => map.set(c.zernio_comment_id || c.id, c));
+        
+        const merged = Array.from(map.values());
+        // Tarihe göre yeniden sırala
+        merged.sort((a, b) => new Date(b.created_at || b.createdAt || b.createdTime || 0).getTime() - new Date(a.created_at || a.createdAt || a.createdTime || 0).getTime());
+        return merged;
+      });
+      
       setLoading(false);
+    } catch (e) {
+      setLoading(false);
+    }
+
+    // ── FAZ 1.5: Sadece resimleri hızlıca çek (~2sn, tek API çağrısı) ──
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const invokeWithTimeout = (funcName, body, ms = 10000) => {
+        return Promise.race([
+          supabase.functions.invoke(funcName, body),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
+        ]);
+      };
+
+      const picResObj = await invokeWithTimeout('zernio-client', {
+        body: { action: 'get-inbox-pictures', payload: { userId: session.user.id } }
+      }, 5000);
+      const picRes = picResObj.data;
+
+
+      const newPictures = picRes?.data?.pictures || picRes?.pictures || {};
+      if (Object.keys(newPictures).length > 0) {
+        const newCache = { ...cachedPics };
+        Object.entries(newPictures).forEach(([postId, url]) => {
+          newCache['post_' + postId] = url;
+        });
+        cachedPics = newCache;
+        try {
+          // TTL'li format ile kaydet
+          await AsyncStorage.setItem(CACHE_KEY, JSON.stringify({ entries: newCache, cachedAt: Date.now() }));
+        } catch (_) {}
+
+        setComments(prev => prev.map(c => {
+          if (c._pictureUrl) return c;
+          const pic = (c.zernio_post_id && newCache['post_' + c.zernio_post_id]) || null;
+          return pic ? { ...c, _pictureUrl: pic } : c;
+        }));
+      }
+    } catch (e) {
+      console.log('Picture fetch error:', e);
+    }
+
+    // ── FAZ 2: Arka planda tam sync (yeni yorumlar için) ──
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const invokeWithTimeout = (funcName, body, ms = 15000) => {
+        return Promise.race([
+          supabase.functions.invoke(funcName, body),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
+        ]);
+      };
+
+      const zernioResObj = await invokeWithTimeout('zernio-client', {
+        body: { action: 'sync-comments', payload: { userId: session.user.id } }
+      }, 15000);
+      const zernioRes = zernioResObj.data;
+
+      const rawComments = zernioRes?.data?.comments || zernioRes?.comments || [];
+      if (rawComments.length === 0) return;
+
+      // Güncel resim önbelleğini oluştur
+      const extraCache = { ...cachedPics };
+      rawComments.forEach(c => {
+        const cid = c.id || c._id;
+        const pic = c.post?.picture || null;
+        if (cid && pic) extraCache[cid] = pic;
+        if (c.post?.id && pic) extraCache['post_' + c.post.id] = pic;
+      });
+      try {
+        await AsyncStorage.setItem(CACHE_KEY, JSON.stringify({ entries: extraCache, cachedAt: Date.now() }));
+      } catch (_) {}
+
+      const liveComments = rawComments.map(c => {
+        const pic = c.post?.picture
+          || extraCache[c.id || c._id]
+          || extraCache['post_' + c.post?.id]
+          || null;
+        return {
+          id: makeStableId(c),
+          content: c.message || c.content || c.text || '',
+          author_name: c.from?.name || c.from?.username || c.username || c.author?.name || 'Kullanıcı',
+          created_at: c.createdTime || c.createdAt || c.timestamp || new Date().toISOString(),
+          zernio_comment_id: c.id || c._id,
+          zernio_post_id: c.post?.id,
+          username: c.from?.username || c.from?.name || c.username || c.author?.name || 'user',
+          platform: c.post?.platform || c.platform || 'facebook',
+          _pictureUrl: pic,
+          posts: {
+            id: c.post?.id,
+            accountId: c.post?.accountId,
+            title: c.post?.content ? c.post.content.substring(0, 50) + '...' : 'Sosyal Medya Gönderisi',
+            media_urls: pic ? [pic] : []
+          }
+        };
+      });
+
+      // Silinmiş yorumları Phase 2'den de filtrele — senkron ref kullan
+      // Race condition yok: handleDeleteSelected ref'i await öncesinde güncelledi
+      const filteredLive = liveComments.filter(
+        c => !deletedIdsRef.current.has(c.id) && !deletedIdsRef.current.has(c.zernio_comment_id)
+      );
+
+      setComments(prev => {
+        const liveIds = new Set(filteredLive.map(c => c.zernio_comment_id).filter(Boolean));
+        const localOnly = prev.filter(c => {
+          // Zernio'dan canlı gelen veri ile üst üste gelmesin
+          if (c.zernio_comment_id && liveIds.has(c.zernio_comment_id)) return false;
+          // Kullanıcının sildiği yorumlar geri gelmesin (temel düzeltme)
+          if (deletedIdsRef.current.has(c.id) || deletedIdsRef.current.has(c.zernio_comment_id)) return false;
+          return true;
+        });
+        return [...filteredLive, ...localOnly]
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      });
+    } catch (e) {
+      console.log('Background sync error:', e);
     }
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchComments().finally(() => setRefreshing(false));
+  };
   useEffect(() => {
-    setTimeout(() => {
-      fetchComments();
-    }, 0);
+    // fetchComments, deletedIdsRef dolduğunda başlar (soğuk başlangıç güvenliği)
+    // AsyncStorage okumadan önce fetchComments başlarsa silinen yorumlar görünür
+    // .finally() sayesinde AsyncStorage hatası olsa bile fetchComments çalışır
+    AsyncStorage.getItem('deleted_comments')
+      .then(raw => {
+        if (!raw) return;
+        try {
+          const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+          const now = Date.now();
+          JSON.parse(raw).forEach(d => {
+            const id = typeof d === 'string' ? d : d.id;
+            const age = typeof d === 'object' ? (now - d.deletedAt) : Infinity;
+            if (age < THIRTY_DAYS) deletedIdsRef.current.add(id);
+          });
+        } catch (_) {}
+      })
+      .catch(() => {})
+      .finally(() => {
+        fetchComments();
+      });
     
     const channel = supabase
       .channel('realtime_comments')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, () => {
+      // Yeni yorum geldi → tam yenileme (resimler dahil)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, () => {
         fetchComments();
+      })
+      // Satır güncellendi (ai_status, media_urls vb.) → sadece o satırı güncelle
+      // fetchComments() çağrılmaz → döngü riski yok
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'comments' }, (payload) => {
+        const updated = payload.new;
+        setComments(prev => prev.map(c => {
+          const match = c.id === updated.id || c.zernio_comment_id === updated.zernio_comment_id;
+          if (!match) return c;
+          return { ...c, ...updated, _pictureUrl: c._pictureUrl }; // Mevcut resmi koru
+        }));
       })
       .subscribe();
 
@@ -347,24 +619,75 @@ const YorumlarTab = ({ navigation }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const listener = DeviceEventEmitter.addListener('REFRESH_INBOX', onRefresh);
+    return () => {
+      listener.remove();
+    };
+  }, []);
+
   if (loading) return <ActivityIndicator color="#bc13fe" style={{ marginTop: 20 }} />;
 
   return (
     <View style={styles.tabContainer}>
-      {comments.length === 0 ? (
-        <View className="flex-1 items-center justify-center p-5">
-          <Ionicons name="chatbubble-ellipses-outline" size={48} color="#849495" />
-          <Text className="text-[#849495] mt-4 text-center">{t('sosyalMedya.inbox.noComments')}</Text>
+      {isSelectionMode && (
+        <View className="flex-row justify-between items-center bg-[#ff0050]/10 px-5 py-3 border-b border-[#ff0050]/30 z-10">
+          <View className="flex-row items-center">
+            <TouchableOpacity onPress={() => { setIsSelectionMode(false); setSelectedItems([]); }} className="mr-4">
+              <Ionicons name="close" size={24} color="#e5e2e3" />
+            </TouchableOpacity>
+            <Text className="text-[#e5e2e3] font-bold text-[14px]">{selectedItems.length} Seçildi</Text>
+          </View>
+          <TouchableOpacity 
+            onPress={handleDeleteSelected} 
+            disabled={selectedItems.length === 0}
+            className={`flex-row items-center px-4 py-2 rounded-lg border ${selectedItems.length > 0 ? 'bg-[#ff0050]/20 border-[#ff0050]/40' : 'bg-white/5 border-white/10'}`}
+          >
+            <Feather name="trash-2" size={14} color={selectedItems.length > 0 ? "#ff0050" : "#849495"} />
+            <Text className={`ml-2 text-[12px] font-bold ${selectedItems.length > 0 ? 'text-[#ff0050]' : 'text-[#849495]'}`}>Sil</Text>
+          </TouchableOpacity>
         </View>
-      ) : (
-        <FlatList 
-          data={comments}
-          keyExtractor={item => item.id}
-          contentContainerStyle={{ padding: 20 }}
-          renderItem={({ item }) => (
-            <GlassCard style={{ padding: 12, marginBottom: 12, borderRadius: 12, flexDirection: 'row' }}>
-              {item.posts?.media_urls?.[0] ? (
-                <Image source={{ uri: item.posts.media_urls[0] }} className="w-16 h-16 rounded-lg mr-3 bg-[#131314]" />
+      )}
+
+      <FlatList 
+        data={comments}
+        keyExtractor={item => item.id}
+        contentContainerStyle={[
+          { padding: 20 },
+          comments.length === 0 && { flex: 1, justifyContent: 'center' } // Center empty state
+        ]}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#bc13fe"
+            colors={["#bc13fe"]}
+            progressBackgroundColor="#131314"
+          />
+        }
+        ListEmptyComponent={
+          <View className="flex-1 items-center justify-center p-5">
+            <Ionicons name="chatbubble-ellipses-outline" size={48} color="#849495" />
+            <Text className="text-[#849495] mt-4 text-center">{t('sosyalMedya.inbox.noComments')}</Text>
+          </View>
+        }
+        renderItem={({ item }) => (
+          <TouchableOpacity 
+            activeOpacity={0.8}
+            onPress={() => {
+              if (isSelectionMode) toggleSelection(item.id);
+            }}
+          >
+            <GlassCard style={{ padding: 12, marginBottom: 12, borderRadius: 12, flexDirection: 'row', borderWidth: isSelectionMode && selectedItems.includes(item.id) ? 1 : 0, borderColor: isSelectionMode && selectedItems.includes(item.id) ? '#bc13fe' : 'transparent' }}>
+              
+              {isSelectionMode && (
+                <View className={`w-6 h-6 rounded-full border mr-3 items-center justify-center self-center ${selectedItems.includes(item.id) ? 'bg-[#bc13fe] border-[#bc13fe]' : 'border-white/30'}`}>
+                  {selectedItems.includes(item.id) && <Ionicons name="checkmark" size={16} color="#fff" />}
+                </View>
+              )}
+
+              {item._pictureUrl || item.posts?.media_urls?.[0] ? (
+                <Image source={{ uri: item._pictureUrl || item.posts.media_urls[0] }} className="w-16 h-16 rounded-lg mr-3 bg-[#131314]" />
               ) : (
                 <View className="w-16 h-16 rounded-lg mr-3 bg-[#131314] items-center justify-center border border-white/5">
                   <Ionicons name="image-outline" size={20} color="#849495" />
@@ -380,9 +703,9 @@ const YorumlarTab = ({ navigation }) => {
                     {new Date(item.created_at).toLocaleDateString('tr-TR')}
                   </Text>
                 </View>
-                <Text className="text-[#e5e2e3] text-[11px] mb-2" numberOfLines={2} ellipsizeMode="tail">{item.content}</Text>
+                <Text className="text-[#e5e2e3] text-[11px] mb-2" numberOfLines={2} ellipsizeMode="tail">{item.content || item.title || ''}</Text>
                 
-                <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center justify-between" pointerEvents={isSelectionMode ? "none" : "auto"}>
                   <View className="flex-row items-center">
                     <View className="flex-row items-center mr-3">
                       <Ionicons name="chatbubble-ellipses" size={12} color="#bc13fe" style={{ marginRight: 4 }} />
@@ -390,18 +713,29 @@ const YorumlarTab = ({ navigation }) => {
                     </View>
                   </View>
                   
-                  <CustomButton 
-                    onPress={() => navigation.navigate('PostCommentsScreen', { post: item.posts, commentFocus: item })}
-                    className="px-2 py-1 rounded border border-[#bc13fe]/30 bg-[#bc13fe]/20"
-                    textClassName="text-[#bc13fe] text-[9px] font-bold"
-                    title={t('sosyalMedya.inbox.viewComments')}
-                  />
+                  <View className="flex-row items-center">
+                    {!isSelectionMode && (
+                      <TouchableOpacity 
+                        onPress={() => { setIsSelectionMode(true); toggleSelection(item.id); }} 
+                        className="mr-2 px-2 py-1 bg-red-500/10 rounded border border-red-500/30 flex-row items-center"
+                      >
+                        <Feather name="trash-2" size={12} color="#ff0050" />
+                      </TouchableOpacity>
+                    )}
+                    
+                    <CustomButton 
+                      onPress={() => navigation.navigate('PostCommentsScreen', { post: item.posts, commentFocus: item })}
+                      className="px-2 py-1 rounded border border-[#bc13fe]/30 bg-[#bc13fe]/20"
+                      textClassName="text-[#bc13fe] text-[9px] font-bold"
+                      title={t('sosyalMedya.inbox.viewComments')}
+                    />
+                  </View>
                 </View>
               </View>
             </GlassCard>
-          )}
-        />
-      )}
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 };
@@ -440,6 +774,13 @@ const DegerlendirmelerTab = () => {
 
     return () => {
       supabase.removeChannel(channel);
+    };
+  }, []);
+
+  useEffect(() => {
+    const listener = DeviceEventEmitter.addListener('REFRESH_INBOX', fetchReviews);
+    return () => {
+      listener.remove();
     };
   }, []);
 
@@ -505,7 +846,9 @@ export default function InboxScreen({ navigation }) {
         module="sosyal" 
         title={t('sosyalMedya.ui.inbox')} 
         showProfile={true} 
-        actions={[{ icon: 'filter-list', onPress: () => {} }]} 
+        actions={[
+          { icon: 'sync', onPress: () => DeviceEventEmitter.emit('REFRESH_INBOX') }
+        ]} 
       />
 
       <Tab.Navigator

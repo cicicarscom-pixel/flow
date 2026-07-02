@@ -94,6 +94,39 @@ serve(async (req) => {
         const accRes = await zernio.accounts.listAccounts({ query: { profileId } });
         const accounts = accRes.data?.accounts || accRes.accounts || accRes.data || [];
         
+        // --- SUPABASE SYNC ---
+        const { userId } = payload;
+        if (userId && accounts.length > 0) {
+          const mappedAccounts = accounts.map((acc: any) => ({
+            profile_id: userId,
+            zernio_account_id: acc._id || acc.id || acc.accountId || acc.uuid,
+            platform: acc.platform || 'unknown',
+            account_name: acc.username || acc.displayName || acc.name || acc.platform,
+            status: 'active'
+          }));
+          
+          const { error } = await supabase.from('social_accounts').upsert(
+            mappedAccounts,
+            { onConflict: 'zernio_account_id' }
+          );
+          if (error) {
+            if (error.code === '42P10') {
+              // UNIQUE constraint eksik — migration çalıştırın: supabase/migrations/20260629173000_social_accounts_unique_constraint.sql
+              console.warn('[sync-accounts] UNIQUE constraint eksik. Geçici fallback aktif.');
+              for (const acc of mappedAccounts) {
+                const { data: ex } = await supabase.from('social_accounts')
+                  .select('id').eq('zernio_account_id', acc.zernio_account_id).maybeSingle();
+                if (!ex) {
+                  const { error: iErr } = await supabase.from('social_accounts').insert(acc);
+                  if (iErr) console.error('[sync-accounts] Insert error:', iErr);
+                }
+              }
+            } else {
+              console.error('[sync-accounts] Upsert error:', error);
+            }
+          }
+        }
+        
         result = { accounts, profileId };
         break;
       }
@@ -117,18 +150,22 @@ serve(async (req) => {
         const { userId } = payload;
         if (userId && postsList.length > 0) {
            const mappedPosts = postsList.map((p: any) => {
-              const mediaList = p.mediaItems?.map((m: any) => m.url) || [];
-              const platformList = p.platforms?.map((pl: any) => typeof pl === 'string' ? pl : pl.platform) || [];
-              return {
-                 profile_id: userId,
-                 zernio_post_id: p._id || p.id,
-                 content: p.content || '',
-                 media_urls: mediaList,
-                 status: p.status || 'published',
-                 platforms: platformList,
-                 scheduled_for: p.scheduledFor || p.createdAt || new Date().toISOString()
-              };
-           });
+               let mediaList = p.mediaItems?.map((m: any) => m.url) || [];
+               // Fallback: Instagram posts have 'picture' instead of 'mediaItems'
+               if (mediaList.length === 0 && p.picture) mediaList = [p.picture];
+               if (mediaList.length === 0 && p.image) mediaList = [p.image];
+               if (mediaList.length === 0 && p.thumbnail) mediaList = [p.thumbnail];
+               const platformList = p.platforms?.map((pl: any) => typeof pl === 'string' ? pl : pl.platform) || [];
+               return {
+                  profile_id: userId,
+                  zernio_post_id: p._id || p.id,
+                  content: p.content || '',
+                  media_urls: mediaList,
+                  status: p.status || 'published',
+                  platforms: platformList,
+                  scheduled_for: p.scheduledFor || p.createdAt || new Date().toISOString()
+               };
+            });
            
            // Check existing
            const { data: existingPosts } = await supabase.from('posts').select('zernio_post_id').eq('profile_id', userId);
@@ -146,6 +183,23 @@ serve(async (req) => {
         break;
       }
       
+      case 'get-inbox-pictures': {
+        // Fast path: just get pictures for all posts (single API call)
+        const listRes2 = await zernio.profiles.listProfiles();
+        const profiles2 = listRes2.data?.profiles || listRes2.profiles || listRes2.data || [];
+        const existing2 = profiles2.find((p: any) => p.name === 'AI Esnaf Profil');
+        if (!existing2) { result = { pictures: {} }; break; }
+        const profileId2 = existing2.id || existing2.profileId || existing2._id || existing2.uuid;
+        const inboxRes2 = await zernio.comments.listInboxComments({ query: { profileId: profileId2 } });
+        const posts2 = inboxRes2.data?.data || [];
+        const pictures: Record<string, string> = {};
+        posts2.forEach((p: any) => {
+          if (p.id && p.picture) pictures[p.id] = p.picture;
+        });
+        result = { pictures, profileId: profileId2 };
+        break;
+      }
+
       case 'sync-comments': {
         const listRes = await zernio.profiles.listProfiles();
         const profiles = listRes.data?.profiles || listRes.profiles || listRes.data || [];
@@ -161,39 +215,138 @@ serve(async (req) => {
         // 1. Get posts that have comments
         const inboxRes = await zernio.comments.listInboxComments({ query: { profileId } });
         const commentedPosts = inboxRes.data?.data || [];
+        const t0 = Date.now();
+        console.log(`[sync-comments] START profileId=${profileId} postsWithComments=${commentedPosts.length}`);
         
         let allComments: any[] = [];
         
         // 2. Fetch comments for each post
-        // We only fetch the first few for performance, or use Promise.all
-        await Promise.all(commentedPosts.slice(0, 10).map(async (post: any) => {
+        // We use Promise.all to fetch concurrently
+        await Promise.all(commentedPosts.map(async (post: any) => {
            if (!post.id || !post.accountId) return;
            try {
               const commentsRes = await zernio.comments.getInboxPostComments({ 
                   path: { postId: post.id },
                   query: { accountId: post.accountId }
               });
-              const commentsList = commentsRes.data?.comments || commentsRes.comments || [];
-              
-              // Attach post info to each comment
-              const enrichedComments = commentsList.map((c: any) => ({
-                 ...c,
-                 post: {
-                    id: post.id,
-                    content: post.content,
-                    picture: post.picture,
-                    accountId: post.accountId
-                 }
-              }));
+               const commentsList = commentsRes.data?.comments || commentsRes.comments || [];
+               
+               // Debug: log actual post structure for first 2 posts
+               if (allComments.length === 0) {
+                  console.log("INBOX POST FIELDS:", JSON.stringify(Object.keys(post)));
+                  console.log("INBOX POST DATA:", JSON.stringify({
+                     id: post.id, picture: post.picture, image: post.image, 
+                     thumbnail: post.thumbnail, media: post.media,
+                     mediaUrl: post.mediaUrl, mediaItems: post.mediaItems,
+                     platformPostId: post.platformPostId, platform: post.platform
+                  }));
+               }
+               
+               // Try ALL possible picture fields from inbox post
+               let pictureUrl = post.picture 
+                  || post.image 
+                  || post.thumbnail 
+                  || post.mediaUrl
+                  || post.media?.[0]?.url 
+                  || post.media?.[0]
+                  || post.mediaItems?.[0]?.url
+                  || null;
+               
+
+               // Format replies before adding to allComments
+               const localMap = new Map();
+               commentsList.forEach((c: any) => localMap.set(c.id || c._id, c));
+               
+               const enrichedComments = commentsList.map((c: any) => {
+                  let content = c.message || c.content || c.text || '';
+                  if (c.parentCommentId || c.isReply) {
+                     const parentId = c.parentCommentId || c.parentId;
+                     const parent = localMap.get(parentId);
+                     if (parent && !content.startsWith('↳ @')) {
+                        const pName = parent.from?.name || parent.from?.username || parent.username || parent.author?.name || 'Yorum';
+                        content = `↳ @${pName}:\n${content}`;
+                     } else if (!content.startsWith('↳ @')) {
+                        content = `↳ @Yorum:\n${content}`;
+                     }
+                  }
+                  return {
+                     ...c,
+                     message: content, // Override message with prefixed content
+                     post: {
+                        id: post.id,
+                        content: post.content,
+                        picture: pictureUrl,
+                        accountId: post.accountId,
+                        platform: post.platform || 'unknown'
+                     }
+                  };
+               });
+               console.log(`POST ${post.id} platform=${post.platform} picture=${pictureUrl ? 'YES:'+pictureUrl.substring(0,60) : 'NULL'} comments=${enrichedComments.length}`);
               allComments = [...allComments, ...enrichedComments];
            } catch (err) {
               console.error("Error fetching comments for post", post.id, err);
            }
         }));
         
+        // 3. Update posts table with pictures from inbox (fix empty media_urls)
+        const postPictures: Record<string, string> = {};
+        commentedPosts.forEach((post: any) => {
+           if (post.id && post.picture) postPictures[post.id] = post.picture;
+        });
+        
+        if (Object.keys(postPictures).length > 0) {
+           // Find posts with empty media_urls and update them
+           const { data: emptyPosts } = await supabase
+              .from('posts')
+              .select('id, zernio_post_id, media_urls')
+              .in('zernio_post_id', Object.keys(postPictures));
+           
+           if (emptyPosts) {
+              await Promise.all(emptyPosts.map(async (ep) => {
+                 if (!ep.media_urls || ep.media_urls.length === 0) {
+                    const pic = postPictures[ep.zernio_post_id];
+                    if (pic) {
+                       await supabase
+                          .from('posts')
+                          .update({ media_urls: [pic] })
+                          .eq('id', ep.id);
+                    }
+                 }
+              }));
+           }
+        }
+        
+        // 4. Fix orphaned comments: post_id is NULL but zernio_post_id exists
+        const { data: orphanedComments } = await supabase
+           .from('comments')
+           .select('id, zernio_post_id')
+           .is('post_id', null)
+           .not('zernio_post_id', 'is', null);
+        
+        if (orphanedComments && orphanedComments.length > 0) {
+           const zPostIds = [...new Set(orphanedComments.map((c: any) => c.zernio_post_id))];
+           const { data: matchingPosts } = await supabase
+              .from('posts')
+              .select('id, zernio_post_id')
+              .in('zernio_post_id', zPostIds);
+           
+           if (matchingPosts) {
+              const postMap: Record<string, string> = {};
+              matchingPosts.forEach((p: any) => { postMap[p.zernio_post_id] = p.id; });
+              
+              await Promise.all(orphanedComments.map(async (oc) => {
+                 const postId = postMap[oc.zernio_post_id];
+                 if (postId) {
+                    await supabase.from('comments').update({ post_id: postId }).eq('id', oc.id);
+                 }
+              }));
+           }
+        }
+        
         // Sort all comments by date descending
         allComments.sort((a, b) => new Date(b.createdTime || b.createdAt).getTime() - new Date(a.createdTime || a.createdAt).getTime());
         
+        console.log(`[sync-comments] END total=${allComments.length} duration=${Date.now()-t0}ms`);
         result = { comments: allComments, profileId };
         break;
       }
@@ -343,31 +496,66 @@ serve(async (req) => {
       }
 
       case 'send-message': {
-        // payload: { conversationId, accountId, message }
-        const msgRes = await zernio.messages.sendInboxMessage({
-          conversationId: payload.conversationId,
-          accountId: payload.accountId,
-          message: payload.message
+        const url = `https://api.zernio.com/v1/inbox/conversations/${payload.conversationId}/messages`;
+        const fetchRes = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${zernioApiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            accountId: payload.accountId,
+            message: payload.message
+          })
         });
-
-        // TODO: Save to Supabase 'messages' table
-
-        result = msgRes;
+        
+        if (!fetchRes.ok) {
+          const errText = await fetchRes.text();
+          throw new Error(`Zernio send-message API error: ${errText}`);
+        }
+        
+        result = await fetchRes.json();
         break;
       }
 
       case 'reply-comment': {
-        // payload: { postId, accountId, message, commentId? }
-        const replyRes = await zernio.comments.replyToInboxComment({
-          postId: payload.postId,
-          accountId: payload.accountId,
-          message: payload.message,
-          commentId: payload.commentId
+        // First, automatically LIKE the comment (required by some platforms to make reply visible)
+        if (payload.commentId) {
+          const likeUrl = `https://api.zernio.com/v1/inbox/comments/${payload.postId}/${payload.commentId}/like`;
+          try {
+            await fetch(likeUrl, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${zernioApiKey}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ accountId: payload.accountId })
+            });
+          } catch (e) {
+            console.warn("Failed to auto-like comment:", e);
+          }
+        }
+
+        const url = `https://api.zernio.com/v1/inbox/comments/${payload.postId}`;
+        const fetchRes = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${zernioApiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            accountId: payload.accountId,
+            commentId: payload.commentId,
+            message: payload.message
+          })
         });
-
-        // TODO: Save to Supabase 'comments' table
-
-        result = replyRes;
+        
+        if (!fetchRes.ok) {
+          const errText = await fetchRes.text();
+          throw new Error(`Zernio reply-comment API error: ${errText}`);
+        }
+        
+        result = await fetchRes.json();
         break;
       }
 

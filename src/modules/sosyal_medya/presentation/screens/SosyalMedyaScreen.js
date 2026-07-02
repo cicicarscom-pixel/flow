@@ -22,9 +22,6 @@ import { supabase , AnimatedBorderCard , GlobalAppBar } from '../../../../shared
 import * as Linking from 'expo-linking';
 
 import { CustomButton } from '../../../../shared';
-
-
-
 const { width } = Dimensions.get('window');
 
 
@@ -207,65 +204,44 @@ export default function SosyalMedyaScreen({ navigation }) {
         
         {/* Top Buttons Grid */}
         <View className="flex-row justify-between mb-6">
-          <AnimatedBorderCard 
-            style={[styles.glowBorderCyan, { flex: 1, marginRight: 4 }]} 
-            colors={['#00f0ff', '#131314', '#00f0ff', '#131314']}
-            padding={0}
-            borderRadius={12}
-          >
+          <View style={[styles.glassCard, { flex: 1, marginRight: 4, borderRadius: 12 }]}>
             <TouchableOpacity 
               className="py-3 px-1 flex-row items-center justify-center"
               onPress={() => navigation.navigate('DigitalAssistant')}
             >
-              <Text className="text-[#00f0ff] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.createPost')}</Text>
+              <Text className="text-[#4edea3] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.createPost')}</Text>
             </TouchableOpacity>
-          </AnimatedBorderCard>
+          </View>
 
-          <AnimatedBorderCard 
-            style={[styles.glowBorderCyan, { flex: 1, marginHorizontal: 4 }]} 
-            colors={['#00f0ff', '#131314', '#00f0ff', '#131314']}
-            padding={0}
-            borderRadius={12}
-          >
+          <View style={[styles.glassCard, { flex: 1, marginHorizontal: 4, borderRadius: 12 }]}>
             <TouchableOpacity 
               className="py-3 px-1 flex-row items-center justify-center"
               onPress={() => navigation.navigate('Gönderiler')}
             >
-              <Text className="text-[#00f0ff] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.allPosts')}</Text>
+              <Text className="text-[#4edea3] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.allPosts')}</Text>
             </TouchableOpacity>
-          </AnimatedBorderCard>
+          </View>
           
-          <AnimatedBorderCard 
-            style={[styles.glowBorderCyan, { flex: 1, marginLeft: 4 }]} 
-            colors={['#00f0ff', '#131314', '#00f0ff', '#131314']}
-            padding={0}
-            borderRadius={12}
-          >
+          <View style={[styles.glassCard, { flex: 1, marginLeft: 4, borderRadius: 12 }]}>
             <TouchableOpacity 
               className="py-3 px-1 flex-row items-center justify-center"
               onPress={() => navigation.navigate('Inbox')}
             >
-              <Text className="text-[#00f0ff] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.inbox')}</Text>
+              <Text className="text-[#4edea3] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.inbox')}</Text>
             </TouchableOpacity>
-          </AnimatedBorderCard>
+          </View>
         </View>
 
         {/* Analytics Button (Full Width) */}
-        <AnimatedBorderCard 
-          style={styles.glowBorderCyan} 
-          colors={['#00f0ff', '#131314', '#00f0ff', '#131314']}
-          padding={0}
-          borderRadius={12}
-          marginBottom={24}
-        >
+        <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 24 }]}>
           <CustomButton 
             onPress={() => navigation.navigate('Analytics')}
             title={t('sosyalMedya.ui.analytics')}
             className="bg-transparent py-3 px-4"
-            textClassName="text-[#00f0ff] text-[12px] font-bold uppercase tracking-widest"
-            leftIcon={<MaterialIcons name="insights" size={16} color="#00f0ff" />}
+            textClassName="text-[#4edea3] text-[12px] font-bold uppercase tracking-widest"
+            leftIcon={<MaterialIcons name="insights" size={16} color="#4edea3" />}
           />
-        </AnimatedBorderCard>
+        </View>
 
         {/* Share Center Button (Full Width) */}
         <AnimatedBorderCard 
@@ -285,14 +261,8 @@ export default function SosyalMedyaScreen({ navigation }) {
         </AnimatedBorderCard>
 
         {/* Add Account Panel */}
-        <AnimatedBorderCard 
-          style={styles.glowBorderCyan} 
-          colors={['#00f0ff', '#bc13fe', '#00f0ff', '#bc13fe']}
-          padding={20} 
-          borderRadius={16} 
-          marginBottom={24}
-        >
-          <Text className="text-[#7df4ff] text-[20px] font-semibold mb-4">{t('sosyalMedya.ui.addAccount')}</Text>
+        <View style={[styles.glassCard, { padding: 20, borderRadius: 16, marginBottom: 24 }]}>
+          <Text className="text-[#e5e1e4] text-[18px] font-semibold mb-4">{t('sosyalMedya.ui.addAccount')}</Text>
           
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 8 }}>
             <View className="flex-row items-center">
@@ -354,12 +324,12 @@ export default function SosyalMedyaScreen({ navigation }) {
 
               {isConnecting && (
                 <View className="ml-2">
-                  <ActivityIndicator size="small" color="#00f0ff" />
+                  <ActivityIndicator size="small" color="#4edea3" />
                 </View>
               )}
             </View>
           </ScrollView>
-        </AnimatedBorderCard>
+        </View>
 
         <View className="flex-row justify-between items-center mt-2 mb-4">
           <Text className="text-[20px] font-semibold text-[#e5e2e3]">{t('sosyalMedya.ui.yourAccounts')}</Text>
@@ -373,16 +343,10 @@ export default function SosyalMedyaScreen({ navigation }) {
         </View>
 
         {/* Main Platform Hub Panel */}
-        <AnimatedBorderCard 
-          style={styles.glowBorderCyan} 
-          colors={['#00f0ff', '#bc13fe', '#00f0ff', '#bc13fe']}
-          padding={20} 
-          borderRadius={16}
-          marginBottom={40}
-        >
+        <View style={[styles.glassCard, { padding: 20, borderRadius: 16, marginBottom: 40 }]}>
           <View className="flex-row flex-wrap justify-start">
             {isLoadingAccounts ? (
-              <ActivityIndicator size="small" color="#00f0ff" />
+              <ActivityIndicator size="small" color="#4edea3" />
             ) : socialAccounts.length > 0 ? (
               socialAccounts.map((acc, index) => {
                 const platformColor = acc.platform.toLowerCase() === 'instagram' ? '#ebb2ff' : 
@@ -398,7 +362,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                       <Text className="text-[10px] text-[#e5e2e3] w-20 text-center" numberOfLines={1}>
                         {acc.account_name ? `@${acc.account_name}` : acc.platform}
                       </Text>
-                      <Text className="text-[10px] text-[#00f0ff] mt-0.5" style={styles.textShadowCyanSm}>{t('sosyalMedya.ui.active')}</Text>
+                      <Text className="text-[10px] text-[#4edea3] mt-0.5">{t('sosyalMedya.ui.active')}</Text>
                     </View>
                   </View>
                 );
@@ -407,11 +371,8 @@ export default function SosyalMedyaScreen({ navigation }) {
               <Text className="text-[#849495] text-[12px] italic">{t('sosyalMedya.ui.noAccountsYet')}</Text>
             )}
           </View>
+        </View>
 
-          {/* Decorative particles */}
-          <View style={styles.particleBottomRight} />
-          <View style={styles.particleTopRight} />
-        </AnimatedBorderCard>
 
       </ScrollView>
 
@@ -425,9 +386,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0A0B',
   },
   glassCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: 'rgba(32, 31, 34, 0.4)',
     borderWidth: 1,
     borderColor: 'rgba(0, 240, 255, 0.2)',
+    borderRadius: 20,
+    shadowColor: '#000000',
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 2,
   },
   glowBorderCyan: {
     borderColor: 'rgba(0, 240, 255, 0.5)',

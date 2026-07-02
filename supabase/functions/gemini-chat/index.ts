@@ -15,9 +15,9 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, image, mimeType, referenceImage, mode, aspectRatio } = await req.json()
+    const { prompt, image, mimeType, referenceImage, mode, aspectRatio, customInstruction } = await req.json()
 
-    // 1. Authenticate user via JWT and fetch BYOK API Key
+    // 1. Authenticate user via JWT
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       throw new Error('Missing Authorization header')
@@ -97,6 +97,18 @@ serve(async (req) => {
     let systemInstruction = "";
     if (mode === 'finance') {
        systemInstruction = `You are an elite financial data extractor. The user is uploading a receipt/invoice for an INCOME or EXPENSE. Extract the following: 1. Total Amount (number), 2. Due Date / Payment Date (ISO format), 3. Title/Vendor Name, 4. Description. Return ONLY a valid JSON object matching this schema: { "amount": number, "date": "YYYY-MM-DD", "title": "string", "type": "income" | "expense" }.`;
+    } else if (mode === 'playground') {
+       systemInstruction = `Aşağıdaki SİSTEM TALİMATI, senin rolünü, karakterini ve kurallarını belirler. Kullanıcıdan gelen mesaja, TAMAMEN bu talimattaki role bürünerek yanıt vermelisin.
+
+--- SİSTEM TALİMATI (KİMLİĞİN) ---
+${customInstruction}
+----------------------------------
+
+Yanıtını WhatsApp üzerinden veriyormuş gibi doğal, role uygun ve kısa tut. 
+SADECE aşağıdaki JSON formatında yanıt dön, başka hiçbir ekstra açıklama yazma:
+{
+  "adCopy": "[Role bürünerek yazdığın yanıt]"
+}`;
     } else {
        systemInstruction = runDualPipeline 
          ? `Sen AI Esnaf paketinin görsel üretim sistemindeki 'Yönetmen' ve analiz motorusun. Kullanıcı senden sosyal medya veya reklam için bir görsel, afiş veya resim oluşturmanı istediğinde ASLA 'Ben metin tabanlı bir yapay zekayım, görsel oluşturamam' veya 'Üzgünüm' gibi cevaplar verme! Bu kesinlikle yasaktır. 

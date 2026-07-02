@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
   StyleSheet, Animated, ActivityIndicator
@@ -9,13 +9,6 @@ import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useAppointments, extractTime } from '../hooks/useAppointments';
-
-const DAYS = [
-  { name: 'Pzt', date: '11' }, { name: 'Sal', date: '12' },
-  { name: 'Car', date: '13' }, { name: 'Per', date: '14' },
-  { name: 'Cum', date: '15' }, { name: 'Cmt', date: '16' },
-  { name: 'Paz', date: '17' },
-];
 
 // Generate 30-min slots from 08:00 to 00:00
 const TIME_SLOTS = (() => {
@@ -40,20 +33,63 @@ const CARD_COLORS = [
 ];
 
 export default function RandevuScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const [activeDay, setActiveDay] = useState(1);
   const [pulseAnim] = useState(() => new Animated.Value(1));
 
-  // ── Supabase veri bağlantısı ──
-  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate } = useAppointments('2025-11-12');
+  // -- Dynamic Date State --
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-  const handleDaySelect = (index) => {
-    setActiveDay(index);
-    const dayObj = DAYS[index];
-    setSelectedDate(`2025-11-${dayObj.date}`);
+  const dynamicDays = useMemo(() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const numDays = new Date(year, month + 1, 0).getDate();
+    const days = [];
+    const locale = i18n.language || 'tr-TR';
+
+    for (let i = 1; i <= numDays; i++) {
+      const d = new Date(year, month, i);
+      let dayName = d.toLocaleString(locale, { weekday: 'short' });
+      if (dayName) {
+        dayName = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+        if (dayName.endsWith('.')) dayName = dayName.slice(0, -1);
+      } else {
+        dayName = '';
+      }
+      
+      days.push({
+        name: dayName,
+        date: String(i).padStart(2, '0'),
+        fullDate: `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`
+      });
+    }
+    return days;
+  }, [currentDate.getFullYear(), currentDate.getMonth(), i18n.language]);
+
+  // Initial selected date is today
+  const todayStr = useMemo(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }, []);
+  
+  // ── Supabase veri bağlantısı ──
+  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate } = useAppointments(todayStr);
+
+  const handleDaySelect = (dayObj) => {
+    setSelectedDate(dayObj.fullDate);
   };
+
+  const handlePrevMonth = () => {
+    setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  };
+  
+  const handleNextMonth = () => {
+    setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  };
+
+  const monthName = currentDate.toLocaleString(i18n.language || 'tr-TR', { month: 'long' });
+  const monthYearStr = monthName ? `${monthName.charAt(0).toUpperCase() + monthName.slice(1)}, ${currentDate.getFullYear()}` : '';
 
   // FAB pulse
   React.useEffect(() => {
@@ -78,15 +114,20 @@ export default function RandevuScreen() {
           <View style={styles.avatarWrap}>
             <Ionicons name="person" size={18} color="#4edea3" />
           </View>
-          <View>
+          <View style={{ justifyContent: 'center' }}>
             <Text style={styles.headerLabel}>DASHBOARD</Text>
-            <View style={styles.headerDateRow}>
-              <Text style={styles.headerDate}>{t('randevu.randevuScreen.monthYear')}</Text>
-              <Ionicons name="chevron-down" size={16} color="#4edea3" />
-            </View>
           </View>
         </View>
 
+        <View style={styles.dateSelectorPill}>
+          <TouchableOpacity onPress={handlePrevMonth} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ padding: 4 }}>
+            <Ionicons name="chevron-back" size={18} color="#bbcabf" />
+          </TouchableOpacity>
+          <Text style={styles.dateSelectorText}>{monthYearStr}</Text>
+          <TouchableOpacity onPress={handleNextMonth} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ padding: 4 }}>
+            <Ionicons name="chevron-forward" size={18} color="#bbcabf" />
+          </TouchableOpacity>
+        </View>
       </BlurView>
 
       {/* ── MAIN SCROLL with sticky header ── */}
@@ -106,20 +147,23 @@ export default function RandevuScreen() {
             contentContainerStyle={styles.calendarStrip}
             style={styles.calendarScroll}
           >
-            {DAYS.map((day, i) => (
-              <TouchableOpacity
-                key={i}
-                style={[styles.dayCard, activeDay === i && styles.dayCardActive]}
-                onPress={() => handleDaySelect(i)}
-              >
-                <Text style={[styles.dayName, activeDay === i && styles.dayNameActive]}>
-                  {day.name}
-                </Text>
-                <Text style={[styles.dayDate, activeDay === i && styles.dayDateActive]}>
-                  {day.date}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {dynamicDays.map((day, i) => {
+              const isActive = selectedDate === day.fullDate;
+              return (
+                <TouchableOpacity
+                  key={i}
+                  style={[styles.dayCard, isActive && styles.dayCardActive]}
+                  onPress={() => handleDaySelect(day)}
+                >
+                  <Text style={[styles.dayName, isActive && styles.dayNameActive]}>
+                    {day.name}
+                  </Text>
+                  <Text style={[styles.dayDate, isActive && styles.dayDateActive]}>
+                    {day.date}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
 
           {/* Time Slots — 3-row heatmap */}
@@ -250,9 +294,14 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(78,222,163,0.25)',
     alignItems: 'center', justifyContent: 'center',
   },
-  headerLabel: { fontSize: 10, fontWeight: '700', color: '#4edea3', letterSpacing: 1.5 },
-  headerDateRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
-  headerDate: { fontSize: 14, fontWeight: '700', color: '#e5e1e4' },
+  headerLabel: { fontSize: 12, fontWeight: '700', color: '#4edea3', letterSpacing: 1.5 },
+  dateSelectorPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: 'rgba(32,31,34,0.4)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8,
+  },
+  dateSelectorText: { fontSize: 15, fontWeight: '700', color: '#e5e1e4' },
   headerBtn: {
     width: 38, height: 38, borderRadius: 10,
     backgroundColor: 'rgba(53,52,55,0.5)',

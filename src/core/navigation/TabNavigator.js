@@ -7,10 +7,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View, TouchableOpacity, StyleSheet, Animated as RNAnimated, Easing, Text, Platform, Keyboard } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { BotYonetimiScreen, SosyalMedyaScreen } from '../../modules/sosyal_medya';
+import { BotYonetimiScreen, SosyalMedyaScreen, AnalyticsScreen } from '../../modules/sosyal_medya';
 import { AiMuhasebeScreen } from '../../modules/muhasebe';
 import RandevuScreen from '../../modules/randevu/presentation/screens/RandevuScreen';
 import HizmetAyarlariScreen from '../../modules/randevu/presentation/screens/HizmetAyarlariScreen';
+import DashboardScreen from '../../screens/DashboardScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -41,12 +42,28 @@ function SosyalMedyaStack() {
   );
 }
 
+function AnalyticsStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="AnalyticsMain" component={AnalyticsScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function DashboardStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="DashboardMain" component={DashboardScreen} />
+    </Stack.Navigator>
+  );
+}
+
 export default function TabNavigator() {
   const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
-      initialRouteName="Ai Asistan"
+      initialRouteName="Anasayfa"
       safeAreaInsets={{ bottom: 0 }}
       screenOptions={({ route }) => ({
         headerShown: false,
@@ -55,10 +72,14 @@ export default function TabNavigator() {
           let iconName;
           if (route.name === 'Ai Asistan') {
             iconName = focused ? 'hardware-chip' : 'hardware-chip-outline';
-          } else if (route.name === 'AI Muhasebe') {
+          } else if (route.name === 'Ai Muhasebe') {
             iconName = focused ? 'wallet' : 'wallet-outline';
           } else if (route.name === 'Sosyal Medya') {
             iconName = focused ? 'share-social' : 'share-social-outline';
+          } else if (route.name === 'Analiz') {
+            iconName = focused ? 'bar-chart' : 'bar-chart-outline';
+          } else if (route.name === 'Anasayfa') {
+            iconName = focused ? 'home' : 'home-outline';
             // Özel tasarım buton için rengi beyaza sabitliyoruz
             return <Ionicons name={iconName} size={28} color="#161B26" style={{ marginTop: 4 }} />;
           }
@@ -68,8 +89,8 @@ export default function TabNavigator() {
         tabBarStyle: {
           position: 'absolute',
           bottom: Math.max(insets.bottom + 10, 20), // Sanal tuşların (nav bar) her zaman üstünde kalması için
-          left: 20,
-          right: 20,
+          left: 10,
+          right: 10,
           backgroundColor: 'rgba(22, 27, 38, 0.85)',
           borderRadius: 40,
           borderTopWidth: 1,
@@ -89,7 +110,7 @@ export default function TabNavigator() {
           paddingVertical: 4,
         },
         tabBarLabelStyle: {
-          fontSize: 10, // Font büyüklüğü sistemde aşırı artırılsa bile bozulmayı en aza indirir
+          fontSize: 9, // Font büyüklüğü sistemde aşırı artırılsa bile bozulmayı en aza indirir
           marginTop: 2,
         },
         tabBarActiveTintColor: '#00F2FE',
@@ -97,16 +118,18 @@ export default function TabNavigator() {
       })}
     >
       <Tab.Screen name="Ai Asistan" component={BotYonetimiStack} />
+      <Tab.Screen name="Ai Muhasebe" component={AiMuhasebeStack} />
       <Tab.Screen 
-        name="Sosyal Medya" 
-        component={SosyalMedyaStack} 
+        name="Anasayfa" 
+        component={DashboardStack} 
         options={{
-          tabBarIcon: () => <Ionicons name="share-social" size={24} color="#FFFFFF" />,
+          tabBarIcon: () => <Ionicons name="home" size={24} color="#FFFFFF" />,
           tabBarButton: (props) => <CustomTabBarButton {...props} />,
           tabBarLabel: () => null // Ortadaki butonda isim yazmasına gerek yok
         }}
       />
-      <Tab.Screen name="AI Muhasebe" component={AiMuhasebeStack} />
+      <Tab.Screen name="Sosyal Medya" component={SosyalMedyaStack} />
+      <Tab.Screen name="Analiz" component={AnalyticsStack} />
     </Tab.Navigator>
   );
 }
@@ -128,7 +151,7 @@ const CustomTabBarButton = ({ children, onPress, style }) => {
     RNAnimated.loop(
       RNAnimated.timing(spinValue, {
         toValue: 1,
-        duration: 3000,
+        duration: 8000,
         easing: Easing.linear,
         useNativeDriver: true,
       })
@@ -178,8 +201,7 @@ const CustomTabBarButton = ({ children, onPress, style }) => {
           transform: [{ rotate: spin }],
         }}>
           <LinearGradient
-            colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#00f0ff', '#ffffff']}
-            locations={[0, 0.4, 0.9, 1]}
+            colors={['#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#00ffff', '#ffff00', '#ff0000']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ flex: 1 }}
@@ -205,7 +227,7 @@ const CustomTabBarButton = ({ children, onPress, style }) => {
         textShadowOffset: { width: 0, height: 0 },
         textShadowRadius: 5,
       }}>
-        Sosyal Medya
+        Anasayfa
       </RNAnimated.Text>
     </TouchableOpacity>
   );
