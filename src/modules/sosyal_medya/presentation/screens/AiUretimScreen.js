@@ -102,6 +102,39 @@ export default function AiUretimScreen({ route, navigation }) {
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [isEditingCaption, setIsEditingCaption] = useState(false);
 
+  // New state variables for the redesign
+  const [zernioAccounts, setZernioAccounts] = useState([]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState({});
+  const [publishMode, setPublishMode] = useState('now');
+  const [scheduleDate, setScheduleDate] = useState('04.07.2026 14:00');
+  const [timezone, setTimezone] = useState('Europe/Istanbul (GMT+3) (current)');
+
+  // Fetch connected accounts on mount
+  React.useEffect(() => {
+    const fetchAccounts = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id;
+      if (userId) {
+        try {
+          const { data: accData } = await supabase.functions.invoke('zernio-client', {
+            body: { action: 'sync-accounts', payload: { userId } }
+          });
+          const accounts = accData?.data?.accounts || [];
+          setZernioAccounts(accounts);
+          
+          const initialSelected = {};
+          accounts.forEach(acc => {
+            initialSelected[acc.platform] = true;
+          });
+          setSelectedPlatforms(initialSelected);
+        } catch(e) {
+          console.warn("Failed to fetch accounts", e);
+        }
+      }
+    };
+    fetchAccounts();
+  }, []);
+
   // Update local and persisted state when route params change
   React.useEffect(() => {
     if (route?.params?.selectedImage) {
@@ -150,33 +183,10 @@ export default function AiUretimScreen({ route, navigation }) {
   };
 
   const publishPost = async (connectedAccounts, contentType) => {
-    let allowedPlatforms = [];
-    let skippedPlatforms = [];
-
-    for (const acc of connectedAccounts) {
-      const platform = acc.platform.toLowerCase();
-      
-      // Otonom Yönlendirme (Smart Filtering) Mantığı
-      if (contentType === 'image') {
-        // Image ise: youtube ve tiktok otomatik olarak çıkarılır
-        if (platform === 'youtube' || platform === 'tiktok') {
-          skippedPlatforms.push(acc.platform);
-          continue;
-        }
-      } else if (contentType === 'text') {
-        // Text ise: instagram, youtube ve tiktok çıkarılır
-        if (platform === 'instagram' || platform === 'youtube' || platform === 'tiktok') {
-          skippedPlatforms.push(acc.platform);
-          continue;
-        }
-      }
-      
-      // Video ise: hiçbir platform çıkarılmaz, hepsi uygundur
-      allowedPlatforms.push(acc);
-    }
+    let allowedPlatforms = connectedAccounts.filter(acc => selectedPlatforms[acc.platform]);
 
     if (allowedPlatforms.length === 0) {
-      Alert.alert(t('sosyalMedya.alerts.info'), "Seçilen içerik formatı mevcut bağlı platformlarınız için uygun değil.");
+      Alert.alert(t('sosyalMedya.alerts.info'), "Lütfen en az bir platform seçin.");
       return;
     }
 
@@ -225,14 +235,12 @@ export default function AiUretimScreen({ route, navigation }) {
     }
 
     // Kullanıcı Deneyimi (Toast/Alert): Zero UI prensibi
-    if (skippedPlatforms.length > 0) {
-      Alert.alert(
-        "Başarılı!", 
-        `İçerik formatı gereği [${skippedPlatforms.join(', ')}] atlanarak uygun platformlarda paylaşıldı.`
-      );
-    } else {
-      Alert.alert("Başarılı!", "Gönderiniz seçili tüm platformlarda paylaşıldı.");
-    }
+    Alert.alert(
+      "Başarılı!", 
+      publishMode === 'now' 
+        ? "Gönderiniz seçili platformlarda anında paylaşıldı." 
+        : "Gönderiniz planlandı ve zamanı gelince paylaşılacak."
+    );
   };
 
   const handleShare = async () => {
@@ -247,12 +255,6 @@ export default function AiUretimScreen({ route, navigation }) {
         return;
       }
 
-      // Bağlı hesapları getir
-      const { data: accData } = await supabase.functions.invoke('zernio-client', {
-        body: { action: 'sync-accounts', payload: { userId } }
-      });
-      
-      const zernioAccounts = accData?.data?.accounts || [];
       if (zernioAccounts.length === 0) {
         Alert.alert(t('sosyalMedya.alerts.info'), t('sosyalMedya.alerts.connectAccountFirst'));
         setIsSharing(false);
@@ -454,6 +456,94 @@ export default function AiUretimScreen({ route, navigation }) {
             </TouchableOpacity>
           </View>
         </AnimatedBorderCard>
+
+        {/* Profiles Section */}
+        <View className="mb-6 mt-6">
+          <Text className="text-[#b9cacb] text-xs font-medium mb-3">profiller</Text>
+          <TouchableOpacity className="flex-row items-center justify-between bg-[#1c1b1c]/50 rounded-lg border border-white/5 p-4 mb-4">
+             <View className="flex-row items-center">
+               <View className="w-3 h-3 rounded-full bg-[#ffb95f] mr-3" />
+               <Text className="text-[#e5e2e3] text-sm">Al Esnaf Profil</Text>
+             </View>
+             <MaterialIcons name="keyboard-arrow-down" size={20} color="#b9cacb" />
+          </TouchableOpacity>
+
+          <Text className="text-[#b9cacb] text-xs font-medium mb-3">platformlar ({Object.values(selectedPlatforms).filter(Boolean).length} profilden)</Text>
+          {zernioAccounts.map((acc, index) => {
+            const isSelected = selectedPlatforms[acc.platform];
+            const getPlatformIcon = (plat) => {
+               switch(plat.toLowerCase()) {
+                  case 'instagram': return 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png';
+                  case 'youtube': return 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/512px-YouTube_full-color_icon_%282017%29.svg.png';
+                  default: return 'https://via.placeholder.com/150';
+               }
+            };
+            return (
+              <TouchableOpacity 
+                key={index}
+                onPress={() => setSelectedPlatforms(prev => ({ ...prev, [acc.platform]: !prev[acc.platform] }))}
+                className="flex-row items-center justify-between bg-[#1c1b1c]/50 rounded-lg border border-white/5 p-3 mb-2"
+              >
+                <View className="flex-row items-center">
+                   <Image source={{ uri: getPlatformIcon(acc.platform) }} className="w-8 h-8 rounded-md mr-3" />
+                   <View>
+                     <Text className="text-[#e5e2e3] text-sm capitalize">{acc.platform}</Text>
+                     <Text className="text-[#b9cacb]/60 text-xs">@{acc.username || 'hesap'}</Text>
+                   </View>
+                </View>
+                {isSelected && (
+                   <View className="w-6 h-6 rounded-full bg-[#4edea3] items-center justify-center">
+                      <MaterialIcons name="check" size={14} color="#003824" />
+                   </View>
+                )}
+              </TouchableOpacity>
+            )
+          })}
+        </View>
+
+        {/* Publishing Options Section */}
+        <View className="mb-6">
+          <Text className="text-[#b9cacb] text-xs font-medium mb-3">yayıncılık</Text>
+          <View className="flex-row bg-[#1c1b1c]/50 rounded-lg p-1 mb-4 border border-white/5">
+             <TouchableOpacity 
+               onPress={() => setPublishMode('schedule')}
+               className={`flex-1 items-center py-2 rounded-md ${publishMode === 'schedule' ? 'bg-[#2a2a2b]' : ''}`}
+             >
+               <Text className={`text-sm ${publishMode === 'schedule' ? 'text-white' : 'text-[#b9cacb]'}`}>Planlı</Text>
+             </TouchableOpacity>
+             <TouchableOpacity 
+               onPress={() => setPublishMode('now')}
+               className={`flex-1 items-center py-2 rounded-md ${publishMode === 'now' ? 'bg-[#2a2a2b]' : ''}`}
+             >
+               <Text className={`text-sm ${publishMode === 'now' ? 'text-white' : 'text-[#b9cacb]'}`}>Şimdi</Text>
+             </TouchableOpacity>
+          </View>
+
+          {publishMode === 'schedule' && (
+            <>
+              <Text className="text-[#b9cacb] text-xs font-medium mb-2">tarih & saat (opsiyonel)</Text>
+              <TouchableOpacity className="flex-row items-center justify-between bg-[#1c1b1c]/50 rounded-lg border border-white/5 p-3 mb-4">
+                 <Text className="text-[#e5e2e3] text-sm">{scheduleDate}</Text>
+                 <MaterialIcons name="calendar-today" size={18} color="#b9cacb" />
+              </TouchableOpacity>
+
+              <Text className="text-[#b9cacb] text-xs font-medium mb-2">timezone</Text>
+              <TouchableOpacity className="flex-row items-center justify-between bg-[#1c1b1c]/50 rounded-lg border border-white/5 p-3 mb-4">
+                 <Text className="text-[#e5e2e3] text-sm">{timezone}</Text>
+                 <MaterialIcons name="keyboard-arrow-down" size={20} color="#b9cacb" />
+              </TouchableOpacity>
+            </>
+          )}
+
+          <View className="bg-[#4edea3]/10 rounded-lg border border-[#4edea3]/20 p-4 flex-row items-center mt-2">
+            <MaterialIcons name="info-outline" size={20} color="#4edea3" className="mr-3" />
+            <Text className="text-[#e5e2e3] text-xs flex-1 ml-2">
+              {publishMode === 'now' 
+                ? "Gönderi, seçilen tüm platformlarda anında yayınlanacaktır."
+                : "Gönderi taslak olarak kaydedilecek ve planlanan zamanda yayınlanacaktır."}
+            </Text>
+          </View>
+        </View>
 
       </ScrollView>
 
