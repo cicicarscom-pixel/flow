@@ -869,4 +869,35 @@ Kullanıcı yorum sildiğinde üç katmanlı kalıcılık sağlanır:
   alter publication supabase_realtime add table comments;
   ```
 
+---
 
+## 📈 Temmuz 2026: Analiz (Analytics) & Sosyal Medya Optimizasyonları
+
+Son yapılan geliştirmeler ile Zernio ve Sosyal Medya altyapısı genişletilmiş ve analiz modülü zenginleştirilmiştir:
+
+1. **Sosyal Medya Kapsamı Genişletildi:** `SosyalMedyaScreen`'deki "Hesabınızı Ekleyin" sekmesine Zernio tarafından desteklenen tüm yeni nesil ağlar eklendi: TikTok, Google Business Profile (GBP), Pinterest, Reddit, Telegram, Bluesky, Threads, Snapchat, WhatsApp, Discord ve Reklam Platformları (Meta, Google, LinkedIn, TikTok, Pinterest, X Ads). Yeni eklenen tüm platform ikonları marka renkleriyle modernize edildi ve altlarına isim etiketleri eklendi.
+2. **AI Paylaşım (AiUretimScreen) Desteği:** Yeni eklenen platformlar (TikTok, GBP, Pinterest, Reddit, Telegram vb.) için yapay zeka ile otomatik paylaşım yaparken seçilebilecek kutucuklar (checkbox) arayüze entegre edildi.
+3. **Gelişmiş Analiz Ekranı (AnalyticsScreen):** 
+   - Zernio Edge fonksiyonları üzerinden gelen veriler kullanılarak **Günlük İzlenme (Views) ve Beğeni (Likes)** verileri aynı grafik üzerinde (Multi-line chart) gösterilecek şekilde güncellendi.
+   - **Takipçi Büyüme Geçmişi (Follower History):** Yeşil alan vurgulu yeni bir `LineChart` ile belirli tarih aralığındaki net takipçi kazanım ve kayıplarının anlık gösterimi sağlandı.
+   - **Demografik Veri Altyapısı:** Instagram ve desteklenen ağlar için Pasta Grafik (Pie Chart) veri yapıları çoklu platformları destekleyecek şekilde optimize edildi.
+
+---
+
+## 🌐 Web Versiyonu İçin Yol Haritası (Web Version Roadmap)
+
+AI Esnaf projesi halihazırda React Native (Expo) kullanılarak mobil odaklı (Native) geliştirilmiştir. Ancak Expo'nun web desteği (SPA) göz önüne alınarak projenin bir Web paneline dönüştürülmesi için aşağıdaki adımlar izlenmelidir:
+
+### Faz 1: Web Uyumluluğu & Navigasyon
+- **React Navigation Web Entegrasyonu:** Mevcut `AppNavigator` ve `TabNavigator` yapıları, `react-navigation`'ın web link (deep-linking) desteğiyle güncellenmelidir. (URL yapısı oluşturma).
+- **Responsive Arayüz (Responsive Design):** NativeWind `v4` zaten web desteğine sahiptir. Ekranlardaki `w-full`, `flex-1` gibi yapıların büyük ekranlarda (`md:`, `lg:` prefix'leri kullanılarak) Sidebar + Content veya Grid yapısına bürünmesi sağlanmalıdır.
+- **Glassmorphism Optimizasyonları:** Blur efektleri (`expo-blur`) mobil cihazlarda native çalışırken, web'de `backdrop-blur` CSS özelliklerine dönüştürülmelidir.
+
+### Faz 2: Zernio ve Supabase Web Entegrasyonu
+- **CORS Kuralları:** Edge fonksiyonları (`zernio-client`, `gemini-chat` vb.) şu anda CORS başlıklarına sahiptir ancak web'in çalışacağı domain (örn. `app.aiesnaf.com`) için `Access-Control-Allow-Origin` izinlerinin netleştirilmesi gerekir.
+- **Zernio OAuth Redirect:** Mobil cihazlardaki OAuth dönüşleri Expo şeması (`aiesnaf://`) kullanmaktadır. Web versiyonu için Zernio geliştirici panelinden yeni bir Web Redirect URI tanımlanmalı ve Supabase Edge fonksiyonları buna göre yapılandırılmalıdır.
+
+### Faz 3: Gelişmiş Web Özellikleri
+- **Klavye Dinleyicileri İptali:** `ChatInputBar`'daki `react-native` klavye dinleyicileri (Keyboard) web üzerinde gereksizdir. Platform kontrolü (`Platform.OS === 'web'`) yapılarak bu mantıkların web ortamında bypass edilmesi gereklidir.
+- **Drag & Drop (Sürükle-Bırak) Desteği:** Web panelinde fatura veya fiş yüklerken mobil kamera yerine HTML5 Drag & Drop API'sine uyumlu web component'leri eklenecektir.
+- **Performans:** Web paketi (bundle) boyutunu azaltmak için rotaların (route) Lazy Loading (`React.lazy`) kullanılarak ayrıştırılması planlanmalıdır.```

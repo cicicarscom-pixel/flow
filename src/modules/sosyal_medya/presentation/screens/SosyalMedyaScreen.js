@@ -171,6 +171,42 @@ export default function SosyalMedyaScreen({ navigation }) {
     }
   };
 
+  const handleDisconnect = (accountId, platform) => {
+    Alert.alert(
+      t('sosyalMedya.alerts.disconnectTitle', 'Bağlantıyı Kes'),
+      t('sosyalMedya.alerts.disconnectConfirm', `${platform} hesabınızın bağlantısını kesmek istediğinize emin misiniz?`),
+      [
+        { text: t('common.cancel', 'İptal'), style: 'cancel' },
+        { 
+          text: t('common.disconnect', 'Kes'), 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+               setIsLoadingAccounts(true);
+               
+               // UI'dan anında kaldır (Optimistic Update)
+               setSocialAccounts(prev => prev.filter(acc => acc.id !== accountId));
+               
+               await supabase.functions.invoke('zernio-client', {
+                  body: { action: 'disconnect-account', payload: { accountId } }
+               });
+               await supabase.from('social_accounts').delete().eq('zernio_account_id', accountId);
+               
+               // Zernio ile eşitle
+               await fetchAccountsFromZernio();
+               
+               Alert.alert(t('sosyalMedya.alerts.success', 'Başarılı'), t('sosyalMedya.alerts.disconnected', 'Hesap bağlantısı kesildi.'));
+            } catch (err) {
+               Alert.alert(t('sosyalMedya.alerts.error', 'Hata'), t('sosyalMedya.alerts.disconnectError', 'Bağlantı kesilirken bir sorun oluştu.'));
+            } finally {
+               setIsLoadingAccounts(false);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchAccountsFromZernio(false);
@@ -267,59 +303,177 @@ export default function SosyalMedyaScreen({ navigation }) {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 8 }}>
             <View className="flex-row items-center">
               {/* Facebook */}
-              <TouchableOpacity 
-                onPress={() => handleConnectZernio('facebook')}
-                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3"
-              >
-                <Ionicons name="logo-facebook" size={24} color="#b9cacb" />
+              <TouchableOpacity onPress={() => handleConnectZernio('facebook')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="logo-facebook" size={24} color="#1877F2" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Facebook</Text>
               </TouchableOpacity>
               
               {/* Instagram */}
-              <TouchableOpacity 
-                onPress={() => handleConnectZernio('instagram')}
-                className="w-14 h-14 rounded-full bg-[#2a2a2b] items-center justify-center mr-3 border border-[#ebb2ff]/50" style={styles.glowBorderMagenta}
-              >
-                <Ionicons name="logo-instagram" size={24} color="#ebb2ff" />
+              <TouchableOpacity onPress={() => handleConnectZernio('instagram')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full bg-[#2a2a2b] items-center justify-center mb-1 border border-[#ebb2ff]/50" style={styles.glowBorderMagenta}>
+                  <Ionicons name="logo-instagram" size={24} color="#ebb2ff" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Instagram</Text>
               </TouchableOpacity>
 
               {/* LinkedIn */}
-              <TouchableOpacity 
-                onPress={() => handleConnectZernio('linkedin')}
-                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3"
-              >
-                <Ionicons name="logo-linkedin" size={24} color="#b9cacb" />
+              <TouchableOpacity onPress={() => handleConnectZernio('linkedin')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="logo-linkedin" size={24} color="#0A66C2" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">LinkedIn</Text>
               </TouchableOpacity>
 
               {/* Twitter/X */}
-              <TouchableOpacity 
-                onPress={() => handleConnectZernio('twitter')}
-                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3"
-              >
-                <Ionicons name="logo-twitter" size={24} color="#b9cacb" />
+              <TouchableOpacity onPress={() => handleConnectZernio('twitter')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="logo-twitter" size={24} color="#fff" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">X</Text>
               </TouchableOpacity>
 
               {/* TikTok */}
-              <TouchableOpacity 
-                onPress={() => handleConnectZernio('tiktok')}
-                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3"
-              >
-                <Ionicons name="logo-tiktok" size={24} color="#b9cacb" />
+              <TouchableOpacity onPress={() => handleConnectZernio('tiktok')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="logo-tiktok" size={24} color="#fff" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">TikTok</Text>
               </TouchableOpacity>
 
               {/* YouTube */}
-              <TouchableOpacity 
-                onPress={() => handleConnectZernio('youtube')}
-                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3"
-              >
-                <Ionicons name="logo-youtube" size={24} color="#b9cacb" />
+              <TouchableOpacity onPress={() => handleConnectZernio('youtube')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="logo-youtube" size={24} color="#FF0000" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">YouTube</Text>
               </TouchableOpacity>
 
               {/* Pinterest */}
-              <TouchableOpacity 
-                onPress={() => handleConnectZernio('pinterest')}
-                className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mr-3"
-              >
-                <Ionicons name="logo-pinterest" size={24} color="#b9cacb" />
+              <TouchableOpacity onPress={() => handleConnectZernio('pinterest')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="logo-pinterest" size={24} color="#E60023" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Pinterest</Text>
+              </TouchableOpacity>
+
+              {/* Google Business */}
+              <TouchableOpacity onPress={() => handleConnectZernio('googlebusiness')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="business" size={24} color="#4285F4" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">GBP</Text>
+              </TouchableOpacity>
+
+              {/* Reddit */}
+              <TouchableOpacity onPress={() => handleConnectZernio('reddit')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="logo-reddit" size={24} color="#FF4500" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Reddit</Text>
+              </TouchableOpacity>
+
+              {/* Telegram */}
+              <TouchableOpacity onPress={() => handleConnectZernio('telegram')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="paper-plane" size={24} color="#2AABEE" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Telegram</Text>
+              </TouchableOpacity>
+
+              {/* Bluesky */}
+              <TouchableOpacity onPress={() => handleConnectZernio('bluesky')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="cloud" size={24} color="#0085ff" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Bluesky</Text>
+              </TouchableOpacity>
+
+              {/* Threads */}
+              <TouchableOpacity onPress={() => handleConnectZernio('threads')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="at" size={24} color="#fff" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Threads</Text>
+              </TouchableOpacity>
+
+              {/* Snapchat */}
+              <TouchableOpacity onPress={() => handleConnectZernio('snapchat')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="logo-snapchat" size={24} color="#fffc00" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Snapchat</Text>
+              </TouchableOpacity>
+
+              {/* WhatsApp */}
+              <TouchableOpacity onPress={() => handleConnectZernio('whatsapp')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="logo-whatsapp" size={24} color="#25D366" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">WhatsApp</Text>
+              </TouchableOpacity>
+
+              {/* Discord */}
+              <TouchableOpacity onPress={() => handleConnectZernio('discord')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
+                  <Ionicons name="logo-discord" size={24} color="#5865F2" />
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Discord</Text>
+              </TouchableOpacity>
+
+              {/* Meta Ads */}
+              <TouchableOpacity onPress={() => handleConnectZernio('meta_ads')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
+                  <Ionicons name="megaphone" size={20} color="#0668E1" />
+                  <Text className="text-[8px] text-[#0668E1] absolute bottom-2">Ads</Text>
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Meta Ads</Text>
+              </TouchableOpacity>
+
+              {/* Google Ads */}
+              <TouchableOpacity onPress={() => handleConnectZernio('google_ads')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
+                  <Ionicons name="logo-google" size={20} color="#EA4335" />
+                  <Text className="text-[8px] text-[#EA4335] absolute bottom-2">Ads</Text>
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Google Ads</Text>
+              </TouchableOpacity>
+
+              {/* LinkedIn Ads */}
+              <TouchableOpacity onPress={() => handleConnectZernio('linkedin_ads')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
+                  <Ionicons name="logo-linkedin" size={20} color="#0A66C2" />
+                  <Text className="text-[8px] text-[#0A66C2] absolute bottom-2">Ads</Text>
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">LinkedIn Ads</Text>
+              </TouchableOpacity>
+
+              {/* TikTok Ads */}
+              <TouchableOpacity onPress={() => handleConnectZernio('tiktok_ads')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
+                  <Ionicons name="logo-tiktok" size={20} color="#fff" />
+                  <Text className="text-[8px] text-[#fff] absolute bottom-2">Ads</Text>
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">TikTok Ads</Text>
+              </TouchableOpacity>
+
+              {/* Pinterest Ads */}
+              <TouchableOpacity onPress={() => handleConnectZernio('pinterest_ads')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
+                  <Ionicons name="logo-pinterest" size={20} color="#E60023" />
+                  <Text className="text-[8px] text-[#E60023] absolute bottom-2">Ads</Text>
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">Pinterest Ads</Text>
+              </TouchableOpacity>
+
+              {/* X Ads */}
+              <TouchableOpacity onPress={() => handleConnectZernio('x_ads')} className="items-center mr-3">
+                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
+                  <Ionicons name="close" size={20} color="#fff" />
+                  <Text className="text-[8px] text-[#fff] absolute bottom-2">Ads</Text>
+                </View>
+                <Text className="text-[10px] text-[#b9cacb]">X Ads</Text>
               </TouchableOpacity>
 
               {isConnecting && (
@@ -363,6 +517,13 @@ export default function SosyalMedyaScreen({ navigation }) {
                         {acc.account_name ? `@${acc.account_name}` : acc.platform}
                       </Text>
                       <Text className="text-[10px] text-[#4edea3] mt-0.5">{t('sosyalMedya.ui.active')}</Text>
+                      
+                      <TouchableOpacity 
+                         onPress={() => handleDisconnect(acc.id, acc.platform)}
+                         className="mt-2 py-1 px-3 border border-[#ff0050]/50 rounded-full bg-[#ff0050]/10"
+                      >
+                         <Text className="text-[9px] text-[#ff0050] font-semibold uppercase">{t('common.disconnect', 'Kaldır')}</Text>
+                      </TouchableOpacity>
                     </View>
                   </View>
                 );

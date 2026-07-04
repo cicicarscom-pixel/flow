@@ -76,7 +76,7 @@ export default function AiChatScreen({ route, navigation }) {
 
   const pickImage = async (useCamera = false) => {
     const options = {
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       base64: true,
       quality: 0.5,
     };

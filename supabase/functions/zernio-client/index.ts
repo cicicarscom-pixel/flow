@@ -655,6 +655,52 @@ serve(async (req) => {
         break;
       }
 
+      case 'disconnect-account': {
+        const { accountId } = payload;
+        if (!accountId) throw new Error("Missing accountId");
+        
+        // Zernio'dan hesabı silmeye çalış
+        let success = false;
+        try {
+           if (typeof zernio.accounts.deleteAccount === 'function') {
+              await zernio.accounts.deleteAccount({ id: accountId });
+              success = true;
+           } else if (typeof zernio.accounts.removeAccount === 'function') {
+              await zernio.accounts.removeAccount({ id: accountId });
+              success = true;
+           } else if (typeof zernio.connect.disconnect === 'function') {
+              await zernio.connect.disconnect({ id: accountId });
+              success = true;
+           }
+        } catch (err) {
+           console.error("Zernio account deletion warning:", err.message);
+        }
+
+        // Eğer SDK üzerinden başarılı olamadıysa doğrudan REST API çağrısı dene
+        if (!success) {
+           try {
+              const fetchRes = await fetch(`https://api.zernio.com/v1/accounts/${accountId}`, {
+                 method: 'DELETE',
+                 headers: {
+                    'Authorization': `Bearer ${zernioApiKey}`,
+                    'Content-Type': 'application/json'
+                 }
+              });
+              if (!fetchRes.ok) {
+                 console.warn("Direct Zernio DELETE failed:", await fetchRes.text());
+              }
+           } catch(e) {
+              console.error("Direct fetch Zernio delete error:", e.message);
+           }
+        }
+
+        // Supabase DB'den de sil (Garanti olması için)
+        await supabase.from('social_accounts').delete().eq('zernio_account_id', accountId);
+
+        result = { success: true };
+        break;
+      }
+
       default:
         throw new Error(`Bilinmeyen action: ${action}`);
     }

@@ -217,6 +217,7 @@ export default function AnalyticsScreen({ navigation }) {
 
       let newZernioData = {
         timelineData: [],
+        timelineDataLikes: [],
         demographics: [],
         followerStats: [],
         platformInsights: null,
@@ -238,11 +239,18 @@ export default function AnalyticsScreen({ navigation }) {
            label: d.date ? d.date.substring(5,10) : ''
          }));
          
+         let mappedTimelineLikes = actualData.dailyData.map(d => ({
+           value: d.metrics?.likes || 0,
+           label: d.date ? d.date.substring(5,10) : ''
+         }));
+
          if (mappedTimeline.length === 1) {
            mappedTimeline.unshift({ value: 0, label: '' });
+           mappedTimelineLikes.unshift({ value: 0, label: '' });
          }
          
          newZernioData.timelineData = mappedTimeline;
+         newZernioData.timelineDataLikes = mappedTimelineLikes;
       }
 
       if (actualData.platformBreakdown) {
@@ -405,16 +413,27 @@ export default function AnalyticsScreen({ navigation }) {
 
       {/* Chart: Posts / Impressions over time */}
       <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#131314']}>
-        <Text className="text-[#e5e2e3] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.engagementImpressions')}</Text>
+        <View className="flex-row justify-between items-center mb-1">
+          <Text className="text-[#e5e2e3] text-[14px] font-bold">{t('sosyalMedya.analytics.engagementImpressions')}</Text>
+          <View className="flex-row items-center">
+             <View className="w-2 h-2 rounded-full bg-[#00f0ff] mr-1" />
+             <Text className="text-[#849495] text-[8px] mr-3">Views</Text>
+             <View className="w-2 h-2 rounded-full bg-[#bc13fe] mr-1" />
+             <Text className="text-[#849495] text-[8px]">Likes</Text>
+          </View>
+        </View>
         <Text className="text-[#849495] text-[10px] mb-4">{t('sosyalMedya.analytics.changeOverTime')}</Text>
         
         {zernioData.timelineData.length > 0 ? (
           <View style={{marginLeft: -20}}>
             <LineChart
               data={zernioData.timelineData}
+              data2={zernioData.timelineDataLikes && zernioData.timelineDataLikes.length > 0 ? zernioData.timelineDataLikes : undefined}
               color="#00f0ff"
+              color2="#bc13fe"
               thickness={3}
-              dataPointsColor="#bc13fe"
+              dataPointsColor="#00f0ff"
+              dataPointsColor2="#bc13fe"
               hideRules
               yAxisTextStyle={{color: '#849495', fontSize: 10}}
               xAxisLabelTextStyle={{color: '#849495', fontSize: 8}}
@@ -431,6 +450,39 @@ export default function AnalyticsScreen({ navigation }) {
            </View>
         )}
       </AnimatedBorderCard>
+
+      {/* Chart: Follower Growth History */}
+      {zernioData.followerStats && zernioData.followerStats.length > 0 && (
+        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#131314']}>
+          <View className="flex-row items-center mb-1">
+            <Ionicons name="trending-up" size={14} color="#4edea3" style={{ marginRight: 4 }} />
+            <Text className="text-[#e5e2e3] text-[14px] font-bold">Takipçi Büyümesi (Follower History)</Text>
+          </View>
+          <Text className="text-[#849495] text-[10px] mb-4">Seçili dönemdeki net takipçi değişimi</Text>
+          
+          <View style={{marginLeft: -20}}>
+            <LineChart
+              data={zernioData.followerStats}
+              color="#4edea3"
+              thickness={3}
+              dataPointsColor="#4edea3"
+              hideRules
+              yAxisTextStyle={{color: '#849495', fontSize: 10}}
+              xAxisLabelTextStyle={{color: '#849495', fontSize: 8}}
+              animationDuration={1500}
+              isAnimated
+              height={120}
+              initialSpacing={20}
+              spacing={width * 0.12}
+              areaChart
+              startFillColor="#4edea3"
+              endFillColor="rgba(78,222,163,0.01)"
+              startOpacity={0.3}
+              endOpacity={0.0}
+            />
+          </View>
+        </AnimatedBorderCard>
+      )}
 
       {/* Demographics / Follower History for specific platforms */}
       {selectedPlatform.id === 'instagram' && zernioData.demographics.length > 0 && (
