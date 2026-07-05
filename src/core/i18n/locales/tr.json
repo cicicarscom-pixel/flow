@@ -164,7 +164,7 @@
         "posting": "Gönderi Analizi",
         "inbox": "Gelen Mesaj Analizi"
       },
-      "loading": "Zernio'dan canlı veriler çekiliyor...",
+      "loading": "Son değişiklikler çekiliyor...",
       "selectPlatform": "Platform Seçin",
       "selectTimeRange": "Zaman Aralığı Seçin",
       "totalPosts": "Toplam Gönderi",

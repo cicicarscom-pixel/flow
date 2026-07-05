@@ -145,7 +145,7 @@
         "posting": "Posting Analytics",
         "inbox": "Inbox Analytics"
       },
-      "loading": "Fetching live data from Zernio...",
+      "loading": "Fetching latest changes...",
       "selectPlatform": "Select Platform",
       "selectTimeRange": "Select Time Range",
       "totalPosts": "Total Posts",
