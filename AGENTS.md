@@ -242,7 +242,17 @@ App.js
 
 ---
 
-## 📝 Son Geliştirme Günlüğü (27 Haziran 2026)
+## 📝 Son Geliştirme Günlüğü (5 Temmuz 2026)
+
+### Yapılan Değişiklikler ve Çözülen Hatalar:
+1. **Zernio Client ve Analytics Cache Güncellemesi:** Supabase Edge Functions altındaki `ZernioClient.ts` dosyası güncellenerek sosyal medya platformları (YouTube, LinkedIn, Instagram, Google Business, vb.) için analytics metotları önbellekleme (cache) desteği ile entegre edildi.
+2. **Hata Yönetimi ve Silme İşlemi:** Zernio hesabını ayırma (`disconnect-account`) işlemi doğrudan ZernioClient içindeki metoda bağlandı.
+3. **Veritabanı Migration'ı:** Analytics cache için yeni bir Supabase veritabanı migration'ı (`20260705000000_analytics_cache.sql`) oluşturuldu.
+4. **Bağımlılıklar:** `package.json` ve `package-lock.json` dosyaları güncellendi.
+
+---
+
+## 📝 Geçmiş Geliştirme Günlüğü (27 Haziran 2026)
 
 ### Yapılan Değişiklikler ve Çözülen Hatalar:
 1. **GitHub Senkronizasyonu:** Local `master` dalı `origin/master` ile güncel olmasına rağmen en son güncellemelerin (Randevu Realtime, RAG Drive senkronizasyonu, dual prompt ve RGB border) `origin/main` dalında olduğu fark edildi. Local repo `main` dalına geçirilerek güncel kod çekildi.

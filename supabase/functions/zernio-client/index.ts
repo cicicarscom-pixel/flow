@@ -1,6 +1,7 @@
-import Zernio from "npm:@zernio/node";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { ZernioClient } from "../shared/infrastructure/clients/ZernioClient.ts";
+import { ZernioError } from "../shared/infrastructure/zernio/ZernioError.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,34 +17,77 @@ serve(async (req) => {
   try {
     const { action, payload = {} } = await req.json();
 
-    // Initialize Zernio Client
-    const zernioApiKey = Deno.env.get("ZERNIO_API_KEY");
-    if (!zernioApiKey) throw new Error("ZERNIO_API_KEY is missing");
-    const zernio = new Zernio({ apiKey: zernioApiKey });
-
-    // Initialize Supabase Client (Service Role for DB operations bypassing RLS if needed, or Auth context)
+    // Initialize Clients
+    const zernio = new ZernioClient();
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    
+    // IMPORTANT: using SERVICE_ROLE key allows bypassing RLS so we can confidently write to cache table
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // TODO: Extract user ID from req.headers.get('Authorization') to enforce security
-    // const authHeader = req.headers.get('Authorization');
-    // const { data: { user } } = await supabase.auth.getUser(authHeader?.replace('Bearer ', ''));
 
     let result = null;
 
+    /**
+     * Helper Function: Analytics Caching Logic
+     * 1. Checks `analytics_cache` for fresh data (< 1 hour).
+     * 2. If valid, fast returns it.
+     * 3. If stale or miss, calls the Zernio API, upserts the cache, and returns it.
+     */
+    async function fetchAnalyticsWithCache(accountId: string, platform: string, metricType: string, fetchFn: () => Promise<any>) {
+      if (!accountId || !platform) {
+         // Fallback if we don't have enough keys to cache properly
+         return await fetchFn();
+      }
+      
+      const { data: cacheData } = await supabase
+        .from('analytics_cache')
+        .select('data, updated_at')
+        .eq('account_id', accountId)
+        .eq('platform', platform)
+        .eq('metric_type', metricType)
+        .maybeSingle();
+
+      if (cacheData) {
+        const updatedAt = new Date(cacheData.updated_at).getTime();
+        const now = Date.now();
+        const oneHour = 60 * 60 * 1000;
+        if (now - updatedAt < oneHour) {
+          console.log(`[Cache HIT] ${platform} - ${metricType}`);
+          return cacheData.data;
+        }
+      }
+
+      console.log(`[Cache MISS/STALE] Fetching from API: ${platform} - ${metricType}`);
+      const freshDataRes = await fetchFn();
+      
+      // Extract data safely, sometimes sdk wraps it in { data: ... }
+      const freshData = freshDataRes.data || freshDataRes;
+
+      const { error: upsertErr } = await supabase.from('analytics_cache').upsert({
+        account_id: accountId,
+        platform,
+        metric_type: metricType,
+        data: freshData,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'account_id,platform,metric_type' });
+      
+      if (upsertErr) {
+        console.error(`[Cache Write Error] ${platform} - ${metricType}:`, upsertErr);
+      }
+
+      return freshData;
+    }
+
     switch (action) {
       case 'get-connect-url': {
-        // payload: { profileId? }
-        // 1. Zernio profilini getir veya yoksa yarat
         let profileId = payload.profileId;
         if (!profileId) {
           console.log("No profileId provided. Listing profiles to find or create 'AI Esnaf Profil'...");
-          let profiles = [];
+          let profiles: any[] = [];
           try {
-            const listRes = await zernio.profiles.listProfiles();
+            const listRes: any = await zernio.profiles.listProfiles();
             profiles = listRes.data?.profiles || listRes.profiles || listRes.data || [];
-          } catch(e) {
+          } catch(e: any) {
             console.log("listProfiles error", e.message);
           }
           
@@ -52,24 +96,18 @@ serve(async (req) => {
           if (existing) {
              profileId = existing.id || existing.profileId || existing._id || existing.uuid;
           } else {
-             const profileRes = await zernio.profiles.createProfile({ body: { name: 'AI Esnaf Profil' } });
+             const profileRes: any = await zernio.profiles.createProfile('AI Esnaf Profil');
              profileId = profileRes.data?.profile?.id || profileRes.data?.id || profileRes.id;
           }
         }
         
-        // 2. Auth URL üret
         console.log("Getting connect URL for profileId:", profileId, "platform:", payload.platform);
-        const urlRes = await zernio.connect.getConnectUrl({ 
-          path: { platform: payload.platform },
-          query: { 
-            profileId, 
-            ...(payload.redirectUrl ? { redirect_url: payload.redirectUrl } : {})
-          } 
+        const urlRes: any = await zernio.accounts.getConnectUrl({ 
+           platform: payload.platform, 
+           profileId, 
+           redirectUrl: payload.redirectUrl 
         });
         
-        console.log("Connect URL response:", JSON.stringify(urlRes, null, 2));
-        
-        // Return EVERYTHING so the frontend doesn't miss the URL regardless of what it's named in v0.2.257
         result = { 
           ...urlRes,
           ...(urlRes.data || {}),
@@ -80,7 +118,7 @@ serve(async (req) => {
       }
 
       case 'sync-accounts': {
-        const listRes = await zernio.profiles.listProfiles();
+        const listRes: any = await zernio.profiles.listProfiles();
         const profiles = listRes.data?.profiles || listRes.profiles || listRes.data || [];
         const existing = profiles.find((p: any) => p.name === 'AI Esnaf Profil');
         
@@ -91,10 +129,9 @@ serve(async (req) => {
         
         const profileId = existing.id || existing.profileId || existing._id || existing.uuid;
         
-        const accRes = await zernio.accounts.listAccounts({ query: { profileId } });
+        const accRes: any = await zernio.accounts.listAccounts(profileId);
         const accounts = accRes.data?.accounts || accRes.accounts || accRes.data || [];
         
-        // --- SUPABASE SYNC ---
         const { userId } = payload;
         if (userId && accounts.length > 0) {
           const mappedAccounts = accounts.map((acc: any) => ({
@@ -109,21 +146,18 @@ serve(async (req) => {
             mappedAccounts,
             { onConflict: 'zernio_account_id' }
           );
-          if (error) {
-            if (error.code === '42P10') {
-              // UNIQUE constraint eksik — migration çalıştırın: supabase/migrations/20260629173000_social_accounts_unique_constraint.sql
+          
+          if (error && error.code === '42P10') {
               console.warn('[sync-accounts] UNIQUE constraint eksik. Geçici fallback aktif.');
               for (const acc of mappedAccounts) {
                 const { data: ex } = await supabase.from('social_accounts')
                   .select('id').eq('zernio_account_id', acc.zernio_account_id).maybeSingle();
                 if (!ex) {
-                  const { error: iErr } = await supabase.from('social_accounts').insert(acc);
-                  if (iErr) console.error('[sync-accounts] Insert error:', iErr);
+                  await supabase.from('social_accounts').insert(acc);
                 }
               }
-            } else {
+          } else if (error) {
               console.error('[sync-accounts] Upsert error:', error);
-            }
           }
         }
         
@@ -132,7 +166,7 @@ serve(async (req) => {
       }
 
       case 'sync-posts': {
-        const listRes = await zernio.profiles.listProfiles();
+        const listRes: any = await zernio.profiles.listProfiles();
         const profiles = listRes.data?.profiles || listRes.profiles || listRes.data || [];
         const existing = profiles.find((p: any) => p.name === 'AI Esnaf Profil');
         
@@ -143,15 +177,13 @@ serve(async (req) => {
         
         const profileId = existing.id || existing.profileId || existing._id || existing.uuid;
         
-        const postsRes = await zernio.posts.listPosts({ query: { profileId } });
+        const postsRes: any = await zernio.posts.listPosts(profileId);
         const postsList = postsRes.data?.posts || postsRes.posts || postsRes.data || [];
         
-        // --- SUPABASE SYNC ---
         const { userId } = payload;
         if (userId && postsList.length > 0) {
            const mappedPosts = postsList.map((p: any) => {
                let mediaList = p.mediaItems?.map((m: any) => m.url) || [];
-               // Fallback: Instagram posts have 'picture' instead of 'mediaItems'
                if (mediaList.length === 0 && p.picture) mediaList = [p.picture];
                if (mediaList.length === 0 && p.image) mediaList = [p.image];
                if (mediaList.length === 0 && p.thumbnail) mediaList = [p.thumbnail];
@@ -167,11 +199,9 @@ serve(async (req) => {
                };
             });
            
-           // Check existing
            const { data: existingPosts } = await supabase.from('posts').select('zernio_post_id').eq('profile_id', userId);
            const existingIds = existingPosts?.map((p: any) => p.zernio_post_id) || [];
            
-           // Insert missing
            const newPosts = mappedPosts.filter((p: any) => !existingIds.includes(p.zernio_post_id));
            if (newPosts.length > 0) {
               const { error } = await supabase.from('posts').insert(newPosts);
@@ -184,24 +214,23 @@ serve(async (req) => {
       }
       
       case 'get-inbox-pictures': {
-        // Fast path: just get pictures for all posts (single API call)
-        const listRes2 = await zernio.profiles.listProfiles();
-        const profiles2 = listRes2.data?.profiles || listRes2.profiles || listRes2.data || [];
-        const existing2 = profiles2.find((p: any) => p.name === 'AI Esnaf Profil');
-        if (!existing2) { result = { pictures: {} }; break; }
-        const profileId2 = existing2.id || existing2.profileId || existing2._id || existing2.uuid;
-        const inboxRes2 = await zernio.comments.listInboxComments({ query: { profileId: profileId2 } });
-        const posts2 = inboxRes2.data?.data || [];
+        const listRes: any = await zernio.profiles.listProfiles();
+        const profiles = listRes.data?.profiles || listRes.profiles || listRes.data || [];
+        const existing = profiles.find((p: any) => p.name === 'AI Esnaf Profil');
+        if (!existing) { result = { pictures: {} }; break; }
+        const profileId = existing.id || existing.profileId || existing._id || existing.uuid;
+        const inboxRes: any = await zernio.comments.listInboxComments(profileId);
+        const posts = inboxRes.data?.data || [];
         const pictures: Record<string, string> = {};
-        posts2.forEach((p: any) => {
+        posts.forEach((p: any) => {
           if (p.id && p.picture) pictures[p.id] = p.picture;
         });
-        result = { pictures, profileId: profileId2 };
+        result = { pictures, profileId };
         break;
       }
 
       case 'sync-comments': {
-        const listRes = await zernio.profiles.listProfiles();
+        const listRes: any = await zernio.profiles.listProfiles();
         const profiles = listRes.data?.profiles || listRes.profiles || listRes.data || [];
         const existing = profiles.find((p: any) => p.name === 'AI Esnaf Profil');
         
@@ -212,48 +241,19 @@ serve(async (req) => {
         
         const profileId = existing.id || existing.profileId || existing._id || existing.uuid;
         
-        // 1. Get posts that have comments
-        const inboxRes = await zernio.comments.listInboxComments({ query: { profileId } });
+        const inboxRes: any = await zernio.comments.listInboxComments(profileId);
         const commentedPosts = inboxRes.data?.data || [];
-        const t0 = Date.now();
-        console.log(`[sync-comments] START profileId=${profileId} postsWithComments=${commentedPosts.length}`);
         
         let allComments: any[] = [];
         
-        // 2. Fetch comments for each post
-        // We use Promise.all to fetch concurrently
         await Promise.all(commentedPosts.map(async (post: any) => {
            if (!post.id || !post.accountId) return;
            try {
-              const commentsRes = await zernio.comments.getInboxPostComments({ 
-                  path: { postId: post.id },
-                  query: { accountId: post.accountId }
-              });
+               const commentsRes: any = await zernio.comments.getInboxPostComments(post.id, post.accountId);
                const commentsList = commentsRes.data?.comments || commentsRes.comments || [];
                
-               // Debug: log actual post structure for first 2 posts
-               if (allComments.length === 0) {
-                  console.log("INBOX POST FIELDS:", JSON.stringify(Object.keys(post)));
-                  console.log("INBOX POST DATA:", JSON.stringify({
-                     id: post.id, picture: post.picture, image: post.image, 
-                     thumbnail: post.thumbnail, media: post.media,
-                     mediaUrl: post.mediaUrl, mediaItems: post.mediaItems,
-                     platformPostId: post.platformPostId, platform: post.platform
-                  }));
-               }
+               let pictureUrl = post.picture || post.image || post.thumbnail || post.mediaUrl || post.media?.[0]?.url || post.media?.[0] || post.mediaItems?.[0]?.url || null;
                
-               // Try ALL possible picture fields from inbox post
-               let pictureUrl = post.picture 
-                  || post.image 
-                  || post.thumbnail 
-                  || post.mediaUrl
-                  || post.media?.[0]?.url 
-                  || post.media?.[0]
-                  || post.mediaItems?.[0]?.url
-                  || null;
-               
-
-               // Format replies before adding to allComments
                const localMap = new Map();
                commentsList.forEach((c: any) => localMap.set(c.id || c._id, c));
                
@@ -271,7 +271,7 @@ serve(async (req) => {
                   }
                   return {
                      ...c,
-                     message: content, // Override message with prefixed content
+                     message: content,
                      post: {
                         id: post.id,
                         content: post.content,
@@ -281,54 +281,37 @@ serve(async (req) => {
                      }
                   };
                });
-               console.log(`POST ${post.id} platform=${post.platform} picture=${pictureUrl ? 'YES:'+pictureUrl.substring(0,60) : 'NULL'} comments=${enrichedComments.length}`);
               allComments = [...allComments, ...enrichedComments];
            } catch (err) {
               console.error("Error fetching comments for post", post.id, err);
            }
         }));
         
-        // 3. Update posts table with pictures from inbox (fix empty media_urls)
         const postPictures: Record<string, string> = {};
         commentedPosts.forEach((post: any) => {
            if (post.id && post.picture) postPictures[post.id] = post.picture;
         });
         
         if (Object.keys(postPictures).length > 0) {
-           // Find posts with empty media_urls and update them
-           const { data: emptyPosts } = await supabase
-              .from('posts')
-              .select('id, zernio_post_id, media_urls')
-              .in('zernio_post_id', Object.keys(postPictures));
+           const { data: emptyPosts } = await supabase.from('posts').select('id, zernio_post_id, media_urls').in('zernio_post_id', Object.keys(postPictures));
            
            if (emptyPosts) {
               await Promise.all(emptyPosts.map(async (ep) => {
                  if (!ep.media_urls || ep.media_urls.length === 0) {
                     const pic = postPictures[ep.zernio_post_id];
                     if (pic) {
-                       await supabase
-                          .from('posts')
-                          .update({ media_urls: [pic] })
-                          .eq('id', ep.id);
+                       await supabase.from('posts').update({ media_urls: [pic] }).eq('id', ep.id);
                     }
                  }
               }));
            }
         }
         
-        // 4. Fix orphaned comments: post_id is NULL but zernio_post_id exists
-        const { data: orphanedComments } = await supabase
-           .from('comments')
-           .select('id, zernio_post_id')
-           .is('post_id', null)
-           .not('zernio_post_id', 'is', null);
+        const { data: orphanedComments } = await supabase.from('comments').select('id, zernio_post_id').is('post_id', null).not('zernio_post_id', 'is', null);
         
         if (orphanedComments && orphanedComments.length > 0) {
            const zPostIds = [...new Set(orphanedComments.map((c: any) => c.zernio_post_id))];
-           const { data: matchingPosts } = await supabase
-              .from('posts')
-              .select('id, zernio_post_id')
-              .in('zernio_post_id', zPostIds);
+           const { data: matchingPosts } = await supabase.from('posts').select('id, zernio_post_id').in('zernio_post_id', zPostIds);
            
            if (matchingPosts) {
               const postMap: Record<string, string> = {};
@@ -343,16 +326,13 @@ serve(async (req) => {
            }
         }
         
-        // Sort all comments by date descending
         allComments.sort((a, b) => new Date(b.createdTime || b.createdAt).getTime() - new Date(a.createdTime || a.createdAt).getTime());
-        
-        console.log(`[sync-comments] END total=${allComments.length} duration=${Date.now()-t0}ms`);
         result = { comments: allComments, profileId };
         break;
       }
       
       case 'sync-messages': {
-        const listRes = await zernio.profiles.listProfiles();
+        const listRes: any = await zernio.profiles.listProfiles();
         const profiles = listRes.data?.profiles || listRes.profiles || listRes.data || [];
         const existing = profiles.find((p: any) => p.name === 'AI Esnaf Profil');
         
@@ -363,10 +343,9 @@ serve(async (req) => {
         
         const profileId = existing.id || existing.profileId || existing._id || existing.uuid;
         
-        const inboxRes = await zernio.messages.listInboxConversations({ query: { profileId } });
+        const inboxRes: any = await zernio.inbox.listInboxConversations(profileId);
         const convList = inboxRes.data?.data || [];
         
-        // --- SUPABASE SYNC ---
         const { userId } = payload;
         if (userId && convList.length > 0) {
            const mappedMessages = convList.map((m: any) => {
@@ -374,14 +353,11 @@ serve(async (req) => {
                  conversation_id: m.id || m._id,
                  zernio_message_id: m.id || m._id,
                  direction: 'incoming',
-                 content: m.snippet || m.text || '',
-                 // Assuming profile_id works for users as we mapped it in posts
-                 // profile_id: userId  <-- Wait, let's omit profile_id if it causes issues, or keep it.
+                 content: m.snippet || m.text || ''
               };
            });
            
-           // Check existing
-           const { data: existingMsgs } = await supabase.from('messages').select('zernio_message_id'); // We'll just check all for this user? RLS will handle or we just omit profile_id filter.
+           const { data: existingMsgs } = await supabase.from('messages').select('zernio_message_id');
            const existingIds = existingMsgs?.map((m: any) => m.zernio_message_id) || [];
            
            const newMessages = mappedMessages.filter((m: any) => !existingIds.includes(m.zernio_message_id));
@@ -400,11 +376,7 @@ serve(async (req) => {
         if (!conversationId || !accountId) {
             throw new Error("conversationId and accountId are required for sync-chat");
         }
-        const inboxRes = await zernio.messages.getInboxConversationMessages({ 
-            path: { conversationId },
-            query: { accountId }
-        });
-        
+        const inboxRes: any = await zernio.inbox.getInboxConversationMessages(conversationId, accountId);
         result = { messages: inboxRes.data?.messages || inboxRes.messages || [] };
         break;
       }
@@ -413,47 +385,31 @@ serve(async (req) => {
         if (!postId || !accountId) {
             throw new Error("postId and accountId are required for sync-post-comments");
         }
-        const commentsRes = await zernio.comments.getInboxPostComments({ 
-            path: { postId },
-            query: { accountId }
-        });
-        
+        const commentsRes: any = await zernio.comments.getInboxPostComments(postId, accountId);
         result = { comments: commentsRes.data?.comments || commentsRes.comments || [] };
         break;
       }
 
       case 'create-post': {
-        // Handle Base64 images by uploading them to Zernio first
         const finalMediaItems = [];
         if (payload.mediaItems && payload.mediaItems.length > 0) {
           for (const item of payload.mediaItems) {
             if (item.url && item.url.startsWith('data:')) {
-               // Extract base64 and mime type
                const matches = item.url.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,(.+)$/);
                if (matches && matches.length === 3) {
                  const mimeType = matches[1];
                  const base64Data = matches[2];
                  
-                 // Decode Base64 to Uint8Array in Deno
                  const binaryStr = atob(base64Data);
                  const bytes = new Uint8Array(binaryStr.length);
                  for (let i = 0; i < binaryStr.length; i++) {
                     bytes[i] = binaryStr.charCodeAt(i);
                  }
                  
-                 // Create Blob
-                 const blob = new Blob([bytes], { type: mimeType });
-                 
-                 // Upload to Zernio
-                 let uploadRes;
+                 let uploadRes: any;
                  try {
-                   uploadRes = await zernio.messages.uploadMediaDirect({
-                      body: {
-                         file: blob as any,
-                         contentType: mimeType
-                      }
-                   });
-                 } catch (uploadError) {
+                   uploadRes = await zernio.media.uploadMediaDirect(mimeType, bytes);
+                 } catch (uploadError: any) {
                    throw new Error("Zernio uploadMediaDirect Hatası: " + (uploadError.message || JSON.stringify(uploadError)));
                  }
                  
@@ -475,174 +431,140 @@ serve(async (req) => {
         }
 
         const createPostPayload = {
-          body: {
-            title: payload.title,
-            content: payload.content,
-            platforms: payload.platforms,
-            scheduledFor: payload.scheduledFor,
-            publishNow: payload.publishNow,
-            mediaItems: finalMediaItems.length > 0 ? finalMediaItems : undefined,
-            tags: payload.tags
-          }
+          title: payload.title,
+          content: payload.content,
+          platforms: payload.platforms,
+          scheduledFor: payload.scheduledFor,
+          publishNow: payload.publishNow,
+          mediaItems: finalMediaItems.length > 0 ? finalMediaItems : undefined,
+          tags: payload.tags
         };
 
         try {
-          const postData = await zernio.posts.createPost(createPostPayload);
-          result = postData;
-        } catch (postError) {
-          throw new Error("Zernio createPost Hatası: " + (postError.message || JSON.stringify(postError)) + " | Payload: " + JSON.stringify(createPostPayload));
+          result = await zernio.posts.createPost(createPostPayload);
+        } catch (postError: any) {
+          throw new ZernioError("Zernio createPost Hatası: " + postError.message, postError.status, 'CREATE_POST_FAILED');
         }
         break;
       }
 
       case 'send-message': {
-        const url = `https://api.zernio.com/v1/inbox/conversations/${payload.conversationId}/messages`;
-        const fetchRes = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${zernioApiKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            accountId: payload.accountId,
-            message: payload.message
-          })
-        });
-        
-        if (!fetchRes.ok) {
-          const errText = await fetchRes.text();
-          throw new Error(`Zernio send-message API error: ${errText}`);
-        }
-        
-        result = await fetchRes.json();
+        result = await zernio.inbox.sendMessage(payload.accountId, payload.conversationId, payload.message);
         break;
       }
 
       case 'reply-comment': {
-        // First, automatically LIKE the comment (required by some platforms to make reply visible)
-        if (payload.commentId) {
-          const likeUrl = `https://api.zernio.com/v1/inbox/comments/${payload.postId}/${payload.commentId}/like`;
-          try {
-            await fetch(likeUrl, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${zernioApiKey}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ accountId: payload.accountId })
-            });
-          } catch (e) {
-            console.warn("Failed to auto-like comment:", e);
-          }
-        }
-
-        const url = `https://api.zernio.com/v1/inbox/comments/${payload.postId}`;
-        const fetchRes = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${zernioApiKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            accountId: payload.accountId,
-            commentId: payload.commentId,
-            message: payload.message
-          })
-        });
-        
-        if (!fetchRes.ok) {
-          const errText = await fetchRes.text();
-          throw new Error(`Zernio reply-comment API error: ${errText}`);
-        }
-        
-        result = await fetchRes.json();
+        result = await zernio.comments.replyToComment(payload.accountId, payload.postId, payload.commentId, payload.message);
         break;
       }
 
-      case 'get-youtube-insights': {
-        result = await zernio.analytics.getYouTubeChannelInsights(payload);
-        break;
+      // ==========================================
+      // CACHED ANALYTICS ENDPOINTS
+      // ==========================================
+      case 'get-youtube-insights': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'youtube', 'channel_insights', () => zernio.analytics.getYouTubeChannelInsights(payload)); 
+        break; 
       }
-      case 'get-youtube-demographics': {
-        result = await zernio.analytics.getYouTubeDemographics(payload);
-        break;
+      case 'get-youtube-demographics': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'youtube', 'demographics', () => zernio.analytics.getYouTubeDemographics(payload)); 
+        break; 
       }
-      case 'get-tiktok-insights': {
-        result = await zernio.analytics.getTikTokAccountInsights(payload);
-        break;
+      case 'get-tiktok-insights': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'tiktok', 'account_insights', () => zernio.analytics.getTikTokAccountInsights(payload)); 
+        break; 
       }
-      case 'get-youtube-daily-views': {
-        result = await zernio.analytics.getYouTubeDailyViews(payload);
-        break;
+      case 'get-youtube-daily-views': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'youtube', 'daily_views', () => zernio.analytics.getYouTubeDailyViews(payload)); 
+        break; 
       }
-      case 'get-linkedin-page-analytics': {
-        result = await zernio.analytics.getLinkedInOrgAggregateAnalytics(payload);
-        break;
+      case 'get-linkedin-page-analytics': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'linkedin', 'org_aggregate', () => zernio.analytics.getLinkedInOrgAggregateAnalytics(payload)); 
+        break; 
       }
-      case 'get-linkedin-post-stats': {
-        result = await zernio.analytics.getLinkedInPostAnalytics(payload);
-        break;
+      case 'get-linkedin-post-stats': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'linkedin', 'post_stats', () => zernio.analytics.getLinkedInPostAnalytics(payload)); 
+        break; 
       }
-      case 'get-linkedin-aggregate-stats': {
-        result = await zernio.analytics.getLinkedInAggregateAnalytics(payload);
-        break;
+      case 'get-linkedin-aggregate-stats': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'linkedin', 'aggregate', () => zernio.analytics.getLinkedInAggregateAnalytics(payload)); 
+        break; 
       }
-      case 'get-instagram-insights': {
-        result = await zernio.analytics.getInstagramAccountInsights(payload);
-        break;
+      case 'get-instagram-insights': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'instagram', 'account_insights', () => zernio.analytics.getInstagramAccountInsights(payload)); 
+        break; 
       }
-      case 'get-instagram-demographics': {
-        result = await zernio.analytics.getInstagramDemographics(payload);
-        break;
+      case 'get-instagram-demographics': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'instagram', 'demographics', () => zernio.analytics.getInstagramDemographics(payload)); 
+        break; 
       }
-      case 'get-instagram-follower-history': {
-        result = await zernio.analytics.getInstagramFollowerHistory(payload);
-        break;
+      case 'get-instagram-follower-history': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'instagram', 'follower_history', () => zernio.analytics.getInstagramFollowerHistory(payload)); 
+        break; 
       }
-      case 'get-gbp-search-keywords': {
-        result = await zernio.analytics.getGoogleBusinessSearchKeywords(payload);
-        break;
+      case 'get-gbp-search-keywords': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'googlebusiness', 'search_keywords', () => zernio.analytics.getGoogleBusinessSearchKeywords(payload)); 
+        break; 
       }
-      case 'get-gbp-performance': {
-        result = await zernio.analytics.getGoogleBusinessPerformance(payload);
-        break;
+      case 'get-gbp-performance': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'googlebusiness', 'performance', () => zernio.analytics.getGoogleBusinessPerformance(payload)); 
+        break; 
       }
-      case 'get-facebook-insights': {
-        result = await zernio.analytics.getFacebookPageInsights(payload);
-        break;
+      case 'get-facebook-insights': { 
+        const accId = payload.accountId || payload.query?.accountId;
+        result = await fetchAnalyticsWithCache(accId, 'facebook', 'page_insights', () => zernio.analytics.getFacebookPageInsights(payload)); 
+        break; 
       }
-      case 'get-follower-stats': {
-        result = await zernio.accounts.getFollowerStats(payload);
-        break;
+      case 'get-follower-stats': { 
+        const accId = payload.accountId || payload.query?.accountId || 'global';
+        result = await fetchAnalyticsWithCache(accId, 'all', 'follower_stats', () => zernio.accounts.getFollowerStats(payload)); 
+        break; 
       }
-      case 'get-daily-metrics': {
-        result = await zernio.analytics.getDailyMetrics(payload);
-        break;
+      case 'get-daily-metrics': { 
+        const accId = payload.accountId || payload.query?.accountId || 'global';
+        result = await fetchAnalyticsWithCache(accId, 'all', 'daily_metrics', () => zernio.analytics.getDailyMetrics(payload)); 
+        break; 
       }
-      case 'get-content-decay': {
-        result = await zernio.analytics.getContentDecay(payload);
-        break;
+      case 'get-content-decay': { 
+        const accId = payload.accountId || payload.query?.accountId || 'global';
+        result = await fetchAnalyticsWithCache(accId, 'all', 'content_decay', () => zernio.analytics.getContentDecay(payload)); 
+        break; 
       }
-      case 'get-post-timeline': {
-        result = await zernio.analytics.getPostTimeline(payload);
-        break;
+      case 'get-post-timeline': { 
+        const accId = payload.accountId || payload.query?.accountId || 'global';
+        result = await fetchAnalyticsWithCache(accId, 'all', 'post_timeline', () => zernio.analytics.getPostTimeline(payload)); 
+        break; 
       }
-      case 'get-posting-frequency': {
-        result = await zernio.analytics.getPostingFrequency(payload);
-        break;
+      case 'get-posting-frequency': { 
+        const accId = payload.accountId || payload.query?.accountId || 'global';
+        result = await fetchAnalyticsWithCache(accId, 'all', 'posting_frequency', () => zernio.analytics.getPostingFrequency(payload)); 
+        break; 
       }
-      case 'get-best-times': {
-        result = await zernio.analytics.getBestTimeToPost(payload);
-        break;
+      case 'get-best-times': { 
+        const accId = payload.accountId || payload.query?.accountId || 'global';
+        result = await fetchAnalyticsWithCache(accId, 'all', 'best_times', () => zernio.analytics.getBestTimeToPost(payload)); 
+        break; 
       }
-      case 'get-post-analytics': {
-        result = await zernio.analytics.getPostTimeline(payload); // Fallback
-        break;
+      case 'get-post-analytics': { 
+        const accId = payload.accountId || payload.query?.accountId || 'global';
+        result = await fetchAnalyticsWithCache(accId, 'all', 'post_analytics', () => zernio.analytics.getPostTimeline(payload)); 
+        break; 
       }
 
       case 'create-profile': {
         const { userId } = payload;
-        if (!userId) throw new Error("Missing userId");
+        if (!userId) throw new ZernioError("Missing userId", 400);
         
         const { error } = await supabase.from('profiles').upsert({ 
           id: userId, 
@@ -657,44 +579,9 @@ serve(async (req) => {
 
       case 'disconnect-account': {
         const { accountId } = payload;
-        if (!accountId) throw new Error("Missing accountId");
+        if (!accountId) throw new ZernioError("Missing accountId", 400);
         
-        // Zernio'dan hesabı silmeye çalış
-        let success = false;
-        try {
-           if (typeof zernio.accounts.deleteAccount === 'function') {
-              await zernio.accounts.deleteAccount({ id: accountId });
-              success = true;
-           } else if (typeof zernio.accounts.removeAccount === 'function') {
-              await zernio.accounts.removeAccount({ id: accountId });
-              success = true;
-           } else if (typeof zernio.connect.disconnect === 'function') {
-              await zernio.connect.disconnect({ id: accountId });
-              success = true;
-           }
-        } catch (err) {
-           console.error("Zernio account deletion warning:", err.message);
-        }
-
-        // Eğer SDK üzerinden başarılı olamadıysa doğrudan REST API çağrısı dene
-        if (!success) {
-           try {
-              const fetchRes = await fetch(`https://api.zernio.com/v1/accounts/${accountId}`, {
-                 method: 'DELETE',
-                 headers: {
-                    'Authorization': `Bearer ${zernioApiKey}`,
-                    'Content-Type': 'application/json'
-                 }
-              });
-              if (!fetchRes.ok) {
-                 console.warn("Direct Zernio DELETE failed:", await fetchRes.text());
-              }
-           } catch(e) {
-              console.error("Direct fetch Zernio delete error:", e.message);
-           }
-        }
-
-        // Supabase DB'den de sil (Garanti olması için)
+        await zernio.accounts.disconnectAccount(accountId);
         await supabase.from('social_accounts').delete().eq('zernio_account_id', accountId);
 
         result = { success: true };
@@ -702,7 +589,7 @@ serve(async (req) => {
       }
 
       default:
-        throw new Error(`Bilinmeyen action: ${action}`);
+        throw new ZernioError(`Bilinmeyen action: ${action}`, 400, 'UNKNOWN_ACTION');
     }
 
     return new Response(
@@ -710,11 +597,16 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );
 
-  } catch (error) {
-    console.error("Zernio Client Error:", error.message);
+  } catch (error: any) {
+    console.error("Zernio Edge Function Error:", error);
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      JSON.stringify({ 
+        success: false, 
+        error: error.message, 
+        code: error.code || 'UNKNOWN_ERROR', 
+        details: error.details 
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 } // Often 200 with success: false in GraphQL/RPC style
     );
   }
 });

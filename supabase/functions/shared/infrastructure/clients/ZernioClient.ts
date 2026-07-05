@@ -1,73 +1,45 @@
+import Zernio from "npm:@zernio/node";
+import { ZernioApiContext } from "./types.ts";
+import { ZernioError } from "./ZernioError.ts";
+import { ProfileApi } from "./ProfileApi.ts";
+import { AccountApi } from "./AccountApi.ts";
+import { PostApi } from "./PostApi.ts";
+import { MediaApi } from "./MediaApi.ts";
+import { InboxApi } from "./InboxApi.ts";
+import { CommentApi } from "./CommentApi.ts";
+import { AnalyticsApi } from "./AnalyticsApi.ts";
+
+/**
+ * ZernioClient Facade
+ * 
+ * Provides a unified entry point to all Zernio Sub-APIs.
+ * This class instantiates the underlying Zernio SDK and injects it into domain-specific APIs.
+ */
 export class ZernioClient {
-  private baseUrl = 'https://api.zernio.com/v1'; // Placeholder
-  private apiKey = Deno.env.get('ZERNIO_API_KEY') || '';
+  public profiles: ProfileApi;
+  public accounts: AccountApi;
+  public posts: PostApi;
+  public media: MediaApi;
+  public inbox: InboxApi;
+  public comments: CommentApi;
+  public analytics: AnalyticsApi;
 
-  async sendMessage(accountId: string, conversationId: string, text: string): Promise<void> {
-    const url = `${this.baseUrl}/inbox/conversations/${conversationId}/messages`;
-    
-    const payload = {
-      accountId,
-      message: text
-    };
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Zernio reply failed:", errorText);
-      throw new Error(`Zernio API error: ${errorText}`);
+  constructor() {
+    const apiKey = Deno.env.get('ZERNIO_API_KEY');
+    if (!apiKey) {
+      throw new ZernioError("ZERNIO_API_KEY environment variable is missing", 500, "MISSING_API_KEY");
     }
-  }
 
-  async replyToComment(accountId: string, postId: string, commentId: string, text: string): Promise<void> {
-    const url = `${this.baseUrl}/inbox/comments/${postId}`;
-    
-    const payload = {
-      accountId,
-      commentId,
-      message: text
-    };
+    const sdk = new Zernio({ apiKey });
+    const context: ZernioApiContext = { apiKey, sdk };
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Zernio comment reply failed:", errorText);
-      throw new Error(`Zernio API error: ${errorText}`);
-    }
-  }
-
-  async likeComment(accountId: string, postId: string, commentId: string): Promise<void> {
-    const url = `${this.baseUrl}/inbox/comments/${postId}/${commentId}/like`;
-    
-    const payload = { accountId };
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Zernio like comment failed:", errorText);
-    }
+    // Initialize Sub-APIs
+    this.profiles = new ProfileApi(context);
+    this.accounts = new AccountApi(context);
+    this.posts = new PostApi(context);
+    this.media = new MediaApi(context);
+    this.inbox = new InboxApi(context);
+    this.comments = new CommentApi(context);
+    this.analytics = new AnalyticsApi(context);
   }
 }

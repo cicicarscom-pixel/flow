@@ -446,7 +446,16 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
 
 ---
 
-## 🆕 Son Güncellemeler (Haziran 2026 - UX/UI & Bug Fixes)
+## 🆕 Son Güncellemeler (Temmuz 2026 - Analytics Cache & Zernio API)
+
+1. **Zernio Client ve Analytics Cache Güncellemesi:** Supabase Edge Functions altındaki `ZernioClient.ts` dosyası güncellenerek sosyal medya platformları (YouTube, LinkedIn, Instagram, Google Business, vb.) için analytics metotları önbellekleme (cache) desteği ile entegre edildi.
+2. **Hata Yönetimi ve Silme İşlemi:** Zernio hesabını ayırma (`disconnect-account`) işlemi doğrudan ZernioClient içindeki metoda bağlandı.
+3. **Veritabanı Migration'ı:** Analytics cache için yeni bir Supabase veritabanı migration'ı (`20260705000000_analytics_cache.sql`) oluşturuldu.
+4. **Bağımlılıklar:** `package.json` ve `package-lock.json` dosyaları güncellendi.
+
+---
+
+## 🆕 Geçmiş Güncellemeler (Haziran 2026 - UX/UI & Bug Fixes)
 
 0. **AiUretimScreen Yeniden Tasarımı (Zernio Orijinal Arayüz Entegrasyonu):** Kullanıcının isteği doğrultusunda AI Paylaşım ekranına (AiUretimScreen) Zernio'nun orijinal arayüzündeki özellikler eklendi. Ekranın mevcut karanlık (dark) teması korunarak platform seçim kutucukları (çoklu seçim), "Planlı" ve "Şimdi" yayınlama seçenekleri, Tarih/Saat ve Timezone giriş alanları entegre edildi. `publishPost` fonksiyonu artık otonom karar vermek yerine kullanıcının seçtiği platformlara ve planlama ayarlarına sadık kalarak çalışacak şekilde refaktör edildi.
 1. **Yüzen Kapsül Mesaj Kutusu (Floating Pill Input):** Uygulamanın tüm mesajlaşma alanlarındaki (AI Muhasebe, Chat, Asistan) mesaj kutuları baştan tasarlandı. Ekranın bir ucundan diğer ucuna uzanan eski düz dikdörtgen yapı yerine, alt navigasyon menüsüyle (TabNavigator) %100 uyumlu **yüzen kapsül** (Floating Pill) tasarımına geçildi.
