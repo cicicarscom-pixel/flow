@@ -909,4 +909,24 @@ AI Esnaf projesi halihazırda React Native (Expo) kullanılarak mobil odaklı (N
 ### Faz 3: Gelişmiş Web Özellikleri
 - **Klavye Dinleyicileri İptali:** `ChatInputBar`'daki `react-native` klavye dinleyicileri (Keyboard) web üzerinde gereksizdir. Platform kontrolü (`Platform.OS === 'web'`) yapılarak bu mantıkların web ortamında bypass edilmesi gereklidir.
 - **Drag & Drop (Sürükle-Bırak) Desteği:** Web panelinde fatura veya fiş yüklerken mobil kamera yerine HTML5 Drag & Drop API'sine uyumlu web component'leri eklenecektir.
-- **Performans:** Web paketi (bundle) boyutunu azaltmak için rotaların (route) Lazy Loading (`React.lazy`) kullanılarak ayrıştırılması planlanmalıdır.```
+- **Performans:** Web paketi (bundle) boyutunu azaltmak için rotaların (route) Lazy Loading (`React.lazy`) kullanılarak ayrıştırılması planlanmalıdır.
+
+---
+
+## 🌈 Gökkuşağı Yapısı (Rainbow RGB Border Architecture)
+
+Uygulama içerisindeki özel AI kartlarının (örn. "AI Kişiliği" kartı) etrafındaki parlayan, ince neon gökkuşağı sınır çizgisi (border) CSS/Native Animated mantığıyla şu şekilde inşa edilmiştir:
+
+**1. Çerçeve (Kapsayıcı - Container):**
+- Kartın en dış sarmalayıcısına `overflow: 'hidden'` ve `padding: 2` (veya web için `3px - 4px` padding) verilir. Bu padding değeri, gökkuşağı çizginin kalınlığını belirler.
+- Etrafına dışarı taşan mavi bir gölge (`shadowColor: '#00a2ff'`) eklenir.
+
+**2. Dönen Dev RGB Işık Kaynağı (LinearGradient / ConicGradient):**
+- Kapsayıcının tam ortasına (`top: 50%`, `left: 50%`), kart boyutundan çok daha büyük (örn. 300% veya 1500x1500px) bir Gradient yerleştirilir.
+- Renk dizilimi saf gökkuşağı RGB'sidir: `['#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#00ffff', '#ffff00', '#ff0000']`.
+- Bu devasa renk dalgası `4 saniyelik` sürekli (linear) bir döngüde kendi merkezi etrafında döndürülür (spin).
+
+**3. Opak İç Zemin (Maskeleme):**
+- Dönen renk dalgasının hemen üzerine (Z-index olarak üstüne), içi tamamen opak (`#1c1b1d`) olan asıl içerik kutusu yerleştirilir.
+- İç kutu, dış kapsayıcıdan `padding` kadar küçük olduğu için (örn. `inset-[3px]` veya `borderRadius: 18`), dönen devasa ışık dalgası sadece bu 2-3 piksellik boşluktan sızar.
+- Sonuç olarak: Işık kutunun etrafında yılan gibi kayarak dönen muhteşem bir RGB neon çizgi efekti yaratır.
