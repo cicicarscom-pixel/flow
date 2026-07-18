@@ -92,47 +92,51 @@ export default function AiMuhasebeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [financeData, setFinanceData] = useState({ income: 0, expense: 0 });
-  const [upcomingPayments, setUpcomingPayments] = useState([]);
+  const [financeData, setFinanceData] = useState({ income: 0, expense: 0, net: 0, receivable: 0, payable: 0 });
   
   const currentMonthName = new Date().toLocaleString(i18n.language || 'tr-TR', { month: 'long' });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: transactions, error } = await supabase.from('transactions').select('*');
+        const { data: documents, error } = await supabase.from('finance_documents').select('*');
         if (error) throw error;
         
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
-        const todayStr = now.toISOString().split('T')[0];
         
         let inc = 0, exp = 0;
-        let upcoming = [];
+        let receivable = 0, payable = 0;
 
-        if (transactions) {
-          transactions.forEach(t => {
-             const tDate = new Date(t.date);
-             // Sadece bu ayki (Current Month) Gelir/Gider toplamları
-             if (tDate.getMonth() === currentMonth && tDate.getFullYear() === currentYear) {
-                if (t.type === 'income') inc += Number(t.amount);
-                if (t.type === 'expense') exp += Number(t.amount);
+        if (documents) {
+          documents.forEach(doc => {
+             const dDate = new Date(doc.created_at);
+             const amount = Number(doc.amount_minor) / 100;
+             
+             // Sadece bu ayki (Current Month) Gelir/Gider toplamları (Ödenmiş olanlar)
+             if (dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear && doc.payment_status === 'paid') {
+                if (doc.type === 'income') inc += amount;
+                if (doc.type === 'expense') exp += amount;
              }
              
-             // Yaklaşan tüm giderler
-             if (t.type === 'expense' && t.date && t.date >= todayStr) {
-                upcoming.push(t);
+             // Bekleyen (Ödenmemiş) Gelir ve Giderler
+             if (doc.payment_status === 'unpaid' || doc.payment_status === 'partial') {
+                if (doc.type === 'income') receivable += amount;
+                if (doc.type === 'expense') payable += amount;
              }
           });
-          
-          upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
-          setUpcomingPayments(upcoming);
         }
         
-        setFinanceData({ income: inc, expense: exp });
+        setFinanceData({ 
+          income: inc, 
+          expense: exp, 
+          net: inc - exp,
+          receivable, 
+          payable 
+        });
       } catch (err) {
-         console.warn("Error fetching transactions", err);
+         console.warn("Error fetching finance_documents", err);
       } finally {
          setIsLoading(false);
       }
@@ -141,8 +145,8 @@ export default function AiMuhasebeScreen({ navigation }) {
     fetchData();
 
     // Supabase Realtime Subscription for auto-updates
-    const channel = supabase.channel('muhasebe_transactions')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
+    const channel = supabase.channel('muhasebe_finance_docs')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'finance_documents' }, () => {
          fetchData();
       }).subscribe();
 
@@ -188,106 +192,71 @@ export default function AiMuhasebeScreen({ navigation }) {
 
         <View className="px-5 -mt-8 relative z-10">
           {/* Summary Cards Section */}
-          <View className="flex-row justify-between mb-6">
+          <View className="flex-row justify-between mb-4">
             <AnimatedBorderCard 
               style={{ flex: 1, marginRight: 8 }} 
               colors={['#00f0ff', '#ffffff']} 
-              padding={20} 
+              padding={16} 
               borderRadius={16}
             >
-              <LinearGradient colors={['#00f0ff', 'transparent']} start={{x: 0, y: 0}} end={{x: 1, y: 0}} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, opacity: 0.5 }} />
-              <View className="flex-row justify-between items-start mb-2">
-                <Text className="text-[#b9cacb] text-xs font-medium uppercase tracking-wider">{t('muhasebe.aiMuhasebe.income')}</Text>
-                <MaterialIcons name="account-balance" size={20} color="#00f0ff" />
+              <View className="flex-row justify-between items-start mb-1">
+                <Text className="text-[#b9cacb] text-[10px] font-medium uppercase tracking-wider">Bu Ay Gelir</Text>
               </View>
               {isLoading ? (
-                <Skeleton width="100%" height={32} style={{ marginTop: 4, marginBottom: 8 }} />
+                <Skeleton width="100%" height={24} style={{ marginTop: 4 }} />
               ) : (
-                <Text className="text-[#e5e2e3] text-2xl font-bold mt-1">{formatCurrency(financeData.income)} ₺</Text>
+                <Text className="text-[#e5e2e3] text-lg font-bold">{formatCurrency(financeData.income)} ₺</Text>
               )}
-              <View className="flex-row items-center mt-2">
-                <View className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] mr-1.5" />
-                <Text className="text-[#b9cacb]/60 text-[10px]">{t('muhasebe.aiMuhasebe.mockBank1')}</Text>
-              </View>
-              <View className="flex-row items-center mt-4 bg-white/5 self-start px-2 py-1 rounded-full border border-[#00f0ff]/20">
-                <View className="w-2 h-2 rounded-full bg-[#00ff7f] mr-1.5 shadow-sm shadow-[#00ff7f]" />
-                <Text className="text-[#00ff7f] text-[10px] font-medium">{t('muhasebe.aiMuhasebe.incomePercentage', { percent: 100 })}</Text>
-              </View>
             </AnimatedBorderCard>
 
             <AnimatedBorderCard 
               style={{ flex: 1, marginLeft: 8 }} 
               colors={['#b600f8', '#ffffff']} 
-              padding={20} 
+              padding={16} 
               borderRadius={16}
             >
-              <LinearGradient colors={['#ffb4ab', 'transparent']} start={{x: 0, y: 0}} end={{x: 1, y: 0}} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, opacity: 0.5 }} />
-              <View className="flex-row justify-between items-start mb-2">
-                <Text className="text-[#b9cacb] text-xs font-medium uppercase tracking-wider">{t('muhasebe.aiMuhasebe.expense')}</Text>
-                <MaterialIcons name="payments" size={20} color="#ffb4ab" />
+              <View className="flex-row justify-between items-start mb-1">
+                <Text className="text-[#b9cacb] text-[10px] font-medium uppercase tracking-wider">Bu Ay Gider</Text>
               </View>
               {isLoading ? (
-                <Skeleton width="100%" height={32} style={{ marginTop: 4, marginBottom: 8 }} />
+                <Skeleton width="100%" height={24} style={{ marginTop: 4 }} />
               ) : (
-                <Text className="text-[#e5e2e3] text-2xl font-bold mt-1">{formatCurrency(financeData.expense)} ₺</Text>
+                <Text className="text-[#e5e2e3] text-lg font-bold">{formatCurrency(financeData.expense)} ₺</Text>
               )}
-              <View className="flex-row items-center mt-2">
-                <View className="w-1.5 h-1.5 rounded-full bg-[#ffb4ab] mr-1.5" />
-                <Text className="text-[#b9cacb]/60 text-[10px]">{t('muhasebe.aiMuhasebe.mockBank2')}</Text>
-              </View>
-              <View className="flex-row items-center mt-4 bg-white/5 self-start px-2 py-1 rounded-full border border-[#ffb4ab]/20">
-                <View className="w-2 h-2 rounded-full bg-[#ff3131] mr-1.5 shadow-sm shadow-[#ff3131]" />
-                <Text className="text-[#ff3131] text-[10px] font-medium">{t('muhasebe.aiMuhasebe.expensePercentage', { percent: 100 })}</Text>
-              </View>
             </AnimatedBorderCard>
           </View>
 
-          {/* Upcoming Payments Section */}
           <View className="mb-6">
-            <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-[#e5e2e3] text-xl font-semibold">{t('muhasebe.aiMuhasebe.upcomingPayments')}</Text>
-              <TouchableOpacity>
-                <Text className="text-[#00f0ff] text-xs font-medium">{t('muhasebe.aiMuhasebe.seeAll')}</Text>
-              </TouchableOpacity>
+            <View style={[styles.glassCard, { padding: 16, marginBottom: 12 }]}>
+              <Text className="text-[#b9cacb] text-xs font-medium uppercase tracking-wider mb-1">Tahmini Net</Text>
+              {isLoading ? (
+                <Skeleton width="100%" height={28} />
+              ) : (
+                <Text className={`text-2xl font-bold ${financeData.net >= 0 ? 'text-[#00ff7f]' : 'text-[#ff3131]'}`}>
+                  {financeData.net > 0 ? '+' : ''}{formatCurrency(financeData.net)} ₺
+                </Text>
+              )}
             </View>
 
-            {isLoading ? (
-               <View style={[styles.glassCard, { padding: 16, marginBottom: 12 }]}>
-                 <Skeleton width="100%" height={50} />
-               </View>
-            ) : upcomingPayments.length > 0 ? (
-               <ScrollView style={{ maxHeight: 260 }} nestedScrollEnabled={true} showsVerticalScrollIndicator={true}>
-                 {upcomingPayments.map((payment, index) => {
-                   const pDate = new Date(payment.date);
-                   const pMonthStr = t(`muhasebe.aiMuhasebe.months.${pDate.toLocaleString('en-US',{month:'short'}).toLowerCase()}`);
-                   const daysLeft = getDaysLeft(payment.date);
-                   const isUrgent = daysLeft <= 3;
-                   
-                   return (
-                     <View key={payment.id || index} style={[styles.glassCard, { padding: 16, marginBottom: index === upcomingPayments.length - 1 ? 0 : 12 }]}>
-                       <View className="flex-row items-center">
-                         <View className="w-12 h-12 rounded-lg bg-[#353436]/40 border border-white/10 items-center justify-center mr-4">
-                           <Text className="text-[#b9cacb] text-[10px] font-bold uppercase">{pMonthStr}</Text>
-                           <Text className="text-[#00f0ff] text-lg font-bold">{pDate.getDate()}</Text>
-                         </View>
-                         <View className="flex-1">
-                           <Text className="text-[#e5e2e3] text-base font-semibold" numberOfLines={1}>{payment.title || payment.description || 'Ödeme'}</Text>
-                           <Text className="text-[#b9cacb] text-xs mt-0.5" numberOfLines={1}>{payment.description}</Text>
-                         </View>
-                         <View className="items-end ml-2">
-                           <Text className="text-[#e5e2e3] text-base font-bold mb-1.5">{formatCurrency(payment.amount)} ₺</Text>
-                           <View className={`px-2 py-0.5 rounded-full border ${isUrgent ? 'bg-[#ff3131]/10 border-[#ff3131]/20' : 'bg-[#00f0ff]/10 border-[#00f0ff]/20'}`}>
-                             <Text className={`text-[10px] ${isUrgent ? 'text-[#ffb4ab]' : 'text-[#00f0ff]'}`}>{t('muhasebe.aiMuhasebe.daysLeft', { count: daysLeft })}</Text>
-                           </View>
-                         </View>
-                       </View>
-                     </View>
-                   );
-                 })}
-               </ScrollView>
-            ) : (
-               <Text className="text-[#b9cacb] text-sm text-center py-4">Yaklaşan bir ödeme bulunmuyor.</Text>
-            )}
+            <View className="flex-row justify-between">
+              <View style={[styles.glassCard, { flex: 1, padding: 16, marginRight: 6 }]}>
+                <Text className="text-[#b9cacb] text-[10px] font-medium uppercase tracking-wider mb-1">Tahsil Edilecek</Text>
+                {isLoading ? (
+                  <Skeleton width="100%" height={20} />
+                ) : (
+                  <Text className="text-[#00f0ff] text-base font-bold">{formatCurrency(financeData.receivable)} ₺</Text>
+                )}
+              </View>
+
+              <View style={[styles.glassCard, { flex: 1, padding: 16, marginLeft: 6 }]}>
+                <Text className="text-[#b9cacb] text-[10px] font-medium uppercase tracking-wider mb-1">Ödenecek</Text>
+                {isLoading ? (
+                  <Skeleton width="100%" height={20} />
+                ) : (
+                  <Text className="text-[#ffb4ab] text-base font-bold">{formatCurrency(financeData.payable)} ₺</Text>
+                )}
+              </View>
+            </View>
           </View>
 
           {/* Action Buttons Section */}
@@ -315,6 +284,20 @@ export default function AiMuhasebeScreen({ navigation }) {
 
           {/* New Bottom Buttons */}
           <View className="pb-10">
+            {/* Ay Sonu Mutabakat Asistanı (Müşavirin Gönderdiği) */}
+            <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 16, borderColor: 'rgba(255, 74, 74, 0.4)' }]}>
+              <CustomButton 
+                onPress={() => navigation.navigate('MutabakatChat')}
+                className="bg-[rgba(255,74,74,0.1)] py-4 px-4 h-auto"
+                title="AY SONU MUTABAKAT ONAYI BEKLİYOR"
+                textClassName="text-[#ff4a4a] text-[12px] font-bold uppercase tracking-widest"
+                leftIcon={<MaterialIcons name="notification-important" size={18} color="#ff4a4a" />}
+              />
+              <Text className="text-[#b9cacb] text-xs text-center px-4 pb-3 opacity-80">
+                Müşaviriniz (Ledger AI) devreden bakiyeleriniz için onayınızı istiyor.
+              </Text>
+            </View>
+
             <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 16 }]}>
               <CustomButton 
                 onPress={() => navigation.navigate('OdemeTakvimi')}

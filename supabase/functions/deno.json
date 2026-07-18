@@ -1,7 +1,0 @@
-{
-  "imports": {
-    "@zernio/node": "npm:@zernio/node@latest",
-    "@supabase/supabase-js": "npm:@supabase/supabase-js@2",
-    "std/server": "https://deno.land/std@0.177.0/http/server.ts"
-  }
-}

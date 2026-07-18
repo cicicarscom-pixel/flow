@@ -1,3 +1,0 @@
-ALTER TABLE bot_settings ADD COLUMN IF NOT EXISTS engine_mode TEXT DEFAULT 'v2';
-ALTER TABLE bot_settings ADD COLUMN IF NOT EXISTS prompt_config JSONB DEFAULT '{}'::jsonb;
-ALTER TABLE bot_settings ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
