@@ -9,7 +9,7 @@ import DigitalAssistantScreen from '../../screens/DigitalAssistantScreen';
 import PostsScreen from '../../screens/PostsScreen';
 import PostCommentsScreen from '../../screens/PostCommentsScreen';
 
-import { OdemeTakvimiScreen } from '../../modules/muhasebe';
+import { OdemeTakvimiScreen, IsletmemScreen, MutabakatChatScreen } from '../../modules/muhasebe';
 import { 
   AiUretimScreen, 
   InboxScreen, 
@@ -25,6 +25,8 @@ export default function AppNavigator() {
       <Stack.Screen name="MainTabs" component={TabNavigator} />
       <Stack.Screen name="Profil" component={ProfilScreen} />
       <Stack.Screen name="OdemeTakvimi" component={OdemeTakvimiScreen} />
+      <Stack.Screen name="Isletmem" component={IsletmemScreen} />
+      <Stack.Screen name="MutabakatChat" component={MutabakatChatScreen} />
       <Stack.Screen name="AiChat" component={AiChatScreen} />
       <Stack.Screen name="AiAssistant" component={AiAssistantScreen} />
       <Stack.Screen name="DigitalAssistant" component={DigitalAssistantScreen} />
