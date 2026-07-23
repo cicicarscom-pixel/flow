@@ -1,64 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SectionList, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { GlobalAppBar, supabase } from '../../../../shared';
-import { useTranslation } from 'react-i18next';
 import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { supabase } from '../../../../shared';
 
 const formatCurrency = (amount) => {
-  return Number(amount).toLocaleString('tr-TR');
-};
-
-const getBadgeStyle = (status) => {
-  switch (status) {
-    case 'paid':
-      return { bg: 'rgba(0, 255, 127, 0.15)', text: '#00ff7f', label: 'Ödendi' };
-    case 'unpaid':
-      return { bg: 'rgba(255, 74, 74, 0.15)', text: '#ff4a4a', label: 'Devretti' };
-    case 'partial':
-      return { bg: 'rgba(255, 165, 0, 0.15)', text: '#ffa500', label: 'Kısmi' };
-    default:
-      return { bg: 'rgba(255, 255, 255, 0.1)', text: '#ffffff', label: 'Bilinmiyor' };
-  }
-};
-
-const getIconForType = (type) => {
-  return type === 'income' ? 'arrow-downward' : 'arrow-upward';
-};
-
-const getIconColorForType = (type) => {
-  return type === 'income' ? '#00f0ff' : '#b600f8';
+  return Number(amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 export default function IsletmemScreen({ navigation }) {
-  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const [sections, setSections] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [documents, setDocuments] = useState([]);
+  const [months, setMonths] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [activeTab, setActiveTab] = useState('Gelirler');
 
   useEffect(() => {
     const fetchPastDocuments = async () => {
       try {
-        const { data: documents, error } = await supabase
+        const { data: docs, error } = await supabase
           .from('finance_documents')
           .select('*')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        const now = new Date();
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-
-        // Filter out current month
-        const pastDocs = (documents || []).filter(doc => {
-          const dDate = new Date(doc.created_at);
-          return !(dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear);
-        });
-
         // Group by Month Year
-        const grouped = pastDocs.reduce((acc, doc) => {
+        const grouped = (docs || []).reduce((acc, doc) => {
           const dDate = new Date(doc.created_at);
           const monthYear = dDate.toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
           if (!acc[monthYear]) {
@@ -68,131 +36,174 @@ export default function IsletmemScreen({ navigation }) {
           return acc;
         }, {});
 
-        const sectionData = Object.keys(grouped).map(key => ({
-          title: key,
-          data: grouped[key]
-        }));
-
-        setSections(sectionData);
+        const monthKeys = Object.keys(grouped);
+        setMonths(monthKeys);
+        if (monthKeys.length > 0) {
+          setSelectedMonth(monthKeys[0]);
+        }
+        setDocuments(docs || []);
       } catch (err) {
         console.warn("Error fetching past documents", err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchPastDocuments();
   }, []);
 
-  const renderItem = ({ item }) => {
-    const amount = Number(item.amount_minor) / 100;
-    const badge = getBadgeStyle(item.payment_status);
-    const dateStr = new Date(item.created_at).toLocaleDateString('tr-TR');
+  const currentDocs = documents.filter(doc => {
+    if (!selectedMonth) return false;
+    const dDate = new Date(doc.created_at);
+    return dDate.toLocaleString('tr-TR', { month: 'long', year: 'numeric' }) === selectedMonth;
+  });
 
-    return (
-      <View style={styles.card}>
-        <View className="flex-row items-center justify-between mb-2">
-          <View className="flex-row items-center">
-            <View style={[styles.iconBox, { backgroundColor: getIconColorForType(item.type) + '20' }]}>
-              <MaterialIcons name={getIconForType(item.type)} size={18} color={getIconColorForType(item.type)} />
-            </View>
-            <View className="ml-3">
-              <Text className="text-white text-sm font-bold">
-                {item.type === 'income' ? 'Gelir' : 'Gider'} Faturası
-              </Text>
-              <Text className="text-[#b9cacb] text-xs opacity-70 mt-0.5">{dateStr}</Text>
-            </View>
-          </View>
-          <Text className="text-white font-bold text-base">
-            {item.type === 'income' ? '+' : '-'}{formatCurrency(amount)} ₺
-          </Text>
-        </View>
+  const totalIncome = currentDocs.filter(d => d.type === 'income').reduce((sum, d) => sum + (Number(d.amount_minor) / 100), 0);
+  const totalExpense = currentDocs.filter(d => d.type === 'expense').reduce((sum, d) => sum + (Number(d.amount_minor) / 100), 0);
+  const totalBalance = totalIncome - totalExpense;
 
-        <View className="flex-row justify-between items-center mt-2 border-t border-[#ffffff10] pt-2">
-          <View style={[styles.badge, { backgroundColor: badge.bg }]}>
-            <Text style={{ color: badge.text, fontSize: 10, fontWeight: 'bold' }}>{badge.label}</Text>
-          </View>
-          <Text className="text-[#b9cacb] text-[10px] opacity-50">ID: {item.id.slice(0, 8)}...</Text>
-        </View>
-      </View>
-    );
-  };
-
-  const renderSectionHeader = ({ section: { title } }) => (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionHeaderText}>{title.toUpperCase()}</Text>
-    </View>
-  );
+  const displayDocs = currentDocs.filter(doc => {
+    if (activeTab === 'Gelirler') return doc.type === 'income';
+    if (activeTab === 'Giderler') return doc.type === 'expense';
+    return true; // Faturalar or others
+  });
 
   return (
-    <View className="flex-1 bg-[#0A0A0B]">
-      <ImageBackground 
-        source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
-        style={StyleSheet.absoluteFillObject}
-        resizeMode="cover"
-      >
-        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(10, 10, 11, 0.85)' }]} />
-      </ImageBackground>
-
-      <GlobalAppBar 
-        level={3} 
-        module="finans" 
-        title="İşletmem (Geçmiş)" 
-        onBack={() => navigation.goBack()}
-      />
-
-      {isLoading ? (
-        <View className="flex-1 justify-center items-center">
-          <Text className="text-[#00f0ff]">Geçmiş kayıtlar yükleniyor...</Text>
+    <View style={[styles.container, { paddingTop: insets.top }]} className="flex-1 bg-black">
+      {/* TopAppBar */}
+      <View className="flex-row items-center justify-between px-5 h-16 bg-black z-50">
+        <View className="flex-row items-center gap-3">
+          <MaterialIcons name="account-balance" size={24} color="#4be277" />
+          <Text className="text-[#4be277] text-2xl font-bold font-['HankenGrotesk-SemiBold']">İşletmem</Text>
         </View>
-      ) : sections.length === 0 ? (
-        <View className="flex-1 justify-center items-center px-6">
-          <MaterialIcons name="history" size={48} color="rgba(255,255,255,0.2)" />
-          <Text className="text-[#b9cacb] text-center mt-4">Geçmiş döneme ait herhangi bir hesap kaydınız bulunmuyor.</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} className="opacity-80 active:scale-95">
+          <MaterialIcons name="close" size={24} color="#bccbb9" />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
+        {/* Monthly Selector */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-6 mb-8 flex-row gap-4 py-2">
+          {months.map(m => (
+            <TouchableOpacity 
+              key={m}
+              onPress={() => setSelectedMonth(m)}
+              className={`flex-shrink-0 px-6 py-2 rounded-xl flex-row items-center gap-2 ${selectedMonth === m ? 'bg-[#4be277]' : 'bg-[#202020]'}`}
+            >
+              <Text className={`font-medium ${selectedMonth === m ? 'text-[#003915]' : 'text-[#bccbb9]'}`}>{m}</Text>
+              {selectedMonth === m && <MaterialIcons name="expand-more" size={16} color="#003915" />}
+            </TouchableOpacity>
+          ))}
+          {months.length === 0 && (
+            <View className="flex-shrink-0 px-6 py-2 rounded-xl bg-[#4be277] flex-row items-center gap-2">
+              <Text className="text-[#003915] font-medium">Bu Ay</Text>
+              <MaterialIcons name="expand-more" size={16} color="#003915" />
+            </View>
+          )}
+        </ScrollView>
+
+        {/* Summary Bento Grid */}
+        <View className="flex-row flex-wrap justify-between mb-8 gap-y-4">
+          <View className="w-full bg-[#1b1b1c] rounded-xl p-6 relative overflow-hidden" style={styles.glowBorder}>
+            <Text className="text-[#bccbb9] text-[12px] uppercase tracking-widest mb-1 font-['JetBrainsMono-Medium']">Toplam Bakiye</Text>
+            <Text className="text-[#4be277] text-5xl font-bold font-['HankenGrotesk-Bold'] tracking-tighter">₺{formatCurrency(totalBalance)}</Text>
+            <View className="mt-4 flex-row items-center gap-2">
+              <MaterialIcons name="trending-up" size={16} color="#4be277" />
+              <Text className="text-[#4be277] text-xs font-medium">Geçen aya göre %12 artış</Text>
+            </View>
+          </View>
+
+          <View className="w-[48%] bg-[#202020] rounded-xl p-4 border border-[#3d4a3d]/30">
+            <Text className="text-[#bccbb9] text-[12px] mb-1 font-['JetBrainsMono-Medium']">Gelirler</Text>
+            <Text className="text-[#4ae176] text-2xl font-semibold font-['HankenGrotesk-SemiBold']">₺{formatCurrency(totalIncome)}</Text>
+          </View>
+          
+          <View className="w-[48%] bg-[#202020] rounded-xl p-4 border border-[#3d4a3d]/30">
+            <Text className="text-[#bccbb9] text-[12px] mb-1 font-['JetBrainsMono-Medium']">Giderler</Text>
+            <Text className="text-[#ff8a83] text-2xl font-semibold font-['HankenGrotesk-SemiBold']">₺{formatCurrency(totalExpense)}</Text>
+          </View>
         </View>
-      ) : (
-        <SectionList
-          sections={sections}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          renderSectionHeader={renderSectionHeader}
-          contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 20 }}
-          stickySectionHeadersEnabled={false}
-        />
-      )}
+
+        {/* Category Tabs */}
+        <View className="flex-row items-center gap-8 mb-6 border-b border-[#3d4a3d]/20">
+          {['Gelirler', 'Giderler', 'Faturalar'].map(tab => (
+            <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={[styles.tabButton, activeTab === tab && styles.activeTab]}>
+              <Text className={`text-base font-medium pb-3 ${activeTab === tab ? 'text-[#4be277]' : 'text-[#bccbb9]'}`}>{tab}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Transactions List */}
+        <View className="space-y-4 mb-8">
+          {displayDocs.length === 0 ? (
+            <View className="py-8 items-center">
+              <Text className="text-[#bccbb9] text-center">Bu kategori için kayıt bulunamadı.</Text>
+            </View>
+          ) : (
+            displayDocs.slice(0, 5).map((item, idx) => {
+              const amount = Number(item.amount_minor) / 100;
+              const dateStr = new Date(item.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
+              return (
+                <TouchableOpacity key={item.id || idx} className="flex-row items-center justify-between p-4 bg-[#2a2a2a] rounded-xl mb-3">
+                  <View className="flex-row items-center gap-4">
+                    <View className="w-12 h-12 rounded-lg bg-[#353535] flex items-center justify-center">
+                      <MaterialIcons name={item.type === 'income' ? 'rocket-launch' : 'payments'} size={24} color={item.type === 'income' ? '#4be277' : '#ff8a83'} />
+                    </View>
+                    <View>
+                      <Text className="text-[#e5e2e1] text-base font-semibold">{item.title || (item.type === 'income' ? 'Satış Geliri' : 'Gider Faturası')}</Text>
+                      <Text className="text-[#bccbb9] text-xs mt-1 font-['JetBrainsMono-Medium']">{dateStr} • {item.payment_status}</Text>
+                    </View>
+                  </View>
+                  <View className="items-end">
+                    <Text className={`text-sm font-medium font-['JetBrainsMono-Medium'] ${item.type === 'income' ? 'text-[#4be277]' : 'text-[#ff8a83]'}`}>
+                      {item.type === 'income' ? '+' : '-'} ₺{formatCurrency(amount)}
+                    </Text>
+                    <MaterialIcons name="chevron-right" size={16} color="#bccbb9" style={{ marginTop: 4 }} />
+                  </View>
+                </TouchableOpacity>
+              )
+            })
+          )}
+          
+          {displayDocs.length > 5 && (
+            <TouchableOpacity className="pt-4 pb-8 flex-row justify-center items-center gap-2">
+              <Text className="text-[#bccbb9] font-medium text-sm">Tümünü Gör</Text>
+              <MaterialIcons name="arrow-forward" size={16} color="#bccbb9" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Insights Card */}
+        <View className="bg-[#202020] rounded-2xl p-6 mb-24 border border-[#3d4a3d]/10">
+          <Text className="text-[#4be277] text-lg font-semibold mb-4">Akıllı Analiz</Text>
+          <View className="flex-row gap-4">
+            <View className="w-1 bg-[#4be277] rounded-full" />
+            <Text className="text-[#bccbb9] text-base leading-6 flex-1">
+              Bu ay giderleriniz geçen aya göre <Text className="text-[#e5e2e1] font-bold">%15 azaldı</Text>. Tasarruf hedefinize ₺5.000 daha yakınsınız.
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: 'rgba(32, 31, 34, 0.6)',
+  container: {
+    flex: 1,
+  },
+  glowBorder: {
+    shadowColor: '#22c55e',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
+    borderColor: 'rgba(34, 197, 94, 0.2)',
   },
-  iconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
+  tabButton: {
+    paddingBottom: 12,
   },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  sectionHeader: {
-    marginBottom: 12,
-    marginTop: 8,
-  },
-  sectionHeaderText: {
-    color: '#00f0ff',
-    fontSize: 12,
-    fontWeight: 'bold',
-    letterSpacing: 1,
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#4be277',
   }
 });
