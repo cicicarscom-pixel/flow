@@ -1,24 +1,72 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Alert, ImageBackground, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, ActivityIndicator, ImageBackground, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 import XLSX from 'xlsx';
-import { supabase , ChatInputBar , GlobalAppBar } from '../shared';
+import { supabase, ChatInputBar, GlobalAppBar } from '../shared';
 
-
-
-export default function AiAssistantScreen({ navigation }) {
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Merhaba! Finansal verilerinizle ilgili sorular sorabilir veya 'Bana Excel/PDF raporu ver' diyebilirsiniz.", sender: 'ai' }
-  ]);
+export default function AiAssistantScreen({ navigation, route }) {
+  const mode = route.params?.mode || 'report';
+  
+  const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pastDocs, setPastDocs] = useState([]);
+
+  const fetchPastUnpaidDocs = async () => {
+    try {
+      const { data: documents, error } = await supabase
+        .from('finance_documents')
+        .select('*')
+        .in('flow_payment_status', ['unpaid', 'partial']);
+
+      if (error) throw error;
+
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      // Filter out current month
+      const past = (documents || []).filter(doc => {
+        const dDate = new Date(doc.created_at);
+        return !(dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear);
+      });
+
+      setPastDocs(past);
+
+      let totalReceivable = 0;
+      let totalPayable = 0;
+
+      past.forEach(doc => {
+        const amount = Number(doc.amount_minor) / 100;
+        if (doc.type === 'income') totalReceivable += amount;
+        if (doc.type === 'expense') totalPayable += amount;
+      });
+
+      const initialMessage = `Geçtiğimiz aylardan devreden ${totalReceivable.toLocaleString('tr-TR')} TL tahsil edilmemiş alacağınız ve ${totalPayable.toLocaleString('tr-TR')} TL ödenmemiş gideriniz var. Bu listede ödediğiniz var mı?`;
+      setMessages([{ id: Date.now(), text: initialMessage, sender: 'ai' }]);
+    } catch (error) {
+      console.warn("Error fetching past unpaid docs", error);
+    }
+  };
+
+  useEffect(() => {
+    if (mode === 'mutabakat') {
+      fetchPastUnpaidDocs();
+    } else {
+      setMessages([
+        { id: 1, text: "Merhaba! Finansal verilerinizle ilgili sorular sorabilir veya 'Bana Excel/PDF raporu ver' diyebilirsiniz.", sender: 'ai' }
+      ]);
+    }
+  }, [mode]);
+
+
 
   const addMessage = (text, sender) => {
-    setMessages(prev => [...prev, { id: Date.now(), text, sender }]);
+    setMessages(prev => [...prev, { id: Date.now() + Math.random(), text, sender }]);
   };
 
   const handleSend = async () => {
@@ -28,25 +76,49 @@ export default function AiAssistantScreen({ navigation }) {
     setInputText('');
     setLoading(true);
 
-    try {
-      const lowerText = userText.toLowerCase();
-      
-      // Determine if it's a report request
-      if (lowerText.includes('pdf')) {
-        await generatePDFReport();
-        addMessage("PDF raporunuz hazırlandı ve paylaşıma açıldı.", 'ai');
-      } else if (lowerText.includes('excel')) {
-        await generateExcelReport();
-        addMessage("Excel raporunuz hazırlandı ve paylaşıma açıldı.", 'ai');
-      } else {
-        // Fallback for generic chat
-        addMessage("Sizi anlıyorum ancak detaylı analiz için henüz sadece PDF ve Excel rapor dökümlerini destekliyorum. Lütfen 'PDF ver' veya 'Excel raporu oluştur' yazın.", 'ai');
+    if (mode === 'mutabakat') {
+      try {
+        const { data, error } = await supabase.functions.invoke('mutabakat-chat', {
+          body: {
+            message: userText,
+            pastDocs: pastDocs
+          }
+        });
+
+        if (error) throw error;
+
+        addMessage(data.reply, 'ai');
+        
+        // Refresh data if AI made changes
+        if (data.updated_ids && data.updated_ids.length > 0) {
+          fetchPastUnpaidDocs();
+        }
+      } catch (error) {
+        console.error(error);
+        addMessage("Bağlantı hatası oluştu, lütfen tekrar deneyin.", 'ai');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      addMessage("Bir hata oluştu. Lütfen tekrar deneyin.", 'ai');
-    } finally {
-      setLoading(false);
+    } else {
+      // Report Mode
+      try {
+        const lowerText = userText.toLowerCase();
+        
+        if (lowerText.includes('pdf')) {
+          await generatePDFReport();
+          addMessage("PDF raporunuz hazırlandı ve paylaşıma açıldı.", 'ai');
+        } else if (lowerText.includes('excel')) {
+          await generateExcelReport();
+          addMessage("Excel raporunuz hazırlandı ve paylaşıma açıldı.", 'ai');
+        } else {
+          addMessage("Sizi anlıyorum ancak detaylı analiz için henüz sadece PDF ve Excel rapor dökümlerini destekliyorum. Lütfen 'PDF ver' veya 'Excel raporu oluştur' yazın.", 'ai');
+        }
+      } catch (error) {
+        console.error(error);
+        addMessage("Bir hata oluştu. Lütfen tekrar deneyin.", 'ai');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -58,7 +130,6 @@ export default function AiAssistantScreen({ navigation }) {
 
   const generatePDFReport = async () => {
     const transactions = await fetchTransactions();
-    
     let rows = transactions.map(t => `
       <tr>
         <td style="padding: 8px; border: 1px solid #ddd;">${t.date}</td>
@@ -83,9 +154,7 @@ export default function AiAssistantScreen({ navigation }) {
             <thead>
               <tr><th>Tarih</th><th>Başlık</th><th>Tutar</th></tr>
             </thead>
-            <tbody>
-              ${rows}
-            </tbody>
+            <tbody>${rows}</tbody>
           </table>
         </body>
       </html>
@@ -97,8 +166,6 @@ export default function AiAssistantScreen({ navigation }) {
 
   const generateExcelReport = async () => {
     const transactions = await fetchTransactions();
-    
-    // Create worksheet
     const ws = XLSX.utils.json_to_sheet(transactions.map(t => ({
       Tarih: t.date,
       Başlık: t.title,
@@ -107,11 +174,9 @@ export default function AiAssistantScreen({ navigation }) {
       Açıklama: t.description || ''
     })));
 
-    // Create workbook
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Islemler");
 
-    // Generate base64
     const base64 = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
     // eslint-disable-next-line import/namespace
     const uri = FileSystem.cacheDirectory + 'finansal_rapor.xlsx';
@@ -129,7 +194,7 @@ export default function AiAssistantScreen({ navigation }) {
       >
         <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(10, 10, 11, 0.8)' }]} />
       </ImageBackground>
-      <GlobalAppBar level={2} module="finans" title="Smart Financial Assistant" showProfile={false} />
+      <GlobalAppBar level={2} module="finans" title={mode === 'mutabakat' ? "AI Mutabakat" : "Smart Financial Assistant"} showProfile={false} />
 
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
@@ -151,7 +216,7 @@ export default function AiAssistantScreen({ navigation }) {
           inputText={inputText}
           setInputText={setInputText}
           handleSend={handleSend}
-          placeholder="Rapor isteyin (Örn: Excel raporu)"
+          placeholder={mode === 'mutabakat' ? "Mesajınızı yazın..." : "Rapor isteyin (Örn: Excel raporu)"}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>

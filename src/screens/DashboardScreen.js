@@ -141,26 +141,55 @@ export default function DashboardScreen({ navigation }) {
           if (botData) setAiActive(botData.is_active);
         }
 
-        // 2. Finance Stats (Transactions)
-        const { data: transactions } = await supabase.from('transactions').select('*');
+        // 2. Finance Stats (Transactions + Finance Documents)
         let inc = 0, exp = 0;
         let upcoming = [];
         const today = new Date().toISOString().split('T')[0];
-        
+
+        // Fetch transactions
+        const { data: transactions } = await supabase.from('transactions').select('*');
         if (transactions) {
           transactions.forEach(t => {
             if (t.type === 'income') inc += Number(t.amount);
             if (t.type === 'expense') {
               exp += Number(t.amount);
               if (t.date && t.date >= today) {
-                upcoming.push(t);
+                upcoming.push({ ...t, description: t.title || 'Ödeme' });
               }
             }
           });
-          
-          upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
-          setUpcomingPayments(upcoming.slice(0, 5));
         }
+
+        // Fetch finance_documents
+        let orgId = null;
+        if (session) {
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).single();
+          orgId = orgMember?.organization_id;
+        }
+
+        if (orgId) {
+          const { data: docs } = await supabase.from('finance_documents').select('*').eq('organization_id', orgId);
+          if (docs) {
+            docs.forEach(d => {
+              const amt = Number(d.amount_minor) / 100;
+              if (d.type === 'income' || d.type === 'sales') {
+                if (d.flow_payment_status === 'paid') inc += amt;
+              } else if (d.type === 'expense') {
+                if (d.flow_payment_status === 'paid') {
+                  exp += amt;
+                } else {
+                  const docDate = d.created_at ? new Date(d.created_at).toISOString().split('T')[0] : null;
+                  if (docDate && docDate >= today) {
+                    upcoming.push({ id: d.id, date: docDate, amount: amt, description: d.title || 'Fatura Ödemesi', type: 'expense' });
+                  }
+                }
+              }
+            });
+          }
+        }
+
+        upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
+        setUpcomingPayments(upcoming.slice(0, 5));
         setFinanceStats({ income: inc, expense: exp });
 
         // 3. Social Stats (Zernio)

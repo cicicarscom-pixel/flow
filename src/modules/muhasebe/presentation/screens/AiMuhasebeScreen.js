@@ -99,8 +99,24 @@ export default function AiMuhasebeScreen({ navigation }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: documents, error } = await supabase.from('finance_documents').select('*');
-        if (error) throw error;
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        let orgId = null;
+        if (session) {
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).single();
+          orgId = orgMember?.organization_id;
+        }
+
+        const [docRes, transRes] = await Promise.all([
+          orgId ? supabase.from('finance_documents').select('*').eq('organization_id', orgId) : supabase.from('finance_documents').select('*'),
+          session ? supabase.from('transactions').select('*').eq('profile_id', session.user.id) : supabase.from('transactions').select('*')
+        ]);
+        
+        if (docRes.error) throw docRes.error;
+        if (transRes.error) throw transRes.error;
+        
+        const documents = docRes.data;
+        const transactions = transRes.data;
         
         const now = new Date();
         const currentMonth = now.getMonth();
@@ -114,17 +130,33 @@ export default function AiMuhasebeScreen({ navigation }) {
              const dDate = new Date(doc.created_at);
              const amount = Number(doc.amount_minor) / 100;
              
-             // Sadece bu ayki (Current Month) Gelir/Gider toplamları (Ödenmiş olanlar)
-             if (dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear && doc.payment_status === 'paid') {
-                if (doc.type === 'income') inc += amount;
+             if (dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear && doc.flow_payment_status === 'paid') {
+                if (doc.type === 'income' || doc.type === 'sales') inc += amount;
                 if (doc.type === 'expense') exp += amount;
              }
              
-             // Bekleyen (Ödenmemiş) Gelir ve Giderler
-             if (doc.payment_status === 'unpaid' || doc.payment_status === 'partial') {
-                if (doc.type === 'income') receivable += amount;
+             if (doc.flow_payment_status === 'unpaid' || doc.flow_payment_status === 'partial') {
+                if (doc.type === 'income' || doc.type === 'sales') receivable += amount;
                 if (doc.type === 'expense') payable += amount;
              }
+          });
+        }
+
+        if (transactions) {
+          transactions.forEach(t => {
+            if (!t.date) return;
+            const dDate = new Date(t.date);
+            const amount = Number(t.amount);
+
+            if (dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear && t.status === 'paid') {
+              if (t.type === 'income') inc += amount;
+              if (t.type === 'expense') exp += amount;
+            }
+
+            if (t.status === 'pending') {
+              if (t.type === 'income') receivable += amount;
+              if (t.type === 'expense') payable += amount;
+            }
           });
         }
         
@@ -136,7 +168,7 @@ export default function AiMuhasebeScreen({ navigation }) {
           payable 
         });
       } catch (err) {
-         console.warn("Error fetching finance_documents", err);
+         console.warn("Error fetching finance data", err);
       } finally {
          setIsLoading(false);
       }
@@ -226,38 +258,7 @@ export default function AiMuhasebeScreen({ navigation }) {
             </AnimatedBorderCard>
           </View>
 
-          <View className="mb-6">
-            <View style={[styles.glassCard, { padding: 16, marginBottom: 12 }]}>
-              <Text className="text-[#b9cacb] text-xs font-medium uppercase tracking-wider mb-1">Tahmini Net</Text>
-              {isLoading ? (
-                <Skeleton width="100%" height={28} />
-              ) : (
-                <Text className={`text-2xl font-bold ${financeData.net >= 0 ? 'text-[#00ff7f]' : 'text-[#ff3131]'}`}>
-                  {financeData.net > 0 ? '+' : ''}{formatCurrency(financeData.net)} ₺
-                </Text>
-              )}
-            </View>
 
-            <View className="flex-row justify-between">
-              <View style={[styles.glassCard, { flex: 1, padding: 16, marginRight: 6 }]}>
-                <Text className="text-[#b9cacb] text-[10px] font-medium uppercase tracking-wider mb-1">Tahsil Edilecek</Text>
-                {isLoading ? (
-                  <Skeleton width="100%" height={20} />
-                ) : (
-                  <Text className="text-[#00f0ff] text-base font-bold">{formatCurrency(financeData.receivable)} ₺</Text>
-                )}
-              </View>
-
-              <View style={[styles.glassCard, { flex: 1, padding: 16, marginLeft: 6 }]}>
-                <Text className="text-[#b9cacb] text-[10px] font-medium uppercase tracking-wider mb-1">Ödenecek</Text>
-                {isLoading ? (
-                  <Skeleton width="100%" height={20} />
-                ) : (
-                  <Text className="text-[#ffb4ab] text-base font-bold">{formatCurrency(financeData.payable)} ₺</Text>
-                )}
-              </View>
-            </View>
-          </View>
 
           {/* Action Buttons Section */}
           <View className="flex-row justify-between pt-2 pb-6">
@@ -283,27 +284,13 @@ export default function AiMuhasebeScreen({ navigation }) {
           </View>
 
           {/* New Bottom Buttons */}
-          <View className="pb-10">
-            {/* Ay Sonu Mutabakat Asistanı (Müşavirin Gönderdiği) */}
-            <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 16, borderColor: 'rgba(255, 74, 74, 0.4)' }]}>
-              <CustomButton 
-                onPress={() => navigation.navigate('MutabakatChat')}
-                className="bg-[rgba(255,74,74,0.1)] py-4 px-4 h-auto"
-                title="AY SONU MUTABAKAT ONAYI BEKLİYOR"
-                textClassName="text-[#ff4a4a] text-[12px] font-bold uppercase tracking-widest"
-                leftIcon={<MaterialIcons name="notification-important" size={18} color="#ff4a4a" />}
-              />
-              <Text className="text-[#b9cacb] text-xs text-center px-4 pb-3 opacity-80">
-                Müşaviriniz (Ledger AI) devreden bakiyeleriniz için onayınızı istiyor.
-              </Text>
-            </View>
-
+          <View className="pb-10 flex-col space-y-4">
             {/* Test Push Button (Dev Mode) */}
-            <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 16, borderColor: 'rgba(255, 255, 0, 0.4)' }]}>
+            <View style={[styles.glassCard, { borderRadius: 12, borderColor: 'rgba(255, 255, 0, 0.4)' }]}>
               <CustomButton 
                 onPress={() => {
-                  alert("Bildirim Gönderildi: 'Önceki aya ait hesaplarınızı kapatıp yeni ayı başlatmak için mutabakatınız hazır.' (Tıklandığında MutabakatChat ekranına yönlendirecektir)");
-                  navigation.navigate('MutabakatChat');
+                  alert("Bildirim Gönderildi: 'Önceki aya ait hesaplarınızı kapatıp yeni ayı başlatmak için mutabakatınız hazır.' (Tıklandığında Asistan ekranına yönlendirecektir)");
+                  navigation.navigate('AiAssistant', { mode: 'mutabakat' });
                 }}
                 className="bg-[rgba(255,255,0,0.1)] py-4 px-4 h-auto"
                 title="[DEV] TEST BİLDİRİMİ GÖNDER"
@@ -312,7 +299,7 @@ export default function AiMuhasebeScreen({ navigation }) {
               />
             </View>
 
-            <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 16 }]}>
+            <View style={[styles.glassCard, { borderRadius: 12 }]}>
               <CustomButton 
                 onPress={() => navigation.navigate('Isletmem')}
                 className="bg-transparent py-4 px-4 h-auto"
@@ -322,7 +309,7 @@ export default function AiMuhasebeScreen({ navigation }) {
               />
             </View>
 
-            <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 16 }]}>
+            <View style={[styles.glassCard, { borderRadius: 12 }]}>
               <CustomButton 
                 onPress={() => navigation.navigate('OdemeTakvimi')}
                 className="bg-transparent py-4 px-4 h-auto"
@@ -332,7 +319,7 @@ export default function AiMuhasebeScreen({ navigation }) {
               />
             </View>
             
-            <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 16 }]}>
+            <View style={[styles.glassCard, { borderRadius: 12 }]}>
               <CustomButton 
                 onPress={() => navigation.navigate('AiAssistant', { mode: 'report' })}
                 className="bg-transparent py-4 px-4 h-auto"

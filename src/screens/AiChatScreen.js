@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert, ImageBackground, StyleSheet , KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -6,9 +6,6 @@ import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { supabase , ChatInputBar , GlobalAppBar } from '../shared';
-
-
-
 
 export default function AiChatScreen({ route, navigation }) {
   const { transactionType } = route.params || { transactionType: 'income' };
@@ -18,57 +15,100 @@ export default function AiChatScreen({ route, navigation }) {
   ]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [orgId, setOrgId] = useState(null);
+  const [profileId, setProfileId] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) {
+        setProfileId(session.user.id);
+        const { data: orgMember } = await supabase
+          .from('organization_members')
+          .select('organization_id')
+          .eq('user_id', session.user.id)
+          .single();
+        setOrgId(orgMember?.organization_id || session.user.id);
+      }
+    };
+    fetchUser();
+  }, []);
 
   const addMessage = (text, sender, isImage = false) => {
-    setMessages(prev => [...prev, { id: Date.now(), text, sender, isImage }]);
+    setMessages(prev => [...prev, { id: Date.now() + Math.random(), text, sender, isImage }]);
   };
 
-  const processWithAI = async (base64Data, mimeType, textPrompt) => {
+  const processWithAI = async (uri, base64Data, mimeType, textPrompt) => {
     setLoading(true);
     try {
+      let publicUrl = null;
+
+      // 1. Insert draft row into finance_documents
+      const { data: draftDoc, error: insertError } = await supabase.from('finance_documents').insert([
+        {
+          organization_id: orgId || 'unknown',
+          type: transactionType,
+          image_url: null,
+          ledger_official_status: 'taslak',
+          flow_payment_status: 'unpaid', // temporary until edge function updates it
+          title: textPrompt ? `Metin girişi: ${textPrompt.substring(0, 20)}...` : 'AI Analizi Bekleniyor',
+          amount_minor: 0
+        }
+      ]).select().single();
+
+      if (insertError) throw insertError;
+
+      // 3. Call ledger-isleyici-api
       const payload = {
-        mode: 'finance',
-        prompt: textPrompt || `Please analyze this receipt for ${transactionType}.`,
+        document_id: draftDoc.id,
+        prompt: textPrompt,
+        mimeType: mimeType || 'image/jpeg',
+        profile_id: profileId,
+        organization_id: orgId
       };
 
       if (base64Data) {
-        payload.image = base64Data;
-        payload.mimeType = mimeType;
+        payload.imageBase64 = base64Data;
       }
 
-      const { data: result, error: invokeError } = await supabase.functions.invoke('gemini-chat', {
+      const { data: result, error: invokeError } = await supabase.functions.invoke('ledger-isleyici-api', {
         body: payload
       });
 
       if (invokeError) throw invokeError;
-      if (result.error) throw new Error(result.error);
+      if (result && result.error) throw new Error(result.error);
 
-      // The edge function returns the parsed JSON inside debug_parsedResult
-      let data = result.debug_parsedResult;
-      if (!data || !data.amount) {
-         // fallback if it was returned as string
-         data = JSON.parse(result.debug_generatedText || '{}');
-      }
-
-      if (!data.amount) throw new Error("Could not extract amount.");
-
-      // Save to Supabase
-      const { error } = await supabase.from('transactions').insert([
-        {
-          amount: data.amount,
-          date: data.date,
-          title: data.title,
-          type: data.type || transactionType
-        }
-      ]);
-
-      if (error) throw error;
-
-      addMessage(`İşlem takvime ve kasaya kaydedildi.\n\nTutar: ${data.amount} ₺\nTarih: ${data.date}\nBaşlık: ${data.title}`, 'ai');
+      // Edge function'dan gelen dinamik mesaji ekrana bas
+      addMessage(result.message || `Belge başarıyla analiz edildi.`, 'ai');
 
     } catch (error) {
-      console.error(error);
-      addMessage("İşlem kaydedilirken bir hata oluştu veya belge anlaşılamadı.", 'ai');
+      console.error("Belge isleme hatasi:", error);
+      addMessage(`İşlem kaydedilirken bir hata oluştu: ${error.message || "Bilinmeyen hata"}`, 'ai');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const processTextWithAI = async (textPrompt) => {
+    setLoading(true);
+    try {
+      // Metin mesajlari icin ledger-isleyici-api'yi dogrudan cagir
+      const { data: result, error: invokeError } = await supabase.functions.invoke('ledger-isleyici-api', {
+        body: { 
+          prompt: textPrompt,
+          profile_id: profileId,
+          organization_id: orgId
+        }
+      });
+
+      if (invokeError) throw invokeError;
+      if (result && result.error) throw new Error(result.error);
+
+      addMessage(result.message || "İşleminiz kaydedildi.", 'ai');
+
+    } catch (error) {
+      console.error("Sohbet hatasi:", error);
+      addMessage("Sohbet sırasında bir hata oluştu.", 'ai');
     } finally {
       setLoading(false);
     }
@@ -87,7 +127,7 @@ export default function AiChatScreen({ route, navigation }) {
 
     if (!result.canceled && result.assets[0].base64) {
       addMessage(result.assets[0].uri, 'user', true);
-      processWithAI(result.assets[0].base64, 'image/jpeg', null);
+      processWithAI(result.assets[0].uri, result.assets[0].base64, 'image/jpeg', null);
     }
   };
 
@@ -96,14 +136,14 @@ export default function AiChatScreen({ route, navigation }) {
     if (!result.canceled && result.assets[0].uri) {
       addMessage(`PDF Yüklendi: ${result.assets[0].name}`, 'user');
       const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, { encoding: FileSystem.EncodingType.Base64 });
-      processWithAI(base64, 'application/pdf', null);
+      processWithAI(result.assets[0].uri, base64, 'application/pdf', null);
     }
   };
 
   const handleSendText = () => {
     if (!inputText.trim()) return;
     addMessage(inputText, 'user');
-    processWithAI(null, null, inputText);
+    processTextWithAI(inputText);
     setInputText('');
   };
 

@@ -446,7 +446,16 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
 
 ---
 
-## 🆕 Son Güncellemeler (Temmuz 2026 - Analytics Cache & Zernio API)
+## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
+
+1. **Yapay Zeka Sorumluluk Ayrımı:** Sistemdeki yapay zeka ajanlarının sınırları netleştirildi. `ledger-isleyici-api` yalnızca finansal işlemlere ("Finansal Denetçi" rolü) odaklanırken, WhatsApp/Zernio entegrasyonu ("Ön Büro" rolü) diğer modüllerin sorumluluğunda bırakıldı. AiChatScreen üzerinden atılan tüm mesajlar doğrudan işleyici API'ye bağlandı.
+2. **Dinamik AI Hafızası (Context):** `ledger-isleyici-api`, kullanıcının anlık gelir/gider, borç/alacak toplamlarını ve `transactions` ile `finance_documents` tablolarından son 30 işlemi anlık olarak Supabase'den çekip Gemini modeline bağlam olarak sunmaya başladı.
+3. **Manuel Finans İşlemleri:** AI asistan ile yapılan konuşmalardan (örn: "Ahmet'e yarın 500 TL ödemem var") elde edilen manuel kasa girişleri, OCR moduna girmeden algılanıp doğrudan `transactions` tablosuna yazılır hale getirildi.
+4. **UI Finansal Veri Birleştirme:** `DashboardScreen`, `AiMuhasebeScreen` ve `IsletmemScreen` ekranları refaktör edilerek, hem resmi faturalar (`finance_documents`) hem de manuel harcamalar (`transactions`) ortak bir potada toplanıp gösterilmeye başlandı. İşletmem ekranındaki ay bazlı gruplama ve akıllı analiz bu karma veriye göre çalışır hale getirildi.
+
+---
+
+## 🆕 Geçmiş Güncellemeler (Temmuz 2026 - Analytics Cache & Zernio API)
 
 1. **Zernio Client ve Analytics Cache Güncellemesi:** Supabase Edge Functions altındaki `ZernioClient.ts` dosyası güncellenerek sosyal medya platformları (YouTube, LinkedIn, Instagram, Google Business, vb.) için analytics metotları önbellekleme (cache) desteği ile entegre edildi.
 2. **Hata Yönetimi ve Silme İşlemi:** Zernio hesabını ayırma (`disconnect-account`) işlemi doğrudan ZernioClient içindeki metoda bağlandı.
