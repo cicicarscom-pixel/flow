@@ -72,108 +72,99 @@ export default function OdemeTakvimiScreen({ navigation }) {
     }
   };
 
-  const renderBox = (day, dayOfWeek, monthIndex) => {
+  const renderBox = (day, monthIndex, shortMonth) => {
     const key = `${monthIndex}-${day}`;
     const transactions = transactionsMap[key] || [];
 
-    const isWeekend = dayOfWeek >= 5;
-    const isSpecialDay = day === 9 && monthIndex === 5; // Highlight day 9 like the image
+    const incomes = transactions.filter(t => t.type === 'income' || t.amount > 0);
+    const expenses = transactions.filter(t => t.type === 'expense' || t.amount < 0);
 
     return (
-      <View key={`day-${day}`} className="w-[14.28%] min-h-[90px] p-0.5">
-        <View className={`flex-1 rounded-md bg-[#252528] items-center pt-2 pb-1 ${isSpecialDay ? 'border border-[#34c759]' : 'border border-transparent'}`}>
-           <View className={isSpecialDay ? "bg-[#34c759] rounded-full w-5 h-5 items-center justify-center -mt-0.5" : ""}>
-             <Text className={`${isWeekend ? 'text-[#ff3b30]' : 'text-[#e5e2e3]'} text-[13px] font-bold`}>{day}</Text>
-           </View>
-           <View className="w-full px-1 mt-1 items-start">
-             {transactions.map((t, idx) => {
-               // A special case for zero amount (just a label, like the birthday in the image)
-               if (t.amount === 0) {
-                  return (
-                    <View key={idx} className="w-full mb-1 bg-[#849495]/40 rounded-sm px-0.5">
-                      <Text numberOfLines={1} className="text-white font-medium text-[8px]">{t.title}</Text>
-                    </View>
-                  );
-               }
+      <View key={`day-${day}`} className="flex-row bg-[#121412] min-h-[64px] mb-1 rounded-xl overflow-hidden border border-[#2d332d]">
+        {/* Left: Gelir (Income) + Date */}
+        <View className="flex-1 flex-row relative p-2">
+          {/* Date */}
+          <View className="flex-col mr-2 w-6">
+            <Text className="text-[#22c55e] font-bold leading-tight text-sm">{day}</Text>
+            <Text className="text-gray-500 font-mono uppercase text-[8px] tracking-tighter">{shortMonth}</Text>
+          </View>
+          
+          {/* Incomes */}
+          <View className="flex-1 justify-start">
+            {incomes.map((t, idx) => (
+              <View key={idx} className="flex-row justify-between items-start mb-1">
+                <Text numberOfLines={1} className="text-[11px] text-gray-300 flex-1 mr-1">{t.title}</Text>
+                <Text className="text-[11px] text-[#22c55e] font-mono">{Math.abs(t.amount)} ₺</Text>
+              </View>
+            ))}
+          </View>
+          
+          {/* Vertical center divider */}
+          <View className="absolute right-0 top-2 bottom-2 w-[1px] bg-[#2d332d]" />
+        </View>
 
-               return (
-                 <View key={idx} className="w-full mb-1">
-                   <Text numberOfLines={1} className={t.type === 'expense' ? "text-[#ff3b30] font-medium text-[9px]" : "text-[#34c759] font-medium text-[9px]"}>{t.title}</Text>
-                   <Text numberOfLines={1} className={t.type === 'expense' ? "text-[#ff3b30] font-bold text-[9px]" : "text-[#34c759] font-bold text-[9px]"}>
-                     {t.type === 'expense' ? '-' : '+'}{t.amount}
-                   </Text>
-                 </View>
-               );
-             })}
-           </View>
+        {/* Right: Gider (Expense) */}
+        <View className="flex-1 justify-start p-2">
+          {expenses.map((t, idx) => (
+            <View key={idx} className="flex-row justify-between items-start mb-1">
+              <Text numberOfLines={1} className="text-[11px] text-gray-300 flex-1 mr-1">{t.title}</Text>
+              <Text className="text-[11px] text-[#22c55e] font-mono">{Math.abs(t.amount)} ₺</Text>
+            </View>
+          ))}
         </View>
       </View>
     );
   };
 
   const renderMonth = ({ item, index }) => {
-    // For visual consistency, let's pretend all months start with some offset.
-    // June 2024 started on a Saturday (index 5)
-    const startDayOffset = (index * 2 + 3) % 7; // Just a dummy varied offset for realistic look
-    
-    let cells = [];
-    for (let i = 0; i < startDayOffset; i++) {
-      cells.push(<View key={`empty-${i}`} className="w-[14.28%] min-h-[90px]" />);
-    }
-
-    // Generate 30 days
-    for (let i = 1; i <= 30; i++) {
-      const dayOfWeek = (startDayOffset + i - 1) % 7;
-      cells.push(renderBox(i, dayOfWeek, index));
-    }
-
     const [monthName, year] = item.split(' ');
     const shortMonth = monthName.substring(0, 3).toUpperCase();
 
+    // Generate 31 days (assuming max for simplicity, or we can use Date logic for exact days)
+    const daysInMonth = new Date(parseInt(year), index + 1, 0).getDate();
+    
+    let cells = [];
+    for (let i = 1; i <= daysInMonth; i++) {
+      cells.push(renderBox(i, index, shortMonth));
+    }
+
     return (
-      <View style={{ width }}>
-        <ScrollView contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 10 }}>
-          <View className="bg-[#1c1c1e] rounded-[32px] p-3 pb-6 border border-white/5">
-            
-            {/* Header Controls for Month */}
-            <View className="flex-row items-center justify-between mb-6 mt-2 px-2">
-              <View className="flex-row items-center">
-                <Text className="text-white text-3xl font-light tracking-widest">{shortMonth}</Text>
-                <Text className="text-[#8e8e93] text-xl ml-2 font-light">{year}</Text>
-              </View>
-              <View className="flex-row gap-4">
-                <TouchableOpacity onPress={handlePrev}>
-                  <MaterialIcons name="chevron-left" size={28} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleNext}>
-                  <MaterialIcons name="chevron-right" size={28} color="#fff" />
-                </TouchableOpacity>
-              </View>
+      <View style={{ width }} className="flex-1">
+        <ScrollView contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 16 }} className="flex-1">
+          {/* Header Controls for Month */}
+          <View className="flex-row items-center justify-between mb-4 mt-2">
+            <View className="flex-row items-center">
+              <Text className="text-gray-100 text-2xl font-semibold tracking-wide">{monthName} {year}</Text>
             </View>
-            
-            {/* Weekdays Header */}
-            <View className="flex-row justify-between mb-3 px-0.5">
-              {[
-                t('muhasebe.odemeTakvimi.weekdays.mon'),
-                t('muhasebe.odemeTakvimi.weekdays.tue'),
-                t('muhasebe.odemeTakvimi.weekdays.wed'),
-                t('muhasebe.odemeTakvimi.weekdays.thu'),
-                t('muhasebe.odemeTakvimi.weekdays.fri'),
-                t('muhasebe.odemeTakvimi.weekdays.sat'),
-                t('muhasebe.odemeTakvimi.weekdays.sun')
-              ].map((d, i) => (
-                <Text key={d} className={`text-center w-[14.28%] text-[10px] font-bold tracking-wider ${i >= 5 ? 'text-[#ff3b30]' : 'text-[#8e8e93]'}`}>
-                  {d}
-                </Text>
-              ))}
+            <View className="flex-row gap-4">
+              <TouchableOpacity onPress={handlePrev}>
+                <MaterialIcons name="chevron-left" size={28} color="#9ca3af" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleNext}>
+                <MaterialIcons name="chevron-right" size={28} color="#9ca3af" />
+              </TouchableOpacity>
             </View>
-
-            {/* Calendar Grid */}
-            <View className="flex-row flex-wrap">
-              {cells}
-            </View>
-
           </View>
+          
+          <View className="mb-4">
+            <Text className="text-[#22c55e] font-mono text-sm tracking-widest uppercase">{t('muhasebe.odemeTakvimi.title', 'ÖDEME TAKVİMİ')}</Text>
+          </View>
+
+          {/* Weekdays / Category Header */}
+          <View className="flex-row justify-between mb-2 px-1">
+            <View className="flex-1 items-center">
+              <Text className="text-[10px] font-mono tracking-widest text-[#22c55e]/60 uppercase">GELİR</Text>
+            </View>
+            <View className="flex-1 items-center">
+              <Text className="text-[10px] font-mono tracking-widest text-[#22c55e]/60 uppercase">GİDER</Text>
+            </View>
+          </View>
+
+          {/* Calendar List */}
+          <View className="flex-col">
+            {cells}
+          </View>
+
         </ScrollView>
       </View>
     );
@@ -212,6 +203,7 @@ export default function OdemeTakvimiScreen({ navigation }) {
             setCurrentIndex(newIndex);
           }}
           renderItem={renderMonth}
+          className="bg-[#0a0d0a]" // noir-bg
         />
       </View>
     </SafeAreaView>
