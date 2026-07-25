@@ -108,7 +108,7 @@ export default function OdemeTakvimiScreen({ navigation }) {
           {expenses.map((t, idx) => (
             <View key={idx} className="flex-row justify-between items-start mb-1">
               <Text numberOfLines={1} className="text-[11px] text-gray-300 flex-1 mr-1">{t.title}</Text>
-              <Text className="text-[11px] text-[#22c55e] font-mono">{Math.abs(t.amount)} ₺</Text>
+              <Text className="text-[11px] text-[#ff3b30] font-mono">{Math.abs(t.amount)} ₺</Text>
             </View>
           ))}
         </View>
