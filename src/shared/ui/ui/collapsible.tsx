@@ -6,7 +6,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { ThemedText } from '../themed-text';
 import { ThemedView } from '../themed-view';
 import { Spacing } from '../../../core';
-import { useTheme } from '@/hooks/use-theme';
+import { useTheme } from '@/shared/hooks/use-theme';
 
 export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,3 +63,4 @@ const styles = StyleSheet.create({
     padding: Spacing.four,
   },
 });
+

@@ -60,7 +60,7 @@ Uygulamadaki tüm eski, dağınık header yapıları silinerek merkezi **GlobalA
 
 ## 🛠️ Teknoloji Yığını (Tech Stack)
 
-- **Frontend**: React Native, Expo, NativeWind v4, React Navigation.
+- **Frontend**: React Native, Expo, NativeWind v2 + Tailwind CSS v3, React Navigation.
 - **Yapay Zeka (AI)**: Google Gemini 1.5 Flash (Metin üretimi) & Gemini 3.1 Flash Image (Görsel).
 - **Sosyal Medya Otomasyonu & Gelen Kutusu**: Zernio API (Webhook + REST).
 - **Veritabanı & Auth**: Supabase PostgreSQL (Row Level Security aktif).
@@ -254,7 +254,7 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf 
 
 ## 🛠️ Teknoloji Yığını (Tech Stack)
 
-- **Frontend**: React Native, Expo, NativeWind v4, React Navigation.
+- **Frontend**: React Native, Expo, NativeWind v2 + Tailwind CSS v3, React Navigation.
 - **Yapay Zeka (AI)**: Google Gemini 1.5 Flash (Metin üretimi) & Gemini 3.1 Flash Image (Görsel).
 - **Sosyal Medya Otomasyonu & Gelen Kutusu**: Zernio API (Webhook + REST).
 - **Veritabanı & Auth**: Supabase PostgreSQL (Row Level Security aktif).
@@ -908,7 +908,7 @@ AI Esnaf projesi halihazırda React Native (Expo) kullanılarak mobil odaklı (N
 
 ### Faz 1: Web Uyumluluğu & Navigasyon
 - **React Navigation Web Entegrasyonu:** Mevcut `AppNavigator` ve `TabNavigator` yapıları, `react-navigation`'ın web link (deep-linking) desteğiyle güncellenmelidir. (URL yapısı oluşturma).
-- **Responsive Arayüz (Responsive Design):** NativeWind `v4` zaten web desteğine sahiptir. Ekranlardaki `w-full`, `flex-1` gibi yapıların büyük ekranlarda (`md:`, `lg:` prefix'leri kullanılarak) Sidebar + Content veya Grid yapısına bürünmesi sağlanmalıdır.
+- **Responsive Arayüz (Responsive Design):** NativeWind `v2` zaten web desteğine sahiptir. Ekranlardaki `w-full`, `flex-1` gibi yapıların büyük ekranlarda (`md:`, `lg:` prefix'leri kullanılarak) Sidebar + Content veya Grid yapısına bürünmesi sağlanmalıdır.
 - **Glassmorphism Optimizasyonları:** Blur efektleri (`expo-blur`) mobil cihazlarda native çalışırken, web'de `backdrop-blur` CSS özelliklerine dönüştürülmelidir.
 
 ### Faz 2: Zernio ve Supabase Web Entegrasyonu

@@ -2,7 +2,7 @@
 
 ## 🚨 Kritik Kural: Expo SDK
 
-Read the exact versioned docs at https://docs.expo.dev/versions/v56.0.0/ before writing any code.
+Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
 
 ---
 
@@ -31,11 +31,11 @@ if (cls === MyNewUseCase) return myNewUseCase;
 
 ### Proje Teknolojileri
 
-- **Frontend**: React Native, Expo SDK 56, React Navigation
+- **Frontend**: React Native 0.86, Expo SDK 57, React 19, React Navigation v7
 - **Backend**: Supabase (PostgreSQL + Realtime + Edge Functions)
 - **Auth**: Supabase Auth + AsyncStorage
 - **DI**: Manuel container (`src/core/container.ts`) — tsyringe YOK
-- **Stil**: StyleSheet + Glassmorphism, renk paleti `#131315` (bg) / `#4edea3` (primary)
+- **Stil**: NativeWind v2 + Tailwind CSS v3, StyleSheet + Glassmorphism, renk paleti `#131315` (bg) / `#4edea3` (primary)
 
 ### Katman Kuralları (Clean Architecture)
 
@@ -242,7 +242,18 @@ App.js
 
 ---
 
-## 📝 Son Geliştirme Günlüğü (5 Temmuz 2026)
+## 📝 Son Geliştirme Günlüğü (25 Temmuz 2026)
+
+### Yapılan Değişiklikler ve Çözülen Hatalar:
+1. **Paket Temizliği:** `tsyringe`, `reflect-metadata` ve gereksiz Babel decorator plugin'leri `package.json`'dan kaldırıldı.
+2. **Konfigürasyon Temizliği:** `tsconfig.json` dosyasındaki `experimentalDecorators` ve `emitDecoratorMetadata` flag'leri kaldırıldı.
+3. **Dokümantasyon Senkronizasyonu:** AGENTS.md dosyası mevcut teknoloji yığınına (Expo 57 / RN 0.86 / React 19) göre güncellendi.
+4. **Mimari Düzenlemeler:** Eksik `index.ts` dosyaları (randevu, persona_engine, business-profile) oluşturuldu. BotYonetimiScreen'deki derin (deep) import kural ihlalleri barrel export üzerinden tek satıra indirgendi.
+5. **Container Bağlantıları:** Eksik olan `wahaService` ve `transactionRepository` container DI sistemine resolve olarak eklendi. `container` nesnesi `core/index.ts` üzerinden dışa aktarıldı.
+
+---
+
+## 📝 Geçmiş Geliştirme Günlüğü (5 Temmuz 2026)
 
 ### Yapılan Değişiklikler ve Çözülen Hatalar:
 1. **Zernio Client ve Analytics Cache Güncellemesi:** Supabase Edge Functions altındaki `ZernioClient.ts` dosyası güncellenerek sosyal medya platformları (YouTube, LinkedIn, Instagram, Google Business, vb.) için analytics metotları önbellekleme (cache) desteği ile entegre edildi.

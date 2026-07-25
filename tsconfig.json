@@ -2,30 +2,36 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "paths": {
       "@/*": ["./src/*"],
       "@/assets/*": ["./assets/*"],
       "@domain/*": [
         "./src/modules/muhasebe/domain/*",
         "./src/modules/sosyal_medya/domain/*",
-        "./src/modules/randevu/domain/*"
+        "./src/modules/randevu/domain/*",
+        "./src/modules/persona_engine/domain/*",
+        "./src/modules/business-profile/domain/*"
       ],
       "@application/*": [
         "./src/modules/muhasebe/application/*",
         "./src/modules/sosyal_medya/application/*",
-        "./src/modules/randevu/application/*"
+        "./src/modules/randevu/application/*",
+        "./src/modules/persona_engine/application/*",
+        "./src/modules/business-profile/application/*"
       ],
       "@infrastructure/*": [
         "./src/modules/muhasebe/infrastructure/*",
         "./src/modules/sosyal_medya/infrastructure/*",
-        "./src/modules/randevu/infrastructure/*"
+        "./src/modules/randevu/infrastructure/*",
+        "./src/modules/persona_engine/infrastructure/*",
+        "./src/modules/business-profile/infrastructure/*"
       ],
       "@presentation/*": [
         "./src/modules/muhasebe/presentation/*",
         "./src/modules/sosyal_medya/presentation/*",
-        "./src/modules/randevu/presentation/*"
+        "./src/modules/randevu/presentation/*",
+        "./src/modules/persona_engine/presentation/*",
+        "./src/modules/business-profile/presentation/*"
       ]
     }
   },

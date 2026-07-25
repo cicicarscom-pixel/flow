@@ -28,13 +28,15 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlobalAppBar, supabase, CustomButton, CustomInput } from '../../../../shared';
 
-import { ROLES } from '../../../persona_engine/domain/config/roles';
-import { PERSONAS } from '../../../persona_engine/domain/config/personas';
-import { MOODS } from '../../../persona_engine/domain/config/moods';
-import { RULES } from '../../../persona_engine/domain/config/rules';
-import { usePersonaEngine } from '../../../persona_engine/presentation/hooks/usePersonaEngine';
-import { useSavePersona } from '../../../persona_engine/presentation/hooks/useSavePersona';
-import { usePlayground } from '../../../persona_engine/presentation/hooks/usePlayground';
+import { 
+  ROLES, 
+  PERSONAS, 
+  MOODS, 
+  RULES, 
+  usePersonaEngine, 
+  useSavePersona, 
+  usePlayground 
+} from '../../../persona_engine';
 
 import { container } from '../../../../core/container';
 import { ManageBotUseCase } from '@application/useCases/ManageBotUseCase';

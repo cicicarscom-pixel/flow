@@ -9,7 +9,7 @@ module.exports = defineConfig([
     ignores: ["dist/*"],
   },
   {
-    files: ["src/modules/**/*.{ts,tsx,js,jsx}"],
+    files: ["src/modules/**/*.{ts,tsx,js,jsx}", "src/core/**/*.{ts,tsx,js,jsx}"],
     rules: {
       "no-restricted-imports": ["error", {
         "patterns": [

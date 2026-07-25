@@ -21,9 +21,16 @@ const approveAppointmentUseCase = new ApproveAppointmentUseCase(appointmentRepos
 const cancelAppointmentUseCase = new CancelAppointmentUseCase(appointmentRepository, wahaRandevuService);
 const startAppointmentFlowUseCase = new StartAppointmentFlowUseCase(appointmentRepository, wahaRandevuService);
 
+export interface IDIContainer {
+  resolve<T>(cls: new (...args: any[]) => T): T;
+  resolve<T = any>(key: string): T;
+}
+
 // Simple DI container - drop-in replacement for tsyringe, no decorators needed
-const container = {
+const container: IDIContainer = {
   resolve: (cls: any) => {
+    if (cls === 'WahaService' || cls?.name === 'WahaService') return wahaService;
+    if (cls === 'SupabaseTransactionRepository' || cls?.name === 'SupabaseTransactionRepository') return transactionRepository;
     if (cls === 'AppointmentRepository') return appointmentRepository;
     if (cls === ManageBotUseCase) return manageBotUseCase;
     if (cls === GetTransactionsUseCase) return getTransactionsUseCase;

@@ -4,13 +4,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { View, TouchableOpacity, StyleSheet, Animated as RNAnimated, Easing, Text, Platform, Keyboard } from 'react-native';
+import { View, TouchableOpacity, Animated as RNAnimated, Easing, Platform, Keyboard } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { BotYonetimiScreen, SosyalMedyaScreen, AnalyticsScreen } from '../../modules/sosyal_medya';
 import { AiMuhasebeScreen } from '../../modules/muhasebe';
-import RandevuScreen from '../../modules/randevu/presentation/screens/RandevuScreen';
-import HizmetAyarlariScreen from '../../modules/randevu/presentation/screens/HizmetAyarlariScreen';
+import { RandevuScreen, HizmetAyarlariScreen } from '../../modules/randevu';
 import DashboardScreen from '../../screens/DashboardScreen';
 
 const Tab = createBottomTabNavigator();
