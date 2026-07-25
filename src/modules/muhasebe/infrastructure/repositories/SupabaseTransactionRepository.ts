@@ -28,7 +28,6 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
     // Actually entity doesn't have an id in omit, but toPersistence needs a full Transaction
     // Let's create a dummy id for the persistence payload if necessary, or let DB handle it.
     const payload = {
-      name: transaction.name,
       title: transaction.title,
       amount: transaction.amount,
       date: transaction.date,
