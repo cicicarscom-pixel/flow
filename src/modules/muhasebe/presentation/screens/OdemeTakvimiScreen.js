@@ -76,8 +76,8 @@ export default function OdemeTakvimiScreen({ navigation }) {
     const key = `${monthIndex}-${day}`;
     const transactions = transactionsMap[key] || [];
 
-    const incomes = transactions.filter(t => t.type === 'income' || t.amount > 0);
-    const expenses = transactions.filter(t => t.type === 'expense' || t.amount < 0);
+    const incomes = transactions.filter(t => t.type === 'income' || t.type === 'sales' || (!t.type && t.amount > 0));
+    const expenses = transactions.filter(t => t.type === 'expense' || t.type === 'ALIS' || (!t.type && t.amount < 0));
 
     return (
       <View key={`day-${day}`} className="flex-row bg-[#121412] min-h-[64px] mb-1 rounded-xl overflow-hidden border border-[#2d332d]">
