@@ -16,52 +16,37 @@ export default function AiAssistantScreen({ navigation, route }) {
   const [loading, setLoading] = useState(false);
   const [pastDocs, setPastDocs] = useState([]);
 
-  const fetchPastUnpaidDocs = async () => {
+  const initializeAssistant = async () => {
     try {
-      const { data: documents, error } = await supabase
-        .from('finance_documents')
-        .select('*')
-        .in('flow_payment_status', ['unpaid', 'partial']);
-
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setMessages([{ id: 1, text: "Lütfen önce giriş yapın.", sender: 'ai' }]);
+        return;
+      }
+      
+      const { data, error } = await supabase.functions.invoke('ledger-isleyici-api', {
+        body: {
+          prompt: "Merhaba, bana şu anki finansal durumumu kısaca özetleyip bugünkü işlemler için proaktif bir şekilde sorar mısın? (Cevabın standart bir mesaj değil, muhasebecim olarak bana hitaben özel bir karşılama olsun)",
+          profile_id: user.id
+        }
+      });
+      
       if (error) throw error;
-
-      const now = new Date();
-      const currentMonth = now.getMonth();
-      const currentYear = now.getFullYear();
-
-      // Filter out current month
-      const past = (documents || []).filter(doc => {
-        const dDate = new Date(doc.created_at);
-        return !(dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear);
-      });
-
-      setPastDocs(past);
-
-      let totalReceivable = 0;
-      let totalPayable = 0;
-
-      past.forEach(doc => {
-        const amount = Number(doc.amount_minor) / 100;
-        if (doc.type === 'income') totalReceivable += amount;
-        if (doc.type === 'expense') totalPayable += amount;
-      });
-
-      const initialMessage = `Geçtiğimiz aylardan devreden ${totalReceivable.toLocaleString('tr-TR')} TL tahsil edilmemiş alacağınız ve ${totalPayable.toLocaleString('tr-TR')} TL ödenmemiş gideriniz var. Bu listede ödediğiniz var mı?`;
-      setMessages([{ id: Date.now(), text: initialMessage, sender: 'ai' }]);
-    } catch (error) {
-      console.warn("Error fetching past unpaid docs", error);
+      
+      if (data && data.message) {
+        setMessages([{ id: 1, text: data.message, sender: 'ai' }]);
+      } else {
+        setMessages([{ id: 1, text: "Merhaba! İşleyici AI asistanınız hazır. Size nasıl yardımcı olabilirim?", sender: 'ai' }]);
+      }
+    } catch (e) {
+      console.warn("Init Error:", e);
+      setMessages([{ id: 1, text: "Merhaba! İşleyici AI asistanınız hazır. Size nasıl yardımcı olabilirim?", sender: 'ai' }]);
     }
   };
 
   useEffect(() => {
-    if (mode === 'mutabakat') {
-      fetchPastUnpaidDocs();
-    } else {
-      setMessages([
-        { id: 1, text: "Merhaba! Finansal verilerinizle ilgili sorular sorabilir veya 'Bana Excel/PDF raporu ver' diyebilirsiniz.", sender: 'ai' }
-      ]);
-    }
-  }, [mode]);
+    initializeAssistant();
+  }, []);
 
 
 
@@ -76,49 +61,48 @@ export default function AiAssistantScreen({ navigation, route }) {
     setInputText('');
     setLoading(true);
 
-    if (mode === 'mutabakat') {
-      try {
-        const { data, error } = await supabase.functions.invoke('mutabakat-chat', {
-          body: {
-            message: userText,
-            pastDocs: pastDocs
-          }
-        });
-
-        if (error) throw error;
-
-        addMessage(data.reply, 'ai');
-        
-        // Refresh data if AI made changes
-        if (data.updated_ids && data.updated_ids.length > 0) {
-          fetchPastUnpaidDocs();
-        }
-      } catch (error) {
-        console.error(error);
-        addMessage("Bağlantı hatası oluştu, lütfen tekrar deneyin.", 'ai');
-      } finally {
+    try {
+      const lowerText = userText.toLowerCase();
+      // Keep PDF and Excel support locally
+      if (lowerText.includes('pdf')) {
+        await generatePDFReport();
+        addMessage("PDF raporunuz hazırlandı ve paylaşıma açıldı.", 'ai');
         setLoading(false);
-      }
-    } else {
-      // Report Mode
-      try {
-        const lowerText = userText.toLowerCase();
-        
-        if (lowerText.includes('pdf')) {
-          await generatePDFReport();
-          addMessage("PDF raporunuz hazırlandı ve paylaşıma açıldı.", 'ai');
-        } else if (lowerText.includes('excel')) {
-          await generateExcelReport();
-          addMessage("Excel raporunuz hazırlandı ve paylaşıma açıldı.", 'ai');
-        } else {
-          addMessage("Sizi anlıyorum ancak detaylı analiz için henüz sadece PDF ve Excel rapor dökümlerini destekliyorum. Lütfen 'PDF ver' veya 'Excel raporu oluştur' yazın.", 'ai');
-        }
-      } catch (error) {
-        console.error(error);
-        addMessage("Bir hata oluştu. Lütfen tekrar deneyin.", 'ai');
-      } finally {
+        return;
+      } else if (lowerText.includes('excel')) {
+        await generateExcelReport();
+        addMessage("Excel raporunuz hazırlandı ve paylaşıma açıldı.", 'ai');
         setLoading(false);
+        return;
       }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not found");
+
+      const { data, error } = await supabase.functions.invoke('ledger-isleyici-api', {
+        body: {
+          prompt: userText,
+          profile_id: user.id
+        }
+      });
+
+      if (error) throw error;
+
+      if (data && data.message) {
+        addMessage(data.message, 'ai');
+      }
+
+      // Check if a manual entry was processed
+      if (data && data.manual_entry) {
+        setTimeout(() => {
+          addMessage("✅ İşlem başarıyla kaydedildi.", 'system');
+        }, 800);
+      }
+    } catch (error) {
+      console.error("Chat Error:", error);
+      addMessage("Bağlantı hatası oluştu, lütfen tekrar deneyin.", 'ai');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -202,8 +186,12 @@ export default function AiAssistantScreen({ navigation, route }) {
       >
         <ScrollView className="flex-1 px-4 pt-4">
           {messages.map((msg) => (
-            <View key={msg.id} className={`mb-4 max-w-[80%] rounded-2xl p-3 ${msg.sender === 'user' ? 'bg-[#00f0ff]/20 self-end' : 'bg-[#1c1c1e] self-start border border-white/5'}`}>
-              <Text className="text-[#e5e2e3] text-sm">{msg.text}</Text>
+            <View key={msg.id} className={`mb-4 max-w-[80%] rounded-2xl p-3 ${
+              msg.sender === 'user' ? 'bg-[#00f0ff]/20 self-end' :
+              msg.sender === 'system' ? 'bg-green-500/20 self-center border border-green-500/50' :
+              'bg-[#1c1c1e] self-start border border-white/5'
+            }`}>
+              <Text className={`${msg.sender === 'system' ? 'text-green-400 font-bold text-center' : 'text-[#e5e2e3]'} text-sm`}>{msg.text}</Text>
             </View>
           ))}
           {loading && (

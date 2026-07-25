@@ -29,8 +29,11 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
     // Let's create a dummy id for the persistence payload if necessary, or let DB handle it.
     const payload = {
       name: transaction.name,
+      title: transaction.title,
       amount: transaction.amount,
-      date: transaction.date
+      date: transaction.date,
+      type: transaction.type,
+      status: transaction.status
     };
     
     const { data, error } = await supabase.from('transactions').insert([payload]).select().single();

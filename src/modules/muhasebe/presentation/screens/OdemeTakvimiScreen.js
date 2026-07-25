@@ -91,16 +91,16 @@ export default function OdemeTakvimiScreen({ navigation }) {
                if (t.amount === 0) {
                   return (
                     <View key={idx} className="w-full mb-1 bg-[#849495]/40 rounded-sm px-0.5">
-                      <Text numberOfLines={1} className="text-white font-medium text-[8px]">{t.name}</Text>
+                      <Text numberOfLines={1} className="text-white font-medium text-[8px]">{t.title}</Text>
                     </View>
                   );
                }
 
                return (
                  <View key={idx} className="w-full mb-1">
-                   <Text numberOfLines={1} className={t.amount < 0 ? "text-[#ff3b30] font-medium text-[9px]" : "text-[#34c759] font-medium text-[9px]"}>{t.name}</Text>
-                   <Text numberOfLines={1} className={t.amount < 0 ? "text-[#ff3b30] font-bold text-[9px]" : "text-[#34c759] font-bold text-[9px]"}>
-                     {t.amount > 0 ? '+' : ''}{t.amount}
+                   <Text numberOfLines={1} className={t.type === 'expense' ? "text-[#ff3b30] font-medium text-[9px]" : "text-[#34c759] font-medium text-[9px]"}>{t.title}</Text>
+                   <Text numberOfLines={1} className={t.type === 'expense' ? "text-[#ff3b30] font-bold text-[9px]" : "text-[#34c759] font-bold text-[9px]"}>
+                     {t.type === 'expense' ? '-' : '+'}{t.amount}
                    </Text>
                  </View>
                );

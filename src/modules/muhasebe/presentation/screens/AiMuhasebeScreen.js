@@ -96,9 +96,9 @@ export default function AiMuhasebeScreen({ navigation }) {
   
   const currentMonthName = new Date().toLocaleString(i18n.language || 'tr-TR', { month: 'long' });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true);
         const { data: { session } } = await supabase.auth.getSession();
         
         let orgId = null;
@@ -172,20 +172,29 @@ export default function AiMuhasebeScreen({ navigation }) {
       } finally {
          setIsLoading(false);
       }
-    };
-
-    fetchData();
-
-    // Supabase Realtime Subscription for auto-updates
-    const channel = supabase.channel('muhasebe_finance_docs')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'finance_documents' }, () => {
-         fetchData();
-      }).subscribe();
-
-    return () => {
-       supabase.removeChannel(channel);
-    };
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+
+      // Supabase Realtime Subscription for auto-updates
+      const docChannel = supabase.channel('muhasebe_finance_docs')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'finance_documents' }, () => {
+           fetchData();
+        }).subscribe();
+
+      const transChannel = supabase.channel('muhasebe_transactions')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
+           fetchData();
+        }).subscribe();
+
+      return () => {
+         supabase.removeChannel(docChannel);
+         supabase.removeChannel(transChannel);
+      };
+    }, [fetchData])
+  );
 
   return (
     <View className="flex-1 bg-[#0A0A0B]">
