@@ -375,8 +375,7 @@ export default function BotYonetimiScreen() {
                   {/* Platform Toggles */}
                   {botActive && (
                     <View className="flex-row items-center justify-between bg-black/20 p-3 rounded-xl mt-1">
-                      <View className="flex-1">
-                        <View className="flex-row items-center mb-2">
+                        <View className="flex-row items-center mb-1">
                           <Ionicons name="logo-whatsapp" size={16} color={whatsappBotActive ? "#25D366" : "#666"} />
                           <Text className="text-white text-xs font-semibold ml-2">WhatsApp Asistanı</Text>
                           <Switch
@@ -387,20 +386,28 @@ export default function BotYonetimiScreen() {
                             style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }], marginLeft: 'auto' }}
                           />
                         </View>
-                        <View className="flex-row items-center">
-                          <Ionicons name="logo-instagram" size={16} color={socialBotActive ? "#4edea3" : "#666"} />
-                          <Text className="text-white text-xs font-semibold ml-2">Sosyal Medya Asistanı</Text>
-                          <Switch
-                            value={socialBotActive}
-                            onValueChange={(val) => { setSocialBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
-                            trackColor={{ false: '#2c2b2e', true: '#4edea3' }}
-                            thumbColor={'#ffffff'}
-                            style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }], marginLeft: 'auto' }}
-                          />
-                        </View>
                       </View>
                     </View>
                   )}
+              </View>
+
+              {/* YENİ EKLENEN BASİT ALAN: Asistan Talimatı Oluştur */}
+              <View className="mb-4 mt-2 px-1">
+                <Text className="text-white text-sm font-bold mb-2">Asistan Talimatı Oluştur</Text>
+                <View className="bg-black/20 border border-white/5 rounded-xl p-3">
+                  <TextInput
+                    value={promptConfig.roleId === 'custom' ? promptConfig.customRoleText : ''}
+                    onChangeText={(text) => { 
+                      setRole('custom'); // Otomatik olarak "Diğer" rolüne geçir ki bu metni kullansın
+                      setCustomRole(text); 
+                      setIsSaveBtnActive(true); 
+                    }}
+                    placeholder="Örn: Sen bir berber dükkanı asistanısın, fiyat bilgisi verip randevu alırsın..."
+                    placeholderTextColor="#849495"
+                    multiline
+                    style={{ color: '#e5e1e4', fontSize: 13, minHeight: 60, textAlignVertical: 'top' }}
+                  />
+                </View>
               </View>
 
               <View style={{ opacity: botActive ? 1 : 0.5 }} pointerEvents={botActive ? 'auto' : 'none'}>

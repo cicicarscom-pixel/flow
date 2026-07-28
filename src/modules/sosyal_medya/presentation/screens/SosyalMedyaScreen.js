@@ -12,14 +12,19 @@ import {
   Dimensions,
   ImageBackground,
   Animated,
-  Easing
-, Alert, ActivityIndicator } from 'react-native';
+  Easing,
+  Alert, 
+  ActivityIndicator,
+  Share,
+  Switch
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase , AnimatedBorderCard , GlobalAppBar } from '../../../../shared';
 import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
 
 import { CustomButton } from '../../../../shared';
 const { width } = Dimensions.get('window');
@@ -33,6 +38,8 @@ export default function SosyalMedyaScreen({ navigation }) {
   
   const [socialAccounts, setSocialAccounts] = useState([]);
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(true);
+  const [socialBotActive, setSocialBotActive] = useState(false);
+  const [isUpdatingBot, setIsUpdatingBot] = useState(false);
 
   const fetchAccountsFromZernio = async (showSuccessAlert = false) => {
     try {
@@ -44,6 +51,17 @@ export default function SosyalMedyaScreen({ navigation }) {
         if (showSuccessAlert) Alert.alert(t('sosyalMedya.alerts.error'), t('sosyalMedya.alerts.noSession'));
         setIsLoadingAccounts(false);
         return;
+      }
+
+      // Fetch Bot Settings
+      const { data: botSettings } = await supabase
+        .from('bot_settings')
+        .select('social_bot_active')
+        .eq('profile_id', userId)
+        .single();
+      
+      if (botSettings && botSettings.social_bot_active !== undefined) {
+        setSocialBotActive(botSettings.social_bot_active);
       }
 
       const { data, error } = await supabase.functions.invoke('zernio-client', {
@@ -160,7 +178,36 @@ export default function SosyalMedyaScreen({ navigation }) {
       const resultData = data?.data;
 
       if (resultData?.authUrl) {
-        Linking.openURL(resultData.authUrl);
+        if (platform === 'instagram') {
+           Alert.alert(
+             "Instagram Uygulaması Çakışması",
+             "Cihazınızdaki Instagram uygulaması araya girip bağlantıyı engelliyor olabilir. En kesin çözüm linki kopyalayıp tarayıcınızda 'Gizli Sekme' (Incognito) üzerinden açmaktır.",
+             [
+               {
+                 text: "Linki Paylaş / Kopyala",
+                 onPress: () => Share.share({ message: resultData.authUrl })
+               },
+               {
+                 text: "Yine de Uygulama İçi Dene",
+                 onPress: async () => {
+                    const browserResult = await WebBrowser.openAuthSessionAsync(resultData.authUrl, redirectUrl);
+                    if (browserResult.type === 'success' && browserResult.url) {
+                       const { queryParams } = Linking.parse(browserResult.url);
+                       if (queryParams?.accountId) saveZernioAccount(queryParams);
+                    }
+                 }
+               }
+             ]
+           );
+        } else {
+           const browserResult = await WebBrowser.openAuthSessionAsync(resultData.authUrl, redirectUrl);
+           if (browserResult.type === 'success' && browserResult.url) {
+              const { queryParams } = Linking.parse(browserResult.url);
+              if (queryParams?.accountId) {
+                saveZernioAccount(queryParams);
+              }
+           }
+        }
       } else {
         Alert.alert(t('sosyalMedya.alerts.connectionError'), t('sosyalMedya.alerts.authUrlError'));
       }
@@ -205,6 +252,29 @@ export default function SosyalMedyaScreen({ navigation }) {
         }
       ]
     );
+  };
+
+  const handleToggleBot = async (val) => {
+    setSocialBotActive(val);
+    setIsUpdatingBot(true);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id;
+      if (userId) {
+         const { error } = await supabase
+           .from('bot_settings')
+           .update({ social_bot_active: val })
+           .eq('profile_id', userId);
+         
+         if (error) throw error;
+      }
+    } catch (error) {
+       console.error("Bot ayarı güncellenirken hata:", error);
+       Alert.alert("Hata", "Asistan ayarı güncellenemedi.");
+       setSocialBotActive(!val); // Revert
+    } finally {
+       setIsUpdatingBot(false);
+    }
   };
 
   useFocusEffect(
@@ -266,6 +336,27 @@ export default function SosyalMedyaScreen({ navigation }) {
               <Text className="text-[#4edea3] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.inbox')}</Text>
             </TouchableOpacity>
           </View>
+        </View>
+
+        {/* Sosyal Medya Asistanı Toggle (Taşındı) */}
+        <View style={[styles.glassCard, { padding: 16, borderRadius: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
+           <View className="flex-row items-center">
+             <Ionicons name="logo-instagram" size={24} color={socialBotActive ? "#4edea3" : "#666"} />
+             <View className="ml-3">
+               <Text className="text-[#e5e1e4] text-[14px] font-semibold">Sosyal Medya Asistanı</Text>
+               <Text className="text-[10px] text-[#849495]">Yapay zeka DM ve yorumlara yanıt versin</Text>
+             </View>
+           </View>
+           {isUpdatingBot ? (
+             <ActivityIndicator size="small" color="#4edea3" />
+           ) : (
+             <Switch
+               value={socialBotActive}
+               onValueChange={handleToggleBot}
+               trackColor={{ false: '#2c2b2e', true: '#4edea3' }}
+               thumbColor={'#ffffff'}
+             />
+           )}
         </View>
 
         {/* Analytics Button (Full Width) */}

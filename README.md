@@ -945,3 +945,7 @@ Uygulama içerisindeki özel AI kartlarının (örn. "AI Kişiliği" kartı) etr
 - **OdemeTakvimiScreen Yeni Tasarım:** `OdemeTakvimiScreen`, grid yapısından "Neo-Fintech Noir" tarzı, dikey listeli ve Gelir/Gider olarak ikiye bölünmüş kart tasarımına geçirildi. Giderler kırmızı (`#ff3b30`), gelirler yeşil (`#22c55e`) olarak renklendirildi.
 - **Filtreleme Mantığı Düzeltildi:** Takvim ekranında işlemlerin hem gelir hem gidere düşmesine neden olan `t.amount > 0` şartı kaldırılarak; `t.type === 'income'` / `'sales'` (gelir) ve `t.type === 'expense'` / `'ALIS'` (gider) kurallarıyla kesin bir ayrım yapıldı.
 - **Gerçek Zamanlı Güncelleme:** `AiMuhasebeScreen` (Dashboard), `transactions` tablosuna yapılan eklemeleri de dinleyecek (realtime subscription) şekilde genişletildi ve `useFocusEffect` ile ekran açıldıkça verilerin anında güncellenmesi garantilendi.
+
+## 28 Temmuz 2026 - Zernio/WAHA Hibrit Mimari Hazırlığı
+- Sosyal Medya Asistanı yönetimi (toggle) BotYonetimiScreen'den SosyalMedyaScreen'e taşındı.
+- Basic paket kullanıcıları için WAHA altyapısını besleyecek 'Asistan Talimatı Oluştur' adlı basit metin girişi eklendi.

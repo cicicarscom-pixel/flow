@@ -319,3 +319,10 @@ ull\ veya boş string dönülmeyecek.
 - **OdemeTakvimiScreen Yeni Tasarım:** `OdemeTakvimiScreen`, grid yapısından "Neo-Fintech Noir" tarzı, dikey listeli ve Gelir/Gider olarak ikiye bölünmüş kart tasarımına geçirildi. Giderler kırmızı (`#ff3b30`), gelirler yeşil (`#22c55e`) olarak renklendirildi.
 - **Filtreleme Mantığı Düzeltildi:** Takvim ekranında işlemlerin hem gelir hem gidere düşmesine neden olan `t.amount > 0` şartı kaldırılarak; `t.type === 'income'` / `'sales'` (gelir) ve `t.type === 'expense'` / `'ALIS'` (gider) kurallarıyla kesin bir ayrım yapıldı.
 - **Gerçek Zamanlı Güncelleme:** `AiMuhasebeScreen` (Dashboard), `transactions` tablosuna yapılan eklemeleri de dinleyecek (realtime subscription) şekilde genişletildi ve `useFocusEffect` ile ekran açıldıkça verilerin anında güncellenmesi garantilendi.
+
+## 📝 Geçmiş Geliştirme Günlüğü (28 Temmuz 2026) - WAHA/Zernio Ayrımı & Zernio Medya Optimizasyonu
+### Yapılan Değişiklikler ve Mimari Kararlar:
+1. **Zernio Medya Yükleme Optimizasyonu (Backend):** Ai_muhasebeci/supabase içindeki zernio-client edge fonksiyonu, resimleri base64/url olarak göndermek yerine Zernio Media API'sine yükleyip 'mediaIds' dizisi ile gönderecek şekilde optimize edildi.
+2. **Zernio Fallback Cron (Backend):** Her gece 03:00'da kaçırılan Zernio mesajlarını/yorumlarını eşitlemek için 'pg_cron' kullanan yeni bir Supabase SQL migration dosyası oluşturuldu.
+3. **Abonelik Mimarisine Hazırlık (Sosyal Medya Asistanı):** Basic (Sadece WhatsApp/WAHA) ve Premium (Tam sosyal medya/Zernio) paket ayrımı kararı alındı. Bu kapsamda 'Sosyal Medya Asistanı' şalteri, BotYonetimiScreen ekranından sökülerek doğrudan SosyalMedyaScreen ekranına taşındı.
+4. **WAHA Temel Talimat Alanı:** BotYonetimiScreen içerisine kilitli olmayan (Basic pakete açık) 'Asistan Talimatı Oluştur' metin kutusu eklendi. Buraya girilen değer doğrudan Custom Role (Özel Karakter) olarak WAHA system_instruction'ına beslenmek üzere bağlandı.
