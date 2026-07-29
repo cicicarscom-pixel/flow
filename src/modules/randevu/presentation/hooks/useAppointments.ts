@@ -25,6 +25,7 @@ export interface UseAppointmentsResult {
   setSelectedDate: (date: string) => void;
   /** Saat diliminin dolu olup olmadığını kontrol eder (PENDING veya APPROVED randevu varsa true) */
   isSlotBusy: (timeSlot: string) => boolean;
+  addAppointment: (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
 }
 
 export function useAppointments(initialDate?: string): UseAppointmentsResult {
@@ -77,5 +78,20 @@ export function useAppointments(initialDate?: string): UseAppointmentsResult {
     });
   };
 
-  return { appointments, loading, error, selectedDate, setSelectedDate, isSlotBusy };
+  const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      setLoading(true);
+      await repo.create(appointment);
+      // Wait for realtime subscription to trigger or re-fetch
+      const data = await repo.getAppointmentsByDate(selectedDate);
+      setAppointments(data);
+    } catch (e: any) {
+      setError(e.message || 'Randevu eklenemedi');
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { appointments, loading, error, selectedDate, setSelectedDate, isSlotBusy, addAppointment };
 }

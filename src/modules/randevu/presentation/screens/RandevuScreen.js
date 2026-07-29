@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, Animated, ActivityIndicator
+  StyleSheet, Animated, ActivityIndicator, Modal, TextInput, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useAppointments, extractTime } from '../hooks/useAppointments';
+import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
 
 // Generate 30-min slots from 08:00 to 00:00
 const TIME_SLOTS = (() => {
@@ -74,10 +75,40 @@ export default function RandevuScreen() {
   }, []);
   
   // ── Supabase veri bağlantısı ──
-  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate } = useAppointments(todayStr);
+  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment } = useAppointments(todayStr);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newApptName, setNewApptName] = useState('');
+  const [newApptPhone, setNewApptPhone] = useState('');
+  const [newApptTime, setNewApptTime] = useState('10:00');
+  const [newApptService, setNewApptService] = useState('Genel Bakım');
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleDaySelect = (dayObj) => {
     setSelectedDate(dayObj.fullDate);
+  };
+
+  const handleSaveAppointment = async () => {
+    if (!newApptName || !newApptPhone || !newApptTime || !newApptService) return;
+    try {
+      setIsSaving(true);
+      await addAppointment({
+        customerName: newApptName,
+        customerPhone: newApptPhone,
+        date: `${selectedDate}T${newApptTime}:00`,
+        serviceId: newApptService,
+        status: AppointmentStatus.Pending,
+        bookingToken: Math.random().toString(36).substring(7)
+      });
+      setIsModalVisible(false);
+      setNewApptName('');
+      setNewApptPhone('');
+      setNewApptTime('10:00');
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handlePrevMonth = () => {
@@ -268,10 +299,89 @@ export default function RandevuScreen() {
 
       {/* ── FAB ── */}
       <Animated.View style={[styles.fab, { bottom: fabBottom, transform: [{ scale: pulseAnim }] }]}>
-        <TouchableOpacity style={styles.fabInner} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.fabInner} activeOpacity={0.8} onPress={() => setIsModalVisible(true)}>
           <Ionicons name="add" size={28} color="#003824" />
         </TouchableOpacity>
       </Animated.View>
+
+      {/* ── ADD APPOINTMENT MODAL ── */}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <KeyboardAvoidingView 
+          style={{ flex: 1 }} 
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>{t('randevu.randevuScreen.addAppointment', 'Yeni Randevu Ekle')}</Text>
+                <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+                  <Ionicons name="close" size={24} color="#bbcabf" />
+                </TouchableOpacity>
+              </View>
+              
+              <Text style={styles.modalLabel}>Müşteri Adı</Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="Örn: Ahmet Yılmaz"
+                placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                value={newApptName}
+                onChangeText={setNewApptName}
+              />
+
+              <Text style={styles.modalLabel}>Telefon Numarası</Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="Örn: +90 555 123 4567"
+                placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                value={newApptPhone}
+                onChangeText={setNewApptPhone}
+                keyboardType="phone-pad"
+              />
+
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.modalLabel}>Saat</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    placeholder="10:00"
+                    placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                    value={newApptTime}
+                    onChangeText={setNewApptTime}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.modalLabel}>Hizmet Tipi</Text>
+                  <TextInput
+                    style={styles.modalInput}
+                    placeholder="Genel Bakım"
+                    placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                    value={newApptService}
+                    onChangeText={setNewApptService}
+                  />
+                </View>
+              </View>
+
+              <TouchableOpacity 
+                style={styles.saveButton}
+                activeOpacity={0.8}
+                onPress={handleSaveAppointment}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <ActivityIndicator color="#003824" />
+                ) : (
+                  <Text style={styles.saveButtonText}>Kaydet</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
 
     </SafeAreaView>
   );
@@ -426,4 +536,35 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 13, color: '#3c4a42', fontWeight: '600',
   },
+
+  /* Modal Styles */
+  modalOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#131315',
+    borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    padding: 20, paddingBottom: 40,
+    borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+  },
+  modalHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: { fontSize: 18, fontWeight: '700', color: '#e5e1e4' },
+  modalLabel: { fontSize: 12, fontWeight: '600', color: '#bbcabf', marginBottom: 6, marginTop: 12 },
+  modalInput: {
+    backgroundColor: 'rgba(32,31,34,0.4)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12,
+    color: '#e5e1e4', fontSize: 14,
+  },
+  saveButton: {
+    backgroundColor: '#4edea3',
+    borderRadius: 12, paddingVertical: 16,
+    alignItems: 'center', marginTop: 24,
+    shadowColor: '#4edea3', shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
+  },
+  saveButtonText: { fontSize: 15, fontWeight: '700', color: '#003824' }
 });

@@ -387,7 +387,6 @@ export default function BotYonetimiScreen() {
                           />
                         </View>
                       </View>
-                    </View>
                   )}
               </View>
 

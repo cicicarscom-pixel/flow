@@ -1183,41 +1183,35 @@ export default function AiUretimScreen({ route, navigation }) {
           </View>
         </View>
 
-      </ScrollView>
-
-      </KeyboardAvoidingView>
-      
-      {/* Action Button (Fixed Bottom) */}
-      {!isKeyboardVisible && (
-      <View className="absolute bottom-0 left-0 w-full px-5 pb-10 pt-4" pointerEvents="box-none">
-        <LinearGradient
-          colors={['transparent', '#0A0A0B', '#0A0A0B']}
-          style={StyleSheet.absoluteFillObject}
-          locations={[0, 0.4, 1]}
-        />
-        <TouchableOpacity 
-          className="w-full" 
-          onPress={handleShare}
-          disabled={isSharing}
-        >
-          <LinearGradient
-            colors={['#00f0ff', '#bc13fe']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            className={`rounded-full py-4 px-6 flex-row items-center justify-center shadow-[0_4px_15px_rgba(0,240,255,0.3)] ${isSharing ? 'opacity-50' : ''}`}
+        </ScrollView>
+        
+        {/* Action Button (Fixed Bottom) */}
+        {!isKeyboardVisible && (
+        <View className="w-full px-5 pb-6 pt-4 bg-[#0A0A0B] border-t border-white/5">
+          <TouchableOpacity 
+            className="w-full" 
+            onPress={handleShare}
+            disabled={isSharing}
           >
-            {isSharing ? (
-              <ActivityIndicator size="small" color="#00363a" style={{ marginRight: 8 }} />
-            ) : (
-              <MaterialIcons name="send" size={20} color="#00363a" style={{ marginRight: 8 }} />
-            )}
-            <Text className="text-[#00363a] font-bold text-lg">
-              {isSharing ? t('sosyalMedya.generate.sharing') : t('sosyalMedya.generate.shareSelected')}
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-      )}
+            <LinearGradient
+              colors={['#00f0ff', '#bc13fe']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className={`rounded-full py-4 px-6 flex-row items-center justify-center shadow-[0_4px_15px_rgba(0,240,255,0.3)] ${isSharing ? 'opacity-50' : ''}`}
+            >
+              {isSharing ? (
+                <ActivityIndicator size="small" color="#00363a" style={{ marginRight: 8 }} />
+              ) : (
+                <MaterialIcons name="send" size={20} color="#00363a" style={{ marginRight: 8 }} />
+              )}
+              <Text className="text-[#00363a] font-bold text-lg">
+                {isSharing ? t('sosyalMedya.generate.sharing') : t('sosyalMedya.generate.shareSelected')}
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+        )}
+      </KeyboardAvoidingView>
       
       {/* YouTube Category Modal */}
       <Modal
