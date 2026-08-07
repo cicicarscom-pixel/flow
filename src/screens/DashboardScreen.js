@@ -532,17 +532,6 @@ export default function DashboardScreen({ navigation }) {
         <CommunicationLogsTable />
         
       </ScrollView>
-      
-      {/* Floating Action Button */}
-      <TouchableOpacity style={[styles.fab, { bottom: tabBarHeight + 16 }]}>
-        <LinearGradient
-          colors={[COLORS.primary, COLORS.primaryContainer, COLORS.secondary]}
-          style={styles.fabGradient}
-          start={{x: 0, y: 0}} end={{x: 1, y: 1}}
-        >
-          <MaterialIcons name="auto-awesome" size={28} color={COLORS.onPrimary} />
-        </LinearGradient>
-      </TouchableOpacity>
     </View>
   );
 }
