@@ -75,8 +75,6 @@ export default function TabNavigator() {
             iconName = focused ? 'wallet' : 'wallet-outline';
           } else if (route.name === 'Sosyal Medya') {
             iconName = focused ? 'share-social' : 'share-social-outline';
-          } else if (route.name === 'Analiz') {
-            iconName = focused ? 'bar-chart' : 'bar-chart-outline';
           } else if (route.name === 'Anasayfa') {
             iconName = focused ? 'home' : 'home-outline';
             // Özel tasarım buton için rengi beyaza sabitliyoruz
@@ -128,7 +126,6 @@ export default function TabNavigator() {
         }}
       />
       <Tab.Screen name="Sosyal Medya" component={SosyalMedyaStack} />
-      <Tab.Screen name="Analiz" component={AnalyticsStack} />
     </Tab.Navigator>
   );
 }

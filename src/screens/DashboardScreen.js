@@ -296,7 +296,6 @@ export default function DashboardScreen({ navigation }) {
         </View>
 
         <View style={styles.headerRightArea}>
-          <GlowingText style={styles.brandTitle}>QuantuMinds</GlowingText>
           <TouchableOpacity style={styles.notificationBtn}>
             <MaterialIcons name="notifications" size={26} color={COLORS.onSurfaceVariant} />
             <View style={styles.notificationBadge} />
@@ -323,7 +322,7 @@ export default function DashboardScreen({ navigation }) {
               ) : (
                 <>
                   <Text style={styles.aiStatusTitle}>{aiActive ? 'AI Asistan Aktif' : 'AI Asistan Kapalı'}</Text>
-                  <Text style={styles.aiStatusSubtitle}>{aiActive ? '7/24 Akıllı Otomasyon Devrede' : 'Sistem şu anda duraklatıldı'}</Text>
+                  <Text style={styles.aiStatusSubtitle}>{aiActive ? '7/24 Akıllı Otomasyon Devrede' : 'Tüm asistanlar (WhatsApp, Sosyal Medya vb.) kapalı'}</Text>
                 </>
               )}
             </View>
@@ -978,3 +977,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   }
 });
+
