@@ -146,7 +146,7 @@ export default function RandevuScreen() {
             <Ionicons name="person" size={18} color="#4edea3" />
           </View>
           <View style={{ justifyContent: 'center' }}>
-            <Text style={styles.headerLabel}>DASHBOARD</Text>
+            <Text style={styles.headerLabel}>RANDEVU</Text>
           </View>
         </View>
 
