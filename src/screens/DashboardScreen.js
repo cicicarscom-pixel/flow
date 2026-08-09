@@ -321,7 +321,7 @@ export default function DashboardScreen({ navigation }) {
                 </>
               ) : (
                 <>
-                  <Text style={styles.aiStatusTitle}>{aiActive ? 'AI Asistan Aktif' : 'AI Asistan Kapalı'}</Text>
+                  <Text style={styles.aiStatusTitle}>{aiActive ? 'Ai Asistan Aktif' : 'Ai Asistan Kapalı'}</Text>
                   <Text style={styles.aiStatusSubtitle}>{aiActive ? '7/24 Akıllı Otomasyon Devrede' : 'Tüm asistanlar (WhatsApp, Sosyal Medya vb.) kapalı'}</Text>
                 </>
               )}
@@ -530,7 +530,7 @@ export default function DashboardScreen({ navigation }) {
           <Text style={styles.sectionTitle}>İletişim Raporları</Text>
         </View>
         <CommunicationLogsTable />
-        
+        <View style={{ height: 40 }} />
       </ScrollView>
     </View>
   );
@@ -641,9 +641,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   aiStatusLeft: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
+  },
+  aiStatusTexts: {
+    flex: 1,
+    justifyContent: 'center',
   },
   aiIconWrapper: {
     width: 48,

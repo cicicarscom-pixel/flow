@@ -326,3 +326,12 @@ ull\ veya boş string dönülmeyecek.
 2. **Zernio Fallback Cron (Backend):** Her gece 03:00'da kaçırılan Zernio mesajlarını/yorumlarını eşitlemek için 'pg_cron' kullanan yeni bir Supabase SQL migration dosyası oluşturuldu.
 3. **Abonelik Mimarisine Hazırlık (Sosyal Medya Asistanı):** Basic (Sadece WhatsApp/WAHA) ve Premium (Tam sosyal medya/Zernio) paket ayrımı kararı alındı. Bu kapsamda 'Sosyal Medya Asistanı' şalteri, BotYonetimiScreen ekranından sökülerek doğrudan SosyalMedyaScreen ekranına taşındı.
 4. **WAHA Temel Talimat Alanı:** BotYonetimiScreen içerisine kilitli olmayan (Basic pakete açık) 'Asistan Talimatı Oluştur' metin kutusu eklendi. Buraya girilen değer doğrudan Custom Role (Özel Karakter) olarak WAHA system_instruction'ına beslenmek üzere bağlandı.
+
+
+## 📝 Son Geliştirme Günlüğü (9 Ağustos 2026)
+
+### Yapılan Değişiklikler ve Çözülen Hatalar:
+1. **Zernio AI Yanıt Hatası (Bug) Düzeltildi:** `HandleIncomingMessageUseCase.ts` içerisindeki ZernioClient fonksiyon çağrıları (sendMessage, likeComment, replyToComment) düzeltilerek `.inbox` ve `.comments` alt modüllerine yönlendirildi. Bu sayede AI'ın Instagram'a yanıt verememesi (TypeError) sorunu çözüldü.
+2. **İletişim Raporları Senkronizasyonu:** `InboxScreen.js`'de silinen mesajların ve yorumların anasayfadaki (Dashboard) `ai_communication_logs` tablosundan da eş zamanlı olarak silinmesi sağlandı.
+3. **Manuel Rapor Temizleme Butonu:** Dashboard üzerindeki `CommunicationLogsTable.js` bileşeninin altına, eski ve takılı kalmış raporları temizlemek için bir "Raporları Temizle" butonu eklendi. İşlemin çalışması için `useCommunicationLogs.ts` hook'una `clearLogs` fonksiyonu yazıldı.
+4. **Supabase RLS Policy Eklendi:** `ai_communication_logs` tablosu için eksik olan DELETE yetkisi (Row Level Security), yeni bir SQL migration dosyası (`20260809223300_ai_communication_logs_delete_policy.sql`) oluşturularak canlı veritabanına push edildi.

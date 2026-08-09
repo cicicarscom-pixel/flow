@@ -39,6 +39,7 @@ export default function SosyalMedyaScreen({ navigation }) {
   const [socialAccounts, setSocialAccounts] = useState([]);
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(true);
   const [socialBotActive, setSocialBotActive] = useState(false);
+  const [systemBotActive, setSystemBotActive] = useState(true);
   const [isUpdatingBot, setIsUpdatingBot] = useState(false);
 
   const fetchAccountsFromZernio = async (showSuccessAlert = false) => {
@@ -56,12 +57,13 @@ export default function SosyalMedyaScreen({ navigation }) {
       // Fetch Bot Settings
       const { data: botSettings } = await supabase
         .from('bot_settings')
-        .select('social_bot_active')
-        .eq('profile_id', userId)
+        .select('social_bot_active, is_active')
+        .eq('merchant_id', userId)
         .single();
       
-      if (botSettings && botSettings.social_bot_active !== undefined) {
-        setSocialBotActive(botSettings.social_bot_active);
+      if (botSettings) {
+        if (botSettings.social_bot_active !== undefined) setSocialBotActive(botSettings.social_bot_active);
+        if (botSettings.is_active !== undefined) setSystemBotActive(botSettings.is_active);
       }
 
       const { data, error } = await supabase.functions.invoke('zernio-client', {
@@ -264,7 +266,7 @@ export default function SosyalMedyaScreen({ navigation }) {
          const { error } = await supabase
            .from('bot_settings')
            .update({ social_bot_active: val })
-           .eq('profile_id', userId);
+           .eq('merchant_id', userId);
          
          if (error) throw error;
       }
@@ -351,11 +353,12 @@ export default function SosyalMedyaScreen({ navigation }) {
              <ActivityIndicator size="small" color="#4edea3" />
            ) : (
              <Switch
-               value={socialBotActive}
-               onValueChange={handleToggleBot}
-               trackColor={{ false: '#2c2b2e', true: '#4edea3' }}
-               thumbColor={'#ffffff'}
-             />
+                 value={socialBotActive}
+                 onValueChange={handleToggleBot}
+                 trackColor={{ false: '#2c2b2e', true: '#4edea3' }}
+                 thumbColor={'#ffffff'}
+                 disabled={!systemBotActive}
+               />
            )}
         </View>
 
@@ -731,3 +734,5 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   }
 });
+
+

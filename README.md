@@ -982,3 +982,12 @@ Uygulama içerisindeki özel AI kartlarının (örn. "AI Kişiliği" kartı) etr
 - Sosyal Medya Asistanı yönetimi (toggle) BotYonetimiScreen'den SosyalMedyaScreen'e taşındı.
 - Basic paket kullanıcıları için WAHA altyapısını besleyecek 'Asistan Talimatı Oluştur' adlı basit metin girişi eklendi.
 
+
+
+## 📝 Son Geliştirme Günlüğü (9 Ağustos 2026)
+
+### Yapılan Değişiklikler ve Çözülen Hatalar:
+1. **Zernio AI Yanıt Hatası (Bug) Düzeltildi:** `HandleIncomingMessageUseCase.ts` içerisindeki ZernioClient fonksiyon çağrıları (sendMessage, likeComment, replyToComment) düzeltilerek `.inbox` ve `.comments` alt modüllerine yönlendirildi. Bu sayede AI'ın Instagram'a yanıt verememesi (TypeError) sorunu çözüldü.
+2. **İletişim Raporları Senkronizasyonu:** `InboxScreen.js`'de silinen mesajların ve yorumların anasayfadaki (Dashboard) `ai_communication_logs` tablosundan da eş zamanlı olarak silinmesi sağlandı.
+3. **Manuel Rapor Temizleme Butonu:** Dashboard üzerindeki `CommunicationLogsTable.js` bileşeninin altına, eski ve takılı kalmış raporları temizlemek için bir "Raporları Temizle" butonu eklendi. İşlemin çalışması için `useCommunicationLogs.ts` hook'una `clearLogs` fonksiyonu yazıldı.
+4. **Supabase RLS Policy Eklendi:** `ai_communication_logs` tablosu için eksik olan DELETE yetkisi (Row Level Security), yeni bir SQL migration dosyası (`20260809223300_ai_communication_logs_delete_policy.sql`) oluşturularak canlı veritabanına push edildi.

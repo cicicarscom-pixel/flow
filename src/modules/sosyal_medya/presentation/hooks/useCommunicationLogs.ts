@@ -6,6 +6,7 @@ export interface CommunicationLog {
   merchant_id: string;
   platform: 'whatsapp' | 'social';
   sender_id: string;
+  sender_name?: string;
   user_message: string;
   ai_response: string;
   created_at: string;
@@ -39,9 +40,26 @@ export function useCommunicationLogs() {
     }
   }, []);
 
+  const clearLogs = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { error: deleteError } = await supabase
+        .from('ai_communication_logs')
+        .delete()
+        .eq('merchant_id', session.user.id);
+
+      if (deleteError) throw deleteError;
+      setLogs([]);
+    } catch (err) {
+      console.error('Error clearing communication logs:', err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchLogs();
   }, [fetchLogs]);
 
-  return { logs, loading, error, refetch: fetchLogs };
+  return { logs, loading, error, refetch: fetchLogs, clearLogs };
 }

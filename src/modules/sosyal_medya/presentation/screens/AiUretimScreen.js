@@ -20,6 +20,8 @@ import {
   Modal
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -312,6 +314,7 @@ export default function AiUretimScreen({ route, navigation }) {
     const { data: session } = await supabase.auth.getSession();
     const userId = session?.session?.user?.id;
 
+    let successCount = 0;
     // Döngü (for...of) ile sadece filtreden geçen uygun platformların Zernio API endpoint'lerine istek atılsın
     for (const acc of allowedPlatforms) {
       try {
@@ -329,12 +332,19 @@ export default function AiUretimScreen({ route, navigation }) {
         });
         
         if (postError || postData?.error) {
-           throw new Error(postError?.message || postData?.error?.message || "Zernio API hatası");
+          const actualError = postError?.message || (typeof postData?.error === 'string' ? postData.error : postData?.error?.message) || "Zernio API hatası";
+          throw new Error(actualError);
         }
+        successCount++;
       } catch (err) {
         // Zero UI: Kullanıcıya asla hata gösterme
         console.warn(`[Zernio API Hatası] ${acc.platform}:`, err);
       }
+    }
+
+    if (successCount === 0) {
+      Alert.alert("Hata", "Gönderi paylaşılamadı. Lütfen bildirimleri kontrol edin.");
+      return;
     }
 
     // Başarılı olan gönderimleri veritabanına kaydet
@@ -393,35 +403,81 @@ export default function AiUretimScreen({ route, navigation }) {
     }
   };
 
-  const pickMedia = async () => {
+  const saveImageToGallery = async () => {
+    if (!localImage || !localImage.startsWith('data:image')) {
+      Alert.alert('Hata', 'Paylaşılacak bir resim bulunamadı.');
+      return;
+    }
     try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images', 'videos'],
-        allowsEditing: true,
-        quality: 0.8,
-        base64: true,
+      const base64Data = localImage.replace(/^data:image\/\w+;base64,/, '');
+      const filename = FileSystem.documentDirectory + 'ai_generated_' + Date.now() + '.jpg';
+      
+      await FileSystem.writeAsStringAsync(filename, base64Data, {
+        encoding: FileSystem.EncodingType.Base64,
       });
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const asset = result.assets[0];
-        const isVideo = asset.type === 'video';
-        
-        const newMediaType = isVideo ? 'video' : 'image';
-        setMediaType(newMediaType);
-        persistedMediaType = newMediaType;
-        
-        let mediaData;
-        if (isVideo) {
-           mediaData = asset.uri;
-        } else {
-           mediaData = asset.base64 ? `data:image/jpeg;base64,${asset.base64}` : asset.uri;
-        }
-
-        setLocalImage(mediaData);
-        persistedImage = mediaData;
+      
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (isAvailable) {
+        await Sharing.shareAsync(filename, {
+          mimeType: 'image/jpeg',
+          dialogTitle: 'Resmi Paylaş veya Kaydet'
+        });
+      } else {
+        Alert.alert('Hata', 'Cihazınızda paylaşım özelliği desteklenmiyor.');
       }
     } catch (error) {
-      console.error("Medya seçme hatası:", error);
+      console.error('Error sharing image:', error);
+      Alert.alert('Hata', 'Resim paylaşılırken bir sorun oluştu.');
+    }
+  };
+
+  const pickMedia = async () => {
+    const isInstagramSelected = selectedPlatforms['instagram'] || selectedPlatforms['Instagram'];
+    
+    const launchPicker = async () => {
+      try {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ['images', 'videos'],
+          allowsEditing: true,
+          aspect: isInstagramSelected ? [4, 5] : undefined,
+          quality: 0.8,
+          base64: true,
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+          const asset = result.assets[0];
+          const isVideo = asset.type === 'video';
+          
+          const newMediaType = isVideo ? 'video' : 'image';
+          setMediaType(newMediaType);
+          persistedMediaType = newMediaType;
+          
+          let mediaData;
+          if (isVideo) {
+             mediaData = asset.uri;
+          } else {
+             mediaData = asset.base64 ? `data:image/jpeg;base64,${asset.base64}` : asset.uri;
+          }
+
+          setLocalImage(mediaData);
+          persistedImage = mediaData;
+        }
+      } catch (error) {
+        console.error("Resim secerken hata:", error);
+      }
+    };
+
+    if (isInstagramSelected) {
+      Alert.alert(
+        'Instagram Boyut Kısıtlaması',
+        'Instagram\'ın yayın kuralları gereği, resimlerin dikey formata (en fazla 4:5) uygun olması zorunludur. Lütfen açılacak ekranda resminizi bu alana göre ayarlayın.',
+        [
+          { text: 'İptal', style: 'cancel' },
+          { text: 'Anladım', onPress: () => launchPicker() }
+        ]
+      );
+    } else {
+      launchPicker();
     }
   };
 

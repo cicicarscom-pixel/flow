@@ -361,7 +361,6 @@ export default function ChatScreen({ route, navigation }) {
           setInputText={setInputText}
           handleSend={handleSendMessage}
           placeholder={t('sosyalMedya.chat.typeMessage')}
-          onAttachImage={handleUploadMedia}
           onAttachGallery={handleUploadMedia}
         />
       </KeyboardAvoidingView>

@@ -166,6 +166,7 @@ const MesajlarTab = ({ navigation }) => {
           style: "destructive",
           onPress: async () => {
             const { error } = await supabase.from('conversations').delete().in('zernio_conversation_id', selectedItems);
+            await supabase.from('ai_communication_logs').delete().in('sender_id', selectedItems);
             if (error) {
               console.error("Sohbet silme hatası:", error);
               alert(t('sosyalMedya.alerts.deleteChatError'));
@@ -369,7 +370,10 @@ const YorumlarTab = ({ navigation }) => {
             } catch (_) {}
 
             if (uuids.length > 0) await supabase.from('comments').delete().in('id', uuids);
-            if (zernioIds.length > 0) await supabase.from('comments').delete().in('zernio_comment_id', zernioIds);
+            if (zernioIds.length > 0) {
+              await supabase.from('comments').delete().in('zernio_comment_id', zernioIds);
+              await supabase.from('ai_communication_logs').delete().in('sender_id', zernioIds);
+            }
             
             setComments(prev => prev.filter(c => !uniqueIds.includes(c.id) && !uniqueIds.includes(c.zernio_comment_id)));
             setIsSelectionMode(false);
@@ -842,10 +846,9 @@ export default function InboxScreen({ navigation }) {
 
       {/* App Bar */}
       <GlobalAppBar 
-        level={2} 
+        level={3} 
         module="sosyal" 
         title={t('sosyalMedya.ui.inbox')} 
-        showProfile={true} 
         actions={[
           { icon: 'sync', onPress: () => DeviceEventEmitter.emit('REFRESH_INBOX') }
         ]} 

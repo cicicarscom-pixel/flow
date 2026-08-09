@@ -369,6 +369,14 @@ export default function BotYonetimiScreen() {
                     <View className="flex-row items-center gap-2">
                       <View className={`w-3 h-3 rounded-full ${botActive ? 'bg-[#4edea3]' : 'bg-red-500'}`} style={botActive ? styles.pulseGlow : {}} />
                       <Text className="text-white text-base font-bold">Ai Asistan</Text>
+                    </View>
+                    <Switch
+                      value={botActive}
+                      onValueChange={(val) => { setBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
+                      trackColor={{ false: '#2c2b2e', true: '#4edea3' }}
+                      thumbColor={'#ffffff'}
+                      style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
+                    />
                   </View>
 
                   {/* Platform Toggles */}
