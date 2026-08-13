@@ -2,16 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, ImageBackground, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { GlobalAppBar , supabase } from '../shared';
 
 import { CustomButton } from '../shared';
 import { CustomInput } from '../shared';
+import AddressSelector from '../shared/ui/AddressSelector';
 
 export default function ProfilScreen() {
   const [businessName, setBusinessName] = useState('');
+  const [addressData, setAddressData] = useState(null);
   const [category, setCategory] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [avatar, setAvatar] = useState('https://api.dicebear.com/7.x/avataaars/png?seed=Alex');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -22,7 +26,7 @@ export default function ProfilScreen() {
         setEmail(session.user.email || '');
         const { data, error } = await supabase
           .from('profiles')
-          .select('business_name, category, phone_number')
+          .select('business_name, category, phone_number, address, avatar_url')
           .eq('id', session.user.id)
           .single();
 
@@ -32,6 +36,12 @@ export default function ProfilScreen() {
           setBusinessName(data.business_name || '');
           setCategory(data.category || 'Diğer');
           setPhone(data.phone_number || '');
+          if (data.address) {
+            setAddressData(data.address);
+          }
+          if (data.avatar_url) {
+            setAvatar(data.avatar_url);
+          }
         }
       }
     } catch (err) {
@@ -47,6 +57,19 @@ export default function ProfilScreen() {
     }, 0);
   }, []);
 
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setAvatar(result.assets[0].uri);
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -57,7 +80,9 @@ export default function ProfilScreen() {
           .update({
             business_name: businessName,
             category: category,
-            phone_number: phone
+            phone_number: phone,
+            address: addressData,
+            avatar_url: avatar
           })
           .eq('id', session.user.id);
 
@@ -93,17 +118,17 @@ export default function ProfilScreen() {
         >
           {/* Avatar Area */}
           <View className="items-center mb-8">
-            <View className="relative">
+            <TouchableOpacity onPress={pickImage} className="relative">
               <View className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/50 shadow-lg shadow-primary">
                 <Image 
-                  source={{ uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Alex' }} 
+                  source={{ uri: avatar }} 
                   style={{ width: '100%', height: '100%' }}
                 />
               </View>
-              <TouchableOpacity className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary items-center justify-center border-2 border-background">
-                <Ionicons name="pencil" size={16} color="#000" />
-              </TouchableOpacity>
-            </View>
+              <View className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary items-center justify-center border-2 border-background">
+                <Ionicons name="camera" size={16} color="#000" />
+              </View>
+            </TouchableOpacity>
           </View>
 
           {loading ? (
@@ -142,8 +167,13 @@ export default function ProfilScreen() {
                 value={category}
                 onChangeText={setCategory}
                 placeholder="Örn: Cafe & Restoran, Kuaför..."
-                containerClassName="mb-8"
+                containerClassName="mb-6"
               />
+
+              <View style={{ marginBottom: 32 }}>
+                <Text className="text-gray-400 text-xs font-semibold mb-2">Adres Bilgileri</Text>
+                <AddressSelector initialData={addressData} onAddressChange={setAddressData} />
+              </View>
 
               {/* Gradient Button */}
               <CustomButton

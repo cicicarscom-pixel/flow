@@ -20,9 +20,14 @@ const CustomInput = forwardRef(({
           {label}
         </Text>
       )}
-      <View className={`bg-surface border-transparent rounded-small flex-row items-center p-4 ${
-          error ? 'border-red-500 border' : ''
-        }`}>
+      <View 
+        style={{
+          backgroundColor: 'rgba(39, 42, 46, 0.4)',
+          borderWidth: 1,
+          borderColor: error ? 'red' : 'rgba(255, 255, 255, 0.05)',
+          borderRadius: 12
+        }}
+        className="flex-row items-center p-4">
         {leftIcon && <View className="mr-3">{leftIcon}</View>}
         <TextInput
           ref={ref}

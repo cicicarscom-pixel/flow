@@ -12,6 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFocusEffect } from '@react-navigation/native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { CommunicationLogsTable } from '../modules/sosyal_medya/presentation/components/CommunicationLogsTable';
 import { supabase } from '../shared/lib/supabase';
@@ -117,6 +118,32 @@ export default function DashboardScreen({ navigation }) {
   const [upcomingPayments, setUpcomingPayments] = useState([]);
   const [socialStats, setSocialStats] = useState({ followers: 0, trend: 12 });
   const [recentActivities, setRecentActivities] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnreadNotifications = async (merchantId) => {
+    try {
+      const { count } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('profile_id', merchantId)
+        .eq('is_read', false);
+      setUnreadCount(count || 0);
+    } catch (e) {
+      console.warn('Notification count error:', e);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadCounts = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          fetchUnreadNotifications(session.user.id);
+        }
+      };
+      loadCounts();
+    }, [])
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,10 +154,22 @@ export default function DashboardScreen({ navigation }) {
         if (session) {
           merchantId = session.user.id;
           const meta = session.user.user_metadata || {};
+
+          // Fetch profile for avatar
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('business_name, avatar_url')
+            .eq('id', merchantId)
+            .single();
+
+          const nameToUse = profileData?.business_name || meta.full_name || 'Kullanıcı';
           setUserProfile({
-            fullName: meta.full_name || 'Kullanıcı',
-            avatarUrl: meta.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(meta.full_name || 'K')}&background=00daf3&color=fff`
+            fullName: nameToUse,
+            avatarUrl: profileData?.avatar_url || meta.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nameToUse)}&background=00daf3&color=fff`
           });
+
+          // Unread Notifications Count
+          fetchUnreadNotifications(merchantId);
 
           // Bot Status
           const { data: botData } = await supabase
@@ -274,7 +313,10 @@ export default function DashboardScreen({ navigation }) {
       {/* Top App Bar */}
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 20) }]}>
         <View style={styles.headerProfileArea}>
-          <View style={styles.profileImageWrapper}>
+          <TouchableOpacity 
+            style={styles.profileImageWrapper}
+            onPress={() => navigation.navigate('Profil')}
+          >
             {isLoading ? (
               <Skeleton width="100%" height="100%" borderRadius={18} />
             ) : (
@@ -284,7 +326,7 @@ export default function DashboardScreen({ navigation }) {
               />
             )}
             {!isLoading && <View style={styles.onlineDot} />}
-          </View>
+          </TouchableOpacity>
           <View>
             <Text style={styles.greetingText}>MERHABA,</Text>
             {isLoading ? (
@@ -296,9 +338,9 @@ export default function DashboardScreen({ navigation }) {
         </View>
 
         <View style={styles.headerRightArea}>
-          <TouchableOpacity style={styles.notificationBtn}>
+          <TouchableOpacity style={styles.notificationBtn} onPress={() => navigation.navigate('Bildirimler')}>
             <MaterialIcons name="notifications" size={26} color={COLORS.onSurfaceVariant} />
-            <View style={styles.notificationBadge} />
+            {unreadCount > 0 && <View style={styles.notificationBadge} />}
           </TouchableOpacity>
         </View>
       </View>

@@ -30,7 +30,7 @@ export default function GlobalAppBar({
   return (
     <View style={{ paddingTop: insets.top, backgroundColor: '#070B1F' }}>
       <View 
-        className="flex-row items-center justify-between px-4 border-b border-white/5"
+        className="flex-row items-center justify-between px-4"
         style={{ height: 64 }}
       >
         {/* Left Section */}
@@ -65,33 +65,8 @@ export default function GlobalAppBar({
               <MaterialIcons name={action.icon} size={24} color="#e5e2e3" />
             </TouchableOpacity>
           ))}
-
-          {(level === 1 || level === 2) && (
-            <TouchableOpacity className="w-11 h-11 items-center justify-center ml-1">
-              <Ionicons name="notifications-outline" size={24} color="#e5e2e3" />
-            </TouchableOpacity>
-          )}
-
-          {showProfile && (
-            <TouchableOpacity 
-              onPress={() => navigation.navigate('Profil')}
-              className="w-11 h-11 items-center justify-center ml-2"
-            >
-              <View className="w-8 h-8 rounded-full bg-[#1c1c1e] items-center justify-center border border-white/10 overflow-hidden">
-                <Image 
-                  source={{ uri: 'https://api.dicebear.com/7.x/avataaars/png?seed=Alex' }} 
-                  style={{ width: '100%', height: '100%' }}
-                />
-              </View>
-            </TouchableOpacity>
-          )}
         </View>
       </View>
-      
-      {/* Accent Line */}
-      {accentColor !== 'transparent' && (
-        <View style={{ height: 2, backgroundColor: accentColor, position: 'absolute', bottom: 0, left: 0, right: 0 }} />
-      )}
     </View>
   );
 }

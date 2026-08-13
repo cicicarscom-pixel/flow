@@ -335,3 +335,9 @@ ull\ veya boş string dönülmeyecek.
 2. **İletişim Raporları Senkronizasyonu:** `InboxScreen.js`'de silinen mesajların ve yorumların anasayfadaki (Dashboard) `ai_communication_logs` tablosundan da eş zamanlı olarak silinmesi sağlandı.
 3. **Manuel Rapor Temizleme Butonu:** Dashboard üzerindeki `CommunicationLogsTable.js` bileşeninin altına, eski ve takılı kalmış raporları temizlemek için bir "Raporları Temizle" butonu eklendi. İşlemin çalışması için `useCommunicationLogs.ts` hook'una `clearLogs` fonksiyonu yazıldı.
 4. **Supabase RLS Policy Eklendi:** `ai_communication_logs` tablosu için eksik olan DELETE yetkisi (Row Level Security), yeni bir SQL migration dosyası (`20260809223300_ai_communication_logs_delete_policy.sql`) oluşturularak canlı veritabanına push edildi.
+
+### [11.08.2026] Bildirimler Ekranı & AI Bildirim Altyapısı (Flow)
+1. **Bildirimler UI/UX:** Glassmorphism tasarım stili ile \BildirimlerScreen.js\ oluşturuldu ve \AppNavigator\'a eklendi.
+2. **Dinamik Çan İkonu:** \DashboardScreen\ üst menüsündeki bildirim çanı, veritabanından okunmamış bildirim sayısını alıp kırmızı bir rozet gösterecek şekilde güncellendi.
+3. **Gerçek Zamanlı Silme & Okuma:** Kullanıcılar bildirimleri okuyabilir veya çöpe atıp Supabase'den silebilirler.
+4. **AI Bildirim Entegrasyonu:** Ledger tarafındaki yapay zeka asistanının isme veya profile özel anında in-app bildirim atabilmesini sağlayan veritabanı altyapısı ve araçlar tamamlandı.
