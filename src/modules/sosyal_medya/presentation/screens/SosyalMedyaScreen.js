@@ -580,7 +580,7 @@ export default function SosyalMedyaScreen({ navigation }) {
           )}
         </View>
 
-
+      </ScrollView>
 
     </View>
   );
