@@ -341,3 +341,9 @@ ull\ veya boş string dönülmeyecek.
 2. **Dinamik Çan İkonu:** \DashboardScreen\ üst menüsündeki bildirim çanı, veritabanından okunmamış bildirim sayısını alıp kırmızı bir rozet gösterecek şekilde güncellendi.
 3. **Gerçek Zamanlı Silme & Okuma:** Kullanıcılar bildirimleri okuyabilir veya çöpe atıp Supabase'den silebilirler.
 4. **AI Bildirim Entegrasyonu:** Ledger tarafındaki yapay zeka asistanının isme veya profile özel anında in-app bildirim atabilmesini sağlayan veritabanı altyapısı ve araçlar tamamlandı.
+
+
+### [14.08.2026] Web ve Mobil Platform UI/UX Senkronizasyonu
+1. **Mobil Arayüz Web ile Eşitlendi:** Web versiyonunda bulunan şık, cam görünümlü yatay kaydırılabilir (horizontal) Sosyal Medya hesap kartları, aynen Flow mobil (React Native) uygulamasına uyarlandı.
+2. **Emoji İkonlar ve Glow Efekti:** Standart marka ikonları iptal edildi; yerine Web versiyonunda kullanılan emojiler (👥, 📸 vb.) getirildi ve kart etrafındaki neon parlama (glow) efekti %20 oranında güçlendirilerek çok daha estetik bir görünüm elde edildi.
+3. **Dashboard Paritesi:** Web tarafındaki eski paneller temizlenip, güncel 'Son Aktiviteler' ve 'İletişim Raporları' Web Dashboard'a dahil edilerek Mobil ekranla tam senkron sağlandı.

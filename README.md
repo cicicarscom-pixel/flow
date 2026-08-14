@@ -991,3 +991,6 @@ Uygulama içerisindeki özel AI kartlarının (örn. "AI Kişiliği" kartı) etr
 2. **İletişim Raporları Senkronizasyonu:** `InboxScreen.js`'de silinen mesajların ve yorumların anasayfadaki (Dashboard) `ai_communication_logs` tablosundan da eş zamanlı olarak silinmesi sağlandı.
 3. **Manuel Rapor Temizleme Butonu:** Dashboard üzerindeki `CommunicationLogsTable.js` bileşeninin altına, eski ve takılı kalmış raporları temizlemek için bir "Raporları Temizle" butonu eklendi. İşlemin çalışması için `useCommunicationLogs.ts` hook'una `clearLogs` fonksiyonu yazıldı.
 4. **Supabase RLS Policy Eklendi:** `ai_communication_logs` tablosu için eksik olan DELETE yetkisi (Row Level Security), yeni bir SQL migration dosyası (`20260809223300_ai_communication_logs_delete_policy.sql`) oluşturularak canlı veritabanına push edildi.
+
+## [14.08.2026] UI/UX Web Senkronizasyonu
+Web platformu ile tam eşlenik görsel deneyim için Sosyal Medya ekranı baştan aşağı yenilendi. Standart marka ikonları (Ionicons) yerine Web'in estetik Emojileri (👥, 📸 vb.) getirildi. Kartlara %20 güçlendirilmiş yatay kaydırılabilir (Horizontal ScrollView) şık neon (glow) ve glassmorphism efekti entegre edildi. Dashboard 'Son Aktiviteler' ve 'İletişim Raporları' eşitlendi.
