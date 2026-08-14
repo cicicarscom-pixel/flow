@@ -29,27 +29,27 @@ import * as WebBrowser from 'expo-web-browser';
 import { CustomButton } from '../../../../shared';
 const { width } = Dimensions.get('window');
 const PLATFORMS_DATA = [
-  { id: "facebook", name: "Facebook", color: "#1877F2", glow: "rgba(24,119,242,0.3)", icon: "logo-facebook" },
-  { id: "instagram", name: "Instagram", color: "#E1306C", glow: "rgba(225,48,108,0.3)", icon: "logo-instagram" },
-  { id: "linkedin", name: "LinkedIn", color: "#0A66C2", glow: "rgba(10,102,194,0.3)", icon: "logo-linkedin" },
-  { id: "twitter", name: "X", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "logo-twitter" },
-  { id: "tiktok", name: "TikTok", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "logo-tiktok" },
-  { id: "youtube", name: "YouTube", color: "#FF0000", glow: "rgba(255,0,0,0.3)", icon: "logo-youtube" },
-  { id: "pinterest", name: "Pinterest", color: "#E60023", glow: "rgba(230,0,35,0.3)", icon: "logo-pinterest" },
-  { id: "googlebusiness", name: "GBP", color: "#4285F4", glow: "rgba(66,133,244,0.3)", icon: "business" },
-  { id: "reddit", name: "Reddit", color: "#FF4500", glow: "rgba(255,69,0,0.3)", icon: "logo-reddit" },
-  { id: "telegram", name: "Telegram", color: "#2AABEE", glow: "rgba(42,171,238,0.3)", icon: "paper-plane" },
-  { id: "bluesky", name: "Bluesky", color: "#0085ff", glow: "rgba(0,133,255,0.3)", icon: "cloud" },
-  { id: "threads", name: "Threads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "at" },
-  { id: "snapchat", name: "Snapchat", color: "#fffc00", glow: "rgba(255,252,0,0.3)", icon: "logo-snapchat" },
-  { id: "whatsapp", name: "WhatsApp", color: "#25D366", glow: "rgba(37,211,102,0.3)", icon: "logo-whatsapp" },
-  { id: "discord", name: "Discord", color: "#5865F2", glow: "rgba(88,101,242,0.3)", icon: "logo-discord" },
-  { id: "meta_ads", name: "Meta Ads", color: "#0668E1", glow: "rgba(6,104,225,0.3)", icon: "megaphone", isAd: true },
-  { id: "google_ads", name: "Google Ads", color: "#EA4335", glow: "rgba(234,67,53,0.3)", icon: "logo-google", isAd: true },
-  { id: "linkedin_ads", name: "LinkedIn Ads", color: "#0A66C2", glow: "rgba(10,102,194,0.3)", icon: "logo-linkedin", isAd: true },
-  { id: "tiktok_ads", name: "TikTok Ads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "logo-tiktok", isAd: true },
-  { id: "pinterest_ads", name: "Pinterest Ads", color: "#E60023", glow: "rgba(230,0,35,0.3)", icon: "logo-pinterest", isAd: true },
-  { id: "x_ads", name: "X Ads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "close", isAd: true },
+  { id: "facebook", name: "Facebook", color: "#1877F2", glow: "rgba(24,119,242,0.3)", icon: "👥" },
+  { id: "instagram", name: "Instagram", color: "#E1306C", glow: "rgba(225,48,108,0.3)", icon: "📸" },
+  { id: "linkedin", name: "LinkedIn", color: "#0A66C2", glow: "rgba(10,102,194,0.3)", icon: "💼" },
+  { id: "twitter", name: "X", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "✖️" },
+  { id: "tiktok", name: "TikTok", color: "#010101", glow: "rgba(105,201,208,0.3)", icon: "🎵" },
+  { id: "youtube", name: "YouTube", color: "#FF0000", glow: "rgba(255,0,0,0.3)", icon: "▶️" },
+  { id: "pinterest", name: "Pinterest", color: "#E60023", glow: "rgba(230,0,35,0.3)", icon: "📌" },
+  { id: "googlebusiness", name: "GBP", color: "#4285F4", glow: "rgba(66,133,244,0.3)", icon: "🏢" },
+  { id: "reddit", name: "Reddit", color: "#FF4500", glow: "rgba(255,69,0,0.3)", icon: "🤖" },
+  { id: "telegram", name: "Telegram", color: "#2AABEE", glow: "rgba(42,171,238,0.3)", icon: "✈️" },
+  { id: "bluesky", name: "Bluesky", color: "#0085ff", glow: "rgba(0,133,255,0.3)", icon: "☁️" },
+  { id: "threads", name: "Threads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "🧵" },
+  { id: "snapchat", name: "Snapchat", color: "#fffc00", glow: "rgba(255,252,0,0.3)", icon: "👻" },
+  { id: "whatsapp", name: "WhatsApp", color: "#25D366", glow: "rgba(37,211,102,0.3)", icon: "💬" },
+  { id: "discord", name: "Discord", color: "#5865F2", glow: "rgba(88,101,242,0.3)", icon: "👾" },
+  { id: "meta_ads", name: "Meta Ads", color: "#0668E1", glow: "rgba(6,104,225,0.3)", icon: "📈", isAd: true },
+  { id: "google_ads", name: "Google Ads", color: "#EA4335", glow: "rgba(234,67,53,0.3)", icon: "📊", isAd: true },
+  { id: "linkedin_ads", name: "LinkedIn Ads", color: "#0A66C2", glow: "rgba(10,102,194,0.3)", icon: "💼", isAd: true },
+  { id: "tiktok_ads", name: "TikTok Ads", color: "#010101", glow: "rgba(255,255,255,0.3)", icon: "📱", isAd: true },
+  { id: "pinterest_ads", name: "Pinterest Ads", color: "#E60023", glow: "rgba(230,0,35,0.3)", icon: "📌", isAd: true },
+  { id: "x_ads", name: "X Ads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "✖️", isAd: true },
 ];
 
 
@@ -452,10 +452,10 @@ export default function SosyalMedyaScreen({ navigation }) {
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 1 }}
                           >
-                             <Ionicons name={p.icon} size={20} color="#fff" />
+                             <Text style={{ fontSize: 18 }}>{p.icon}</Text>
                           </LinearGradient>
                        ) : (
-                         <Ionicons name={p.icon} size={20} color={p.color === '#ffffff' ? '#000' : '#fff'} />
+                         <Text style={{ fontSize: 18 }}>{p.icon}</Text>
                        )}
                      </View>
                    </View>
@@ -535,10 +535,10 @@ export default function SosyalMedyaScreen({ navigation }) {
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 1 }}
                           >
-                             <Ionicons name={platformInfo.icon} size={20} color="#fff" />
+                             <Text style={{ fontSize: 18 }}>{platformInfo.icon}</Text>
                           </LinearGradient>
                        ) : (
-                         <Ionicons name={platformInfo.icon} size={20} color={platformInfo.color === '#ffffff' ? '#000' : '#fff'} />
+                         <Text style={{ fontSize: 18 }}>{platformInfo.icon}</Text>
                        )}
                      </View>
                      
