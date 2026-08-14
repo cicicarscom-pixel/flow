@@ -28,6 +28,30 @@ import * as WebBrowser from 'expo-web-browser';
 
 import { CustomButton } from '../../../../shared';
 const { width } = Dimensions.get('window');
+const PLATFORMS_DATA = [
+  { id: "facebook", name: "Facebook", color: "#1877F2", glow: "rgba(24,119,242,0.3)", icon: "logo-facebook" },
+  { id: "instagram", name: "Instagram", color: "#E1306C", glow: "rgba(225,48,108,0.3)", icon: "logo-instagram" },
+  { id: "linkedin", name: "LinkedIn", color: "#0A66C2", glow: "rgba(10,102,194,0.3)", icon: "logo-linkedin" },
+  { id: "twitter", name: "X", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "logo-twitter" },
+  { id: "tiktok", name: "TikTok", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "logo-tiktok" },
+  { id: "youtube", name: "YouTube", color: "#FF0000", glow: "rgba(255,0,0,0.3)", icon: "logo-youtube" },
+  { id: "pinterest", name: "Pinterest", color: "#E60023", glow: "rgba(230,0,35,0.3)", icon: "logo-pinterest" },
+  { id: "googlebusiness", name: "GBP", color: "#4285F4", glow: "rgba(66,133,244,0.3)", icon: "business" },
+  { id: "reddit", name: "Reddit", color: "#FF4500", glow: "rgba(255,69,0,0.3)", icon: "logo-reddit" },
+  { id: "telegram", name: "Telegram", color: "#2AABEE", glow: "rgba(42,171,238,0.3)", icon: "paper-plane" },
+  { id: "bluesky", name: "Bluesky", color: "#0085ff", glow: "rgba(0,133,255,0.3)", icon: "cloud" },
+  { id: "threads", name: "Threads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "at" },
+  { id: "snapchat", name: "Snapchat", color: "#fffc00", glow: "rgba(255,252,0,0.3)", icon: "logo-snapchat" },
+  { id: "whatsapp", name: "WhatsApp", color: "#25D366", glow: "rgba(37,211,102,0.3)", icon: "logo-whatsapp" },
+  { id: "discord", name: "Discord", color: "#5865F2", glow: "rgba(88,101,242,0.3)", icon: "logo-discord" },
+  { id: "meta_ads", name: "Meta Ads", color: "#0668E1", glow: "rgba(6,104,225,0.3)", icon: "megaphone", isAd: true },
+  { id: "google_ads", name: "Google Ads", color: "#EA4335", glow: "rgba(234,67,53,0.3)", icon: "logo-google", isAd: true },
+  { id: "linkedin_ads", name: "LinkedIn Ads", color: "#0A66C2", glow: "rgba(10,102,194,0.3)", icon: "logo-linkedin", isAd: true },
+  { id: "tiktok_ads", name: "TikTok Ads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "logo-tiktok", isAd: true },
+  { id: "pinterest_ads", name: "Pinterest Ads", color: "#E60023", glow: "rgba(230,0,35,0.3)", icon: "logo-pinterest", isAd: true },
+  { id: "x_ads", name: "X Ads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "close", isAd: true },
+];
+
 
 
 export default function SosyalMedyaScreen({ navigation }) {
@@ -390,192 +414,71 @@ export default function SosyalMedyaScreen({ navigation }) {
           />
         </AnimatedBorderCard>
 
-        {/* Add Account Panel */}
-        <View style={[styles.glassCard, { padding: 20, borderRadius: 16, marginBottom: 24 }]}>
+                {/* Add Account Panel */}
+        <View style={{ marginBottom: 32 }}>
           <Text className="text-[#e5e1e4] text-[18px] font-semibold mb-4">{t('sosyalMedya.ui.addAccount')}</Text>
-          
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 8 }}>
-            <View className="flex-row items-center">
-              {/* Facebook */}
-              <TouchableOpacity onPress={() => handleConnectZernio('facebook')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="logo-facebook" size={24} color="#1877F2" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Facebook</Text>
-              </TouchableOpacity>
-              
-              {/* Instagram */}
-              <TouchableOpacity onPress={() => handleConnectZernio('instagram')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full bg-[#2a2a2b] items-center justify-center mb-1 border border-[#ebb2ff]/50" style={styles.glowBorderMagenta}>
-                  <Ionicons name="logo-instagram" size={24} color="#ebb2ff" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Instagram</Text>
-              </TouchableOpacity>
-
-              {/* LinkedIn */}
-              <TouchableOpacity onPress={() => handleConnectZernio('linkedin')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="logo-linkedin" size={24} color="#0A66C2" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">LinkedIn</Text>
-              </TouchableOpacity>
-
-              {/* Twitter/X */}
-              <TouchableOpacity onPress={() => handleConnectZernio('twitter')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="logo-twitter" size={24} color="#fff" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">X</Text>
-              </TouchableOpacity>
-
-              {/* TikTok */}
-              <TouchableOpacity onPress={() => handleConnectZernio('tiktok')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="logo-tiktok" size={24} color="#fff" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">TikTok</Text>
-              </TouchableOpacity>
-
-              {/* YouTube */}
-              <TouchableOpacity onPress={() => handleConnectZernio('youtube')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="logo-youtube" size={24} color="#FF0000" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">YouTube</Text>
-              </TouchableOpacity>
-
-              {/* Pinterest */}
-              <TouchableOpacity onPress={() => handleConnectZernio('pinterest')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="logo-pinterest" size={24} color="#E60023" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Pinterest</Text>
-              </TouchableOpacity>
-
-              {/* Google Business */}
-              <TouchableOpacity onPress={() => handleConnectZernio('googlebusiness')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="business" size={24} color="#4285F4" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">GBP</Text>
-              </TouchableOpacity>
-
-              {/* Reddit */}
-              <TouchableOpacity onPress={() => handleConnectZernio('reddit')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="logo-reddit" size={24} color="#FF4500" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Reddit</Text>
-              </TouchableOpacity>
-
-              {/* Telegram */}
-              <TouchableOpacity onPress={() => handleConnectZernio('telegram')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="paper-plane" size={24} color="#2AABEE" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Telegram</Text>
-              </TouchableOpacity>
-
-              {/* Bluesky */}
-              <TouchableOpacity onPress={() => handleConnectZernio('bluesky')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="cloud" size={24} color="#0085ff" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Bluesky</Text>
-              </TouchableOpacity>
-
-              {/* Threads */}
-              <TouchableOpacity onPress={() => handleConnectZernio('threads')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="at" size={24} color="#fff" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Threads</Text>
-              </TouchableOpacity>
-
-              {/* Snapchat */}
-              <TouchableOpacity onPress={() => handleConnectZernio('snapchat')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="logo-snapchat" size={24} color="#fffc00" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Snapchat</Text>
-              </TouchableOpacity>
-
-              {/* WhatsApp */}
-              <TouchableOpacity onPress={() => handleConnectZernio('whatsapp')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="logo-whatsapp" size={24} color="#25D366" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">WhatsApp</Text>
-              </TouchableOpacity>
-
-              {/* Discord */}
-              <TouchableOpacity onPress={() => handleConnectZernio('discord')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1">
-                  <Ionicons name="logo-discord" size={24} color="#5865F2" />
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Discord</Text>
-              </TouchableOpacity>
-
-              {/* Meta Ads */}
-              <TouchableOpacity onPress={() => handleConnectZernio('meta_ads')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
-                  <Ionicons name="megaphone" size={20} color="#0668E1" />
-                  <Text className="text-[8px] text-[#0668E1] absolute bottom-2">Ads</Text>
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Meta Ads</Text>
-              </TouchableOpacity>
-
-              {/* Google Ads */}
-              <TouchableOpacity onPress={() => handleConnectZernio('google_ads')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
-                  <Ionicons name="logo-google" size={20} color="#EA4335" />
-                  <Text className="text-[8px] text-[#EA4335] absolute bottom-2">Ads</Text>
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Google Ads</Text>
-              </TouchableOpacity>
-
-              {/* LinkedIn Ads */}
-              <TouchableOpacity onPress={() => handleConnectZernio('linkedin_ads')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
-                  <Ionicons name="logo-linkedin" size={20} color="#0A66C2" />
-                  <Text className="text-[8px] text-[#0A66C2] absolute bottom-2">Ads</Text>
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">LinkedIn Ads</Text>
-              </TouchableOpacity>
-
-              {/* TikTok Ads */}
-              <TouchableOpacity onPress={() => handleConnectZernio('tiktok_ads')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
-                  <Ionicons name="logo-tiktok" size={20} color="#fff" />
-                  <Text className="text-[8px] text-[#fff] absolute bottom-2">Ads</Text>
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">TikTok Ads</Text>
-              </TouchableOpacity>
-
-              {/* Pinterest Ads */}
-              <TouchableOpacity onPress={() => handleConnectZernio('pinterest_ads')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
-                  <Ionicons name="logo-pinterest" size={20} color="#E60023" />
-                  <Text className="text-[8px] text-[#E60023] absolute bottom-2">Ads</Text>
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">Pinterest Ads</Text>
-              </TouchableOpacity>
-
-              {/* X Ads */}
-              <TouchableOpacity onPress={() => handleConnectZernio('x_ads')} className="items-center mr-3">
-                <View className="w-14 h-14 rounded-full border border-[#3b494b] bg-[#1c1b1c] items-center justify-center mb-1 relative">
-                  <Ionicons name="close" size={20} color="#fff" />
-                  <Text className="text-[8px] text-[#fff] absolute bottom-2">Ads</Text>
-                </View>
-                <Text className="text-[10px] text-[#b9cacb]">X Ads</Text>
-              </TouchableOpacity>
-
-              {isConnecting && (
-                <View className="ml-2">
-                  <ActivityIndicator size="small" color="#4edea3" />
-                </View>
-              )}
-            </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16, paddingRight: 20, paddingLeft: 4 }}>
+            {PLATFORMS_DATA.map((p) => {
+               const isConnected = socialAccounts.some(acc => acc.platform.toLowerCase() === p.id);
+               if (isConnected) return null; // Zaten bağlıysa gösterme
+               return (
+                 <View
+                   key={p.id}
+                   style={{
+                     width: 140,
+                     backgroundColor: 'rgba(32, 31, 34, 0.4)',
+                     borderRadius: 16,
+                     padding: 14,
+                     marginRight: 12,
+                     borderWidth: 1,
+                     borderColor: p.glow.replace('0.3', '0.4'),
+                     shadowColor: p.color,
+                     shadowOffset: { width: 0, height: 0 },
+                     shadowOpacity: 0.3,
+                     shadowRadius: 10,
+                     elevation: 5,
+                   }}
+                 >
+                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                     <View style={{
+                       width: 36, height: 36, borderRadius: 10,
+                       backgroundColor: p.id === 'instagram' ? '#1c1b1c' : p.color,
+                       alignItems: 'center', justifyContent: 'center',
+                     }}>
+                       {p.id === 'instagram' ? (
+                          <LinearGradient
+                            colors={['#f09433','#e6683c','#dc2743','#cc2366','#bc1888']}
+                            style={{ width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                          >
+                             <Ionicons name={p.icon} size={20} color="#fff" />
+                          </LinearGradient>
+                       ) : (
+                         <Ionicons name={p.icon} size={20} color={p.color === '#ffffff' ? '#000' : '#fff'} />
+                       )}
+                     </View>
+                   </View>
+                   
+                   <Text style={{ fontWeight: '600', fontSize: 13, color: '#e5e2e3', marginBottom: 4 }}>{p.name}</Text>
+                   <Text style={{ color: '#849495', fontSize: 10, marginBottom: 12 }}>Henüz bağlanmadı</Text>
+                   
+                   <TouchableOpacity 
+                     onPress={() => handleConnectZernio(p.id)}
+                     style={{ 
+                       width: '100%', alignItems: 'center', justifyContent: 'center',
+                       backgroundColor: p.glow.replace('0.3', '0.15'),
+                       borderColor: p.glow.replace('0.3', '0.4'),
+                       borderWidth: 1,
+                       borderRadius: 8,
+                       paddingVertical: 6,
+                     }}
+                   >
+                     <Text style={{ color: p.color, fontSize: 10, fontWeight: '600' }}>+ Hesap Bağla</Text>
+                   </TouchableOpacity>
+                 </View>
+               );
+            })}
           </ScrollView>
         </View>
 
@@ -590,46 +493,94 @@ export default function SosyalMedyaScreen({ navigation }) {
           />
         </View>
 
-        {/* Main Platform Hub Panel */}
-        <View style={[styles.glassCard, { padding: 20, borderRadius: 16, marginBottom: 40 }]}>
-          <View className="flex-row flex-wrap justify-start">
-            {isLoadingAccounts ? (
-              <ActivityIndicator size="small" color="#4edea3" />
-            ) : socialAccounts.length > 0 ? (
-              socialAccounts.map((acc, index) => {
-                const platformColor = acc.platform.toLowerCase() === 'instagram' ? '#ebb2ff' : 
-                                      acc.platform.toLowerCase() === 'facebook' ? '#00f0ff' : '#0077b5';
-                const borderColor = acc.platform.toLowerCase() === 'instagram' ? 'border-[#b600f8]' : 'border-[#00f0ff]';
+                {/* Main Platform Hub Panel */}
+        <View style={{ marginBottom: 40 }}>
+          {isLoadingAccounts ? (
+            <ActivityIndicator size="small" color="#4edea3" style={{ marginVertical: 20 }} />
+          ) : socialAccounts.length > 0 ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16, paddingRight: 20, paddingLeft: 4 }}>
+              {socialAccounts.map((acc, index) => {
+                const platformInfo = PLATFORMS_DATA.find(p => p.id === acc.platform.toLowerCase()) || {
+                  id: acc.platform, name: acc.platform, color: '#00f0ff', glow: 'rgba(0,240,255,0.3)', icon: 'logo-edge'
+                };
                 
                 return (
-                  <View key={acc.id || index.toString()} className="items-center mr-6 mb-4">
-                    <View className={`w-20 h-20 rounded-full border-2 ${borderColor} items-center justify-center bg-[#1c1b1c] mb-3`}>
-                      <Ionicons name={`logo-${acc.platform.toLowerCase()}`} size={32} color={platformColor} />
-                    </View>
-                    <View className="items-center">
-                      <Text className="text-[10px] text-[#e5e2e3] w-20 text-center" numberOfLines={1}>
-                        {acc.account_name ? `@${acc.account_name}` : acc.platform}
-                      </Text>
-                      <Text className="text-[10px] text-[#4edea3] mt-0.5">{t('sosyalMedya.ui.active')}</Text>
-                      
-                      <TouchableOpacity 
-                         onPress={() => handleDisconnect(acc.id, acc.platform)}
-                         className="mt-2 py-1 px-3 border border-[#ff0050]/50 rounded-full bg-[#ff0050]/10"
-                      >
-                         <Text className="text-[9px] text-[#ff0050] font-semibold uppercase">{t('common.disconnect', 'Kaldır')}</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+                 <View
+                   key={acc.id || index.toString()}
+                   style={{
+                     width: 140,
+                     backgroundColor: 'rgba(32, 31, 34, 0.4)',
+                     borderRadius: 16,
+                     padding: 14,
+                     marginRight: 12,
+                     borderWidth: 1,
+                     borderColor: platformInfo.glow.replace('0.3', '0.4'),
+                     shadowColor: platformInfo.color,
+                     shadowOffset: { width: 0, height: 0 },
+                     shadowOpacity: 0.3,
+                     shadowRadius: 10,
+                     elevation: 5,
+                   }}
+                 >
+                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                     <View style={{
+                       width: 36, height: 36, borderRadius: 10,
+                       backgroundColor: platformInfo.id === 'instagram' ? '#1c1b1c' : platformInfo.color,
+                       alignItems: 'center', justifyContent: 'center',
+                     }}>
+                       {platformInfo.id === 'instagram' ? (
+                          <LinearGradient
+                            colors={['#f09433','#e6683c','#dc2743','#cc2366','#bc1888']}
+                            style={{ width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                          >
+                             <Ionicons name={platformInfo.icon} size={20} color="#fff" />
+                          </LinearGradient>
+                       ) : (
+                         <Ionicons name={platformInfo.icon} size={20} color={platformInfo.color === '#ffffff' ? '#000' : '#fff'} />
+                       )}
+                     </View>
+                     
+                     <View style={{ 
+                       paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12,
+                       backgroundColor: 'rgba(78,222,163,0.15)',
+                       borderColor: 'rgba(78,222,163,0.3)', borderWidth: 1
+                     }}>
+                       <Text style={{ fontSize: 9, color: '#4edea3', fontWeight: '600' }}>✓ Bağlı</Text>
+                     </View>
+                   </View>
+                   
+                   <Text style={{ fontWeight: '600', fontSize: 13, color: '#e5e2e3', marginBottom: 4 }} numberOfLines={1}>
+                     {acc.account_name ? `@${acc.account_name}` : platformInfo.name}
+                   </Text>
+                   <Text style={{ color: '#849495', fontSize: 10, marginBottom: 12 }}>Bağlı</Text>
+                   
+                   <TouchableOpacity 
+                     onPress={() => handleDisconnect(acc.id, acc.platform)}
+                     style={{ 
+                       width: '100%', alignItems: 'center', justifyContent: 'center',
+                       backgroundColor: 'rgba(255,255,255,0.05)',
+                       borderColor: 'rgba(255,255,255,0.1)',
+                       borderWidth: 1,
+                       borderRadius: 8,
+                       paddingVertical: 6,
+                     }}
+                   >
+                     <Text style={{ color: '#b9cacb', fontSize: 10, fontWeight: '600' }}>Ayır</Text>
+                   </TouchableOpacity>
+                 </View>
                 );
-              })
-            ) : (
+              })}
+            </ScrollView>
+          ) : (
+            <View style={[styles.glassCard, { padding: 20, borderRadius: 16 }]}>
               <Text className="text-[#849495] text-[12px] italic">{t('sosyalMedya.ui.noAccountsYet')}</Text>
-            )}
-          </View>
+            </View>
+          )}
         </View>
 
 
-      </ScrollView>
 
     </View>
   );
