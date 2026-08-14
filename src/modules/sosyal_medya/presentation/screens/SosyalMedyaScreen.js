@@ -431,12 +431,12 @@ export default function SosyalMedyaScreen({ navigation }) {
                      padding: 14,
                      marginRight: 12,
                      borderWidth: 1,
-                     borderColor: p.glow.replace('0.3', '0.4'),
+                     borderColor: p.glow.replace('0.3', '0.6'),
                      shadowColor: p.color,
                      shadowOffset: { width: 0, height: 0 },
-                     shadowOpacity: 0.3,
-                     shadowRadius: 10,
-                     elevation: 5,
+                     shadowOpacity: 0.5,
+                     shadowRadius: 15,
+                     elevation: 8,
                    }}
                  >
                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
@@ -514,12 +514,12 @@ export default function SosyalMedyaScreen({ navigation }) {
                      padding: 14,
                      marginRight: 12,
                      borderWidth: 1,
-                     borderColor: platformInfo.glow.replace('0.3', '0.4'),
+                     borderColor: platformInfo.glow.replace('0.3', '0.6'),
                      shadowColor: platformInfo.color,
                      shadowOffset: { width: 0, height: 0 },
-                     shadowOpacity: 0.3,
-                     shadowRadius: 10,
-                     elevation: 5,
+                     shadowOpacity: 0.5,
+                     shadowRadius: 15,
+                     elevation: 8,
                    }}
                  >
                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
