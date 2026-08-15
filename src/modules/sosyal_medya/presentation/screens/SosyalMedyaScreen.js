@@ -130,7 +130,9 @@ export default function SosyalMedyaScreen({ navigation }) {
 
   const saveZernioAccount = useCallback(async (params) => {
     try {
-      const { accountId, platform, username } = params;
+      const accountId = params.accountId;
+      const platform = params.platform || params.connected;
+      const username = params.username;
       
       const { data: session } = await supabase.auth.getSession();
       const userId = session?.session?.user?.id;
