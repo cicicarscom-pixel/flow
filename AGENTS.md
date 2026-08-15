@@ -1,5 +1,11 @@
 # AI Esnaf — Agent Kuralları ve Proje Hafızası
 
+## 🚨 Kritik Kural: Ortak Veritabanı Etkileşimi (Web & Mobil)
+
+**Web ve Mobil versiyonlar AYNI (Supabase) veritabanını paylaşmaktadır.** 
+- Web tarafında bir veritabanı (şema, tablo, edge function) veya query değişikliği yaptığınızda, bunun Mobil (React Native) uygulamasını da doğrudan etkileyeceğini ve bozabileceğini DAİMA hesaba katın.
+- Herhangi bir API metodolojisi (`.single()` vb.) veya veri modeli değişikliği yapmadan önce, bunun her iki platformdaki koda nasıl yansıyacağını kontrol edin.
+
 ## 🚨 Kritik Kural: Expo SDK
 
 Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
