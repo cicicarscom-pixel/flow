@@ -212,7 +212,7 @@ const MesajlarTab = ({ navigation }) => {
         <FlatList 
           data={conversations}
           keyExtractor={item => item.id}
-          contentContainerStyle={{ padding: 20 }}
+          contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
           renderItem={({ item }) => (
             <TouchableOpacity 
               activeOpacity={0.8}
@@ -657,7 +657,7 @@ const YorumlarTab = ({ navigation }) => {
         data={comments}
         keyExtractor={item => item.id}
         contentContainerStyle={[
-          { padding: 20 },
+          { padding: 20, paddingBottom: 100 },
           comments.length === 0 && { flex: 1, justifyContent: 'center' } // Center empty state
         ]}
         refreshControl={
@@ -801,7 +801,7 @@ const DegerlendirmelerTab = () => {
         <FlatList 
           data={reviews}
           keyExtractor={item => item.id}
-          contentContainerStyle={{ padding: 20 }}
+          contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
           renderItem={({ item }) => (
             <GlassCard style={{ padding: 16, marginBottom: 12, borderRadius: 12 }}>
               <View className="flex-row justify-between items-center mb-2">
