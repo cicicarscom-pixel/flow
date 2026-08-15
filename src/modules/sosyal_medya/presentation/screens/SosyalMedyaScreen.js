@@ -139,34 +139,15 @@ export default function SosyalMedyaScreen({ navigation }) {
         return;
       }
       
-      // Önce bu zernio_account_id ile kayıt var mı kontrol et
-      const { data: existingAccounts } = await supabase
-        .from('social_accounts')
-        .select('*')
-        .eq('zernio_account_id', accountId);
-
-      let error = null;
-      if (existingAccounts && existingAccounts.length > 0) {
-        // Zaten var, güncelle
-        const { error: updateError } = await supabase.from('social_accounts')
-          .update({
-            platform: platform || 'unknown',
-            account_name: username || 'User',
-            status: 'active'
-          })
-          .eq('zernio_account_id', accountId);
-        error = updateError;
-      } else {
-        // Yeni ekle
-        const { error: insertError } = await supabase.from('social_accounts').insert({
-          profile_id: userId,
-          zernio_account_id: accountId,
-          platform: platform || 'unknown',
-          account_name: username || 'User',
-          status: 'active'
-        });
-        error = insertError;
-      }
+      const { error: upsertError } = await supabase.from('social_accounts').upsert({
+        profile_id: userId,
+        zernio_account_id: accountId,
+        platform: platform || 'unknown',
+        account_name: username || 'User',
+        status: 'active'
+      }, { onConflict: 'zernio_account_id' });
+      
+      let error = upsertError;
       
       if (error) {
         Alert.alert(t('sosyalMedya.alerts.dbError'), error.message || JSON.stringify(error));
@@ -465,7 +446,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                        paddingVertical: 6,
                      }}
                    >
-                     <Text style={{ color: p.color, fontSize: 10, fontWeight: '600' }}>+ Hesap Bağla</Text>
+                     <Text style={{ color: p.color, fontSize: 10, fontWeight: '600' }}>Hesap Bağla</Text>
                    </TouchableOpacity>
                  </View>
                );
@@ -558,7 +539,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                        paddingVertical: 6,
                      }}
                    >
-                     <Text style={{ color: '#b9cacb', fontSize: 10, fontWeight: '600' }}>Ayır</Text>
+                     <Text style={{ color: '#b9cacb', fontSize: 10, fontWeight: '600' }}>Bağlantıyı Kes</Text>
                    </TouchableOpacity>
                  </View>
                 );
