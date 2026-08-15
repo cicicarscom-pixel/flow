@@ -120,6 +120,13 @@ export default function DashboardScreen({ navigation }) {
   const [recentActivities, setRecentActivities] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  const appointments = [
+    { time: "10:00", title: "Ayşe Kaya - Danışmanlık", type: "consulting", color: COLORS.primary },
+    { time: "12:30", title: "Marka Toplantısı", type: "meeting", color: COLORS.secondary },
+    { time: "15:00", title: "Seda Koç - Demo Sunumu", type: "demo", color: COLORS.tertiaryFixed },
+    { time: "17:30", title: "Haftalık Analitik İncelemesi", type: "review", color: COLORS.error },
+  ];
+
   const fetchUnreadNotifications = async (merchantId) => {
     try {
       const { count } = await supabase
@@ -492,6 +499,56 @@ export default function DashboardScreen({ navigation }) {
             style={styles.socialBottomLine}
           />
         </View>
+
+        {/* Fatura Tarayıcı */}
+        <CustomGlassCard style={[styles.invoiceCard, { borderColor: 'rgba(255, 185, 95, 0.3)' }]} glowColor="#ffb95f">
+          <Text style={styles.invoiceCardHeader}>FATURA TARAYICI · SON FATURA</Text>
+          <View style={styles.invoiceContentRow}>
+            <View style={styles.invoiceImageWrapper}>
+              <Image 
+                source={{ uri: "https://images.unsplash.com/photo-1648500847390-7792256bb95a?w=80&h=100&fit=crop&auto=format" }}
+                style={styles.invoiceImage}
+              />
+            </View>
+            <View style={styles.invoiceDetails}>
+              <View style={styles.invoiceDetailRow}>
+                <Text style={styles.invoiceDetailLabel}>Tedarikçi</Text>
+                <Text style={styles.invoiceDetailValue}>Ofis Dünyası A.Ş.</Text>
+              </View>
+              <View style={styles.invoiceDetailRow}>
+                <Text style={styles.invoiceDetailLabel}>Tarih</Text>
+                <Text style={styles.invoiceDetailValue}>03.02.2026</Text>
+              </View>
+              <View style={styles.invoiceDetailRow}>
+                <Text style={styles.invoiceDetailLabel}>KDV</Text>
+                <Text style={styles.invoiceDetailValue}>%20</Text>
+              </View>
+              <View style={styles.invoiceDetailRow}>
+                <Text style={styles.invoiceDetailLabel}>Toplam</Text>
+                <Text style={styles.invoiceDetailValue}>₺4,820.00</Text>
+              </View>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.invoiceBtn}>
+            <Text style={styles.invoiceBtnText}>+ Yeni Fatura Tara</Text>
+          </TouchableOpacity>
+        </CustomGlassCard>
+
+        {/* Bugünkü Randevular */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionTitle}>Bugünkü Randevular</Text>
+        </View>
+        <CustomGlassCard style={styles.appointmentsContainer}>
+          {appointments.map(a => (
+            <View key={a.time} style={styles.appointmentRow}>
+              <Text style={[styles.appointmentTime, { color: a.color }]}>{a.time}</Text>
+              <View style={[styles.appointmentDivider, { backgroundColor: a.color }]} />
+              <View style={styles.appointmentBody}>
+                <Text style={styles.appointmentTitle}>{a.title}</Text>
+              </View>
+            </View>
+          ))}
+        </CustomGlassCard>
 
         {/* Son Aktiviteler */}
         <View style={styles.sectionHeaderRow}>
@@ -1011,6 +1068,95 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  appointmentsContainer: {
+    padding: 16,
+    gap: 12,
+    marginBottom: 16,
+  },
+  appointmentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  appointmentTime: {
+    fontSize: 12,
+    fontWeight: '700',
+    width: 44,
+  },
+  appointmentDivider: {
+    width: 3,
+    height: 36,
+    borderRadius: 2,
+    opacity: 0.6,
+  },
+  appointmentBody: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  appointmentTitle: {
+    color: COLORS.onSurface,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  invoiceCard: {
+    padding: 16,
+    marginBottom: 16,
+  },
+  invoiceCardHeader: {
+    fontSize: 11,
+    color: '#ffb95f',
+    fontWeight: '700',
+    letterSpacing: 1,
+    marginBottom: 16,
+  },
+  invoiceContentRow: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  invoiceImageWrapper: {
+    width: 70,
+    height: 90,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,185,95,0.2)',
+    overflow: 'hidden',
+  },
+  invoiceImage: {
+    width: '100%',
+    height: '100%',
+    opacity: 0.7,
+  },
+  invoiceDetails: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  invoiceDetailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  invoiceDetailLabel: {
+    color: COLORS.onSurfaceVariant,
+    fontSize: 12,
+  },
+  invoiceDetailValue: {
+    color: COLORS.onSurface,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  invoiceBtn: {
+    marginTop: 16,
+    backgroundColor: 'rgba(255, 185, 95, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 185, 95, 0.3)',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  invoiceBtnText: {
+    color: '#ffb95f',
+    fontWeight: '600',
+    fontSize: 13,
   }
 });
 

@@ -134,10 +134,10 @@ export default function IsletmemScreen({ navigation }) {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]} className="flex-1 bg-black">
-      <View className="flex-row items-center justify-between px-5 h-16 bg-black z-50">
+      <View className="flex-row items-center justify-between px-5 h-12 bg-black z-50">
         <View className="flex-row items-center gap-3">
-          <MaterialIcons name="account-balance" size={24} color="#4be277" />
-          <Text className="text-[#4be277] text-2xl font-bold font-['HankenGrotesk-SemiBold']">İşletmem</Text>
+          <MaterialIcons name="account-balance" size={20} color="#4be277" />
+          <Text className="text-[#4be277] text-xl font-bold font-['HankenGrotesk-SemiBold']">İşletmem</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.goBack()} className="opacity-80 active:scale-95">
           <MaterialIcons name="close" size={24} color="#bccbb9" />
@@ -145,65 +145,65 @@ export default function IsletmemScreen({ navigation }) {
       </View>
 
       <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-6 mb-8 flex-row gap-4 py-2">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-4 mb-4 flex-row gap-3 py-1">
           {months.map(m => (
             <TouchableOpacity 
               key={m}
               onPress={() => setSelectedMonth(m)}
-              className={`flex-shrink-0 px-6 py-2 rounded-xl flex-row items-center gap-2 ${selectedMonth === m ? 'bg-[#4be277]' : 'bg-[#202020]'}`}
+              className={`flex-shrink-0 px-4 py-1.5 rounded-xl flex-row items-center gap-2 ${selectedMonth === m ? 'bg-[#4be277]' : 'bg-[#202020]'}`}
             >
-              <Text className={`font-medium ${selectedMonth === m ? 'text-[#003915]' : 'text-[#bccbb9]'}`}>{m}</Text>
+              <Text className={`text-sm font-medium ${selectedMonth === m ? 'text-[#003915]' : 'text-[#bccbb9]'}`}>{m}</Text>
               {selectedMonth === m && <MaterialIcons name="expand-more" size={16} color="#003915" />}
             </TouchableOpacity>
           ))}
           {months.length === 0 && (
-            <View className="flex-shrink-0 px-6 py-2 rounded-xl bg-[#4be277] flex-row items-center gap-2">
-              <Text className="text-[#003915] font-medium">Bu Ay</Text>
+            <View className="flex-shrink-0 px-4 py-1.5 rounded-xl bg-[#4be277] flex-row items-center gap-2">
+              <Text className="text-[#003915] text-sm font-medium">Bu Ay</Text>
               <MaterialIcons name="expand-more" size={16} color="#003915" />
             </View>
           )}
         </ScrollView>
 
         {/* Summary Bento Grid */}
-        <View className="flex-row flex-wrap justify-between mb-8 gap-y-4">
-          <View className="w-full bg-[#1b1b1c] rounded-xl p-6 relative overflow-hidden" style={styles.glowBorder}>
-            <Text className="text-[#bccbb9] text-[12px] uppercase tracking-widest mb-1 font-['JetBrainsMono-Medium']">Toplam Bakiye</Text>
-            <Text className="text-[#4be277] text-5xl font-bold font-['HankenGrotesk-Bold'] tracking-tighter">₺{formatCurrency(currentData.balance)}</Text>
+        <View className="flex-row flex-wrap justify-between mb-5 gap-y-3">
+          <View className="w-full bg-[#1b1b1c] rounded-xl p-4 relative overflow-hidden" style={styles.glowBorder}>
+            <Text className="text-[#bccbb9] text-[10px] uppercase tracking-widest mb-1 font-['JetBrainsMono-Medium']">Toplam Bakiye</Text>
+            <Text className="text-[#4be277] text-4xl font-bold font-['HankenGrotesk-Bold'] tracking-tighter">₺{formatCurrency(currentData.balance)}</Text>
             {prevMonthStr && (
-              <View className="mt-4 flex-row items-center gap-2">
-                <MaterialIcons name={trend >= 0 ? "trending-up" : "trending-down"} size={16} color={trend >= 0 ? "#4be277" : "#ff8a83"} />
-                <Text className={`text-xs font-medium ${trend >= 0 ? "text-[#4be277]" : "text-[#ff8a83]"}`}>
+              <View className="mt-2 flex-row items-center gap-1.5">
+                <MaterialIcons name={trend >= 0 ? "trending-up" : "trending-down"} size={14} color={trend >= 0 ? "#4be277" : "#ff8a83"} />
+                <Text className={`text-[10px] font-medium ${trend >= 0 ? "text-[#4be277]" : "text-[#ff8a83]"}`}>
                   Geçen aya göre %{Math.abs(trend).toFixed(1)} {trend >= 0 ? "artış" : "düşüş"}
                 </Text>
               </View>
             )}
           </View>
 
-          <View className="w-[48%] bg-[#202020] rounded-xl p-4 border border-[#3d4a3d]/30">
-            <Text className="text-[#bccbb9] text-[12px] mb-1 font-['JetBrainsMono-Medium']">Gelirler</Text>
-            <Text className="text-[#4ae176] text-2xl font-semibold font-['HankenGrotesk-SemiBold']">₺{formatCurrency(currentData.income)}</Text>
+          <View className="w-[48%] bg-[#202020] rounded-xl p-3 border border-[#3d4a3d]/30">
+            <Text className="text-[#bccbb9] text-[10px] mb-1 font-['JetBrainsMono-Medium']">Gelirler</Text>
+            <Text className="text-[#4ae176] text-xl font-semibold font-['HankenGrotesk-SemiBold']">₺{formatCurrency(currentData.income)}</Text>
           </View>
           
-          <View className="w-[48%] bg-[#202020] rounded-xl p-4 border border-[#3d4a3d]/30">
-            <Text className="text-[#bccbb9] text-[12px] mb-1 font-['JetBrainsMono-Medium']">Giderler</Text>
-            <Text className="text-[#ff8a83] text-2xl font-semibold font-['HankenGrotesk-SemiBold']">₺{formatCurrency(currentData.expense)}</Text>
+          <View className="w-[48%] bg-[#202020] rounded-xl p-3 border border-[#3d4a3d]/30">
+            <Text className="text-[#bccbb9] text-[10px] mb-1 font-['JetBrainsMono-Medium']">Giderler</Text>
+            <Text className="text-[#ff8a83] text-xl font-semibold font-['HankenGrotesk-SemiBold']">₺{formatCurrency(currentData.expense)}</Text>
           </View>
         </View>
 
         {/* Category Tabs */}
-        <View className="flex-row items-center gap-8 mb-6 border-b border-[#3d4a3d]/20">
+        <View className="flex-row items-center gap-6 mb-4 border-b border-[#3d4a3d]/20">
           {['Gelirler', 'Giderler', 'Faturalar'].map(tab => (
             <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={[styles.tabButton, activeTab === tab && styles.activeTab]}>
-              <Text className={`text-base font-medium pb-3 ${activeTab === tab ? 'text-[#4be277]' : 'text-[#bccbb9]'}`}>{tab}</Text>
+              <Text className={`text-sm font-medium pb-2 ${activeTab === tab ? 'text-[#4be277]' : 'text-[#bccbb9]'}`}>{tab}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Transactions List */}
-        <View className="space-y-4 mb-8">
+        <View className="space-y-3 mb-6">
           {displayDocs.length === 0 ? (
-            <View className="py-8 items-center">
-              <Text className="text-[#bccbb9] text-center">Bu kategori için kayıt bulunamadı.</Text>
+            <View className="py-6 items-center">
+              <Text className="text-[#bccbb9] text-sm text-center">Bu kategori için kayıt bulunamadı.</Text>
             </View>
           ) : (
             displayDocs.slice(0, 5).map((item, idx) => {
@@ -212,26 +212,26 @@ export default function IsletmemScreen({ navigation }) {
               const badge = getBadge(item.flow_payment_status);
 
               return (
-                <TouchableOpacity key={item.id || idx} className="flex-row items-center justify-between p-4 bg-[#2a2a2a] rounded-xl mb-3">
-                  <View className="flex-row items-center gap-4">
-                    <View className="w-12 h-12 rounded-lg bg-[#353535] flex items-center justify-center">
-                      <MaterialIcons name={item.type === 'income' || item.type === 'sales' ? 'rocket-launch' : 'payments'} size={24} color={item.type === 'income' || item.type === 'sales' ? '#4be277' : '#ff8a83'} />
+                <TouchableOpacity key={item.id || idx} className="flex-row items-center justify-between p-3 bg-[#2a2a2a] rounded-xl mb-2">
+                  <View className="flex-row items-center gap-3">
+                    <View className="w-10 h-10 rounded-lg bg-[#353535] flex items-center justify-center">
+                      <MaterialIcons name={item.type === 'income' || item.type === 'sales' ? 'rocket-launch' : 'payments'} size={20} color={item.type === 'income' || item.type === 'sales' ? '#4be277' : '#ff8a83'} />
                     </View>
                     <View>
-                      <Text className="text-[#e5e2e1] text-base font-semibold">{item.title || (item.type === 'income' || item.type === 'sales' ? 'Satış Geliri' : 'Gider')}</Text>
+                      <Text className="text-[#e5e2e1] text-sm font-semibold">{item.title || (item.type === 'income' || item.type === 'sales' ? 'Satış Geliri' : 'Gider')}</Text>
                       <View className="flex-row items-center mt-1">
-                        <Text className="text-[#bccbb9] text-xs font-['JetBrainsMono-Medium']">{dateStr} • </Text>
-                        <View style={{ backgroundColor: badge.bg, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginLeft: 4 }}>
-                          <Text style={{ color: badge.text, fontSize: 10, fontWeight: 'bold' }}>{badge.label}</Text>
+                        <Text className="text-[#bccbb9] text-[10px] font-['JetBrainsMono-Medium']">{dateStr} • </Text>
+                        <View style={{ backgroundColor: badge.bg, paddingHorizontal: 4, paddingVertical: 2, borderRadius: 4, marginLeft: 2 }}>
+                          <Text style={{ color: badge.text, fontSize: 9, fontWeight: 'bold' }}>{badge.label}</Text>
                         </View>
                       </View>
                     </View>
                   </View>
                   <View className="items-end">
-                    <Text className={`text-sm font-medium font-['JetBrainsMono-Medium'] ${item.type === 'income' || item.type === 'sales' ? 'text-[#4be277]' : 'text-[#ff8a83]'}`}>
+                    <Text className={`text-xs font-medium font-['JetBrainsMono-Medium'] ${item.type === 'income' || item.type === 'sales' ? 'text-[#4be277]' : 'text-[#ff8a83]'}`}>
                       {item.type === 'income' || item.type === 'sales' ? '+' : '-'} ₺{formatCurrency(amount)}
                     </Text>
-                    <MaterialIcons name="chevron-right" size={16} color="#bccbb9" style={{ marginTop: 4 }} />
+                    <MaterialIcons name="chevron-right" size={14} color="#bccbb9" style={{ marginTop: 2 }} />
                   </View>
                 </TouchableOpacity>
               )
@@ -239,22 +239,22 @@ export default function IsletmemScreen({ navigation }) {
           )}
           
           {displayDocs.length > 5 && (
-            <TouchableOpacity className="pt-4 pb-8 flex-row justify-center items-center gap-2">
-              <Text className="text-[#bccbb9] font-medium text-sm">Tümünü Gör</Text>
-              <MaterialIcons name="arrow-forward" size={16} color="#bccbb9" />
+            <TouchableOpacity className="pt-2 pb-6 flex-row justify-center items-center gap-2">
+              <Text className="text-[#bccbb9] font-medium text-xs">Tümünü Gör</Text>
+              <MaterialIcons name="arrow-forward" size={14} color="#bccbb9" />
             </TouchableOpacity>
           )}
         </View>
 
         {/* Insights Card */}
-        <View className="bg-[#202020] rounded-2xl p-6 mb-24 border border-[#3d4a3d]/10">
-          <Text className="text-[#4be277] text-lg font-semibold mb-4">Akıllı Analiz</Text>
-          <View className="flex-row gap-4">
+        <View className="bg-[#202020] rounded-xl p-4 mb-20 border border-[#3d4a3d]/10">
+          <Text className="text-[#4be277] text-base font-semibold mb-3">Akıllı Analiz</Text>
+          <View className="flex-row gap-3">
             <View className="w-1 bg-[#4be277] rounded-full" />
             {isInsightLoading ? (
               <ActivityIndicator color="#4be277" />
             ) : (
-              <Text className="text-[#bccbb9] text-base leading-6 flex-1">
+              <Text className="text-[#bccbb9] text-sm leading-5 flex-1">
                 {insight}
               </Text>
             )}
@@ -272,6 +272,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1, shadowRadius: 10, elevation: 5,
     borderWidth: 1, borderColor: 'rgba(34, 197, 94, 0.2)',
   },
-  tabButton: { paddingBottom: 12 },
+  tabButton: { paddingBottom: 8 },
   activeTab: { borderBottomWidth: 2, borderBottomColor: '#4be277' }
 });

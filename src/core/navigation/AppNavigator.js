@@ -6,7 +6,6 @@ import ProfilScreen from '../../screens/ProfilScreen';
 import BildirimlerScreen from '../../screens/BildirimlerScreen';
 import AiChatScreen from '../../screens/AiChatScreen';
 import AiAssistantScreen from '../../screens/AiAssistantScreen';
-import DigitalAssistantScreen from '../../screens/DigitalAssistantScreen';
 import PostsScreen from '../../screens/PostsScreen';
 import PostCommentsScreen from '../../screens/PostCommentsScreen';
 
@@ -30,7 +29,6 @@ export default function AppNavigator() {
       <Stack.Screen name="Isletmem" component={IsletmemScreen} />
       <Stack.Screen name="AiChat" component={AiChatScreen} />
       <Stack.Screen name="AiAssistant" component={AiAssistantScreen} />
-      <Stack.Screen name="DigitalAssistant" component={DigitalAssistantScreen} />
       <Stack.Screen name="AiUretim" component={AiUretimScreen} />
       <Stack.Screen name="Inbox" component={InboxScreen} />
       <Stack.Screen name="Analytics" component={AnalyticsScreen} />

@@ -339,15 +339,6 @@ export default function SosyalMedyaScreen({ navigation }) {
           <View style={[styles.glassCard, { flex: 1, marginRight: 4, borderRadius: 12 }]}>
             <TouchableOpacity 
               className="py-3 px-1 flex-row items-center justify-center"
-              onPress={() => navigation.navigate('DigitalAssistant')}
-            >
-              <Text className="text-[#4edea3] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.createPost')}</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={[styles.glassCard, { flex: 1, marginHorizontal: 4, borderRadius: 12 }]}>
-            <TouchableOpacity 
-              className="py-3 px-1 flex-row items-center justify-center"
               onPress={() => navigation.navigate('Gönderiler')}
             >
               <Text className="text-[#4edea3] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.allPosts')}</Text>

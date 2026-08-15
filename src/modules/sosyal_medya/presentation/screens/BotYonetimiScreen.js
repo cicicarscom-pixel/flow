@@ -390,7 +390,7 @@ export default function BotYonetimiScreen() {
                             onValueChange={(val) => { setWhatsappBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
                             trackColor={{ false: '#2c2b2e', true: '#25D366' }}
                             thumbColor={'#ffffff'}
-                            style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }], marginLeft: 'auto' }}
+                            style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }], marginLeft: 'auto' }}
                           />
                         </View>
                       </View>

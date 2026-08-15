@@ -294,20 +294,6 @@ export default function AiMuhasebeScreen({ navigation }) {
 
           {/* New Bottom Buttons */}
           <View className="pb-10 flex-col space-y-4">
-            {/* Test Push Button (Dev Mode) */}
-            <View style={[styles.glassCard, { borderRadius: 12, borderColor: 'rgba(255, 255, 0, 0.4)' }]}>
-              <CustomButton 
-                onPress={() => {
-                  alert("Bildirim Gönderildi: 'Önceki aya ait hesaplarınızı kapatıp yeni ayı başlatmak için mutabakatınız hazır.' (Tıklandığında Asistan ekranına yönlendirecektir)");
-                  navigation.navigate('AiAssistant', { mode: 'mutabakat' });
-                }}
-                className="bg-[rgba(255,255,0,0.1)] py-4 px-4 h-auto"
-                title="[DEV] TEST BİLDİRİMİ GÖNDER"
-                textClassName="text-[#ffff00] text-[12px] font-bold uppercase tracking-widest"
-                leftIcon={<MaterialIcons name="bug-report" size={18} color="#ffff00" />}
-              />
-            </View>
-
             <View style={[styles.glassCard, { borderRadius: 12 }]}>
               <CustomButton 
                 onPress={() => navigation.navigate('Isletmem')}
