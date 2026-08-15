@@ -16,13 +16,14 @@ import {
   Alert
 } from 'react-native';
 import { Ionicons, MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase , GlobalAppBar } from '../shared';
 
 
 export default function PostCommentsScreen({ route, navigation }) {
   const { post, commentFocus } = route.params || {};
+  const insets = useSafeAreaInsets();
   
   const [comments, setComments] = useState([]);
   const [replyText, setReplyText] = useState('');
@@ -525,7 +526,10 @@ export default function PostCommentsScreen({ route, navigation }) {
         />
 
         {/* Public Reply Input Bar */}
-        <View className="px-4 py-3 bg-[#0A0A0B]/90 border-t border-white/10">
+        <View 
+          className="px-4 pt-3 bg-[#0A0A0B]/90 border-t border-white/10"
+          style={{ paddingBottom: Math.max(insets.bottom, 12) }}
+        >
           {replyingTo && (
             <View className="flex-row justify-between items-center mb-2 bg-white/5 px-3 py-1.5 rounded-lg border border-[#bc13fe]/30">
               <Text className="text-[#bc13fe] text-[11px]">@{replyingTo.username} kişisine yanıt veriliyor</Text>
