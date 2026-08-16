@@ -324,10 +324,24 @@ const YorumlarTab = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
-  // Inline Reply State
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
+
+  const handleHideComment = async (comment) => {
+    try {
+      deletedIdsRef.current.add(comment.id);
+      if (comment.zernio_comment_id) deletedIdsRef.current.add(comment.zernio_comment_id);
+      setComments(prev => prev.filter(c => c.id !== comment.id && c.zernio_comment_id !== comment.zernio_comment_id));
+      await supabase.from('comments').update({ hidden: true }).eq('id', comment.id);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDMClick = (username) => {
+    navigation.navigate('Mesajlar');
+  };
 
   const submitReply = async (parentComment) => {
     if (!replyText.trim()) return;
@@ -959,14 +973,14 @@ const YorumlarTab = ({ navigation }) => {
                           <Text className="text-[#849495] text-[11px] ml-1 font-medium">{t('sosyalMedya.inbox.reply', 'Yanıtla')}</Text>
                         </TouchableOpacity>
                         
-                        <TouchableOpacity className="flex-row items-center mr-4">
+                        <TouchableOpacity onPress={() => handleDMClick(item.username)} className="flex-row items-center mr-4">
                           <Feather name="send" size={12} color="#849495" />
                           <Text className="text-[#849495] text-[11px] ml-1 font-medium">DM</Text>
                         </TouchableOpacity>
 
                         {!isSelectionMode && (
                           <TouchableOpacity 
-                            onPress={() => { setIsSelectionMode(true); toggleSelection(item.id); }} 
+                            onPress={() => handleHideComment(item)} 
                             className="flex-row items-center"
                           >
                             <Feather name="eye-off" size={12} color="#849495" />
