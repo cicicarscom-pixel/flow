@@ -153,6 +153,15 @@ const MesajlarTab = ({ navigation }) => {
     );
   };
 
+  const handleSelectAll = () => {
+    const allIds = conversations.map(c => c.zernio_conversation_id || c.id).filter(Boolean);
+    if (selectedItems.length === allIds.length && allIds.length > 0) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(allIds);
+    }
+  };
+
   const handleDeleteSelected = () => {
     if (selectedItems.length === 0) return;
     
@@ -192,8 +201,12 @@ const MesajlarTab = ({ navigation }) => {
             </TouchableOpacity>
             <Text className="text-[#e5e2e3] font-bold text-[16px]">{t('sosyalMedya.inbox.selectedCount', { count: selectedItems.length })}</Text>
           </View>
-          <CustomButton 
-            onPress={handleDeleteSelected} 
+          <View className="flex-row items-center">
+            <TouchableOpacity onPress={handleSelectAll} className="mr-4 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+              <Text className="text-white text-[14px] font-bold">Tümünü Seç</Text>
+            </TouchableOpacity>
+            <CustomButton 
+              onPress={handleDeleteSelected} 
             disabled={selectedItems.length === 0}
             className={`px-4 py-2 rounded-lg border ${selectedItems.length > 0 ? 'bg-[#ff0050]/20 border-[#ff0050]/40' : 'bg-white/5 border-white/10'}`}
             textClassName={`text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#ff0050]' : 'text-[#849495]'}`}
@@ -320,6 +333,15 @@ const YorumlarTab = ({ navigation }) => {
 
   const toggleSelection = (id) => {
     setSelectedItems(prev => prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]);
+  };
+
+  const handleSelectAll = () => {
+    const allIds = comments.map(c => c.zernio_comment_id || c.id).filter(Boolean);
+    if (selectedItems.length === allIds.length && allIds.length > 0) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(allIds);
+    }
   };
 
   const handleDeleteSelected = () => {
@@ -642,8 +664,12 @@ const YorumlarTab = ({ navigation }) => {
             </TouchableOpacity>
             <Text className="text-[#e5e2e3] font-bold text-[14px]">{selectedItems.length} Seçildi</Text>
           </View>
-          <TouchableOpacity 
-            onPress={handleDeleteSelected} 
+          <View className="flex-row items-center">
+            <TouchableOpacity onPress={handleSelectAll} className="mr-3 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+              <Text className="text-white text-[12px] font-bold">Tümünü Seç</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={handleDeleteSelected} 
             disabled={selectedItems.length === 0}
             className={`flex-row items-center px-4 py-2 rounded-lg border ${selectedItems.length > 0 ? 'bg-[#ff0050]/20 border-[#ff0050]/40' : 'bg-white/5 border-white/10'}`}
           >
