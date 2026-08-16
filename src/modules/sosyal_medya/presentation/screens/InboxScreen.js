@@ -226,7 +226,7 @@ const MesajlarTab = ({ navigation }) => {
         <FlatList 
           data={conversations}
           keyExtractor={item => item.id}
-          contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
+          contentContainerStyle={{ padding: 20, paddingBottom: 160 }}
           renderItem={({ item }) => (
             <TouchableOpacity 
               activeOpacity={0.8}
@@ -358,22 +358,25 @@ const YorumlarTab = ({ navigation }) => {
           onPress: async () => {
             const uuids = selectedItems.filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id));
             const zernioIds = selectedItems.filter(id => !uuids.includes(id));
+            
+            const { data: globalLogs } = await supabase.from('ai_communication_logs')
+              .select('sender_id')
+              .eq('platform', 'zernio_deleted_comment');
+            const globallyDeletedIds = globalLogs ? globalLogs.map(l => l.sender_id) : [];
 
-            // Hem item.id hem zernio_comment_id'yi topla
             const allDeletedIds = [
+              ...Array.from(deletedIdsRef.current),
               ...selectedItems,
               ...selectedItems.map(id => {
                 const c = comments.find(cm => cm.id === id);
                 return c?.zernio_comment_id;
-              }).filter(Boolean)
+              }).filter(Boolean),
+              ...globallyDeletedIds
             ];
             const uniqueIds = [...new Set(allDeletedIds)];
 
-            // ✔ Önce ref'i SENKRON güncelle (await yok, race condition yok)
-            // Phase 2 hangi noktada olursa olsun, setComments çağrılınca bu set kullanılır.
             uniqueIds.forEach(id => deletedIdsRef.current.add(id));
 
-            // Ardından AsyncStorage'a yaz (uygulama yeniden açıldığında kalıcılık için)
             try {
               const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
               const raw = await AsyncStorage.getItem('deleted_comments');
@@ -395,7 +398,13 @@ const YorumlarTab = ({ navigation }) => {
             if (uuids.length > 0) await supabase.from('comments').delete().in('id', uuids);
             if (zernioIds.length > 0) {
               await supabase.from('comments').delete().in('zernio_comment_id', zernioIds);
-              await supabase.from('ai_communication_logs').delete().in('sender_id', zernioIds);
+              await supabase.from('ai_communication_logs').insert(
+                zernioIds.map(id => ({
+                  platform: 'zernio_deleted_comment',
+                  sender_id: id,
+                  user_message: '[DELETED]'
+                }))
+              );
             }
             
             setComments(prev => prev.filter(c => !uniqueIds.includes(c.id) && !uniqueIds.includes(c.zernio_comment_id)));
@@ -424,6 +433,16 @@ const YorumlarTab = ({ navigation }) => {
     const DELETED_KEY = 'deleted_comments';
     const CACHE_TTL_MS = 6 * 24 * 60 * 60 * 1000;  // 6 gün
     const THIRTY_DAYS  = 30 * 24 * 60 * 60 * 1000;
+
+    // ── FAZ 0: Global Silinenleri Çek ──
+    try {
+      const { data: globalLogs } = await supabase.from('ai_communication_logs')
+        .select('sender_id')
+        .eq('platform', 'zernio_deleted_comment');
+      if (globalLogs) {
+        globalLogs.forEach(l => deletedIdsRef.current.add(l.sender_id));
+      }
+    } catch (_) {}
 
     // ── FAZ 1: Yerel DB'yi anında göster ──
     let cachedPics = {};
@@ -685,7 +704,7 @@ const YorumlarTab = ({ navigation }) => {
         data={comments}
         keyExtractor={item => item.id}
         contentContainerStyle={[
-          { padding: 20, paddingBottom: 100 },
+          { padding: 20, paddingBottom: 160 },
           comments.length === 0 && { flex: 1, justifyContent: 'center' } // Center empty state
         ]}
         refreshControl={
