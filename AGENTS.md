@@ -10,6 +10,11 @@
 
 Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
 
+## 🚨 Kritik Kural: Belgelendirme Zorunluluğu (README)
+
+**Yapılan ve eklenen her yeni özellik, hata düzeltmesi veya mimari değişiklik KESİNLİKLE ilgili projenin (mobil için flow/README.md, web için flowweb/README.md) `Son Güncellemeler` bölümüne tarih ve detay belirterek yazılmalıdır.**
+- Yeni eklenen bir özelliği koda dahil ettikten hemen sonra, commit işleminden önce README dosyalarını güncelleyin.
+
 ---
 
 ## 🚨 Kritik Kural: Dependency Injection

@@ -972,6 +972,10 @@ Uygulama içerisindeki özel AI kartlarının (örn. "AI Kişiliği" kartı) etr
 - İç kutu, dış kapsayıcıdan `padding` kadar küçük olduğu için (örn. `inset-[3px]` veya `borderRadius: 18`), dönen devasa ışık dalgası sadece bu 2-3 piksellik boşluktan sızar.
 - Sonuç olarak: Işık kutunun etrafında yılan gibi kayarak dönen muhteşem bir RGB neon çizgi efekti yaratır.
 
+### [16.08.2026] Son Güncellemeler (Gelen Kutusu Çoklu Seçim & Optimizasyon)
+1. **Gelen Kutusu "Tümünü Seç" Özelliği:** Kullanıcılardan gelen talepler doğrultusunda, Gelen Kutusu (`InboxScreen.js`) çoklu seçim moduna "Tümünü Seç" butonu entegre edildi. Bu sayede Mesajlar, Yorumlar ve Değerlendirmeler sekmelerindeki tüm veriler tek dokunuşla seçilip kalıcı olarak silinebiliyor.
+2. **Kalıcı Silme Politikası (RLS):** Yorum silme işlemlerinin sunucu bazlı kalıcı olması için veritabanındaki `comments` tablosuna Row Level Security (RLS) `DELETE` politikası (`auth.uid() = profile_id`) eklendi ve frontend `.delete().in()` metodolojisiyle uyumlu hale getirildi.
+
 ### [26.07.2026] Yapılan Son Güncellemeler
 - **Veritabanı Uyumsuzlukları Giderildi:** `transactions` tablosundaki geçersiz `name` sütunu kod bazında temizlendi. AI Asistanın döndürdüğü `title`, `type` ve `status` alanlarının `SupabaseTransactionRepository` ve `TransactionMapper` tarafından sorunsuz işlenip veritabanına eklenmesi sağlandı. Veritabanındaki eski migration çakışmaları temizlendi.
 - **OdemeTakvimiScreen Yeni Tasarım:** `OdemeTakvimiScreen`, grid yapısından "Neo-Fintech Noir" tarzı, dikey listeli ve Gelir/Gider olarak ikiye bölünmüş kart tasarımına geçirildi. Giderler kırmızı (`#ff3b30`), gelirler yeşil (`#22c55e`) olarak renklendirildi.
