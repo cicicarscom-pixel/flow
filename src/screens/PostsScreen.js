@@ -9,7 +9,9 @@ import {
   ImageBackground,
   Animated,
   Easing,
-  Image
+  Image,
+  Modal,
+  Alert
 } from 'react-native';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -82,6 +84,8 @@ const FILTERS = [
 export default function PostsScreen({ navigation }) {
   const [activeFilter, setActiveFilter] = useState('all');
   const [posts, setPosts] = useState([]);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, postId: null });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchPosts = async () => {
     // 1. Fetch local posts (which now includes Zernio sync via edge function)
@@ -146,6 +150,44 @@ export default function PostsScreen({ navigation }) {
       return words.slice(0, 5).join(' ') + '...';
     }
     return text;
+  };
+
+  const handleDeletePost = (id) => {
+    setDeleteModal({ isOpen: true, postId: id });
+  };
+
+  const executeDelete = async (deleteFromPlatforms) => {
+    if (isDeleting || !deleteModal.postId) return;
+    setIsDeleting(true);
+    
+    try {
+      const post = posts.find(p => p.id === deleteModal.postId);
+      if (post?.zernio_post_id) {
+        const { error: invokeError } = await supabase.functions.invoke('zernio-client', {
+          body: { action: 'delete-post', postId: post.zernio_post_id, deleteFromPlatforms }
+        });
+        if (invokeError) {
+          console.error("Zernio delete error:", invokeError);
+        }
+      }
+
+      const { error } = await supabase
+        .from('posts')
+        .update({ status: 'deleted' })
+        .eq('id', deleteModal.postId);
+        
+      if (error) {
+        Alert.alert("Hata", "Gönderi silinirken hata oluştu: " + error.message);
+      } else {
+        setPosts(prev => prev.map(p => p.id === deleteModal.postId ? { ...p, status: 'deleted' } : p));
+      }
+    } catch (err) {
+      console.error("Delete exception:", err);
+      Alert.alert("Hata", "İşlem sırasında hata oluştu.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ isOpen: false, postId: null });
+    }
   };
 
   const renderPostItem = ({ item }) => {
@@ -236,14 +278,19 @@ export default function PostsScreen({ navigation }) {
             </TouchableOpacity>
           )}
           {item.status === 'scheduled' && (
-            <TouchableOpacity className="p-2 rounded bg-[#00f0ff]/10 border border-[#00f0ff]/30">
+            <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="p-2 rounded bg-[#00f0ff]/10 border border-[#00f0ff]/30">
               <Ionicons name="trash-outline" size={14} color="#00f0ff" />
             </TouchableOpacity>
           )}
           {item.status === 'published' && (
-            <TouchableOpacity className="p-2 rounded bg-[#bc13fe]/10 border border-[#bc13fe]/30">
-              <Ionicons name="cloud-offline-outline" size={14} color="#bc13fe" />
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity className="p-2 rounded bg-[#bc13fe]/10 border border-[#bc13fe]/30">
+                <Ionicons name="cloud-offline-outline" size={14} color="#bc13fe" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="p-2 rounded bg-[#ff0050]/10 border border-[#ff0050]/30 ml-1">
+                <Ionicons name="trash-outline" size={14} color="#ff0050" />
+              </TouchableOpacity>
+            </>
           )}
         </View>
 
@@ -331,6 +378,60 @@ export default function PostsScreen({ navigation }) {
           />
         </View>
       </ScrollView>
+
+      {/* Delete Modal */}
+      <Modal visible={deleteModal.isOpen} transparent={true} animationType="fade" onRequestClose={() => !isDeleting && setDeleteModal({ isOpen: false, postId: null })}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <View style={{ width: '100%', maxWidth: 400, backgroundColor: '#ffffff', borderRadius: 16, overflow: 'hidden' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Feather name="trash-2" size={18} color="#ff3b30" />
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#111827', marginLeft: 8 }}>Gönderiyi sil</Text>
+              </View>
+              <TouchableOpacity onPress={() => !isDeleting && setDeleteModal({ isOpen: false, postId: null })} disabled={isDeleting} style={{ padding: 4 }}>
+                <Feather name="x" size={20} color="#9ca3af" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={{ padding: 20 }}>
+              <Text style={{ fontSize: 14, color: '#4b5563', marginBottom: 20 }}>Bu gönderiyi nasıl silmek istediğinizi seçin.</Text>
+              
+              <TouchableOpacity 
+                disabled={isDeleting}
+                onPress={() => executeDelete(false)}
+                style={{ flexDirection: 'row', padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#e5e7eb', marginBottom: 12 }}
+              >
+                <View style={{ backgroundColor: 'rgba(255, 59, 48, 0.1)', padding: 8, borderRadius: 8, marginRight: 12, alignSelf: 'flex-start', marginTop: 2 }}>
+                  <Feather name="trash-2" size={18} color="#ff3b30" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#111827', marginBottom: 4 }}>Sadece Workigom Flow'dan sil</Text>
+                  <Text style={{ fontSize: 12, color: '#6b7280', lineHeight: 18 }}>Workigom Flow panelinizden kaldırılır. Gönderi Facebook ve Instagram'da yayınlanmaya devam eder.</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                disabled={isDeleting}
+                onPress={() => executeDelete(true)}
+                style={{ flexDirection: 'row', padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#e5e7eb' }}
+              >
+                <View style={{ backgroundColor: 'rgba(236, 72, 153, 0.1)', padding: 8, borderRadius: 8, marginRight: 12, alignSelf: 'flex-start', marginTop: 2 }}>
+                  <Feather name="globe" size={18} color="#ec4899" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#111827', marginBottom: 4 }}>Platformlardan ve Workigom Flow'dan sil</Text>
+                  <Text style={{ fontSize: 12, color: '#6b7280', lineHeight: 18, marginBottom: 8 }}>Facebook'tan kalıcı olarak silinir ve Workigom Flow'dan kaldırılır.</Text>
+                  <View style={{ flexDirection: 'row', backgroundColor: '#fefce8', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#fef08a' }}>
+                    <Feather name="alert-triangle" size={14} color="#ca8a04" style={{ marginTop: 2, marginRight: 8 }} />
+                    <Text style={{ flex: 1, fontSize: 11, color: '#a16207', lineHeight: 16 }}>Instagram API üzerinden silmeyi desteklemediğinden, Instagram'dan manuel olarak silinmesi gerekebilir.</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }
