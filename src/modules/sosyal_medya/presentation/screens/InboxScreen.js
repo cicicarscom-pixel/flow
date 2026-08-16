@@ -213,6 +213,7 @@ const MesajlarTab = ({ navigation }) => {
             title={t('sosyalMedya.inbox.delete')}
             leftIcon={<Feather name="trash-2" size={16} color={selectedItems.length > 0 ? "#ff0050" : "#849495"} />}
           />
+          </View>
         </View>
       )}
 
@@ -676,6 +677,7 @@ const YorumlarTab = ({ navigation }) => {
             <Feather name="trash-2" size={14} color={selectedItems.length > 0 ? "#ff0050" : "#849495"} />
             <Text className={`ml-2 text-[12px] font-bold ${selectedItems.length > 0 ? 'text-[#ff0050]' : 'text-[#849495]'}`}>Sil</Text>
           </TouchableOpacity>
+          </View>
         </View>
       )}
 
