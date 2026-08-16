@@ -13,7 +13,8 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  TextInput
 } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
@@ -322,6 +323,54 @@ const YorumlarTab = ({ navigation }) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  
+  // Inline Reply State
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyText, setReplyText] = useState('');
+  const [sendingReply, setSendingReply] = useState(false);
+
+  const submitReply = async (parentComment) => {
+    if (!replyText.trim()) return;
+    setSendingReply(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const payload = {
+        action: 'reply-comment',
+        payload: {
+          userId: session?.user?.id,
+          commentId: parentComment.zernio_comment_id || parentComment.id,
+          platform: parentComment.platform,
+          message: replyText
+        }
+      };
+      
+      const res = await supabase.functions.invoke('zernio-client', { body: payload });
+      if (res.error) throw res.error;
+      
+      const newReply = {
+        id: 'temp_' + Date.now(),
+        content: `@${parentComment.username} ${replyText}`,
+        created_at: new Date().toISOString(),
+        username: 'Mağaza (Ben)',
+        platform: parentComment.platform,
+        is_owner: true,
+        is_business_reply: true,
+        zernio_post_id: parentComment.zernio_post_id || parentComment.posts?.id,
+        posts: parentComment.posts
+      };
+      
+      setComments(prev => [newReply, ...prev]);
+      
+      setReplyText('');
+      setReplyingTo(null);
+    } catch (e) {
+      console.error(e);
+      Alert.alert("Hata", "Yanıt gönderilemedi.");
+    } finally {
+      setSendingReply(false);
+    }
+  };
   
   // Silinen ID'lerin senkron ref'i — race condition'ı önler
   // AsyncStorage asenkron, Phase 2 closure eski değeri yakalayabilir.
@@ -897,7 +946,14 @@ const YorumlarTab = ({ navigation }) => {
                       <View className="flex-row items-center mt-1" pointerEvents={isSelectionMode ? "none" : "auto"}>
                         <TouchableOpacity 
                           className="flex-row items-center mr-4"
-                          onPress={() => navigation.navigate('PostCommentsScreen', { post: item.posts, commentFocus: item })}
+                          onPress={() => {
+                            if (replyingTo === item.id) {
+                              setReplyingTo(null);
+                            } else {
+                              setReplyingTo(item.id);
+                              setReplyText('');
+                            }
+                          }}
                         >
                           <Ionicons name="return-down-forward" size={14} color="#849495" />
                           <Text className="text-[#849495] text-[11px] ml-1 font-medium">{t('sosyalMedya.inbox.reply', 'Yanıtla')}</Text>
@@ -972,6 +1028,35 @@ const YorumlarTab = ({ navigation }) => {
                       </GlassCard>
                     </TouchableOpacity>
                   ))}
+                </View>
+              )}
+
+              {/* Inline Reply Input */}
+              {replyingTo === item.id && (
+                <View className="mt-2 ml-8 flex-row items-center">
+                  <View className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 flex-row items-center">
+                    <TextInput
+                      value={replyText}
+                      onChangeText={setReplyText}
+                      placeholder={`${item.username} kullanıcısına yanıt ver...`}
+                      placeholderTextColor="#849495"
+                      style={{ flex: 1, color: '#e5e2e3', fontSize: 12, padding: 0 }}
+                      autoFocus
+                      multiline
+                      maxLength={500}
+                    />
+                  </View>
+                  <TouchableOpacity 
+                    onPress={() => submitReply(item)}
+                    disabled={sendingReply || !replyText.trim()}
+                    className={`ml-2 w-9 h-9 rounded-full items-center justify-center ${sendingReply || !replyText.trim() ? 'bg-white/10' : 'bg-[#bc13fe]'}`}
+                  >
+                    {sendingReply ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Ionicons name="send" size={14} color={sendingReply || !replyText.trim() ? '#849495' : '#fff'} style={{ marginLeft: 2 }} />
+                    )}
+                  </TouchableOpacity>
                 </View>
               )}
             </View>
