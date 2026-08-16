@@ -674,6 +674,39 @@ const YorumlarTab = ({ navigation }) => {
     };
   }, []);
 
+  const uniquePosts = React.useMemo(() => {
+    const postsMap = new Map();
+    comments.forEach(c => {
+      const pId = c.zernio_post_id || c.posts?.id;
+      if (pId && !postsMap.has(pId)) {
+        postsMap.set(pId, {
+          id: pId,
+          picture: c._pictureUrl || c.posts?.media_urls?.[0],
+          platform: c.platform || c.posts?.platform || 'instagram',
+          title: c.posts?.title || 'Gönderi',
+          postsObj: c.posts
+        });
+      }
+    });
+    return Array.from(postsMap.values());
+  }, [comments]);
+
+  const [selectedPostId, setSelectedPostId] = useState(null);
+
+  useEffect(() => {
+    if (!selectedPostId && uniquePosts.length > 0) {
+      setSelectedPostId(uniquePosts[0].id);
+    } else if (selectedPostId && !uniquePosts.find(p => p.id === selectedPostId)) {
+      if (uniquePosts.length > 0) setSelectedPostId(uniquePosts[0].id);
+      else setSelectedPostId(null);
+    }
+  }, [uniquePosts, selectedPostId]);
+
+  const displayedComments = React.useMemo(() => {
+    if (!selectedPostId) return [];
+    return comments.filter(c => (c.zernio_post_id || c.posts?.id) === selectedPostId);
+  }, [comments, selectedPostId]);
+
   if (loading) return <ActivityIndicator color="#bc13fe" style={{ marginTop: 20 }} />;
 
   return (
@@ -702,12 +735,46 @@ const YorumlarTab = ({ navigation }) => {
         </View>
       )}
 
+      {/* Top Post List */}
+      {uniquePosts.length > 0 && (
+        <View style={{ paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}>
+          <FlatList
+            data={uniquePosts}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={item => item.id}
+            contentContainerStyle={{ paddingHorizontal: 20 }}
+            renderItem={({ item }) => {
+              const isSelected = item.id === selectedPostId;
+              return (
+                <TouchableOpacity 
+                  onPress={() => setSelectedPostId(item.id)}
+                  activeOpacity={0.8}
+                  className={`mr-4 items-center justify-center p-1 rounded-xl border-2 ${isSelected ? 'border-[#bc13fe]' : 'border-transparent'}`}
+                >
+                  {item.picture ? (
+                    <Image source={{ uri: item.picture }} className="w-16 h-16 rounded-lg bg-[#131314]" />
+                  ) : (
+                    <View className="w-16 h-16 rounded-lg bg-[#131314] items-center justify-center border border-white/5">
+                      <Ionicons name="image-outline" size={20} color="#849495" />
+                    </View>
+                  )}
+                  <View className="absolute -bottom-2 -right-2 bg-[#0A0A0B] rounded-full p-1 border border-white/10">
+                    <Ionicons name={`logo-${item.platform}`} size={12} color={item.platform === 'instagram' ? '#ebb2ff' : '#00f0ff'} />
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
+      )}
+
       <FlatList 
-        data={comments}
+        data={displayedComments}
         keyExtractor={item => item.id}
         contentContainerStyle={[
           { padding: 20, paddingBottom: 160 },
-          comments.length === 0 && { flex: 1, justifyContent: 'center' } // Center empty state
+          displayedComments.length === 0 && { flex: 1, justifyContent: 'center' }
         ]}
         refreshControl={
           <RefreshControl
@@ -721,73 +788,101 @@ const YorumlarTab = ({ navigation }) => {
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center p-5">
             <Ionicons name="chatbubble-ellipses-outline" size={48} color="#849495" />
-            <Text className="text-[#849495] mt-4 text-center">{t('sosyalMedya.inbox.noComments')}</Text>
+            <Text className="text-[#849495] mt-4 text-center">
+              {uniquePosts.length === 0 ? t('sosyalMedya.inbox.noComments') : 'Bu gönderide yorum bulunmuyor.'}
+            </Text>
           </View>
         }
-        renderItem={({ item }) => (
-          <TouchableOpacity 
-            activeOpacity={0.8}
-            onPress={() => {
-              if (isSelectionMode) toggleSelection(item.id);
-            }}
-          >
-            <GlassCard style={{ padding: 12, marginBottom: 12, borderRadius: 12, flexDirection: 'row', borderWidth: isSelectionMode && selectedItems.includes(item.id) ? 1 : 0, borderColor: isSelectionMode && selectedItems.includes(item.id) ? '#bc13fe' : 'transparent' }}>
-              
-              {isSelectionMode && (
-                <View className={`w-6 h-6 rounded-full border mr-3 items-center justify-center self-center ${selectedItems.includes(item.id) ? 'bg-[#bc13fe] border-[#bc13fe]' : 'border-white/30'}`}>
-                  {selectedItems.includes(item.id) && <Ionicons name="checkmark" size={16} color="#fff" />}
-                </View>
-              )}
-
-              {item._pictureUrl || item.posts?.media_urls?.[0] ? (
-                <Image source={{ uri: item._pictureUrl || item.posts.media_urls[0] }} className="w-16 h-16 rounded-lg mr-3 bg-[#131314]" />
-              ) : (
-                <View className="w-16 h-16 rounded-lg mr-3 bg-[#131314] items-center justify-center border border-white/5">
-                  <Ionicons name="image-outline" size={20} color="#849495" />
-                </View>
-              )}
-              <View className="flex-1 justify-between">
-                <View className="flex-row justify-between items-center mb-1">
-                  <View className="flex-row items-center flex-1 pr-2">
-                    <Ionicons name={`logo-${item.platform}`} size={14} color={item.platform === 'instagram' ? '#ebb2ff' : '#00f0ff'} style={{ marginRight: 4 }} />
-                    <Text className="text-[#00f0ff] font-bold text-[12px]" numberOfLines={1} ellipsizeMode="tail">@{item.username}</Text>
-                  </View>
-                  <Text className="text-[#849495] text-[10px]">
-                    {new Date(item.created_at).toLocaleDateString('tr-TR')}
-                  </Text>
-                </View>
-                <Text className="text-[#e5e2e3] text-[11px] mb-2" numberOfLines={2} ellipsizeMode="tail">{item.content || item.title || ''}</Text>
+        renderItem={({ item }) => {
+          // Identify if it's a business reply (e.g. is_owner true, or role merchant, or AI)
+          const isBusiness = item.is_owner || item.role === 'merchant' || item.username === 'Ben' || item.username === 'Sen' || item.is_business_reply;
+          
+          return (
+            <TouchableOpacity 
+              activeOpacity={0.8}
+              onPress={() => {
+                if (isSelectionMode) toggleSelection(item.id);
+              }}
+              style={{ width: isBusiness ? '90%' : '100%', alignSelf: isBusiness ? 'flex-end' : 'flex-start' }}
+            >
+              <GlassCard style={{ 
+                padding: 12, 
+                marginBottom: 12, 
+                borderRadius: 12, 
+                flexDirection: 'row', 
+                borderWidth: isSelectionMode && selectedItems.includes(item.id) ? 1 : (isBusiness ? 1 : 0), 
+                borderColor: isSelectionMode && selectedItems.includes(item.id) 
+                  ? '#bc13fe' 
+                  : (isBusiness ? 'rgba(255, 185, 95, 0.3)' : 'transparent'),
+                backgroundColor: isBusiness ? 'rgba(255, 185, 95, 0.05)' : 'rgba(32,31,34,0.4)'
+              }}>
                 
-                <View className="flex-row items-center justify-between" pointerEvents={isSelectionMode ? "none" : "auto"}>
-                  <View className="flex-row items-center">
-                    <View className="flex-row items-center mr-3">
-                      <Ionicons name="chatbubble-ellipses" size={12} color="#bc13fe" style={{ marginRight: 4 }} />
-                      <Text className="text-[#bc13fe] text-[10px] font-bold">{t('sosyalMedya.inbox.details')}</Text>
+                {isSelectionMode && (
+                  <View className={`w-6 h-6 rounded-full border mr-3 items-center justify-center self-center ${selectedItems.includes(item.id) ? 'bg-[#bc13fe] border-[#bc13fe]' : 'border-white/30'}`}>
+                    {selectedItems.includes(item.id) && <Ionicons name="checkmark" size={16} color="#fff" />}
+                  </View>
+                )}
+
+                {!isBusiness && (
+                  item._pictureUrl || item.posts?.media_urls?.[0] ? (
+                    <Image source={{ uri: item._pictureUrl || item.posts.media_urls[0] }} className="w-16 h-16 rounded-lg mr-3 bg-[#131314]" />
+                  ) : (
+                    <View className="w-16 h-16 rounded-lg mr-3 bg-[#131314] items-center justify-center border border-white/5">
+                      <Ionicons name="image-outline" size={20} color="#849495" />
+                    </View>
+                  )
+                )}
+
+                <View className="flex-1 justify-between">
+                  <View className="flex-row justify-between items-center mb-1">
+                    <View className="flex-row items-center flex-1 pr-2">
+                      <Ionicons name={`logo-${item.platform}`} size={14} color={item.platform === 'instagram' ? '#ebb2ff' : '#00f0ff'} style={{ marginRight: 4 }} />
+                      <Text className={`font-bold text-[12px] ${isBusiness ? 'text-[#ffb95f]' : 'text-[#00f0ff]'}`} numberOfLines={1} ellipsizeMode="tail">
+                        @{item.username}
+                      </Text>
+                      {isBusiness && (
+                        <View className="ml-2 bg-[#ffb95f] px-1.5 py-0.5 rounded">
+                          <Text className="text-black text-[9px] font-bold">BEN</Text>
+                        </View>
+                      )}
+                    </View>
+                    <Text className="text-[#849495] text-[10px]">
+                      {new Date(item.created_at).toLocaleDateString('tr-TR')}
+                    </Text>
+                  </View>
+                  <Text className="text-[#e5e2e3] text-[11px] mb-2">{item.content || item.title || ''}</Text>
+                  
+                  <View className="flex-row items-center justify-between" pointerEvents={isSelectionMode ? "none" : "auto"}>
+                    <View className="flex-row items-center">
+                      <View className="flex-row items-center mr-3">
+                        <Ionicons name="chatbubble-ellipses" size={12} color="#bc13fe" style={{ marginRight: 4 }} />
+                        <Text className="text-[#bc13fe] text-[10px] font-bold">{t('sosyalMedya.inbox.details')}</Text>
+                      </View>
+                    </View>
+                    
+                    <View className="flex-row items-center">
+                      {!isSelectionMode && (
+                        <TouchableOpacity 
+                          onPress={() => { setIsSelectionMode(true); toggleSelection(item.id); }} 
+                          className="mr-2 px-2 py-1 bg-red-500/10 rounded border border-red-500/30 flex-row items-center"
+                        >
+                          <Feather name="trash-2" size={12} color="#ff0050" />
+                        </TouchableOpacity>
+                      )}
+                      
+                      <CustomButton 
+                        onPress={() => navigation.navigate('PostCommentsScreen', { post: item.posts, commentFocus: item })}
+                        className="px-2 py-1 rounded border border-[#bc13fe]/30 bg-[#bc13fe]/20"
+                        textClassName="text-[#bc13fe] text-[9px] font-bold"
+                        title={t('sosyalMedya.inbox.viewComments')}
+                      />
                     </View>
                   </View>
-                  
-                  <View className="flex-row items-center">
-                    {!isSelectionMode && (
-                      <TouchableOpacity 
-                        onPress={() => { setIsSelectionMode(true); toggleSelection(item.id); }} 
-                        className="mr-2 px-2 py-1 bg-red-500/10 rounded border border-red-500/30 flex-row items-center"
-                      >
-                        <Feather name="trash-2" size={12} color="#ff0050" />
-                      </TouchableOpacity>
-                    )}
-                    
-                    <CustomButton 
-                      onPress={() => navigation.navigate('PostCommentsScreen', { post: item.posts, commentFocus: item })}
-                      className="px-2 py-1 rounded border border-[#bc13fe]/30 bg-[#bc13fe]/20"
-                      textClassName="text-[#bc13fe] text-[9px] font-bold"
-                      title={t('sosyalMedya.inbox.viewComments')}
-                    />
-                  </View>
                 </View>
-              </View>
-            </GlassCard>
-          </TouchableOpacity>
-        )}
+              </GlassCard>
+            </TouchableOpacity>
+          );
+        }}
       />
     </View>
   );
