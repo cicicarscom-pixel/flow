@@ -8,7 +8,7 @@ import { View, TouchableOpacity, Animated as RNAnimated, Easing, Platform, Keybo
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { BotYonetimiScreen, SosyalMedyaScreen, AnalyticsScreen } from '../../modules/sosyal_medya';
-import { AiMuhasebeScreen } from '../../modules/muhasebe';
+import { AiMuhasebeScreen, MuhasebecimScreen } from '../../modules/muhasebe';
 import { RandevuScreen, HizmetAyarlariScreen } from '../../modules/randevu';
 import DashboardScreen from '../../screens/DashboardScreen';
 
@@ -29,6 +29,7 @@ function AiMuhasebeStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="AiMuhasebeMain" component={AiMuhasebeScreen} />
+      <Stack.Screen name="Muhasebecim" component={MuhasebecimScreen} />
     </Stack.Navigator>
   );
 }

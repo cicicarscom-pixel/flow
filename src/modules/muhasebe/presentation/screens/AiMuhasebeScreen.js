@@ -323,6 +323,16 @@ export default function AiMuhasebeScreen({ navigation }) {
                 leftIcon={<MaterialIcons name="auto-awesome" size={16} color="#4edea3" />}
               />
             </View>
+
+            <View style={[styles.glassCard, { borderRadius: 12, marginTop: 16 }]}>
+              <CustomButton 
+                onPress={() => navigation.navigate('Muhasebecim')}
+                className="bg-transparent py-4 px-4 h-auto"
+                title="MUHASEBECİ BAĞLANTISI"
+                textClassName="text-[#00daf3] text-[12px] font-bold uppercase tracking-widest"
+                leftIcon={<MaterialIcons name="vpn-key" size={16} color="#00daf3" />}
+              />
+            </View>
           </View>
         </View>
       </ScrollView>
