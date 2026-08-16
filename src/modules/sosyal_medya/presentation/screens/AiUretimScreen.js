@@ -137,7 +137,11 @@ export default function AiUretimScreen({ route, navigation }) {
   const [zernioAccounts, setZernioAccounts] = useState([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState({});
   const [publishMode, setPublishMode] = useState('now');
-  const [scheduleDate, setScheduleDate] = useState('04.07.2026 14:00');
+  const [scheduleDate, setScheduleDate] = useState(() => {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() + 10);
+    return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+  });
   const [timezone, setTimezone] = useState('Europe/Istanbul (GMT+3)');
   const [isTimezoneModalVisible, setTimezoneModalVisible] = useState(false);
 
@@ -326,6 +330,23 @@ export default function AiUretimScreen({ route, navigation }) {
     const { data: session } = await supabase.auth.getSession();
     const userId = session?.session?.user?.id;
 
+    let finalScheduledFor = undefined;
+    let finalTimezone = timezone.split(' ')[0];
+
+    if (publishMode === 'schedule') {
+      try {
+        const parts = scheduleDate.trim().split(' ');
+        if (parts.length !== 2) throw new Error();
+        const dateParts = parts[0].split('.');
+        const timeParts = parts[1].split(':');
+        finalScheduledFor = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}T${timeParts[0].padStart(2, '0')}:${timeParts[1].padStart(2, '0')}:00`;
+      } catch (err) {
+        Alert.alert("Hata", "Tarih formatı hatalı. Lütfen 'GÜN.AY.YIL SAAT:DAKİKA' (örn: 16.08.2026 16:26) şeklinde girin.");
+        setIsSharing(false);
+        return;
+      }
+    }
+
     let successCount = 0;
     // Döngü (for...of) ile sadece filtreden geçen uygun platformların Zernio API endpoint'lerine istek atılsın
     for (const acc of allowedPlatforms) {
@@ -337,7 +358,9 @@ export default function AiUretimScreen({ route, navigation }) {
             payload: { 
               content: contentToShare,
               platforms: [{ platform: acc.platform, accountId: acc._id || acc.id || acc.accountId || acc.uuid }],
-              publishNow: true,
+              publishNow: publishMode === 'now',
+              scheduledFor: finalScheduledFor,
+              timezone: finalTimezone,
               mediaItems: localImage ? [{ type: contentType, url: localImage }] : undefined
             } 
           }
