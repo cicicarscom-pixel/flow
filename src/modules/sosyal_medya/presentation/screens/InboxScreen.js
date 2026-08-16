@@ -398,11 +398,13 @@ const YorumlarTab = ({ navigation }) => {
             if (uuids.length > 0) await supabase.from('comments').delete().in('id', uuids);
             if (zernioIds.length > 0) {
               await supabase.from('comments').delete().in('zernio_comment_id', zernioIds);
+              const { data: { session } } = await supabase.auth.getSession();
               await supabase.from('ai_communication_logs').insert(
                 zernioIds.map(id => ({
                   platform: 'zernio_deleted_comment',
                   sender_id: id,
-                  user_message: '[DELETED]'
+                  user_message: '[DELETED]',
+                  merchant_id: session?.user?.id
                 }))
               );
             }
