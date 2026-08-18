@@ -344,11 +344,11 @@ export default function DashboardScreen({ navigation }) {
           </View>
         </View>
 
-        <View style={styles.headerRightArea}>
-          <TouchableOpacity style={styles.notificationBtn} onPress={() => navigation.navigate('Bildirimler')}>
-            <MaterialIcons name="notifications" size={26} color={COLORS.onSurfaceVariant} />
-            {unreadCount > 0 && <View style={styles.notificationBadge} />}
-          </TouchableOpacity>
+          <View style={styles.headerRightArea}>
+            <TouchableOpacity style={styles.notificationBtn} onPress={() => navigation.navigate('Inbox', { screen: 'Bildirimler' })}>
+              <MaterialIcons name="notifications" size={26} color={COLORS.onSurfaceVariant} />
+              {unreadCount > 0 && <View style={styles.notificationBadge} />}
+            </TouchableOpacity>
         </View>
       </View>
 

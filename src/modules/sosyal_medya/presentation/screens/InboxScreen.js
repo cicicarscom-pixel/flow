@@ -25,6 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase , GlobalAppBar } from '../../../../shared';
 import { CustomButton } from '../../../../shared';
 import { CustomInput } from '../../../../shared';
+import BildirimlerScreen from '../../../../screens/BildirimlerScreen';
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -1241,6 +1242,11 @@ const DegerlendirmelerTab = () => {
 };
 
 // MAIN SCREEN
+
+const BildirimlerTab = ({ navigation }) => {
+  return <BildirimlerScreen navigation={navigation} isTab={true} />;
+};
+
 export default function InboxScreen({ navigation }) {
   const { t } = useTranslation();
   return (
@@ -1276,6 +1282,7 @@ export default function InboxScreen({ navigation }) {
       >
         <Tab.Screen name="Mesajlar" component={MesajlarTab} options={{ tabBarLabel: t('sosyalMedya.inbox.tabs.messages') }} />
         <Tab.Screen name="Yorumlar" component={YorumlarTab} options={{ tabBarLabel: t('sosyalMedya.inbox.tabs.comments') }} />
+        <Tab.Screen name="Bildirimler" component={BildirimlerTab} options={{ tabBarLabel: 'Bildirimler' }} />
         <Tab.Screen name="Değerlendirmeler" component={DegerlendirmelerTab} options={{ tabBarLabel: t('sosyalMedya.inbox.tabs.reviews') }} />
       </Tab.Navigator>
     </SafeAreaView>

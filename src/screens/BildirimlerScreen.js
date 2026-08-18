@@ -33,7 +33,7 @@ const formatRelativeTime = (dateStr) => {
   return `${Math.floor(hrs / 24)}g önce`;
 };
 
-export default function BildirimlerScreen({ navigation }) {
+export default function BildirimlerScreen({ navigation, isTab = false }) {
   const insets = useSafeAreaInsets();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -163,12 +163,14 @@ export default function BildirimlerScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <GlobalAppBar 
-        title="Bildirimler" 
-        onBack={() => navigation.goBack()} 
-        rightIcon={notifications.some(n => !n.is_read) ? "checkmark-done" : undefined}
-        onRightPress={markAllAsRead}
-      />
+      {!isTab && (
+        <GlobalAppBar 
+          title="Bildirimler" 
+          onBack={() => navigation.goBack()} 
+          rightIcon={notifications.some(n => !n.is_read) ? "checkmark-done" : undefined}
+          onRightPress={markAllAsRead}
+        />
+      )}
       
       {loading ? (
         <View style={styles.center}>
