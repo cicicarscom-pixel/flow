@@ -328,6 +328,10 @@ const YorumlarTab = ({ navigation }) => {
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
 
+  const [privateReplyingTo, setPrivateReplyingTo] = useState(null);
+  const [privateReplyText, setPrivateReplyText] = useState('');
+  const [sendingPrivateReply, setSendingPrivateReply] = useState(false);
+
   const handleHideComment = async (comment) => {
     try {
       deletedIdsRef.current.add(comment.id);
@@ -339,8 +343,47 @@ const YorumlarTab = ({ navigation }) => {
     }
   };
 
-  const handleDMClick = (username) => {
-    navigation.navigate('Mesajlar');
+  const handleDMClick = (item) => {
+    if (privateReplyingTo === item.id) {
+      setPrivateReplyingTo(null);
+    } else {
+      setPrivateReplyingTo(item.id);
+      setPrivateReplyText('');
+      if (replyingTo === item.id) setReplyingTo(null);
+    }
+  };
+
+  const submitPrivateReply = async (parentComment) => {
+    if (!privateReplyText.trim()) return;
+    setSendingPrivateReply(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const payload = {
+        action: 'send-private-reply',
+        payload: {
+          userId: session?.user?.id,
+          accountId: parentComment.posts?.accountId || parentComment.accountId,
+          postId: parentComment.zernio_post_id,
+          commentId: parentComment.zernio_comment_id,
+          platform: parentComment.platform,
+          message: privateReplyText
+        }
+      };
+      
+      const res = await supabase.functions.invoke('zernio-client', { body: payload });
+      if (res.error) throw res.error;
+      
+      Alert.alert("Başarılı", "Özel mesaj (DM) başarıyla gönderildi.");
+      
+      setPrivateReplyText('');
+      setPrivateReplyingTo(null);
+    } catch (e) {
+      console.error(e);
+      Alert.alert("Hata", "Özel mesaj gönderilemedi.");
+    } finally {
+      setSendingPrivateReply(false);
+    }
   };
 
   const submitReply = async (parentComment) => {
@@ -966,6 +1009,7 @@ const YorumlarTab = ({ navigation }) => {
                             } else {
                               setReplyingTo(item.id);
                               setReplyText('');
+                              if (privateReplyingTo === item.id) setPrivateReplyingTo(null);
                             }
                           }}
                         >
@@ -973,7 +1017,7 @@ const YorumlarTab = ({ navigation }) => {
                           <Text className="text-[#849495] text-[11px] ml-1 font-medium">{t('sosyalMedya.inbox.reply', 'Yanıtla')}</Text>
                         </TouchableOpacity>
                         
-                        <TouchableOpacity onPress={() => handleDMClick(item.username)} className="flex-row items-center mr-4">
+                        <TouchableOpacity onPress={() => handleDMClick(item)} className="flex-row items-center mr-4">
                           <Feather name="send" size={12} color="#849495" />
                           <Text className="text-[#849495] text-[11px] ml-1 font-medium">DM</Text>
                         </TouchableOpacity>
@@ -1069,6 +1113,35 @@ const YorumlarTab = ({ navigation }) => {
                       <ActivityIndicator size="small" color="#fff" />
                     ) : (
                       <Ionicons name="send" size={14} color={sendingReply || !replyText.trim() ? '#849495' : '#fff'} style={{ marginLeft: 2 }} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {/* Inline Private Reply Input */}
+              {privateReplyingTo === item.id && (
+                <View className="mt-2 ml-8 flex-row items-center">
+                  <View className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 flex-row items-center">
+                    <TextInput
+                      value={privateReplyText}
+                      onChangeText={setPrivateReplyText}
+                      placeholder={`${item.username} kullanıcısına DM gönder...`}
+                      placeholderTextColor="#849495"
+                      style={{ flex: 1, color: '#e5e2e3', fontSize: 12, padding: 0 }}
+                      autoFocus
+                      multiline
+                      maxLength={500}
+                    />
+                  </View>
+                  <TouchableOpacity 
+                    onPress={() => submitPrivateReply(item)}
+                    disabled={sendingPrivateReply || !privateReplyText.trim()}
+                    className={`ml-2 w-9 h-9 rounded-full items-center justify-center ${sendingPrivateReply || !privateReplyText.trim() ? 'bg-white/10' : 'bg-[#00f0ff]'}`}
+                  >
+                    {sendingPrivateReply ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Ionicons name="send" size={14} color={sendingPrivateReply || !privateReplyText.trim() ? '#849495' : '#000'} style={{ marginLeft: 2 }} />
                     )}
                   </TouchableOpacity>
                 </View>

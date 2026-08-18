@@ -496,7 +496,10 @@ export default function SosyalMedyaScreen({ navigation }) {
           <Text className="text-[#e5e1e4] text-[18px] font-semibold mb-4">{t('sosyalMedya.ui.addAccount')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16, paddingRight: 20, paddingLeft: 4 }}>
             {PLATFORMS_DATA.map((p) => {
-               const isConnected = socialAccounts.some(acc => acc.platform.toLowerCase() === p.id);
+               const isConnected = socialAccounts.some(acc => {
+                 const pid = acc.platform.toLowerCase();
+                 return (pid.includes('google') ? 'googlebusiness' : pid) === p.id;
+               });
                if (isConnected) return null; // Zaten bağlıysa gösterme
                return (
                  <View
@@ -577,7 +580,9 @@ export default function SosyalMedyaScreen({ navigation }) {
           ) : socialAccounts.length > 0 ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16, paddingRight: 20, paddingLeft: 4 }}>
               {socialAccounts.map((acc, index) => {
-                const platformInfo = PLATFORMS_DATA.find(p => p.id === acc.platform.toLowerCase()) || {
+                const rawPid = acc.platform.toLowerCase();
+                const normalizedPid = rawPid.includes('google') ? 'googlebusiness' : rawPid;
+                const platformInfo = PLATFORMS_DATA.find(p => p.id === normalizedPid) || {
                   id: acc.platform, name: acc.platform, color: '#00f0ff', glow: 'rgba(0,240,255,0.3)', icon: 'logo-edge'
                 };
                 

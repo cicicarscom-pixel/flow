@@ -681,11 +681,17 @@ export default function AiUretimScreen({ route, navigation }) {
           <View className="flex-row flex-wrap justify-between">
           {zernioAccounts.map((acc, index) => {
             const isSelected = selectedPlatforms[acc.platform];
-            const platformColor = acc.platform.toLowerCase() === 'instagram' ? '#bc13fe' : 
-                                  acc.platform.toLowerCase() === 'facebook' ? '#1877F2' : 
-                                  acc.platform.toLowerCase() === 'youtube' ? '#ff0000' : 
-                                  acc.platform.toLowerCase() === 'twitter' ? '#1DA1F2' : 
-                                  acc.platform.toLowerCase() === 'linkedin' ? '#0A66C2' : '#b9cacb';
+            const platformId = acc.platform.toLowerCase();
+            const platformColor = platformId === 'instagram' ? '#bc13fe' : 
+                                  platformId === 'facebook' ? '#1877F2' : 
+                                  platformId === 'youtube' ? '#ff0000' : 
+                                  platformId === 'twitter' ? '#1DA1F2' : 
+                                  platformId === 'linkedin' ? '#0A66C2' : 
+                                  platformId.includes('google') ? '#4285F4' : '#b9cacb';
+            
+            let iconName = `logo-${platformId}`;
+            if (platformId.includes('google')) iconName = 'business';
+
             return (
               <TouchableOpacity 
                 key={index}
@@ -693,7 +699,7 @@ export default function AiUretimScreen({ route, navigation }) {
                 className={`flex-row items-center justify-between rounded-lg border p-2 mb-3 w-[31%] ${isSelected ? 'bg-[#4edea3]/10 border-[#4edea3]/50' : 'bg-[#1c1b1c]/50 border-white/5'}`}
               >
                 <View className="flex-row items-center flex-1">
-                   <Ionicons name={`logo-${acc.platform.toLowerCase()}`} size={16} color={platformColor} style={{ marginRight: 6 }} />
+                   <Ionicons name={iconName} size={16} color={platformColor} style={{ marginRight: 6 }} />
                    <View className="flex-1">
                      <Text className="text-[#e5e2e3] text-[10px] capitalize font-medium" numberOfLines={1}>{acc.platform}</Text>
                      <Text className="text-[#b9cacb]/60 text-[8px]" numberOfLines={1}>@{acc.username || 'hesap'}</Text>
