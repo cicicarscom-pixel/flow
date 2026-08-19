@@ -16,6 +16,9 @@ export default function ProfilScreen() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [avatar, setAvatar] = useState('https://api.dicebear.com/7.x/avataaars/png?seed=Alex');
+  const [vkn, setVkn] = useState('');
+  const [taxOffice, setTaxOffice] = useState('');
+  const [organizationId, setOrganizationId] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -41,6 +44,26 @@ export default function ProfilScreen() {
           }
           if (data.avatar_url) {
             setAvatar(data.avatar_url);
+          }
+        }
+        
+        const { data: orgMember } = await supabase
+          .from('organization_members')
+          .select('organization_id')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+          
+        if (orgMember?.organization_id) {
+          setOrganizationId(orgMember.organization_id);
+          const { data: legalData } = await supabase
+            .from('organization_legal_profiles')
+            .select('tax_identifier, tax_office')
+            .eq('organization_id', orgMember.organization_id)
+            .maybeSingle();
+            
+          if (legalData) {
+            setVkn(legalData.tax_identifier || '');
+            setTaxOffice(legalData.tax_office || '');
           }
         }
       }
@@ -87,6 +110,26 @@ export default function ProfilScreen() {
           .eq('id', session.user.id);
 
         if (error) throw error;
+        
+        if (organizationId) {
+          const { data: existingLegal } = await supabase
+            .from('organization_legal_profiles')
+            .select('id')
+            .eq('organization_id', organizationId)
+            .maybeSingle();
+
+          if (existingLegal) {
+            await supabase
+              .from('organization_legal_profiles')
+              .update({ tax_identifier: vkn, tax_office: taxOffice })
+              .eq('organization_id', organizationId);
+          } else {
+            await supabase
+              .from('organization_legal_profiles')
+              .insert({ organization_id: organizationId, tax_identifier: vkn, tax_office: taxOffice });
+          }
+        }
+        
         Alert.alert('Başarılı', 'Profil bilgileriniz güncellendi.');
       } else {
         Alert.alert('Hata', 'Oturum bulunamadı.');
@@ -158,7 +201,24 @@ export default function ProfilScreen() {
                 value={phone}
                 onChangeText={setPhone}
                 keyboardType="phone-pad"
-                placeholder="Telefon numaranızı girin"
+                placeholder="Telefon numarasn girin"
+                containerClassName="mb-4"
+              />
+              
+              <CustomInput
+                label="Vergi Numaras (VKN)"
+                value={vkn}
+                onChangeText={setVkn}
+                keyboardType="numeric"
+                placeholder="VKN girin"
+                containerClassName="mb-4"
+              />
+
+              <CustomInput
+                label="Vergi Dairesi"
+                value={taxOffice}
+                onChangeText={setTaxOffice}
+                placeholder="Vergi dairesini girin"
                 containerClassName="mb-4"
               />
 
