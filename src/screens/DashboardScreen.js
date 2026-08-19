@@ -165,11 +165,11 @@ export default function DashboardScreen({ navigation }) {
           // Fetch profile for avatar
           const { data: profileData } = await supabase
             .from('profiles')
-            .select('business_name, avatar_url')
+            .select('business_name, authorized_person, avatar_url')
             .eq('id', merchantId)
             .single();
 
-          const nameToUse = profileData?.business_name || meta.full_name || 'Kullanıcı';
+          const nameToUse = profileData?.authorized_person || profileData?.business_name || meta.full_name || 'Kullanıcı';
           setUserProfile({
             fullName: nameToUse,
             avatarUrl: profileData?.avatar_url || meta.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nameToUse)}&background=00daf3&color=fff`
@@ -1159,4 +1159,5 @@ const styles = StyleSheet.create({
     fontSize: 13,
   }
 });
+
 
