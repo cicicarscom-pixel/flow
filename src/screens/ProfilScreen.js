@@ -166,7 +166,6 @@ export default function ProfilScreen() {
           <View className="items-center mb-6">
             <Text className="text-white text-xl font-bold mb-1">Merhaba, {authorizedPerson || 'Yetkili'} 👋</Text>
             <Text className="text-gray-400 text-sm mb-6">{businessName || 'İşletme Adı'}</Text>
-            <View className="items-center mb-2">
             <TouchableOpacity onPress={pickImage} className="relative">
               <View className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/50 shadow-lg shadow-primary">
                 <Image 
@@ -187,6 +186,13 @@ export default function ProfilScreen() {
             </View>
           ) : (
             <>
+              <CustomInput
+                label="Yetkili Kişi Adı Soyadı"
+                value={authorizedPerson}
+                onChangeText={setAuthorizedPerson}
+                placeholder="Örn: Mehmet Yılmaz"
+                containerClassName="mb-4"
+              />
               <CustomInput
                 label="İşletme Adı"
                 value={businessName}
@@ -267,5 +273,7 @@ export default function ProfilScreen() {
     </View>
   );
 }
+
+
 
 
