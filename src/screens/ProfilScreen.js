@@ -11,6 +11,7 @@ import AddressSelector from '../shared/ui/AddressSelector';
 
 export default function ProfilScreen() {
   const [businessName, setBusinessName] = useState('');
+  const [authorizedPerson, setAuthorizedPerson] = useState('');
   const [addressData, setAddressData] = useState(null);
   const [category, setCategory] = useState('');
   const [phone, setPhone] = useState('');
@@ -29,7 +30,7 @@ export default function ProfilScreen() {
         setEmail(session.user.email || '');
         const { data, error } = await supabase
           .from('profiles')
-          .select('business_name, category, phone_number, address, avatar_url')
+          .select('business_name, authorized_person, category, phone_number, address, avatar_url')
           .eq('id', session.user.id)
           .single();
 
@@ -37,6 +38,7 @@ export default function ProfilScreen() {
           console.error('Error fetching profile data:', error);
         } else if (data) {
           setBusinessName(data.business_name || '');
+          setAuthorizedPerson(data.authorized_person || '');
           setCategory(data.category || 'Diğer');
           setPhone(data.phone_number || '');
           if (data.address) {
@@ -102,6 +104,7 @@ export default function ProfilScreen() {
           .from('profiles')
           .update({
             business_name: businessName,
+            authorized_person: authorizedPerson,
             category: category,
             phone_number: phone,
             address: addressData,
@@ -160,7 +163,10 @@ export default function ProfilScreen() {
           style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
         >
           {/* Avatar Area */}
-          <View className="items-center mb-8">
+          <View className="items-center mb-6">
+            <Text className="text-white text-xl font-bold mb-1">Merhaba, {authorizedPerson || 'Yetkili'} 👋</Text>
+            <Text className="text-gray-400 text-sm mb-6">{businessName || 'İşletme Adı'}</Text>
+            <View className="items-center mb-2">
             <TouchableOpacity onPress={pickImage} className="relative">
               <View className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/50 shadow-lg shadow-primary">
                 <Image 
@@ -261,4 +267,5 @@ export default function ProfilScreen() {
     </View>
   );
 }
+
 
