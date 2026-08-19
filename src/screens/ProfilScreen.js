@@ -163,9 +163,9 @@ export default function ProfilScreen() {
           style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
         >
           {/* Avatar Area */}
-          <View className="items-center mb-6">
-            <Text className="text-white text-xl font-bold mb-1">Merhaba, {authorizedPerson || 'Yetkili'} 👋</Text>
-            <Text className="text-gray-400 text-sm mb-6">{businessName || 'İşletme Adı'}</Text>
+          <View className="items-center mb-8">
+            <Text className="text-white text-xl font-bold mb-1">{businessName || 'İşletme Adı'}</Text>
+            <Text className="text-gray-400 text-sm mb-6">{email}</Text>
             <TouchableOpacity onPress={pickImage} className="relative">
               <View className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/50 shadow-lg shadow-primary">
                 <Image 
@@ -273,6 +273,7 @@ export default function ProfilScreen() {
     </View>
   );
 }
+
 
 
 
