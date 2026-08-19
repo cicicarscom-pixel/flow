@@ -35,9 +35,59 @@ export default function MuhasebecimScreen({ navigation }) {
   const [step, setStep] = useState('initial'); // 'initial' | 'verified' | 'connected'
   const [accountantCode, setAccountantCode] = useState('');
   const [firm, setFirm] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const myCode = 'WG-73492';
+  
+  // Real DB connection fetch
+  React.useEffect(() => {
+    checkConnection();
+  }, []);
+
+  const checkConnection = async () => {
+    try {
+      const { supabase } = require('../../../../../shared');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data: orgMember } = await supabase
+        .from('organization_members')
+        .select('organization_id')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      if (orgMember?.organization_id) {
+        const { data: link } = await supabase
+          .from('accountant_taxpayer_links')
+          .select('accounting_firm_id')
+          .eq('taxpayer_organization_id', orgMember.organization_id)
+          .eq('status', 'active')
+          .maybeSingle();
+
+        if (link?.accounting_firm_id) {
+          const { data: firmInfo } = await supabase
+            .from('accounting_firms')
+            .select('firm_name')
+            .eq('id', link.accounting_firm_id)
+            .maybeSingle();
+
+          if (firmInfo) {
+            setFirm({
+              name: firmInfo.firm_name,
+              location: '-',
+              rating: 5.0,
+              activeTaxpayers: 'Çok sayıda'
+            });
+            setStep('connected');
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error checking connection:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleVerify = () => {
     if (accountantCode.trim().length > 0) {
