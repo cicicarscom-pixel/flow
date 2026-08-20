@@ -128,7 +128,8 @@ export default function AddressSelector({ onAddressChange, initialData }) {
   };
 
   return (
-    <View style={styles.container}>      {/* Cascading Selectors */}
+    <View style={styles.container}>
+      {/* Cascading Selectors */}
       {renderSelectorButton('Country', country ? Country.getCountryByCode(country)?.name : null, 'country', false)}
       {renderSelectorButton('City / State', (country && city) ? State.getStateByCodeAndCountry(city, country)?.name : null, 'city', !country)}
       {renderSelectorButton('District', district, 'district', !city)}
