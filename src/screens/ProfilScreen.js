@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, ImageBackground, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { decode } from 'base64-arraybuffer';
 import { GlobalAppBar , supabase } from '../shared';
 
 import { CustomButton } from '../shared';
@@ -57,6 +58,17 @@ export default function ProfilScreen() {
           
         if (orgMember?.organization_id) {
           setOrganizationId(orgMember.organization_id);
+          
+          const { data: orgData } = await supabase
+            .from('organizations')
+            .select('name')
+            .eq('id', orgMember.organization_id)
+            .maybeSingle();
+            
+          if (orgData && orgData.name) {
+            setBusinessName(orgData.name);
+          }
+
           const { data: legalData } = await supabase
             .from('organization_legal_profiles')
             .select('tax_identifier, tax_office')
@@ -97,7 +109,7 @@ export default function ProfilScreen() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session && asset.base64) {
-          const fileName = \-\.jpg;
+          const fileName = `${session.user.id}-${Date.now()}.jpg`;
           const { data, error } = await supabase.storage
             .from('avatars')
             .upload(fileName, decode(asset.base64), { contentType: 'image/jpeg' });
@@ -134,6 +146,11 @@ const handleSave = async () => {
         if (error) throw error;
         
         if (organizationId) {
+          await supabase
+            .from('organizations')
+            .update({ name: businessName })
+            .eq('id', organizationId);
+
           const { data: existingLegal } = await supabase
             .from('organization_legal_profiles')
             .select('id')
