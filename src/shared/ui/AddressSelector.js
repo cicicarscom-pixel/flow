@@ -1,48 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Modal, 
-  Animated, 
-  StyleSheet, 
-  Dimensions, 
-  TextInput,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback
+  View, Text, TouchableOpacity, Modal, Animated, StyleSheet, 
+  Dimensions, TextInput, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback
 } from 'react-native';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
+import { Country, State, City } from 'country-state-city';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-
-// Mock Data for Cascading Selection
-const LOCATION_DATA = {
-  Germany: {
-    Hamburg: ['Altona', 'Eimsbüttel', 'Hamburg-Nord', 'Wandsbek'],
-    Berlin: ['Mitte', 'Pankow', 'Charlottenburg', 'Spandau'],
-    Munich: ['Altstadt', 'Maxvorstadt', 'Schwabing', 'Bogenhausen']
-  },
-  Turkey: {
-    Istanbul: [
-      'Adalar', 'Arnavutköy', 'Ataşehir', 'Avcılar', 'Bağcılar', 'Bahçelievler', 'Bakırköy', 
-      'Başakşehir', 'Bayrampaşa', 'Beşiktaş', 'Beykoz', 'Beylikdüzü', 'Beyoğlu', 'Büyükçekmece', 
-      'Çatalca', 'Çekmeköy', 'Esenler', 'Esenyurt', 'Eyüpsultan', 'Fatih', 'Gaziosmanpaşa', 
-      'Güngören', 'Kadıköy', 'Kağıthane', 'Kartal', 'Küçükçekmece', 'Maltepe', 'Pendik', 
-      'Sancaktepe', 'Sarıyer', 'Silivri', 'Sultanbeyli', 'Sultangazi', 'Şile', 'Şişli', 
-      'Tuzla', 'Ümraniye', 'Üsküdar', 'Zeytinburnu'
-    ],
-    Ankara: ['Cankaya', 'Kecioren', 'Yenimahalle', 'Mamak'],
-    Izmir: ['Karsiyaka', 'Bornova', 'Buca', 'Konak']
-  },
-  USA: {
-    'New York': ['Manhattan', 'Brooklyn', 'Queens', 'Bronx'],
-    'California': ['Los Angeles', 'San Francisco', 'San Diego', 'San Jose'],
-    'Texas': ['Houston', 'Austin', 'Dallas', 'San Antonio']
-  }
-};
 
 export default function AddressSelector({ onAddressChange, initialData }) {
   // Selection State
@@ -68,23 +33,19 @@ export default function AddressSelector({ onAddressChange, initialData }) {
       setDistrict(initialData.district || null);
       setFullAddress(initialData.fullAddress || '');
     }
-  }, [initialData]);
-
-  // Derived Options for Modal
+  }, [initialData]);  // Derived Options for Modal
   let currentOptions = [];
   if (modalType === 'country') {
-    currentOptions = Object.keys(LOCATION_DATA);
+    currentOptions = Country.getAllCountries().map(c => ({ id: c.isoCode, name: c.name }));
   } else if (modalType === 'city' && country) {
-    currentOptions = Object.keys(LOCATION_DATA[country] || {});
+    currentOptions = State.getStatesOfCountry(country).map(s => ({ id: s.isoCode, name: s.name }));
   } else if (modalType === 'district' && country && city) {
-    currentOptions = LOCATION_DATA[country]?.[city] || [];
+    currentOptions = City.getCitiesOfState(country, city).map(c => ({ id: c.name, name: c.name }));
   }
 
   const filteredOptions = currentOptions.filter(opt => 
-    opt.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  useEffect(() => {
+    opt.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );useEffect(() => {
     // Notify parent component when state changes
     if (onAddressChange) {
       onAddressChange({ country, city, district, fullAddress });
@@ -126,23 +87,19 @@ export default function AddressSelector({ onAddressChange, initialData }) {
       setModalVisible(false);
       setModalType(null);
     });
-  };
-
-  const handleSelect = (item) => {
+  };  const handleSelect = (item) => {
     if (modalType === 'country') {
-      setCountry(item);
+      setCountry(item.id);
       setCity(null);
       setDistrict(null);
     } else if (modalType === 'city') {
-      setCity(item);
+      setCity(item.id);
       setDistrict(null);
     } else if (modalType === 'district') {
-      setDistrict(item);
+      setDistrict(item.id);
     }
     closeModal();
-  };
-
-  const renderSelectorButton = (label, value, type, disabled) => {
+  };const renderSelectorButton = (label, value, type, disabled) => {
     const isActive = !!value;
     return (
       <TouchableOpacity 
@@ -171,14 +128,13 @@ export default function AddressSelector({ onAddressChange, initialData }) {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Cascading Selectors */}
-      {renderSelectorButton('Country', country, 'country', false)}
-      {renderSelectorButton('City / State', city, 'city', !country)}
+    <View style={styles.container}>      {/* Cascading Selectors */}
+      {renderSelectorButton('Country', country ? Country.getCountryByCode(country)?.name : null, 'country', false)}
+      {renderSelectorButton('City / State', (country && city) ? State.getStateByCodeAndCountry(city, country)?.name : null, 'city', !country)}
       {renderSelectorButton('District', district, 'district', !city)}
 
       {/* Full Address Input */}
-      <View style={[styles.inputContainer, fullAddress.length > 0 && styles.inputContainerActive]}>
+<View style={[styles.inputContainer, fullAddress.length > 0 && styles.inputContainerActive]}>
         <Text style={styles.selectorLabel}>Full Address</Text>
         <TextInput
           style={styles.textInput}
@@ -244,16 +200,14 @@ export default function AddressSelector({ onAddressChange, initialData }) {
                 contentContainerStyle={{ paddingBottom: 40 }}
               >
                 {filteredOptions.length > 0 ? (
-                  filteredOptions.map((item, index) => (
-                    <TouchableOpacity 
+                  filteredOptions.map((item, index) => (                    <TouchableOpacity 
                       key={index} 
                       style={styles.optionItem}
                       onPress={() => handleSelect(item)}
                     >
-                      <Text style={styles.optionText}>{item}</Text>
+                      <Text style={styles.optionText}>{item.name}</Text>
                       <MaterialIcons name="chevron-right" size={20} color="#bac9cc50" />
-                    </TouchableOpacity>
-                  ))
+                    </TouchableOpacity>))
                 ) : (
                   <View style={styles.emptyState}>
                     <Text style={styles.emptyStateText}>No results found.</Text>
@@ -406,3 +360,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
