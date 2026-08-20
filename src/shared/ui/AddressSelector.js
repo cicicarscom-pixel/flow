@@ -22,8 +22,8 @@ export default function AddressSelector({ onAddressChange, initialData }) {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Animation
-  const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [slideAnim] = useState(() => new Animated.Value(SCREEN_HEIGHT));
+  const [fadeAnim] = useState(() => new Animated.Value(0));
 
   // Sync with async initial data
   useEffect(() => {
