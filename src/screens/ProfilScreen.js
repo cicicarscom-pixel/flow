@@ -81,21 +81,40 @@ export default function ProfilScreen() {
       fetchProfileData();
     }, 0);
   }, []);
-
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
+      base64: true,
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setAvatar(result.assets[0].uri);
+      const asset = result.assets[0];
+      setAvatar(asset.uri); // Optimistic UI update
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && asset.base64) {
+          const fileName = \-\.jpg;
+          const { data, error } = await supabase.storage
+            .from('avatars')
+            .upload(fileName, decode(asset.base64), { contentType: 'image/jpeg' });
+            
+          if (!error && data) {
+            const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+            setAvatar(publicUrl);
+          } else {
+            console.warn("Upload avatar error:", error);
+          }
+        }
+      } catch(e) {
+        console.warn("Avatar upload failed", e);
+      }
     }
   };
-
-  const handleSave = async () => {
+const handleSave = async () => {
     setSaving(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -271,6 +290,7 @@ export default function ProfilScreen() {
     </View>
   );
 }
+
 
 
 
