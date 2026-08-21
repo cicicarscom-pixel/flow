@@ -116,7 +116,7 @@ export default function DashboardScreen({ navigation }) {
   const [userProfile, setUserProfile] = useState({ fullName: '', avatarUrl: null });
   const [financeStats, setFinanceStats] = useState({ income: 0, expense: 0 });
   const [upcomingPayments, setUpcomingPayments] = useState([]);
-  const [socialStats, setSocialStats] = useState({ followers: 0, trend: 12 });
+  const [socialStats, setSocialStats] = useState({ followers: 0, trend: 0 });
   const [recentActivities, setRecentActivities] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -244,11 +244,26 @@ export default function DashboardScreen({ navigation }) {
         });
         
         let totalFollowers = 0;
+        let totalTrend = 0;
+        let accountsWithTrend = 0;
+
         const actualFollow = followRes?.data?.data?.data || followRes?.data?.data || {};
         if (actualFollow.accounts) {
-           totalFollowers = actualFollow.accounts.reduce((sum, a) => sum + (a.currentFollowers || 0), 0);
+           totalFollowers = actualFollow.accounts.reduce((sum, a) => sum + (a.currentFollowers || a.followers || 0), 0);
+           actualFollow.accounts.forEach(a => {
+              const t = a.followerGrowthPercentage || a.growthPercentage || a.trend || a.growth || 0;
+              if (t > 0 || t < 0) {
+                 totalTrend += t;
+                 accountsWithTrend++;
+              }
+           });
         }
-        setSocialStats(prev => ({ ...prev, followers: totalFollowers }));
+        
+        const finalTrend = accountsWithTrend > 0 
+           ? Number((totalTrend / accountsWithTrend).toFixed(1)) 
+           : (actualFollow.trend || actualFollow.growthPercentage || actualFollow.totalGrowth || 0);
+
+        setSocialStats(prev => ({ ...prev, followers: totalFollowers, trend: finalTrend }));
 
         // 4. Recent Activities (Messages & Comments)
         const [{ data: msgs }, { data: comments }] = await Promise.all([
