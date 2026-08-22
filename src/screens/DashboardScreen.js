@@ -145,7 +145,9 @@ export default function DashboardScreen({ navigation }) {
       const loadCounts = async () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          fetchUnreadNotifications(session.user.id);
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).single();
+          const merchantId = orgMember?.organization_id || session.user.id;
+          fetchUnreadNotifications(merchantId);
         }
       };
       loadCounts();
@@ -159,7 +161,8 @@ export default function DashboardScreen({ navigation }) {
         const { data: { session } } = await supabase.auth.getSession();
         let merchantId = null;
         if (session) {
-          merchantId = session.user.id;
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).single();
+          merchantId = orgMember?.organization_id || session.user.id;
           const meta = session.user.user_metadata || {};
 
           // Fetch profile for avatar
@@ -315,10 +318,13 @@ export default function DashboardScreen({ navigation }) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
+        const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).single();
+        const merchantId = orgMember?.organization_id || session.user.id;
+        
         await supabase
           .from('bot_settings')
           .update({ is_active: val })
-          .eq('merchant_id', session.user.id);
+          .eq('merchant_id', merchantId);
       }
     } catch (e) {
       console.warn('Could not save bot status', e);

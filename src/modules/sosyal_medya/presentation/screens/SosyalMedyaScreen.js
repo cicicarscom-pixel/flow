@@ -66,56 +66,14 @@ export default function SosyalMedyaScreen({ navigation }) {
   const [systemBotActive, setSystemBotActive] = useState(true);
   const [isUpdatingBot, setIsUpdatingBot] = useState(false);
   
-  const [profiles, setProfiles] = useState([]);
-  const [activeProfile, setActiveProfile] = useState(null);
-  const [isProfilesDropdownOpen, setIsProfilesDropdownOpen] = useState(false);
+  const [organizationId, setOrganizationId] = useState(null);
 
-  const fetchProfilesFromZernio = async () => {
-    try {
-      const { data } = await supabase.functions.invoke('zernio-client', {
-        body: { action: 'get-zernio-profiles', payload: {} }
-      });
-      if (data?.data?.profiles) {
-        const fetchedProfiles = data.data.profiles;
-        setProfiles(fetchedProfiles);
-        const aiEsnaf = fetchedProfiles.find((p) => p.name === 'AI Esnaf Profil');
-        if (aiEsnaf) setActiveProfile(aiEsnaf);
-        else if (fetchedProfiles.length > 0) setActiveProfile(fetchedProfiles[0]);
-      }
-    } catch (err) {
-      console.warn("Failed to fetch profiles", err);
-    }
+  const fetchOrganizationId = async (userId) => {
+    if (!userId) return null;
+    const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', userId).single();
+    return orgMember?.organization_id;
   };
 
-  const handleCreateProfile = () => {
-    Alert.prompt(
-      "Yeni Profil",
-      "Yeni profilin adını giriniz:",
-      [
-        { text: "İptal", style: "cancel" },
-        { 
-          text: "Oluştur", 
-          onPress: async (name) => {
-            if (!name?.trim()) return;
-            try {
-              const { data } = await supabase.functions.invoke('zernio-client', {
-                body: { action: 'add-zernio-profile', payload: { name: name.trim() } }
-              });
-              if (data?.data?.profile) {
-                setProfiles(prev => [...prev, data.data.profile]);
-                setActiveProfile(data.data.profile);
-              } else if (data?.error) {
-                Alert.alert("Hata", data.error);
-              }
-            } catch (err) {
-              Alert.alert("Hata", "Profil oluşturulurken hata oluştu.");
-            }
-          }
-        }
-      ],
-      "plain-text"
-    );
-  };
 
   const fetchAccountsFromZernio = async (showSuccessAlert = false) => {
     try {
@@ -129,7 +87,17 @@ export default function SosyalMedyaScreen({ navigation }) {
         return;
       }
 
-      await fetchProfilesFromZernio();
+      let orgId = organizationId;
+      if (!orgId) {
+         orgId = await fetchOrganizationId(userId);
+         setOrganizationId(orgId);
+      }
+      
+      if (!orgId) {
+         if (showSuccessAlert) Alert.alert(t('sosyalMedya.alerts.error'), 'Organizasyon bulunamadı.');
+         setIsLoadingAccounts(false);
+         return;
+      }
 
       // Fetch Bot Settings
       const { data: botSettings } = await supabase
@@ -144,7 +112,7 @@ export default function SosyalMedyaScreen({ navigation }) {
       }
 
       const { data, error } = await supabase.functions.invoke('zernio-client', {
-        body: { action: 'sync-accounts', payload: { userId } }
+        body: { action: 'sync-accounts', payload: { organizationId: orgId } }
       });
       
       if (error || data?.error) {
@@ -194,8 +162,16 @@ export default function SosyalMedyaScreen({ navigation }) {
         return;
       }
       
-      const { error: upsertError } = await supabase.from('social_accounts').upsert({
-        profile_id: userId,
+      let orgId = organizationId;
+      if (!orgId) {
+         orgId = await fetchOrganizationId(userId);
+         setOrganizationId(orgId);
+      }
+
+      if (!orgId) return;
+
+      const { error: upsertError } = await supabase.schema('integration').from('social_accounts').upsert({
+        organization_id: orgId,
         zernio_account_id: accountId,
         platform: platform || 'unknown',
         account_name: username || 'User',
@@ -231,9 +207,21 @@ export default function SosyalMedyaScreen({ navigation }) {
     setIsConnecting(true);
     try {
       const redirectUrl = Linking.createURL('/sosyalmedya');
-      const profileId = activeProfile?.id || activeProfile?._id || activeProfile?.profileId;
+      
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id;
+      if (!userId) throw new Error(t('sosyalMedya.alerts.noSession'));
+
+      let orgId = organizationId;
+      if (!orgId) {
+         orgId = await fetchOrganizationId(userId);
+         setOrganizationId(orgId);
+      }
+
+      if (!orgId) throw new Error("Organizasyon bulunamadı");
+
       const { data, error } = await supabase.functions.invoke('zernio-client', {
-        body: { action: 'get-connect-url', payload: { platform, redirectUrl, profileId } }
+        body: { action: 'get-connect-url', payload: { platform, redirectUrl, organizationId: orgId } }
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -300,7 +288,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                await supabase.functions.invoke('zernio-client', {
                   body: { action: 'disconnect-account', payload: { accountId } }
                });
-               await supabase.from('social_accounts').delete().eq('zernio_account_id', accountId);
+               await supabase.schema('integration').from('social_accounts').delete().eq('zernio_account_id', accountId);
                
                // Zernio ile eşitle
                await fetchAccountsFromZernio();
@@ -442,54 +430,6 @@ export default function SosyalMedyaScreen({ navigation }) {
           />
         </AnimatedBorderCard>
 
-        {/* Zernio Profile Management */}
-        <View style={{ marginBottom: 32 }}>
-          <Text style={{ color: '#b9cacb', fontSize: 12, fontWeight: '500', marginBottom: 8 }}>Platform Profiliniz (Zernio Workspace)</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', zIndex: 10 }}>
-            <TouchableOpacity 
-              onPress={() => setIsProfilesDropdownOpen(!isProfilesDropdownOpen)}
-              style={{ flex: 1, backgroundColor: 'rgba(28,27,28,0.8)', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 16, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: '#ffb95f', marginRight: 12 }} />
-                <Text style={{ color: '#e5e2e3', fontWeight: '500' }}>{activeProfile?.name || "Profil Seçin"}</Text>
-              </View>
-              <MaterialIcons name={isProfilesDropdownOpen ? "expand-less" : "expand-more"} size={20} color="#b9cacb" />
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              onPress={handleCreateProfile}
-              style={{ marginLeft: 12, backgroundColor: 'rgba(78,222,163,0.1)', borderColor: 'rgba(78,222,163,0.3)', borderWidth: 1, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, flexDirection: 'row', alignItems: 'center' }}
-            >
-              <MaterialIcons name="add" size={16} color="#4edea3" style={{ marginRight: 6 }} />
-              <Text style={{ color: '#4edea3', fontWeight: '500', fontSize: 13 }}>Yeni Profil</Text>
-            </TouchableOpacity>
-          </View>
-          
-          {isProfilesDropdownOpen && (
-            <View style={{ marginTop: 8, backgroundColor: '#1c1b1c', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
-              <View style={{ backgroundColor: 'rgba(0,0,0,0.2)', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}>
-                <Text style={{ color: '#b9cacb', fontSize: 10, fontWeight: '500' }}>All profiles</Text>
-              </View>
-              {profiles.map((p, idx) => {
-                const isActive = activeProfile && (activeProfile.id === p.id || activeProfile._id === p._id);
-                return (
-                  <TouchableOpacity 
-                    key={idx}
-                    onPress={() => { setActiveProfile(p); setIsProfilesDropdownOpen(false); }}
-                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: isActive ? 'rgba(78,222,163,0.05)' : 'transparent', borderBottomWidth: idx === profiles.length - 1 ? 0 : 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}
-                  >
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: isActive ? '#4edea3' : 'rgba(229,226,227,0.4)', marginRight: 12 }} />
-                      <Text style={{ color: isActive ? '#4edea3' : '#e5e2e3', fontWeight: isActive ? '600' : '400', fontSize: 14 }}>{p.name}</Text>
-                    </View>
-                    {isActive && <MaterialIcons name="check" size={16} color="#4edea3" />}
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          )}
-        </View>
 
         {/* Add Account Panel */}
         <View style={{ marginBottom: 32 }}>

@@ -23,10 +23,13 @@ export function useCommunicationLogs() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('No active session');
 
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
+      const orgId = orgMember?.organization_id || session.user.id;
+
       const { data, fetchError } = await supabase
         .from('ai_communication_logs')
         .select('*')
-        .eq('merchant_id', session.user.id)
+        .eq('merchant_id', orgId)
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -45,10 +48,13 @@ export function useCommunicationLogs() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
+      const orgId = orgMember?.organization_id || session.user.id;
+
       const { error: deleteError } = await supabase
         .from('ai_communication_logs')
         .delete()
-        .eq('merchant_id', session.user.id);
+        .eq('merchant_id', orgId);
 
       if (deleteError) throw deleteError;
       setLogs([]);

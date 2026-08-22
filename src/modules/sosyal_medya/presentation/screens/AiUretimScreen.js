@@ -238,11 +238,12 @@ export default function AiUretimScreen({ route, navigation }) {
   React.useEffect(() => {
     const fetchAccounts = async () => {
       const { data: session } = await supabase.auth.getSession();
-      const userId = session?.session?.user?.id;
-      if (userId) {
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session?.session?.user?.id || session?.user?.id).maybeSingle();
+      const organizationId = orgMember?.organization_id || session?.session?.user?.id || session?.user?.id;
+      if (organizationId) {
         try {
           const { data: accData } = await supabase.functions.invoke('zernio-client', {
-            body: { action: 'sync-accounts', payload: { userId } }
+            body: { action: 'sync-accounts', payload: { organizationId } }
           });
           const accounts = accData?.data?.accounts || [];
           setZernioAccounts(accounts);
@@ -328,7 +329,8 @@ export default function AiUretimScreen({ route, navigation }) {
 
     const contentToShare = localText || prompt || t('sosyalMedya.generate.fallbackContent');
     const { data: session } = await supabase.auth.getSession();
-    const userId = session?.session?.user?.id;
+    const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session?.session?.user?.id || session?.user?.id).maybeSingle();
+      const organizationId = orgMember?.organization_id || session?.session?.user?.id || session?.user?.id;
 
     let finalScheduledFor = undefined;
     let finalTimezone = timezone.split(' ')[0];
@@ -386,7 +388,7 @@ export default function AiUretimScreen({ route, navigation }) {
     try {
        const finalMediaUrls = localImage ? [localImage] : [];
        await supabase.from('posts').insert({
-          profile_id: userId,
+          profile_id: organizationId,
           zernio_post_id: 'mock-post-id',
           content: contentToShare,
           media_urls: finalMediaUrls,
@@ -410,9 +412,10 @@ export default function AiUretimScreen({ route, navigation }) {
     try {
       setIsSharing(true);
       const { data: session } = await supabase.auth.getSession();
-      const userId = session?.session?.user?.id;
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session?.session?.user?.id || session?.user?.id).maybeSingle();
+      const organizationId = orgMember?.organization_id || session?.session?.user?.id || session?.user?.id;
       
-      if (!userId) {
+      if (!organizationId) {
         Alert.alert(t('sosyalMedya.alerts.error'), t('sosyalMedya.alerts.noSession'));
         setIsSharing(false);
         return;
@@ -1388,3 +1391,5 @@ export default function AiUretimScreen({ route, navigation }) {
     </SafeAreaView>
   );
 }
+
+

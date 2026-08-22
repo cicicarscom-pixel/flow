@@ -360,10 +360,14 @@ const YorumlarTab = ({ navigation }) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session?.user?.id).maybeSingle();
+      const orgId = orgMember?.organization_id || session?.user?.id;
+
       const payload = {
         action: 'send-private-reply',
         payload: {
           userId: session?.user?.id,
+          organizationId: orgId,
           accountId: parentComment.posts?.accountId || parentComment.accountId,
           postId: parentComment.zernio_post_id,
           commentId: parentComment.zernio_comment_id,
@@ -393,10 +397,14 @@ const YorumlarTab = ({ navigation }) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session?.user?.id).maybeSingle();
+      const orgId = orgMember?.organization_id || session?.user?.id;
+
       const payload = {
         action: 'reply-comment',
         payload: {
           userId: session?.user?.id,
+          organizationId: orgId,
           commentId: parentComment.zernio_comment_id || parentComment.id,
           platform: parentComment.platform,
           message: replyText
@@ -610,6 +618,9 @@ const YorumlarTab = ({ navigation }) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
+      
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
+      const orgId = orgMember?.organization_id || session.user.id;
 
       const invokeWithTimeout = (funcName, body, ms = 10000) => {
         return Promise.race([
@@ -619,7 +630,7 @@ const YorumlarTab = ({ navigation }) => {
       };
 
       const picResObj = await invokeWithTimeout('zernio-client', {
-        body: { action: 'get-inbox-pictures', payload: { userId: session.user.id } }
+        body: { action: 'get-inbox-pictures', payload: { organizationId: orgId } }
       }, 5000);
       const picRes = picResObj.data;
 
@@ -651,6 +662,9 @@ const YorumlarTab = ({ navigation }) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
+      const orgId = orgMember?.organization_id || session.user.id;
+
       const invokeWithTimeout = (funcName, body, ms = 15000) => {
         return Promise.race([
           supabase.functions.invoke(funcName, body),
@@ -659,7 +673,7 @@ const YorumlarTab = ({ navigation }) => {
       };
 
       const zernioResObj = await invokeWithTimeout('zernio-client', {
-        body: { action: 'sync-comments', payload: { userId: session.user.id } }
+        body: { action: 'sync-comments', payload: { organizationId: orgId } }
       }, 15000);
       const zernioRes = zernioResObj.data;
 
@@ -1300,3 +1314,4 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.15)',
   }
 });
+

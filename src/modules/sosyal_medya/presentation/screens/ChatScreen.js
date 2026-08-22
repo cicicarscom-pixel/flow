@@ -60,10 +60,11 @@ export default function ChatScreen({ route, navigation }) {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session && conversationId && accountId) {
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
           const { data: zernioRes } = await supabase.functions.invoke('zernio-client', {
             body: { 
                action: 'sync-chat', 
-               payload: { userId: session.user.id, conversationId, accountId } 
+               payload: { organizationId: orgMember?.organization_id || session.user.id, userId: session.user.id, conversationId, accountId } 
             }
           });
           if (zernioRes?.data?.messages && zernioRes.data.messages.length > 0) {
