@@ -111,16 +111,15 @@ export default function SosyalMedyaScreen({ navigation }) {
   const fetchOrganizationId = async (userId) => {
     if (!userId) return null;
     const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', userId).maybeSingle();
-    return orgMember?.organization_id;
+    return orgMember?.organization_id || userId;
   };
 
 
   const fetchAccountsFromZernio = async (showSuccessAlert = false) => {
     try {
       setIsLoadingAccounts(true);
-      const { data: session } = await supabase.auth.getSession();
-      const userId = session?.session?.user?.id;
-      
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
       if (!userId) {
         if (showSuccessAlert) Alert.alert(t('sosyalMedya.alerts.error'), t('sosyalMedya.alerts.noSession'));
         setIsLoadingAccounts(false);
@@ -195,8 +194,8 @@ export default function SosyalMedyaScreen({ navigation }) {
       const platform = params.platform || params.connected;
       const username = params.username;
       
-      const { data: session } = await supabase.auth.getSession();
-      const userId = session?.session?.user?.id;
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
       if (!userId) {
         Alert.alert(t('sosyalMedya.alerts.error'), t('sosyalMedya.alerts.noSession'));
         return;
@@ -248,8 +247,8 @@ export default function SosyalMedyaScreen({ navigation }) {
     try {
       const redirectUrl = Linking.createURL('/sosyalmedya');
       
-      const { data: session } = await supabase.auth.getSession();
-      const userId = session?.session?.user?.id;
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
       if (!userId) throw new Error(t('sosyalMedya.alerts.noSession'));
 
       let orgId = organizationId;
@@ -349,8 +348,8 @@ export default function SosyalMedyaScreen({ navigation }) {
     setSocialBotActive(val);
     setIsUpdatingBot(true);
     try {
-      const { data: session } = await supabase.auth.getSession();
-      const userId = session?.session?.user?.id;
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
       if (userId) {
          const { error } = await supabase
            .from('bot_settings')
