@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+
 import { CommunicationLogsTable } from '../modules/sosyal_medya/presentation/components/CommunicationLogsTable';
 import { supabase } from '../shared/lib/supabase';
 
@@ -94,7 +94,7 @@ const CustomGlassCard = ({ children, style, glowColor }) => (
 );
 
 const Skeleton = ({ width, height, style, borderRadius = 8 }) => {
-  const animValue = useRef(new Animated.Value(0)).current;
+  const [animValue] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     Animated.loop(
@@ -115,7 +115,7 @@ const Skeleton = ({ width, height, style, borderRadius = 8 }) => {
 // "Asistan çalışıyor" hissi: ikon rozetinin arkasında yavaşça büyüyüp küçülen
 // bir nefes alma animasyonu — sadece görsel, aiActive durumuna dokunmaz.
 const BreathingIcon = ({ active, children }) => {
-  const pulse = useRef(new Animated.Value(0)).current;
+  const [pulse] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     let loop;
@@ -131,7 +131,7 @@ const BreathingIcon = ({ active, children }) => {
       pulse.setValue(0);
     }
     return () => { if (loop) loop.stop(); };
-  }, [active]);
+  }, [active, pulse]);
 
   const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] });
 
@@ -168,15 +168,15 @@ export default function DashboardScreen({ navigation }) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   // --- Sadece görsel: ekran girişinde içerik yumuşakça belirir ---
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(20)).current;
+  const [fadeAnim] = useState(() => new Animated.Value(0));
+  const [slideAnim] = useState(() => new Animated.Value(20));
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
       Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
     ]).start();
-  }, []);
+  }, [fadeAnim, slideAnim]);
 
   const appointments = [
     { time: "10:00", title: "Ayşe Kaya - Danışmanlık", type: "consulting", color: COLORS.primary },
@@ -389,10 +389,7 @@ export default function DashboardScreen({ navigation }) {
     }
   };
 
-  let tabBarHeight = 80;
-  try {
-    tabBarHeight = useBottomTabBarHeight();
-  } catch (e) {}
+  const tabBarHeight = 80;
 
   const scrollRef = useRef(null);
   useEffect(() => {
