@@ -509,7 +509,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                      shadowOffset: { width: 0, height: 0 },
                      shadowOpacity: 0.35,
                      shadowRadius: 15,
-                     elevation: 8,
+                     elevation: 0,
                    }}
                  >
                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
@@ -594,7 +594,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                      shadowOffset: { width: 0, height: 0 },
                      shadowOpacity: 0.35,
                      shadowRadius: 15,
-                     elevation: 8,
+                     elevation: 0,
                    }}
                  >
                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
@@ -765,7 +765,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
     shadowRadius: 15,
-    elevation: 5,
+    elevation: 0,
   },
   glowBorderMagenta: {
     borderColor: 'rgba(235, 178, 255, 0.5)',
@@ -773,7 +773,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
     shadowRadius: 15,
-    elevation: 5,
+    elevation: 0,
   },
   textShadowCyan: {
     textShadowColor: 'rgba(0, 219, 233, 0.5)',
@@ -790,14 +790,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.35,
     shadowRadius: 20,
-    elevation: 10,
+    elevation: 0,
   },
   shadowCyan: {
     shadowColor: 'rgba(34, 181, 115, 0.4)',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.35,
     shadowRadius: 20,
-    elevation: 10,
+    elevation: 0,
   },
   zernioPopup: {
     position: 'absolute',
