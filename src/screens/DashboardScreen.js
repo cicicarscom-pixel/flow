@@ -9,7 +9,7 @@ import {
   StyleSheet, 
   Switch,
   Animated,
-  Dimensions
+  Dimensions, Platform
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -801,16 +801,25 @@ const styles = StyleSheet.create({
     borderColor: '#38BDF8',
   },
   heroGreeting: {
-    color: 'rgba(23, 21, 26, 0.65)',
-    fontSize: 13,
-    fontWeight: '600',
+    color: '#FEF08A',
+    fontSize: 14,
+    fontWeight: '700',
+    fontStyle: 'italic',
     marginBottom: 2,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   heroName: {
-    color: '#17151A',
-    fontSize: 24,
-    fontWeight: '800',
+    color: '#FDE047',
+    fontSize: 26,
+    fontWeight: '900',
+    fontFamily: Platform.OS === 'ios' ? 'AvenirNext-Heavy' : 'sans-serif-medium',
+    letterSpacing: 0.5,
     marginBottom: 18,
+    textShadowColor: 'rgba(0, 0, 0, 0.6)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 5,
   },
   heroAiCard: {
     backgroundColor: '#17151A',
