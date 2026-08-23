@@ -17,6 +17,7 @@ export default function AuthScreen() {
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
@@ -88,6 +89,10 @@ export default function AuthScreen() {
   }
 
   async function signUpWithEmail() {
+    if (!name) {
+      Alert.alert('Hata', 'Lütfen adınızı ve soyadınızı girin.');
+      return;
+    }
     if (!phone) {
       Alert.alert('Hata', 'Lütfen telefon numaranızı girin.');
       return;
@@ -99,6 +104,8 @@ export default function AuthScreen() {
       options: {
         data: {
           phone: phone,
+          display_name: name,
+          full_name: name,
         },
       },
     });
@@ -192,14 +199,24 @@ export default function AuthScreen() {
           />
 
           {!isLogin && (
-            <CustomInput
-              label="Telefon Numarası"
-              onChangeText={(text) => setPhone(text)}
-              value={phone}
-              placeholder="+90 555 555 5555"
-              keyboardType="phone-pad"
-              containerClassName="mb-4"
-            />
+            <>
+              <CustomInput
+                label="Ad Soyad"
+                onChangeText={(text) => setName(text)}
+                value={name}
+                placeholder="Örn: Volkan Akbulut"
+                autoCapitalize="words"
+                containerClassName="mb-4"
+              />
+              <CustomInput
+                label="Telefon Numarası"
+                onChangeText={(text) => setPhone(text)}
+                value={phone}
+                placeholder="+90 555 555 5555"
+                keyboardType="phone-pad"
+                containerClassName="mb-4"
+              />
+            </>
           )}
 
           <CustomInput
