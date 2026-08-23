@@ -28,6 +28,35 @@ import * as WebBrowser from 'expo-web-browser';
 
 import { CustomButton } from '../../../../shared';
 const { width } = Dimensions.get('window');
+
+// "Asistan çalışıyor" hissi — sadece görsel, diğer ekranlarla aynı desen.
+const BreathingIcon = ({ active, children }) => {
+  const [pulse] = useState(() => new Animated.Value(0));
+
+  useEffect(() => {
+    let loop;
+    if (active) {
+      loop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulse, { toValue: 1, duration: 1400, useNativeDriver: true }),
+          Animated.timing(pulse, { toValue: 0, duration: 1400, useNativeDriver: true }),
+        ])
+      );
+      loop.start();
+    } else {
+      pulse.setValue(0);
+    }
+    return () => { if (loop) loop.stop(); };
+  }, [active]);
+
+  const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] });
+
+  return (
+    <Animated.View style={{ transform: [{ scale }] }}>
+      {children}
+    </Animated.View>
+  );
+};
 const PLATFORMS_DATA = [
   { id: "facebook", name: "Facebook", color: "#1877F2", glow: "rgba(24,119,242,0.3)", icon: "👥" },
   { id: "instagram", name: "Instagram", color: "#E1306C", glow: "rgba(225,48,108,0.3)", icon: "📸" },
@@ -67,6 +96,17 @@ export default function SosyalMedyaScreen({ navigation }) {
   const [isUpdatingBot, setIsUpdatingBot] = useState(false);
   
   const [organizationId, setOrganizationId] = useState(null);
+
+  // --- Sadece görsel: ekran girişinde içerik yumuşakça belirir ---
+  const [fadeAnim] = useState(() => new Animated.Value(0));
+  const [slideAnim] = useState(() => new Animated.Value(20));
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
+    ]).start();
+  }, []);
 
   const fetchOrganizationId = async (userId) => {
     if (!userId) return null;
@@ -358,35 +398,44 @@ export default function SosyalMedyaScreen({ navigation }) {
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 130 }}
         showsVerticalScrollIndicator={false}
       >
-        
-        {/* Top Buttons Grid */}
-        <View className="flex-row justify-between mb-6">
-          <View style={[styles.glassCard, { flex: 1, marginRight: 4, borderRadius: 12 }]}>
-            <TouchableOpacity 
-              className="py-3 px-1 flex-row items-center justify-center"
-              onPress={() => navigation.navigate('Gönderiler')}
-            >
-              <Text className="text-[#22B573] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.allPosts')}</Text>
-            </TouchableOpacity>
-          </View>
-          
-          <View style={[styles.glassCard, { flex: 1, marginLeft: 4, borderRadius: 12 }]}>
-            <TouchableOpacity 
-              className="py-3 px-1 flex-row items-center justify-center"
-              onPress={() => navigation.navigate('Inbox')}
-            >
-              <Text className="text-[#22B573] text-[10px] font-semibold text-center" numberOfLines={1}>{t('sosyalMedya.ui.inbox')}</Text>
-            </TouchableOpacity>
-          </View>
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+
+        {/* Quick Actions */}
+        <View className="flex-row justify-between mb-5">
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Gönderiler')}
+            style={[styles.quickActionBtn, { marginRight: 8 }]}
+            activeOpacity={0.8}
+          >
+            <View style={styles.quickActionIcon}>
+              <MaterialIcons name="grid-view" size={16} color="#22B573" />
+            </View>
+            <Text style={styles.quickActionText} numberOfLines={1}>{t('sosyalMedya.ui.allPosts')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Inbox')}
+            style={[styles.quickActionBtn, { marginLeft: 8 }]}
+            activeOpacity={0.8}
+          >
+            <View style={styles.quickActionIcon}>
+              <MaterialIcons name="forum" size={16} color="#22B573" />
+            </View>
+            <Text style={styles.quickActionText} numberOfLines={1}>{t('sosyalMedya.ui.inbox')}</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Sosyal Medya Asistanı Toggle (Taşındı) */}
-        <View style={[styles.glassCard, { padding: 16, borderRadius: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
+        {/* Sosyal Medya Asistanı */}
+        <View style={styles.aiCard}>
            <View className="flex-row items-center">
-             <Ionicons name="logo-instagram" size={24} color={socialBotActive ? "#22B573" : "#756D66"} />
-             <View className="ml-3">
-               <Text className="text-[#F6F1EC] text-[14px] font-semibold">Sosyal Medya Asistanı</Text>
-               <Text className="text-[10px] text-[#A79E96]">Yapay zeka DM ve yorumlara yanıt versin</Text>
+             <BreathingIcon active={socialBotActive && systemBotActive}>
+               <View style={styles.aiIconWrapper}>
+                 <Ionicons name="logo-instagram" size={20} color={socialBotActive ? "#22B573" : "#756D66"} />
+               </View>
+             </BreathingIcon>
+             <View className="ml-3 flex-1">
+               <Text className="text-[#F6F1EC] text-[14px] font-semibold">{t('sosyalMedya.assistant', { defaultValue: 'Sosyal Medya Asistanı' })}</Text>
+               <Text className="text-[10px] text-[#A79E96] mt-0.5">{t('sosyalMedya.assistantDesc', { defaultValue: 'Yapay zeka DM ve yorumlara yanıt versin' })}</Text>
              </View>
            </View>
            {isUpdatingBot ? (
@@ -395,40 +444,44 @@ export default function SosyalMedyaScreen({ navigation }) {
              <Switch
                  value={socialBotActive}
                  onValueChange={handleToggleBot}
-                 trackColor={{ false: '#34303C', true: '#22B573' }}
-                 thumbColor={'#ffffff'}
+                 trackColor={{ false: 'rgba(255,255,255,0.15)', true: 'rgba(34, 181, 115, 0.4)' }}
+                 thumbColor={socialBotActive ? '#22B573' : '#ffffff'}
                  disabled={!systemBotActive}
                />
            )}
         </View>
 
-        {/* Analytics Button (Full Width) */}
-        <View style={[styles.glassCard, { borderRadius: 12, marginBottom: 24 }]}>
-          <CustomButton 
+        {/* Analytics + Paylaşım Merkezi */}
+        <View className="flex-row justify-between mb-6">
+          <TouchableOpacity
             onPress={() => navigation.navigate('Analytics')}
-            title={t('sosyalMedya.ui.analytics')}
-            className="bg-transparent py-3 px-4"
-            textClassName="text-[#22B573] text-[12px] font-bold uppercase tracking-widest"
-            leftIcon={<MaterialIcons name="insights" size={16} color="#22B573" />}
-          />
-        </View>
+            style={[styles.featureCard, { marginRight: 8 }]}
+            activeOpacity={0.85}
+          >
+            <View style={[styles.featureIcon, { backgroundColor: 'rgba(34, 181, 115, 0.14)' }]}>
+              <MaterialIcons name="insights" size={20} color="#22B573" />
+            </View>
+            <Text style={styles.featureCardText}>{t('sosyalMedya.ui.analytics')}</Text>
+          </TouchableOpacity>
 
-        {/* Share Center Button (Full Width) */}
-        <AnimatedBorderCard 
-          style={styles.glowBorderMagenta} 
-          colors={['#C2478D', '#201D24', '#C2478D', '#201D24']}
-          padding={0}
-          borderRadius={12}
-          marginBottom={24}
-        >
-          <CustomButton 
-            onPress={() => navigation.navigate('AiUretim')}
-            title={t('sosyalMedya.ui.shareCenter')}
-            className="bg-transparent py-3 px-4"
-            textClassName="text-[#E8A8CD] text-[12px] font-bold uppercase tracking-widest"
-            leftIcon={<MaterialIcons name="auto-awesome" size={16} color="#E8A8CD" />}
-          />
-        </AnimatedBorderCard>
+          <AnimatedBorderCard 
+            style={[styles.glowBorderMagenta, { flex: 1, marginLeft: 8 }]} 
+            colors={['#C2478D', '#201D24', '#C2478D', '#201D24']}
+            padding={0}
+            borderRadius={20}
+          >
+            <TouchableOpacity
+              onPress={() => navigation.navigate('AiUretim')}
+              style={{ padding: 16, alignItems: 'center' }}
+              activeOpacity={0.85}
+            >
+              <View style={[styles.featureIcon, { backgroundColor: 'rgba(194, 71, 141, 0.14)' }]}>
+                <MaterialIcons name="auto-awesome" size={20} color="#E8A8CD" />
+              </View>
+              <Text style={[styles.featureCardText, { color: '#E8A8CD' }]}>{t('sosyalMedya.ui.shareCenter')}</Text>
+            </TouchableOpacity>
+          </AnimatedBorderCard>
+        </View>
 
 
         {/* Add Account Panel */}
@@ -445,9 +498,9 @@ export default function SosyalMedyaScreen({ navigation }) {
                  <View
                    key={p.id}
                    style={{
-                     width: 140,
-                     backgroundColor: 'rgba(32, 31, 34, 0.4)',
-                     borderRadius: 16,
+                     width: 148,
+                     backgroundColor: 'rgba(32, 31, 34, 0.5)',
+                     borderRadius: 20,
                      padding: 14,
                      marginRight: 12,
                      borderWidth: 1,
@@ -481,7 +534,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                    </View>
                    
                    <Text style={{ fontWeight: '600', fontSize: 13, color: '#F6F1EC', marginBottom: 4 }}>{p.name}</Text>
-                   <Text style={{ color: '#A79E96', fontSize: 10, marginBottom: 12 }}>Henüz bağlanmadı</Text>
+                   <Text style={{ color: '#A79E96', fontSize: 10, marginBottom: 12 }}>{t('sosyalMedya.notConnected', { defaultValue: 'Henüz bağlanmadı' })}</Text>
                    
                    <TouchableOpacity 
                      onPress={() => handleConnectZernio(p.id)}
@@ -494,7 +547,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                        paddingVertical: 6,
                      }}
                    >
-                     <Text style={{ color: p.color, fontSize: 10, fontWeight: '600' }}>Hesap Bağla</Text>
+                     <Text style={{ color: p.color, fontSize: 10, fontWeight: '600' }}>{t('sosyalMedya.connectAccount', { defaultValue: 'Hesap Bağla' })}</Text>
                    </TouchableOpacity>
                  </View>
                );
@@ -530,9 +583,9 @@ export default function SosyalMedyaScreen({ navigation }) {
                  <View
                    key={acc.id || index.toString()}
                    style={{
-                     width: 140,
-                     backgroundColor: 'rgba(32, 31, 34, 0.4)',
-                     borderRadius: 16,
+                     width: 148,
+                     backgroundColor: 'rgba(32, 31, 34, 0.5)',
+                     borderRadius: 20,
                      padding: 14,
                      marginRight: 12,
                      borderWidth: 1,
@@ -569,14 +622,14 @@ export default function SosyalMedyaScreen({ navigation }) {
                        backgroundColor: 'rgba(34, 181, 115,0.15)',
                        borderColor: 'rgba(34, 181, 115,0.3)', borderWidth: 1
                      }}>
-                       <Text style={{ fontSize: 9, color: '#22B573', fontWeight: '600' }}>✓ Bağlı</Text>
+                       <Text style={{ fontSize: 9, color: '#22B573', fontWeight: '600' }}>✓ {t('sosyalMedya.connected', { defaultValue: 'Bağlı' })}</Text>
                      </View>
                    </View>
                    
                    <Text style={{ fontWeight: '600', fontSize: 13, color: '#F6F1EC', marginBottom: 4 }} numberOfLines={1}>
                      {acc.account_name ? `@${acc.account_name}` : platformInfo.name}
                    </Text>
-                   <Text style={{ color: '#A79E96', fontSize: 10, marginBottom: 12 }}>Bağlı</Text>
+                   <Text style={{ color: '#A79E96', fontSize: 10, marginBottom: 12 }}>{t('sosyalMedya.connected', { defaultValue: 'Bağlı' })}</Text>
                    
                    <TouchableOpacity 
                      onPress={() => handleDisconnect(acc.id, acc.platform)}
@@ -589,7 +642,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                        paddingVertical: 6,
                      }}
                    >
-                     <Text style={{ color: '#A79E96', fontSize: 10, fontWeight: '600' }}>Bağlantıyı Kes</Text>
+                     <Text style={{ color: '#A79E96', fontSize: 10, fontWeight: '600' }}>{t('sosyalMedya.disconnect', { defaultValue: 'Bağlantıyı Kes' })}</Text>
                    </TouchableOpacity>
                  </View>
                 );
@@ -602,6 +655,7 @@ export default function SosyalMedyaScreen({ navigation }) {
           )}
         </View>
 
+        </Animated.View>
       </ScrollView>
 
     </View>
@@ -619,9 +673,91 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(34, 181, 115, 0.2)',
     borderRadius: 20,
     shadowColor: '#000000',
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowOpacity: 0.28,
+    shadowRadius: 14,
+    elevation: 6,
+  },
+  quickActionBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(42, 38, 49, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,247,240,0.06)',
+    borderRadius: 18,
+    paddingVertical: 14,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  quickActionIcon: {
+    width: 26,
+    height: 26,
+    borderRadius: 9,
+    backgroundColor: 'rgba(34, 181, 115, 0.14)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickActionText: {
+    color: '#22B573',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  aiCard: {
+    backgroundColor: 'rgba(42, 38, 49, 0.55)',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 181, 115, 0.2)',
+    borderRadius: 22,
+    padding: 16,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 14,
+    elevation: 6,
+  },
+  aiIconWrapper: {
+    width: 44,
+    height: 44,
+    borderRadius: 15,
+    backgroundColor: 'rgba(34, 181, 115, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  featureCard: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: 'rgba(42, 38, 49, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,247,240,0.06)',
+    borderRadius: 20,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  featureIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  featureCardText: {
+    color: '#22B573',
+    fontSize: 11,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   glowBorderCyan: {
     borderColor: 'rgba(34, 181, 115, 0.5)',
