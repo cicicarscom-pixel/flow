@@ -147,7 +147,7 @@ export default function DashboardScreen({ navigation }) {
       const loadCounts = async () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).single();
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
           const merchantId = orgMember?.organization_id || session.user.id;
           fetchUnreadNotifications(merchantId);
         }
@@ -163,7 +163,7 @@ export default function DashboardScreen({ navigation }) {
         const { data: { session } } = await supabase.auth.getSession();
         let merchantId = null;
         if (session) {
-          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).single();
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
           merchantId = orgMember?.organization_id || session.user.id;
           const meta = session.user.user_metadata || {};
 
@@ -172,7 +172,7 @@ export default function DashboardScreen({ navigation }) {
             .from('profiles')
             .select('business_name, authorized_person, avatar_url')
             .eq('id', merchantId)
-            .single();
+            .maybeSingle();
 
           const nameToUse = profileData?.authorized_person || profileData?.business_name || meta.full_name || 'Kullanıcı';
           setUserProfile({
@@ -188,7 +188,7 @@ export default function DashboardScreen({ navigation }) {
             .from('bot_settings')
             .select('is_active')
             .eq('merchant_id', merchantId)
-            .single();
+            .maybeSingle();
           if (botData) setAiActive(botData.is_active);
         }
 
@@ -214,7 +214,7 @@ export default function DashboardScreen({ navigation }) {
         // Fetch finance_documents
         let orgId = null;
         if (session) {
-          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).single();
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
           orgId = orgMember?.organization_id;
         }
 
@@ -320,7 +320,7 @@ export default function DashboardScreen({ navigation }) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).single();
+        const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
         const merchantId = orgMember?.organization_id || session.user.id;
         
         await supabase

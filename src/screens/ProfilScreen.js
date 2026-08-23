@@ -33,7 +33,7 @@ export default function ProfilScreen() {
           .from('profiles')
           .select('business_name, authorized_person, category, phone_number, address, avatar_url')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error('Error fetching profile data:', error);

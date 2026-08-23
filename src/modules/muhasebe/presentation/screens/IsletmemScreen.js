@@ -33,7 +33,7 @@ export default function IsletmemScreen({ navigation }) {
         
         let orgId = null;
         if (session) {
-          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).single();
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
           orgId = orgMember?.organization_id;
         }
 

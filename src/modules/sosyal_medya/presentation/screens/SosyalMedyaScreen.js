@@ -70,7 +70,7 @@ export default function SosyalMedyaScreen({ navigation }) {
 
   const fetchOrganizationId = async (userId) => {
     if (!userId) return null;
-    const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', userId).single();
+    const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', userId).maybeSingle();
     return orgMember?.organization_id;
   };
 
@@ -104,7 +104,7 @@ export default function SosyalMedyaScreen({ navigation }) {
         .from('bot_settings')
         .select('social_bot_active, is_active')
         .eq('merchant_id', userId)
-        .single();
+        .maybeSingle();
       
       if (botSettings) {
         if (botSettings.social_bot_active !== undefined) setSocialBotActive(botSettings.social_bot_active);

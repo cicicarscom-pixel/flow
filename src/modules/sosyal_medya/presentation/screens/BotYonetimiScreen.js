@@ -129,7 +129,7 @@ export default function BotYonetimiScreen() {
           .from('profiles')
           .select('google_drive_folder_id')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (profileError) {
           console.error('Error fetching profile data:', profileError);

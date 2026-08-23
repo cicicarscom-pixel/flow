@@ -27,7 +27,7 @@ export default function AiChatScreen({ route, navigation }) {
           .from('organization_members')
           .select('organization_id')
           .eq('user_id', session.user.id)
-          .single();
+          .maybeSingle();
         setOrgId(orgMember?.organization_id || session.user.id);
       }
     };
@@ -54,7 +54,7 @@ export default function AiChatScreen({ route, navigation }) {
           title: textPrompt ? `Metin girişi: ${textPrompt.substring(0, 20)}...` : 'AI Analizi Bekleniyor',
           amount_minor: 0
         }
-      ]).select().single();
+      ]).select().maybeSingle();
 
       if (insertError) throw insertError;
 
