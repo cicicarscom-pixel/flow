@@ -260,7 +260,7 @@ export default function AiMuhasebeScreen({ navigation }) {
             style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '65%' }}
           />
           <View className="absolute bottom-12 left-5 right-5">
-            <Text style={styles.heroLabel}>NET BAKİYE · {currentMonthName.toUpperCase()}</Text>
+            <Text style={styles.heroLabel}>{t('muhasebe.aiMuhasebe.netBalance', { defaultValue: 'NET BAKİYE' })} · {currentMonthName.toUpperCase()}</Text>
             {isLoading ? (
               <Skeleton width={180} height={38} style={{ marginTop: 8 }} />
             ) : (
@@ -284,7 +284,7 @@ export default function AiMuhasebeScreen({ navigation }) {
               borderRadius={20}
             >
               <View className="flex-row justify-between items-start mb-1">
-                <Text className="text-[#A79E96] text-[10px] font-medium uppercase tracking-wider">Bu Ay Gelir</Text>
+                <Text className="text-[#A79E96] text-[10px] font-medium uppercase tracking-wider">{t('muhasebe.aiMuhasebe.thisMonthIncome', { defaultValue: 'Bu Ay Gelir' })}</Text>
                 <MaterialIcons name="trending-up" size={14} color="#22B573" />
               </View>
               {isLoading ? (
@@ -301,7 +301,7 @@ export default function AiMuhasebeScreen({ navigation }) {
               borderRadius={20}
             >
               <View className="flex-row justify-between items-start mb-1">
-                <Text className="text-[#A79E96] text-[10px] font-medium uppercase tracking-wider">Bu Ay Gider</Text>
+                <Text className="text-[#A79E96] text-[10px] font-medium uppercase tracking-wider">{t('muhasebe.aiMuhasebe.thisMonthExpense', { defaultValue: 'Bu Ay Gider' })}</Text>
                 <MaterialIcons name="trending-down" size={14} color="#C2478D" />
               </View>
               {isLoading ? (
@@ -316,21 +316,21 @@ export default function AiMuhasebeScreen({ navigation }) {
           <View style={styles.miniStatsRow}>
             <View style={styles.miniStat}>
               <MaterialIcons name="call-received" size={15} color="#22B573" />
-              <Text style={styles.miniStatLabel}>Alacak</Text>
+              <Text style={styles.miniStatLabel}>{t('muhasebe.aiMuhasebe.receivable', { defaultValue: 'Alacak' })}</Text>
               {isLoading ? (
                 <Skeleton width={60} height={14} />
               ) : (
-                <Text style={styles.miniStatValue}>{formatCurrency(financeData.receivable)} ₺</Text>
+                <Text style={styles.miniStatValue}>{formatCurrency(financeData.receivable)} {t('currencySymbol', { defaultValue: '₺' })}</Text>
               )}
             </View>
             <View style={styles.miniStatDivider} />
             <View style={styles.miniStat}>
               <MaterialIcons name="call-made" size={15} color="#EF4444" />
-              <Text style={styles.miniStatLabel}>Borç</Text>
+              <Text style={styles.miniStatLabel}>{t('muhasebe.aiMuhasebe.payable', { defaultValue: 'Borç' })}</Text>
               {isLoading ? (
                 <Skeleton width={60} height={14} />
               ) : (
-                <Text style={styles.miniStatValue}>{formatCurrency(financeData.payable)} ₺</Text>
+                <Text style={styles.miniStatValue}>{formatCurrency(financeData.payable)} {t('currencySymbol', { defaultValue: '₺' })}</Text>
               )}
             </View>
           </View>
