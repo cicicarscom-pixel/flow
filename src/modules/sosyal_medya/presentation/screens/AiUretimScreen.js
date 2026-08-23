@@ -64,7 +64,7 @@ const AnimatedBorderCard = ({ children, style, colors, padding = 20, borderRadiu
         transform: [{ rotate: spin }],
       }}>
         <LinearGradient
-          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#A855F7', '#ffffff']}
+          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#C2478D', '#ffffff']}
           locations={[0, 0.4, 0.9, 1]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -72,7 +72,7 @@ const AnimatedBorderCard = ({ children, style, colors, padding = 20, borderRadiu
         />
       </Animated.View>
       
-      <View style={{ flex: 1, backgroundColor: '#12141B', borderRadius: borderRadius - 3.5, padding }}>
+      <View style={{ flex: 1, backgroundColor: '#201D24', borderRadius: borderRadius - 3.5, padding }}>
         {children}
       </View>
     </View>
@@ -520,7 +520,7 @@ export default function AiUretimScreen({ route, navigation }) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0A0B0F]" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-[#17151A]" edges={['top', 'left', 'right']}>
       <ImageBackground 
         source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
         style={StyleSheet.absoluteFillObject}
@@ -545,13 +545,13 @@ export default function AiUretimScreen({ route, navigation }) {
         
         {/* Input Section */}
         <View className="mb-6">
-          <Text className="text-[#9CA3AF] text-xs font-medium uppercase tracking-wider mb-2 ml-1">{t('sosyalMedya.generate.whatToShare')}</Text>
+          <Text className="text-[#A79E96] text-xs font-medium uppercase tracking-wider mb-2 ml-1">{t('sosyalMedya.generate.whatToShare')}</Text>
           <TextInput
             value={prompt}
             onChangeText={setPrompt}
             placeholder={t('sosyalMedya.generate.promptPlaceholder')}
             placeholderTextColor="rgba(185, 202, 203, 0.5)"
-            className="w-full bg-[#1A1D26]/50 rounded-lg border border-white/10 text-[#F3F4F6] text-base p-3 min-h-[100px]"
+            className="w-full bg-[#2A2631]/50 rounded-lg border border-white/10 text-[#F6F1EC] text-base p-3 min-h-[100px]"
             multiline={true}
             textAlignVertical="top"
           />
@@ -561,12 +561,12 @@ export default function AiUretimScreen({ route, navigation }) {
         <View className="items-center w-full mb-6 relative">
           <AnimatedBorderCard 
             style={{ width: '100%', aspectRatio: 1, maxWidth: 350 }} 
-            colors={['#22D3EE', '#ffffff']} 
+            colors={['#22B573', '#ffffff']} 
             padding={0} 
             borderRadius={24}
           >
             <TouchableOpacity 
-              className="flex-1 items-center justify-center bg-[#20242F]/50 overflow-hidden relative" 
+              className="flex-1 items-center justify-center bg-[#34303C]/50 overflow-hidden relative" 
               style={{ borderRadius: 24 }}
               onPress={pickMedia}
               activeOpacity={0.8}
@@ -580,13 +580,13 @@ export default function AiUretimScreen({ route, navigation }) {
                 </>
               ) : (
                 <>
-                  <View className="mb-4 bg-[#22D3EE]/10 rounded-full p-4 border border-[#22D3EE]/30 border-dashed">
-                    <MaterialIcons name="add-photo-alternate" size={48} color="#22D3EE" />
+                  <View className="mb-4 bg-[#22B573]/10 rounded-full p-4 border border-[#22B573]/30 border-dashed">
+                    <MaterialIcons name="add-photo-alternate" size={48} color="#22B573" />
                   </View>
-                  <Text className="text-[#9CA3AF] text-base text-center px-4 font-medium mb-1">
+                  <Text className="text-[#A79E96] text-base text-center px-4 font-medium mb-1">
                     {t('sosyalMedya.generate.selectOrGenerate')}
                   </Text>
-                  <Text className="text-[#9CA3AF]/60 text-xs text-center px-8">
+                  <Text className="text-[#A79E96]/60 text-xs text-center px-8">
                     {t('sosyalMedya.generate.imageHint')}
                   </Text>
                 </>
@@ -598,21 +598,21 @@ export default function AiUretimScreen({ route, navigation }) {
         {/* Caption Editor */}
         <AnimatedBorderCard 
             style={{ width: '100%' }} 
-            colors={['#A855F7', '#ffffff']} 
+            colors={['#C2478D', '#ffffff']} 
             padding={20} 
             borderRadius={20}
         >
           <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-[#F3F4F6] text-lg font-semibold">{t('sosyalMedya.generate.contentTitle')}</Text>
+            <Text className="text-[#F6F1EC] text-lg font-semibold">{t('sosyalMedya.generate.contentTitle')}</Text>
             <TouchableOpacity 
               className="p-1"
               onPress={() => setIsEditingCaption(!isEditingCaption)}
             >
-              <MaterialIcons name={isEditingCaption ? "check" : "edit"} size={20} color={isEditingCaption ? "#A855F7" : "#22D3EE"} />
+              <MaterialIcons name={isEditingCaption ? "check" : "edit"} size={20} color={isEditingCaption ? "#C2478D" : "#22B573"} />
             </TouchableOpacity>
           </View>
           
-          <View className={`bg-[#12141B]/50 rounded-lg p-3 border ${isEditingCaption ? 'border-[#A855F7]' : 'border-white/5'} min-h-[200px] mb-4`}>
+          <View className={`bg-[#201D24]/50 rounded-lg p-3 border ${isEditingCaption ? 'border-[#C2478D]' : 'border-white/5'} min-h-[200px] mb-4`}>
             {isEditingCaption ? (
               <TextInput
                 value={localText}
@@ -620,12 +620,12 @@ export default function AiUretimScreen({ route, navigation }) {
                 multiline
                 autoFocus
                 textAlignVertical="top"
-                className="text-[#F3F4F6] text-sm leading-5 p-0 m-0 min-h-[180px]"
+                className="text-[#F6F1EC] text-sm leading-5 p-0 m-0 min-h-[180px]"
                 placeholder={t('sosyalMedya.generate.contentPlaceholder')}
                 placeholderTextColor="rgba(185, 202, 203, 0.5)"
               />
             ) : (
-              <Text className="text-[#9CA3AF]/80 text-sm leading-5">
+              <Text className="text-[#A79E96]/80 text-sm leading-5">
                 {localText ? localText : t('sosyalMedya.generate.contentEmpty')}
               </Text>
             )}
@@ -638,14 +638,14 @@ export default function AiUretimScreen({ route, navigation }) {
                onChangeText={setAiPrompt}
                placeholder={t('sosyalMedya.generate.aiChatPlaceholder')}
                placeholderTextColor="rgba(185, 202, 203, 0.5)"
-               className="flex-1 bg-[#1A1D26] rounded-full px-4 py-2 text-[#F3F4F6] border border-[#2A2E3A]"
+               className="flex-1 bg-[#2A2631] rounded-full px-4 py-2 text-[#F6F1EC] border border-[#3A3540]"
                multiline={false}
                onSubmitEditing={generateCaption}
             />
             <TouchableOpacity 
                onPress={generateCaption} 
                disabled={isGeneratingText}
-               className={`ml-2 w-10 h-10 rounded-full bg-[#A855F7] items-center justify-center ${isGeneratingText ? 'opacity-50' : ''}`}
+               className={`ml-2 w-10 h-10 rounded-full bg-[#C2478D] items-center justify-center ${isGeneratingText ? 'opacity-50' : ''}`}
             >
               {isGeneratingText ? (
                 <ActivityIndicator size="small" color="#fff" />
@@ -656,41 +656,41 @@ export default function AiUretimScreen({ route, navigation }) {
           </View>
           
           <View className="flex-row flex-wrap gap-2">
-            <View className="bg-[#22D3EE]/10 px-3 py-1 rounded-full border border-[#22D3EE]/20">
-              <Text className="text-[#22D3EE] text-xs font-medium">{t('sosyalMedya.generate.tagSummer')}</Text>
+            <View className="bg-[#22B573]/10 px-3 py-1 rounded-full border border-[#22B573]/20">
+              <Text className="text-[#22B573] text-xs font-medium">{t('sosyalMedya.generate.tagSummer')}</Text>
             </View>
-            <View className="bg-[#22D3EE]/10 px-3 py-1 rounded-full border border-[#22D3EE]/20">
-              <Text className="text-[#22D3EE] text-xs font-medium">{t('sosyalMedya.generate.tagNewSeason')}</Text>
+            <View className="bg-[#22B573]/10 px-3 py-1 rounded-full border border-[#22B573]/20">
+              <Text className="text-[#22B573] text-xs font-medium">{t('sosyalMedya.generate.tagNewSeason')}</Text>
             </View>
             <TouchableOpacity className="px-2 flex-row items-center">
-              <MaterialIcons name="add" size={16} color="#9CA3AF" />
-              <Text className="text-[#9CA3AF] text-xs font-medium ml-1">{t('sosyalMedya.generate.addTag')}</Text>
+              <MaterialIcons name="add" size={16} color="#A79E96" />
+              <Text className="text-[#A79E96] text-xs font-medium ml-1">{t('sosyalMedya.generate.addTag')}</Text>
             </TouchableOpacity>
           </View>
         </AnimatedBorderCard>
 
         {/* Profiles Section */}
         <View className="mb-6 mt-6">
-          <Text className="text-[#9CA3AF] text-xs font-medium mb-3">profiller</Text>
-          <TouchableOpacity className="flex-row items-center justify-between bg-[#1A1D26]/50 rounded-lg border border-white/5 p-4 mb-4">
+          <Text className="text-[#A79E96] text-xs font-medium mb-3">profiller</Text>
+          <TouchableOpacity className="flex-row items-center justify-between bg-[#2A2631]/50 rounded-lg border border-white/5 p-4 mb-4">
              <View className="flex-row items-center">
                <View className="w-3 h-3 rounded-full bg-[#F59E0B] mr-3" />
-               <Text className="text-[#F3F4F6] text-sm">Al Esnaf Profil</Text>
+               <Text className="text-[#F6F1EC] text-sm">Al Esnaf Profil</Text>
              </View>
-             <MaterialIcons name="keyboard-arrow-down" size={20} color="#9CA3AF" />
+             <MaterialIcons name="keyboard-arrow-down" size={20} color="#A79E96" />
           </TouchableOpacity>
 
-          <Text className="text-[#9CA3AF] text-xs font-medium mb-3">Seçilen platformlarda paylaş</Text>
+          <Text className="text-[#A79E96] text-xs font-medium mb-3">Seçilen platformlarda paylaş</Text>
           <View className="flex-row flex-wrap justify-between">
           {zernioAccounts.map((acc, index) => {
             const isSelected = selectedPlatforms[acc.platform];
             const platformId = acc.platform.toLowerCase();
-            const platformColor = platformId === 'instagram' ? '#A855F7' : 
+            const platformColor = platformId === 'instagram' ? '#C2478D' : 
                                   platformId === 'facebook' ? '#1877F2' : 
                                   platformId === 'youtube' ? '#ff0000' : 
                                   platformId === 'twitter' ? '#1DA1F2' : 
                                   platformId === 'linkedin' ? '#0A66C2' : 
-                                  platformId.includes('google') ? '#4285F4' : '#9CA3AF';
+                                  platformId.includes('google') ? '#4285F4' : '#A79E96';
             
             let iconName = `logo-${platformId}`;
             if (platformId.includes('google')) iconName = 'business';
@@ -699,18 +699,18 @@ export default function AiUretimScreen({ route, navigation }) {
               <TouchableOpacity 
                 key={index}
                 onPress={() => setSelectedPlatforms(prev => ({ ...prev, [acc.platform]: !prev[acc.platform] }))}
-                className={`flex-row items-center justify-between rounded-lg border p-2 mb-3 w-[31%] ${isSelected ? 'bg-[#22C55E]/10 border-[#22C55E]/50' : 'bg-[#1A1D26]/50 border-white/5'}`}
+                className={`flex-row items-center justify-between rounded-lg border p-2 mb-3 w-[31%] ${isSelected ? 'bg-[#22B573]/10 border-[#22B573]/50' : 'bg-[#2A2631]/50 border-white/5'}`}
               >
                 <View className="flex-row items-center flex-1">
                    <Ionicons name={iconName} size={16} color={platformColor} style={{ marginRight: 6 }} />
                    <View className="flex-1">
-                     <Text className="text-[#F3F4F6] text-[10px] capitalize font-medium" numberOfLines={1}>{acc.platform}</Text>
-                     <Text className="text-[#9CA3AF]/60 text-[8px]" numberOfLines={1}>@{acc.username || 'hesap'}</Text>
+                     <Text className="text-[#F6F1EC] text-[10px] capitalize font-medium" numberOfLines={1}>{acc.platform}</Text>
+                     <Text className="text-[#A79E96]/60 text-[8px]" numberOfLines={1}>@{acc.username || 'hesap'}</Text>
                    </View>
                 </View>
                 {isSelected && (
-                   <View className="w-3.5 h-3.5 rounded-full bg-[#22C55E] items-center justify-center ml-1">
-                      <MaterialIcons name="check" size={10} color="#132A1F" />
+                   <View className="w-3.5 h-3.5 rounded-full bg-[#22B573] items-center justify-center ml-1">
+                      <MaterialIcons name="check" size={10} color="#1C3327" />
                    </View>
                 )}
               </TouchableOpacity>
@@ -721,158 +721,158 @@ export default function AiUretimScreen({ route, navigation }) {
 
         {/* --- YOUTUBE SETTINGS --- */}
         {selectedPlatforms['youtube'] && (
-          <View className="mb-6 bg-[#1A1D26]/50 rounded-xl p-4 border border-[#ff0000]/30">
+          <View className="mb-6 bg-[#2A2631]/50 rounded-xl p-4 border border-[#ff0000]/30">
             <View className="flex-row items-center mb-4">
                <Ionicons name="logo-youtube" size={20} color="#ff0000" className="mr-2" />
-               <Text className="text-[#F3F4F6] text-sm font-semibold ml-2">YouTube</Text>
+               <Text className="text-[#F6F1EC] text-sm font-semibold ml-2">YouTube</Text>
             </View>
             
-            <Text className="text-[#9CA3AF] text-xs font-medium mb-1">title (optional)</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">title (optional)</Text>
             <TextInput 
                value={ytTitle} onChangeText={setYtTitle}
                placeholder="Custom title for your video..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-               className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-1"
+               className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1"
                maxLength={100}
             />
-            <Text className="text-[#9CA3AF]/50 text-[10px] text-right mb-2">{ytTitle.length}/100</Text>
+            <Text className="text-[#A79E96]/50 text-[10px] text-right mb-2">{ytTitle.length}/100</Text>
 
-            <Text className="text-[#9CA3AF] text-xs font-medium mb-1">tags (optional)</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">tags (optional)</Text>
             <TextInput 
                value={ytTags} onChangeText={setYtTags}
                placeholder="Type a tag and press Enter..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-               className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-4"
+               className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-4"
             />
 
-            <Text className="text-[#9CA3AF] text-xs font-medium mb-1">visibility</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">visibility</Text>
             <View className="flex-row rounded-lg border border-white/5 mb-4 overflow-hidden">
                {['Public', 'Unlisted', 'Private'].map((opt) => (
                  <TouchableOpacity 
                     key={opt}
                     onPress={() => setYtVisibility(opt)}
-                    className={`flex-1 items-center py-2 border-r border-white/5 ${ytVisibility === opt ? 'bg-[#20242F]' : 'bg-[#12141B]/50'}`}
+                    className={`flex-1 items-center py-2 border-r border-white/5 ${ytVisibility === opt ? 'bg-[#34303C]' : 'bg-[#201D24]/50'}`}
                  >
-                    <Text className={`text-[13px] ${ytVisibility === opt ? 'text-white' : 'text-[#9CA3AF]'}`}>{opt}</Text>
-                    <Text className="text-[#9CA3AF]/50 text-[10px]">{opt === 'Public' ? 'Anyone' : opt === 'Unlisted' ? 'Link only' : 'Only you'}</Text>
+                    <Text className={`text-[13px] ${ytVisibility === opt ? 'text-white' : 'text-[#A79E96]'}`}>{opt}</Text>
+                    <Text className="text-[#A79E96]/50 text-[10px]">{opt === 'Public' ? 'Anyone' : opt === 'Unlisted' ? 'Link only' : 'Only you'}</Text>
                  </TouchableOpacity>
                ))}
             </View>
 
-            <Text className="text-[#9CA3AF] text-xs font-medium mb-1">category</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">category</Text>
             <TouchableOpacity 
                onPress={() => setYtCategoryModalVisible(true)}
-               className="flex-row items-center justify-between bg-[#12141B]/50 rounded-lg border border-white/5 px-3 py-3 mb-4"
+               className="flex-row items-center justify-between bg-[#201D24]/50 rounded-lg border border-white/5 px-3 py-3 mb-4"
             >
-               <Text className="text-[#F3F4F6] text-sm">{ytCategory}</Text>
-               <MaterialIcons name="keyboard-arrow-down" size={18} color="#9CA3AF" />
+               <Text className="text-[#F6F1EC] text-sm">{ytCategory}</Text>
+               <MaterialIcons name="keyboard-arrow-down" size={18} color="#A79E96" />
             </TouchableOpacity>
 
-            <Text className="text-[#9CA3AF] text-xs font-medium mb-1 mt-2">custom caption</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">custom caption</Text>
             <TextInput 
                value={ytCustomCaption} onChangeText={setYtCustomCaption}
                placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-               className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 min-h-[80px]"
+               className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 min-h-[80px]"
                multiline textAlignVertical="top" maxLength={5000}
             />
-            <Text className="text-[#9CA3AF]/50 text-[10px] text-right mt-1">{ytCustomCaption.length}/5000</Text>
+            <Text className="text-[#A79E96]/50 text-[10px] text-right mt-1">{ytCustomCaption.length}/5000</Text>
           </View>
         )}
 
         {/* --- FACEBOOK SETTINGS --- */}
         {selectedPlatforms['facebook'] && (
-          <View className="mb-6 bg-[#1A1D26]/50 rounded-xl p-4 border border-[#1877F2]/30">
+          <View className="mb-6 bg-[#2A2631]/50 rounded-xl p-4 border border-[#1877F2]/30">
             <View className="flex-row items-center justify-between mb-4">
                <View className="flex-row items-center">
                  <Ionicons name="logo-facebook" size={20} color="#1877F2" className="mr-2" />
-                 <Text className="text-[#F3F4F6] text-sm font-semibold ml-2">Facebook</Text>
+                 <Text className="text-[#F6F1EC] text-sm font-semibold ml-2">Facebook</Text>
                </View>
-               <View className="flex-row bg-[#12141B]/50 rounded-lg overflow-hidden border border-white/5">
+               <View className="flex-row bg-[#201D24]/50 rounded-lg overflow-hidden border border-white/5">
                  {['Feed', 'Story', 'Reel'].map((opt) => (
                    <TouchableOpacity 
                       key={opt} onPress={() => setFbFormat(opt)}
-                      className={`px-2 py-1 border-r border-white/5 ${fbFormat === opt ? 'bg-[#20242F]' : ''}`}
+                      className={`px-2 py-1 border-r border-white/5 ${fbFormat === opt ? 'bg-[#34303C]' : ''}`}
                    >
-                     <Text className={`text-[10px] ${fbFormat === opt ? 'text-white' : 'text-[#9CA3AF]'}`}>{opt}</Text>
+                     <Text className={`text-[10px] ${fbFormat === opt ? 'text-white' : 'text-[#A79E96]'}`}>{opt}</Text>
                    </TouchableOpacity>
                  ))}
                </View>
             </View>
 
             {fbFormat === 'Story' && (
-               <Text className="text-[#9CA3AF]/70 text-[11px] mb-4">İçerik 24 saat sonra kaybolur. Medya (görsel veya video) gerektirir.</Text>
+               <Text className="text-[#A79E96]/70 text-[11px] mb-4">İçerik 24 saat sonra kaybolur. Medya (görsel veya video) gerektirir.</Text>
             )}
 
-            <Text className="text-[#9CA3AF] text-xs font-medium mb-1">first comment</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">first comment</Text>
             <TextInput 
                value={fbFirstComment} onChangeText={setFbFirstComment}
                placeholder="Drop any extra context or a CTA here." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-               className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-1 min-h-[60px]"
+               className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                multiline textAlignVertical="top" maxLength={8000}
             />
-            <Text className="text-[#9CA3AF]/50 text-[10px] text-right mb-4">{fbFirstComment.length}/8000</Text>
+            <Text className="text-[#A79E96]/50 text-[10px] text-right mb-4">{fbFirstComment.length}/8000</Text>
 
-            <Text className="text-[#9CA3AF] text-xs font-medium mb-1">custom caption</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">custom caption</Text>
             <TextInput 
                value={fbCustomCaption} onChangeText={setFbCustomCaption}
                placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-               className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-1 min-h-[60px]"
+               className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                multiline textAlignVertical="top" maxLength={63206}
             />
-            <Text className="text-[#9CA3AF]/50 text-[10px] text-right">{fbCustomCaption.length}/63206</Text>
+            <Text className="text-[#A79E96]/50 text-[10px] text-right">{fbCustomCaption.length}/63206</Text>
           </View>
         )}
 
         {/* --- INSTAGRAM SETTINGS --- */}
         {selectedPlatforms['instagram'] && (
-          <View className="mb-6 bg-[#1A1D26]/50 rounded-xl p-4 border border-[#A855F7]/30">
+          <View className="mb-6 bg-[#2A2631]/50 rounded-xl p-4 border border-[#C2478D]/30">
             <View className="flex-row items-center justify-between mb-4">
                <View className="flex-row items-center">
-                 <Ionicons name="logo-instagram" size={20} color="#A855F7" className="mr-2" />
-                 <Text className="text-[#F3F4F6] text-sm font-semibold ml-2">Instagram</Text>
+                 <Ionicons name="logo-instagram" size={20} color="#C2478D" className="mr-2" />
+                 <Text className="text-[#F6F1EC] text-sm font-semibold ml-2">Instagram</Text>
                </View>
-               <View className="flex-row bg-[#12141B]/50 rounded-lg overflow-hidden border border-white/5">
+               <View className="flex-row bg-[#201D24]/50 rounded-lg overflow-hidden border border-white/5">
                  {['Feed', 'Story', 'Reel', 'Carousel'].map((opt) => (
                    <TouchableOpacity 
                       key={opt} onPress={() => setIgFormat(opt)}
-                      className={`px-2 py-1 border-r border-white/5 ${igFormat === opt ? 'bg-[#20242F]' : ''}`}
+                      className={`px-2 py-1 border-r border-white/5 ${igFormat === opt ? 'bg-[#34303C]' : ''}`}
                    >
-                     <Text className={`text-[10px] ${igFormat === opt ? 'text-white' : 'text-[#9CA3AF]'}`}>{opt}</Text>
+                     <Text className={`text-[10px] ${igFormat === opt ? 'text-white' : 'text-[#A79E96]'}`}>{opt}</Text>
                    </TouchableOpacity>
                  ))}
                </View>
             </View>
 
-            <Text className="text-[#9CA3AF]/70 text-[11px] mb-4">İçerik 24 saat sonra kaybolur. Sınırlı metin desteği.</Text>
+            <Text className="text-[#A79E96]/70 text-[11px] mb-4">İçerik 24 saat sonra kaybolur. Sınırlı metin desteği.</Text>
 
             <TouchableOpacity 
                onPress={() => setIgAiLabel(!igAiLabel)}
                className="flex-row items-start mb-4"
             >
-               <View className={`w-4 h-4 rounded-sm border mr-3 items-center justify-center mt-1 ${igAiLabel ? 'bg-[#22C55E] border-[#22C55E]' : 'border-[#9CA3AF]/50 bg-transparent'}`}>
-                  {igAiLabel && <MaterialIcons name="check" size={12} color="#132A1F" />}
+               <View className={`w-4 h-4 rounded-sm border mr-3 items-center justify-center mt-1 ${igAiLabel ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
+                  {igAiLabel && <MaterialIcons name="check" size={12} color="#1C3327" />}
                </View>
                <View className="flex-1">
-                 <Text className="text-[#F3F4F6] text-[13px] font-medium">AI ile üretildi olarak işaretle</Text>
-                 <Text className="text-[#9CA3AF]/70 text-[11px] mt-1">Instagram'ın AI içerik etiketini ekler. Medya tamamen veya büyük oranda AI ile oluşturulduğunda kullanın.</Text>
+                 <Text className="text-[#F6F1EC] text-[13px] font-medium">AI ile üretildi olarak işaretle</Text>
+                 <Text className="text-[#A79E96]/70 text-[11px] mt-1">Instagram'ın AI içerik etiketini ekler. Medya tamamen veya büyük oranda AI ile oluşturulduğunda kullanın.</Text>
                </View>
             </TouchableOpacity>
 
-            <Text className="text-[#9CA3AF] text-xs font-medium mb-1">first comment</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">first comment</Text>
             <TextInput 
                value={igFirstComment} onChangeText={setIgFirstComment}
                placeholder="Drop any extra context or a CTA here." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-               className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-1 min-h-[60px]"
+               className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                multiline textAlignVertical="top" maxLength={2200}
             />
-            <Text className="text-[#9CA3AF]/50 text-[10px] text-right mb-4">{igFirstComment.length}/2200</Text>
+            <Text className="text-[#A79E96]/50 text-[10px] text-right mb-4">{igFirstComment.length}/2200</Text>
 
-            <Text className="text-[#9CA3AF] text-xs font-medium mb-1">custom caption</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">custom caption</Text>
             <TextInput 
                value={igCustomCaption} onChangeText={setIgCustomCaption}
                placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-               className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-1 min-h-[60px]"
+               className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                multiline textAlignVertical="top" maxLength={2200}
             />
-            <Text className="text-[#9CA3AF]/50 text-[10px] text-right">{igCustomCaption.length}/2200</Text>
+            <Text className="text-[#A79E96]/50 text-[10px] text-right">{igCustomCaption.length}/2200</Text>
           </View>
         )}
 
@@ -883,18 +883,18 @@ export default function AiUretimScreen({ route, navigation }) {
                <View className="w-6 h-6 rounded bg-[#0A66C2] items-center justify-center mr-2">
                  <Ionicons name="logo-linkedin" size={14} color="#fff" />
                </View>
-               <Text className="text-[#F3F4F6] font-semibold">LinkedIn</Text>
+               <Text className="text-[#F6F1EC] font-semibold">LinkedIn</Text>
              </View>
 
              {/* Mention section */}
              <View className="flex-row items-center mb-1 z-20">
-                <Text className="text-[#9CA3AF] text-xs font-medium mr-1">@mention</Text>
+                <Text className="text-[#A79E96] text-xs font-medium mr-1">@mention</Text>
                 <TouchableOpacity onPress={() => setShowLiMentionTooltip(!showLiMentionTooltip)}>
-                   <MaterialIcons name="info-outline" size={14} color="#9CA3AF" />
+                   <MaterialIcons name="info-outline" size={14} color="#A79E96" />
                 </TouchableOpacity>
              </View>
              {showLiMentionTooltip && (
-                <View className="bg-[#1A1D26] border border-white/10 rounded-lg p-3 mb-2 z-20">
+                <View className="bg-[#2A2631] border border-white/10 rounded-lg p-3 mb-2 z-20">
                    <Text className="text-white text-[11px] mb-2 leading-4">
                      Kişi etiketlemeleri (person mentions) LinkedIn hesabınızın en az bir organizasyonun yöneticisi olmasını gerektirir (LinkedIn API kısıtlaması).
                    </Text>
@@ -910,27 +910,27 @@ export default function AiUretimScreen({ route, navigation }) {
                 <TextInput 
                   value={liMentionUsername} onChangeText={setLiMentionUsername}
                   placeholder="username or profile URL" placeholderTextColor="rgba(185, 202, 203, 0.5)"
-                  className="flex-1 bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mr-2"
+                  className="flex-1 bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mr-2"
                 />
                 <TextInput 
                   value={liMentionDisplayName} onChangeText={setLiMentionDisplayName}
                   placeholder="display name" placeholderTextColor="rgba(185, 202, 203, 0.5)"
-                  className="flex-1 bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mr-2"
+                  className="flex-1 bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mr-2"
                 />
-                <TouchableOpacity className="bg-[#9CA3AF]/20 px-3 py-2 rounded-lg items-center justify-center">
+                <TouchableOpacity className="bg-[#A79E96]/20 px-3 py-2 rounded-lg items-center justify-center">
                   <Text className="text-white text-xs font-medium">Insert</Text>
                 </TouchableOpacity>
              </View>
 
              {/* Repost section */}
              <View className="flex-row items-center mb-1 z-10 mt-2">
-                <Text className="text-[#9CA3AF] text-xs font-medium mr-1">Repost a LinkedIn post</Text>
+                <Text className="text-[#A79E96] text-xs font-medium mr-1">Repost a LinkedIn post</Text>
                 <TouchableOpacity onPress={() => setShowLiRepostTooltip(!showLiRepostTooltip)}>
-                   <MaterialIcons name="info-outline" size={14} color="#9CA3AF" />
+                   <MaterialIcons name="info-outline" size={14} color="#A79E96" />
                 </TouchableOpacity>
              </View>
              {showLiRepostTooltip && (
-                <View className="bg-[#1A1D26] border border-white/10 rounded-lg p-3 mb-2 z-10">
+                <View className="bg-[#2A2631] border border-white/10 rounded-lg p-3 mb-2 z-10">
                    <Text className="text-white text-[11px] mb-2 leading-4">
                      Gönderinin "Gönderi bağlantısını kopyala" (Copy link to post) seçeneği ile bağlantıyı alın (adres çubuğundaki bağlantı çalışmaz).
                    </Text>
@@ -942,7 +942,7 @@ export default function AiUretimScreen({ route, navigation }) {
              <TextInput 
                 value={liRepostLink} onChangeText={setLiRepostLink}
                 placeholder="Paste the post link" placeholderTextColor="rgba(185, 202, 203, 0.5)"
-                className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-4"
+                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-4"
              />
 
              {/* Disable link preview */}
@@ -950,29 +950,29 @@ export default function AiUretimScreen({ route, navigation }) {
                 activeOpacity={0.8} onPress={() => setLiDisableLinkPreview(!liDisableLinkPreview)}
                 className="flex-row items-center mb-4"
              >
-                <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${liDisableLinkPreview ? 'bg-[#22C55E] border-[#22C55E]' : 'border-[#9CA3AF]/50 bg-transparent'}`}>
-                   {liDisableLinkPreview && <MaterialIcons name="check" size={12} color="#132A1F" />}
+                <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${liDisableLinkPreview ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
+                   {liDisableLinkPreview && <MaterialIcons name="check" size={12} color="#1C3327" />}
                 </View>
-                <Text className="text-[#F3F4F6] text-[13px]">Disable link preview</Text>
+                <Text className="text-[#F6F1EC] text-[13px]">Disable link preview</Text>
              </TouchableOpacity>
 
-             <Text className="text-[#9CA3AF] text-xs font-medium mb-1 mt-2">first comment</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">first comment</Text>
              <TextInput 
                 value={liFirstComment} onChangeText={setLiFirstComment}
                 placeholder="Add a first comment to boost engagement." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-                className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-1 min-h-[60px]"
+                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                 multiline textAlignVertical="top" maxLength={1250}
              />
-             <Text className="text-[#9CA3AF]/50 text-[10px] text-right mb-4">{liFirstComment.length}/1250</Text>
+             <Text className="text-[#A79E96]/50 text-[10px] text-right mb-4">{liFirstComment.length}/1250</Text>
 
-             <Text className="text-[#9CA3AF] text-xs font-medium mb-1">custom caption</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1">custom caption</Text>
              <TextInput 
                 value={liCustomCaption} onChangeText={setLiCustomCaption}
                 placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-                className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-1 min-h-[60px]"
+                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                 multiline textAlignVertical="top" maxLength={3000}
              />
-             <Text className="text-[#9CA3AF]/50 text-[10px] text-right">{liCustomCaption.length}/3000</Text>
+             <Text className="text-[#A79E96]/50 text-[10px] text-right">{liCustomCaption.length}/3000</Text>
           </View>
         )}
 
@@ -983,15 +983,15 @@ export default function AiUretimScreen({ route, navigation }) {
                <View className="w-6 h-6 rounded bg-[#000] items-center justify-center mr-2 border border-white/10">
                  <Ionicons name="close" size={14} color="#fff" /> {/* Fallback if logo-x is not available, close looks somewhat like X */}
                </View>
-               <Text className="text-[#F3F4F6] font-semibold">X (Twitter)</Text>
+               <Text className="text-[#F6F1EC] font-semibold">X (Twitter)</Text>
              </View>
 
              {/* Thread Toggle */}
              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-[#9CA3AF] text-xs font-medium">thread</Text>
+                <Text className="text-[#A79E96] text-xs font-medium">thread</Text>
                 <TouchableOpacity 
                    activeOpacity={0.8} onPress={() => setTwIsThread(!twIsThread)}
-                   className={`w-9 h-5 rounded-full px-0.5 justify-center ${twIsThread ? 'bg-[#22C55E]' : 'bg-[#9CA3AF]/50'}`}
+                   className={`w-9 h-5 rounded-full px-0.5 justify-center ${twIsThread ? 'bg-[#22B573]' : 'bg-[#A79E96]/50'}`}
                 >
                    <View className={`w-4 h-4 rounded-full bg-white ${twIsThread ? 'self-end' : 'self-start'}`} />
                 </TouchableOpacity>
@@ -999,14 +999,14 @@ export default function AiUretimScreen({ route, navigation }) {
              
              {twIsThread && (
                 <View className="mb-4">
-                   <Text className="text-[#9CA3AF]/70 text-[10px] mb-3">Main content + media become tweet 1. Add more below.</Text>
+                   <Text className="text-[#A79E96]/70 text-[10px] mb-3">Main content + media become tweet 1. Add more below.</Text>
                    
                    {twThreadTweets.map((tweet, index) => (
-                      <View key={tweet.id} className="bg-[#1A1D26] border border-white/5 rounded-lg p-3 mb-2">
+                      <View key={tweet.id} className="bg-[#2A2631] border border-white/5 rounded-lg p-3 mb-2">
                          <View className="flex-row justify-between items-center mb-2">
-                            <Text className="text-[#9CA3AF] text-xs font-medium text-dashed">Tweet {index + 2}</Text>
+                            <Text className="text-[#A79E96] text-xs font-medium text-dashed">Tweet {index + 2}</Text>
                             <View className="flex-row items-center">
-                               <Text className="text-[#9CA3AF]/50 text-[10px] mr-2">{tweet.content.length}/280</Text>
+                               <Text className="text-[#A79E96]/50 text-[10px] mr-2">{tweet.content.length}/280</Text>
                                <TouchableOpacity onPress={() => removeTweet(tweet.id)}>
                                   <Text className="text-[#F59E0B] text-[10px]">remove</Text>
                                </TouchableOpacity>
@@ -1015,29 +1015,29 @@ export default function AiUretimScreen({ route, navigation }) {
                          <TextInput 
                             value={tweet.content} onChangeText={(txt) => updateTweet(tweet.id, txt)}
                             placeholder={`Tweet ${index + 2} content...`} placeholderTextColor="rgba(185, 202, 203, 0.5)"
-                            className="text-[#F3F4F6] text-sm mb-3 min-h-[40px] p-0"
+                            className="text-[#F6F1EC] text-sm mb-3 min-h-[40px] p-0"
                             multiline textAlignVertical="top" maxLength={280}
                          />
                          <TouchableOpacity className="w-8 h-8 rounded border border-dashed border-white/20 items-center justify-center">
-                            <Ionicons name="image-outline" size={14} color="#9CA3AF" />
+                            <Ionicons name="image-outline" size={14} color="#A79E96" />
                          </TouchableOpacity>
                       </View>
                    ))}
                    
                    <TouchableOpacity onPress={addTweet} className="py-2">
-                      <Text className="text-[#9CA3AF] text-xs">+ add tweet {twThreadTweets.length + 2}</Text>
+                      <Text className="text-[#A79E96] text-xs">+ add tweet {twThreadTweets.length + 2}</Text>
                    </TouchableOpacity>
                 </View>
              )}
 
-             <Text className="text-[#9CA3AF] text-xs font-medium mb-1 mt-2">custom caption</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">custom caption</Text>
              <TextInput 
                 value={twCustomCaption} onChangeText={setTwCustomCaption}
                 placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-                className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-1 min-h-[60px]"
+                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                 multiline textAlignVertical="top" maxLength={280}
              />
-             <Text className="text-[#9CA3AF]/50 text-[10px] text-right">{twCustomCaption.length}/280</Text>
+             <Text className="text-[#A79E96]/50 text-[10px] text-right">{twCustomCaption.length}/280</Text>
           </View>
         )}
 
@@ -1049,17 +1049,17 @@ export default function AiUretimScreen({ route, navigation }) {
                <View className="w-6 h-6 rounded bg-[#000] items-center justify-center mr-2 border border-white/10">
                  <Ionicons name="logo-tiktok" size={14} color="#fff" />
                </View>
-               <Text className="text-[#F3F4F6] font-semibold">TikTok</Text>
+               <Text className="text-[#F6F1EC] font-semibold">TikTok</Text>
              </View>
 
-             <Text className="text-[#9CA3AF] text-xs font-medium mb-1">Privacy Level</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1">Privacy Level</Text>
              <View className="flex-row flex-wrap mb-3 gap-2">
                 {['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'FOLLOWER_OF_CREATOR', 'SELF_ONLY'].map(level => (
                   <TouchableOpacity 
                     key={level} onPress={() => setTtPrivacyLevel(level)}
-                    className={`px-3 py-1.5 rounded-lg border ${ttPrivacyLevel === level ? 'bg-[#22C55E]/10 border-[#22C55E]' : 'bg-[#1A1D26] border-white/10'}`}
+                    className={`px-3 py-1.5 rounded-lg border ${ttPrivacyLevel === level ? 'bg-[#22B573]/10 border-[#22B573]' : 'bg-[#2A2631] border-white/10'}`}
                   >
-                    <Text className={`text-[10px] ${ttPrivacyLevel === level ? 'text-[#22C55E]' : 'text-[#9CA3AF]'}`}>
+                    <Text className={`text-[10px] ${ttPrivacyLevel === level ? 'text-[#22B573]' : 'text-[#A79E96]'}`}>
                       {level.replace(/_/g, ' ')}
                     </Text>
                   </TouchableOpacity>
@@ -1069,30 +1069,30 @@ export default function AiUretimScreen({ route, navigation }) {
              <View className="flex-row justify-between mb-3">
                <View className="flex-1 mr-2">
                  <TouchableOpacity activeOpacity={0.8} onPress={() => setTtAllowComment(!ttAllowComment)} className="flex-row items-center mb-2">
-                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttAllowComment ? 'bg-[#22C55E] border-[#22C55E]' : 'border-[#9CA3AF]/50 bg-transparent'}`}>
-                       {ttAllowComment && <MaterialIcons name="check" size={12} color="#132A1F" />}
+                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttAllowComment ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
+                       {ttAllowComment && <MaterialIcons name="check" size={12} color="#1C3327" />}
                     </View>
-                    <Text className="text-[#F3F4F6] text-xs">Allow Comment</Text>
+                    <Text className="text-[#F6F1EC] text-xs">Allow Comment</Text>
                  </TouchableOpacity>
                  <TouchableOpacity activeOpacity={0.8} onPress={() => setTtAllowDuet(!ttAllowDuet)} className="flex-row items-center mb-2">
-                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttAllowDuet ? 'bg-[#22C55E] border-[#22C55E]' : 'border-[#9CA3AF]/50 bg-transparent'}`}>
-                       {ttAllowDuet && <MaterialIcons name="check" size={12} color="#132A1F" />}
+                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttAllowDuet ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
+                       {ttAllowDuet && <MaterialIcons name="check" size={12} color="#1C3327" />}
                     </View>
-                    <Text className="text-[#F3F4F6] text-xs">Allow Duet</Text>
+                    <Text className="text-[#F6F1EC] text-xs">Allow Duet</Text>
                  </TouchableOpacity>
                </View>
                <View className="flex-1">
                  <TouchableOpacity activeOpacity={0.8} onPress={() => setTtAllowStitch(!ttAllowStitch)} className="flex-row items-center mb-2">
-                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttAllowStitch ? 'bg-[#22C55E] border-[#22C55E]' : 'border-[#9CA3AF]/50 bg-transparent'}`}>
-                       {ttAllowStitch && <MaterialIcons name="check" size={12} color="#132A1F" />}
+                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttAllowStitch ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
+                       {ttAllowStitch && <MaterialIcons name="check" size={12} color="#1C3327" />}
                     </View>
-                    <Text className="text-[#F3F4F6] text-xs">Allow Stitch</Text>
+                    <Text className="text-[#F6F1EC] text-xs">Allow Stitch</Text>
                  </TouchableOpacity>
                  <TouchableOpacity activeOpacity={0.8} onPress={() => setTtVideoMadeWithAi(!ttVideoMadeWithAi)} className="flex-row items-center mb-2">
-                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttVideoMadeWithAi ? 'bg-[#22C55E] border-[#22C55E]' : 'border-[#9CA3AF]/50 bg-transparent'}`}>
-                       {ttVideoMadeWithAi && <MaterialIcons name="check" size={12} color="#132A1F" />}
+                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttVideoMadeWithAi ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
+                       {ttVideoMadeWithAi && <MaterialIcons name="check" size={12} color="#1C3327" />}
                     </View>
-                    <Text className="text-[#F3F4F6] text-xs">AI Generated</Text>
+                    <Text className="text-[#F6F1EC] text-xs">AI Generated</Text>
                  </TouchableOpacity>
                </View>
              </View>
@@ -1106,30 +1106,30 @@ export default function AiUretimScreen({ route, navigation }) {
                <View className="w-6 h-6 rounded bg-[#4285F4] items-center justify-center mr-2">
                  <Ionicons name="business" size={14} color="#fff" />
                </View>
-               <Text className="text-[#F3F4F6] font-semibold">Google Business</Text>
+               <Text className="text-[#F6F1EC] font-semibold">Google Business</Text>
              </View>
 
-             <View className="flex-row mb-3 bg-[#1A1D26] rounded-lg p-1 border border-white/5">
+             <View className="flex-row mb-3 bg-[#2A2631] rounded-lg p-1 border border-white/5">
                 {['STANDARD', 'EVENT', 'OFFER'].map(type => (
                   <TouchableOpacity 
                     key={type} onPress={() => setGbpPostType(type)}
                     className={`flex-1 py-1.5 rounded justify-center items-center ${gbpPostType === type ? 'bg-[#4285F4]' : 'bg-transparent'}`}
                   >
-                    <Text className={`text-[11px] font-medium ${gbpPostType === type ? 'text-white' : 'text-[#9CA3AF]'}`}>{type}</Text>
+                    <Text className={`text-[11px] font-medium ${gbpPostType === type ? 'text-white' : 'text-[#A79E96]'}`}>{type}</Text>
                   </TouchableOpacity>
                 ))}
              </View>
 
              {(gbpPostType === 'STANDARD' || gbpPostType === 'EVENT') && (
                <View className="mb-3">
-                 <Text className="text-[#9CA3AF] text-xs font-medium mb-1">Call To Action</Text>
+                 <Text className="text-[#A79E96] text-xs font-medium mb-1">Call To Action</Text>
                  <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row mb-2">
                     {['NONE', 'LEARN_MORE', 'BOOK', 'ORDER', 'SHOP', 'SIGN_UP', 'CALL'].map(cta => (
                       <TouchableOpacity 
                         key={cta} onPress={() => setGbpCallToAction(cta)}
-                        className={`px-3 py-1.5 rounded-lg border mr-2 ${gbpCallToAction === cta ? 'bg-[#4285F4]/10 border-[#4285F4]' : 'bg-[#1A1D26] border-white/10'}`}
+                        className={`px-3 py-1.5 rounded-lg border mr-2 ${gbpCallToAction === cta ? 'bg-[#4285F4]/10 border-[#4285F4]' : 'bg-[#2A2631] border-white/10'}`}
                       >
-                        <Text className={`text-[10px] ${gbpCallToAction === cta ? 'text-[#4285F4]' : 'text-[#9CA3AF]'}`}>
+                        <Text className={`text-[10px] ${gbpCallToAction === cta ? 'text-[#4285F4]' : 'text-[#A79E96]'}`}>
                           {cta.replace('_', ' ')}
                         </Text>
                       </TouchableOpacity>
@@ -1139,19 +1139,19 @@ export default function AiUretimScreen({ route, navigation }) {
                     <TextInput 
                       value={gbpCtaUrl} onChangeText={setGbpCtaUrl}
                       placeholder="https://..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
-                      className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2"
+                      className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2"
                     />
                  )}
                </View>
              )}
 
              {gbpPostType === 'EVENT' && (
-               <View className="mb-2 bg-[#1A1D26]/30 p-2 rounded-lg border border-white/5">
-                  <Text className="text-[#9CA3AF] text-[10px] font-medium mb-1">Event Details</Text>
-                  <TextInput value={gbpEventTitle} onChangeText={setGbpEventTitle} placeholder="Event Title" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#12141B]/50 border border-white/5 rounded text-[#F3F4F6] text-xs px-2 py-1.5 mb-2" />
+               <View className="mb-2 bg-[#2A2631]/30 p-2 rounded-lg border border-white/5">
+                  <Text className="text-[#A79E96] text-[10px] font-medium mb-1">Event Details</Text>
+                  <TextInput value={gbpEventTitle} onChangeText={setGbpEventTitle} placeholder="Event Title" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#201D24]/50 border border-white/5 rounded text-[#F6F1EC] text-xs px-2 py-1.5 mb-2" />
                   <View className="flex-row space-x-2">
-                    <TextInput value={gbpEventStartDate} onChangeText={setGbpEventStartDate} placeholder="Start YYYY-MM-DD" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="flex-1 bg-[#12141B]/50 border border-white/5 rounded text-[#F3F4F6] text-xs px-2 py-1.5 mr-1" />
-                    <TextInput value={gbpEventEndDate} onChangeText={setGbpEventEndDate} placeholder="End YYYY-MM-DD" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="flex-1 bg-[#12141B]/50 border border-white/5 rounded text-[#F3F4F6] text-xs px-2 py-1.5" />
+                    <TextInput value={gbpEventStartDate} onChangeText={setGbpEventStartDate} placeholder="Start YYYY-MM-DD" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="flex-1 bg-[#201D24]/50 border border-white/5 rounded text-[#F6F1EC] text-xs px-2 py-1.5 mr-1" />
+                    <TextInput value={gbpEventEndDate} onChangeText={setGbpEventEndDate} placeholder="End YYYY-MM-DD" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="flex-1 bg-[#201D24]/50 border border-white/5 rounded text-[#F6F1EC] text-xs px-2 py-1.5" />
                   </View>
                </View>
              )}
@@ -1165,12 +1165,12 @@ export default function AiUretimScreen({ route, navigation }) {
                <View className="w-6 h-6 rounded bg-[#E60023] items-center justify-center mr-2">
                  <Ionicons name="logo-pinterest" size={14} color="#fff" />
                </View>
-               <Text className="text-[#F3F4F6] font-semibold">Pinterest</Text>
+               <Text className="text-[#F6F1EC] font-semibold">Pinterest</Text>
              </View>
 
-             <TextInput value={pinBoardId} onChangeText={setPinBoardId} placeholder="Board ID (Required)" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-2" />
-             <TextInput value={pinTitle} onChangeText={setPinTitle} placeholder="Pin Title (Max 100 chars)" placeholderTextColor="rgba(185, 202, 203, 0.5)" maxLength={100} className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-2" />
-             <TextInput value={pinLink} onChangeText={setPinLink} placeholder="Destination Link" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-1" />
+             <TextInput value={pinBoardId} onChangeText={setPinBoardId} placeholder="Board ID (Required)" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-2" />
+             <TextInput value={pinTitle} onChangeText={setPinTitle} placeholder="Pin Title (Max 100 chars)" placeholderTextColor="rgba(185, 202, 203, 0.5)" maxLength={100} className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-2" />
+             <TextInput value={pinLink} onChangeText={setPinLink} placeholder="Destination Link" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1" />
           </View>
         )}
 
@@ -1181,35 +1181,35 @@ export default function AiUretimScreen({ route, navigation }) {
                <View className="w-6 h-6 rounded bg-[#FF4500] items-center justify-center mr-2">
                  <Ionicons name="logo-reddit" size={14} color="#fff" />
                </View>
-               <Text className="text-[#F3F4F6] font-semibold">Reddit</Text>
+               <Text className="text-[#F6F1EC] font-semibold">Reddit</Text>
              </View>
 
              <View className="flex-row space-x-2 mb-2">
-               <View className="flex-row items-center bg-[#12141B]/50 border border-white/5 rounded-lg px-3 py-2 flex-1 mr-2">
-                 <Text className="text-[#9CA3AF] mr-1">r/</Text>
-                 <TextInput value={redditSubreddit} onChangeText={setRedditSubreddit} placeholder="subreddit" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="text-[#F3F4F6] text-sm flex-1 p-0" />
+               <View className="flex-row items-center bg-[#201D24]/50 border border-white/5 rounded-lg px-3 py-2 flex-1 mr-2">
+                 <Text className="text-[#A79E96] mr-1">r/</Text>
+                 <TextInput value={redditSubreddit} onChangeText={setRedditSubreddit} placeholder="subreddit" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="text-[#F6F1EC] text-sm flex-1 p-0" />
                </View>
-               <TextInput value={redditTitle} onChangeText={setRedditTitle} placeholder="Post Title" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 flex-1" />
+               <TextInput value={redditTitle} onChangeText={setRedditTitle} placeholder="Post Title" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 flex-1" />
              </View>
 
              <View className="flex-row mt-2">
                 <TouchableOpacity activeOpacity={0.8} onPress={() => setRedditNsfw(!redditNsfw)} className="flex-row items-center mr-4">
-                   <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${redditNsfw ? 'bg-[#FF4500] border-[#FF4500]' : 'border-[#9CA3AF]/50 bg-transparent'}`}>
+                   <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${redditNsfw ? 'bg-[#FF4500] border-[#FF4500]' : 'border-[#A79E96]/50 bg-transparent'}`}>
                       {redditNsfw && <MaterialIcons name="check" size={12} color="#fff" />}
                    </View>
-                   <Text className="text-[#F3F4F6] text-xs">NSFW</Text>
+                   <Text className="text-[#F6F1EC] text-xs">NSFW</Text>
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={0.8} onPress={() => setRedditSpoiler(!redditSpoiler)} className="flex-row items-center mr-4">
-                   <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${redditSpoiler ? 'bg-[#FF4500] border-[#FF4500]' : 'border-[#9CA3AF]/50 bg-transparent'}`}>
+                   <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${redditSpoiler ? 'bg-[#FF4500] border-[#FF4500]' : 'border-[#A79E96]/50 bg-transparent'}`}>
                       {redditSpoiler && <MaterialIcons name="check" size={12} color="#fff" />}
                    </View>
-                   <Text className="text-[#F3F4F6] text-xs">Spoiler</Text>
+                   <Text className="text-[#F6F1EC] text-xs">Spoiler</Text>
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={0.8} onPress={() => setRedditSendReplies(!redditSendReplies)} className="flex-row items-center">
-                   <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${redditSendReplies ? 'bg-[#FF4500] border-[#FF4500]' : 'border-[#9CA3AF]/50 bg-transparent'}`}>
+                   <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${redditSendReplies ? 'bg-[#FF4500] border-[#FF4500]' : 'border-[#A79E96]/50 bg-transparent'}`}>
                       {redditSendReplies && <MaterialIcons name="check" size={12} color="#fff" />}
                    </View>
-                   <Text className="text-[#F3F4F6] text-xs">Inbox Replies</Text>
+                   <Text className="text-[#F6F1EC] text-xs">Inbox Replies</Text>
                 </TouchableOpacity>
              </View>
           </View>
@@ -1222,60 +1222,60 @@ export default function AiUretimScreen({ route, navigation }) {
                <View className="w-6 h-6 rounded bg-[#2AABEE] items-center justify-center mr-2">
                  <Ionicons name="paper-plane" size={14} color="#fff" />
                </View>
-               <Text className="text-[#F3F4F6] font-semibold">Telegram</Text>
+               <Text className="text-[#F6F1EC] font-semibold">Telegram</Text>
              </View>
 
-             <TextInput value={tgChatId} onChangeText={setTgChatId} placeholder="@channelname or Chat ID" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#12141B]/50 border border-white/5 rounded-lg text-[#F3F4F6] text-sm px-3 py-2 mb-2" />
+             <TextInput value={tgChatId} onChangeText={setTgChatId} placeholder="@channelname or Chat ID" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-2" />
              
              <TouchableOpacity activeOpacity={0.8} onPress={() => setTgDisableNotification(!tgDisableNotification)} className="flex-row items-center mb-1">
-                <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${tgDisableNotification ? 'bg-[#2AABEE] border-[#2AABEE]' : 'border-[#9CA3AF]/50 bg-transparent'}`}>
+                <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${tgDisableNotification ? 'bg-[#2AABEE] border-[#2AABEE]' : 'border-[#A79E96]/50 bg-transparent'}`}>
                    {tgDisableNotification && <MaterialIcons name="check" size={12} color="#fff" />}
                 </View>
-                <Text className="text-[#F3F4F6] text-xs">Send Silently (No Notification)</Text>
+                <Text className="text-[#F6F1EC] text-xs">Send Silently (No Notification)</Text>
              </TouchableOpacity>
           </View>
         )}
 
         {/* Publishing Options Section */}
         <View className="mb-6">
-          <Text className="text-[#9CA3AF] text-xs font-medium mb-3">yayıncılık</Text>
-          <View className="flex-row bg-[#1A1D26]/50 rounded-lg p-1 mb-4 border border-white/5">
+          <Text className="text-[#A79E96] text-xs font-medium mb-3">yayıncılık</Text>
+          <View className="flex-row bg-[#2A2631]/50 rounded-lg p-1 mb-4 border border-white/5">
              <TouchableOpacity 
                onPress={() => setPublishMode('schedule')}
-               className={`flex-1 items-center py-2 rounded-md ${publishMode === 'schedule' ? 'bg-[#20242F]' : ''}`}
+               className={`flex-1 items-center py-2 rounded-md ${publishMode === 'schedule' ? 'bg-[#34303C]' : ''}`}
              >
-               <Text className={`text-sm ${publishMode === 'schedule' ? 'text-white' : 'text-[#9CA3AF]'}`}>Planlı</Text>
+               <Text className={`text-sm ${publishMode === 'schedule' ? 'text-white' : 'text-[#A79E96]'}`}>Planlı</Text>
              </TouchableOpacity>
              <TouchableOpacity 
                onPress={() => setPublishMode('now')}
-               className={`flex-1 items-center py-2 rounded-md ${publishMode === 'now' ? 'bg-[#20242F]' : ''}`}
+               className={`flex-1 items-center py-2 rounded-md ${publishMode === 'now' ? 'bg-[#34303C]' : ''}`}
              >
-               <Text className={`text-sm ${publishMode === 'now' ? 'text-white' : 'text-[#9CA3AF]'}`}>Şimdi</Text>
+               <Text className={`text-sm ${publishMode === 'now' ? 'text-white' : 'text-[#A79E96]'}`}>Şimdi</Text>
              </TouchableOpacity>
           </View>
 
           {publishMode === 'schedule' && (
             <>
-              <Text className="text-[#9CA3AF] text-xs font-medium mb-2">tarih & saat (opsiyonel)</Text>
-              <TouchableOpacity className="flex-row items-center justify-between bg-[#1A1D26]/50 rounded-lg border border-white/5 p-3 mb-4">
-                 <Text className="text-[#F3F4F6] text-sm">{scheduleDate}</Text>
-                 <MaterialIcons name="calendar-today" size={18} color="#9CA3AF" />
+              <Text className="text-[#A79E96] text-xs font-medium mb-2">tarih & saat (opsiyonel)</Text>
+              <TouchableOpacity className="flex-row items-center justify-between bg-[#2A2631]/50 rounded-lg border border-white/5 p-3 mb-4">
+                 <Text className="text-[#F6F1EC] text-sm">{scheduleDate}</Text>
+                 <MaterialIcons name="calendar-today" size={18} color="#A79E96" />
               </TouchableOpacity>
 
-              <Text className="text-[#9CA3AF] text-xs font-medium mb-2">timezone</Text>
+              <Text className="text-[#A79E96] text-xs font-medium mb-2">timezone</Text>
               <TouchableOpacity 
                 onPress={() => setTimezoneModalVisible(true)}
-                className="flex-row items-center justify-between bg-[#1A1D26]/50 rounded-lg border border-white/5 p-3 mb-4"
+                className="flex-row items-center justify-between bg-[#2A2631]/50 rounded-lg border border-white/5 p-3 mb-4"
               >
-                 <Text className="text-[#F3F4F6] text-sm">{timezone}</Text>
-                 <MaterialIcons name="keyboard-arrow-down" size={20} color="#9CA3AF" />
+                 <Text className="text-[#F6F1EC] text-sm">{timezone}</Text>
+                 <MaterialIcons name="keyboard-arrow-down" size={20} color="#A79E96" />
               </TouchableOpacity>
             </>
           )}
 
-          <View className="bg-[#22C55E]/10 rounded-lg border border-[#22C55E]/20 p-4 flex-row items-center mt-2">
-            <MaterialIcons name="info-outline" size={20} color="#22C55E" className="mr-3" />
-            <Text className="text-[#F3F4F6] text-xs flex-1 ml-2">
+          <View className="bg-[#22B573]/10 rounded-lg border border-[#22B573]/20 p-4 flex-row items-center mt-2">
+            <MaterialIcons name="info-outline" size={20} color="#22B573" className="mr-3" />
+            <Text className="text-[#F6F1EC] text-xs flex-1 ml-2">
               {publishMode === 'now' 
                 ? "Gönderi, seçilen tüm platformlarda anında yayınlanacaktır."
                 : "Gönderi taslak olarak kaydedilecek ve planlanan zamanda yayınlanacaktır."}
@@ -1288,7 +1288,7 @@ export default function AiUretimScreen({ route, navigation }) {
         {/* Action Button (Fixed Bottom) */}
         {!isKeyboardVisible && (
         <View 
-          className="w-full px-5 pt-4 bg-[#0A0B0F] border-t border-white/5"
+          className="w-full px-5 pt-4 bg-[#17151A] border-t border-white/5"
           style={{ paddingBottom: Math.max(insets.bottom + 16, 24) }}
         >
           <TouchableOpacity 
@@ -1297,17 +1297,17 @@ export default function AiUretimScreen({ route, navigation }) {
             disabled={isSharing}
           >
             <LinearGradient
-              colors={['#22D3EE', '#A855F7']}
+              colors={['#22B573', '#C2478D']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className={`rounded-full py-4 px-6 flex-row items-center justify-center shadow-[0_4px_15px_rgba(34, 211, 238,0.3)] ${isSharing ? 'opacity-50' : ''}`}
+              className={`rounded-full py-4 px-6 flex-row items-center justify-center shadow-[0_4px_15px_rgba(34, 181, 115,0.3)] ${isSharing ? 'opacity-50' : ''}`}
             >
               {isSharing ? (
-                <ActivityIndicator size="small" color="#0A0B0F" style={{ marginRight: 8 }} />
+                <ActivityIndicator size="small" color="#17151A" style={{ marginRight: 8 }} />
               ) : (
-                <MaterialIcons name="send" size={20} color="#0A0B0F" style={{ marginRight: 8 }} />
+                <MaterialIcons name="send" size={20} color="#17151A" style={{ marginRight: 8 }} />
               )}
-              <Text className="text-[#0A0B0F] font-bold text-lg">
+              <Text className="text-[#17151A] font-bold text-lg">
                 {isSharing ? t('sosyalMedya.generate.sharing') : t('sosyalMedya.generate.shareSelected')}
               </Text>
             </LinearGradient>
@@ -1324,11 +1324,11 @@ export default function AiUretimScreen({ route, navigation }) {
         onRequestClose={() => setYtCategoryModalVisible(false)}
       >
         <View className="flex-1 bg-black/80 justify-end">
-          <View className="bg-[#1A1D26] rounded-t-3xl h-[60%]">
+          <View className="bg-[#2A2631] rounded-t-3xl h-[60%]">
             <View className="flex-row justify-between items-center p-5 border-b border-white/10">
-              <Text className="text-[#F3F4F6] text-lg font-semibold">Kategori Seçin</Text>
+              <Text className="text-[#F6F1EC] text-lg font-semibold">Kategori Seçin</Text>
               <TouchableOpacity onPress={() => setYtCategoryModalVisible(false)}>
-                <MaterialIcons name="close" size={24} color="#9CA3AF" />
+                <MaterialIcons name="close" size={24} color="#A79E96" />
               </TouchableOpacity>
             </View>
             <ScrollView className="p-4" contentContainerStyle={{ paddingBottom: 40 }}>
@@ -1339,11 +1339,11 @@ export default function AiUretimScreen({ route, navigation }) {
                     setYtCategory(cat);
                     setYtCategoryModalVisible(false);
                   }}
-                  className={`flex-row justify-between items-center p-4 border-b border-white/5 ${ytCategory === cat ? 'bg-[#22C55E]/10' : ''}`}
+                  className={`flex-row justify-between items-center p-4 border-b border-white/5 ${ytCategory === cat ? 'bg-[#22B573]/10' : ''}`}
                 >
-                  <Text className={`text-base ${ytCategory === cat ? 'text-[#22C55E] font-bold' : 'text-[#F3F4F6]'}`}>{cat}</Text>
+                  <Text className={`text-base ${ytCategory === cat ? 'text-[#22B573] font-bold' : 'text-[#F6F1EC]'}`}>{cat}</Text>
                   {ytCategory === cat && (
-                    <MaterialIcons name="check" size={20} color="#22C55E" />
+                    <MaterialIcons name="check" size={20} color="#22B573" />
                   )}
                 </TouchableOpacity>
               ))}
@@ -1360,11 +1360,11 @@ export default function AiUretimScreen({ route, navigation }) {
         onRequestClose={() => setTimezoneModalVisible(false)}
       >
         <View className="flex-1 bg-black/80 justify-end">
-          <View className="bg-[#1A1D26] rounded-t-3xl h-[60%]">
+          <View className="bg-[#2A2631] rounded-t-3xl h-[60%]">
             <View className="flex-row justify-between items-center p-5 border-b border-white/10">
-              <Text className="text-[#F3F4F6] text-lg font-semibold">Timezone Seçin</Text>
+              <Text className="text-[#F6F1EC] text-lg font-semibold">Timezone Seçin</Text>
               <TouchableOpacity onPress={() => setTimezoneModalVisible(false)}>
-                <MaterialIcons name="close" size={24} color="#9CA3AF" />
+                <MaterialIcons name="close" size={24} color="#A79E96" />
               </TouchableOpacity>
             </View>
             <ScrollView className="p-4" contentContainerStyle={{ paddingBottom: 40 }}>
@@ -1375,11 +1375,11 @@ export default function AiUretimScreen({ route, navigation }) {
                     setTimezone(tz);
                     setTimezoneModalVisible(false);
                   }}
-                  className={`flex-row justify-between items-center p-4 border-b border-white/5 ${timezone === tz ? 'bg-[#22C55E]/10' : ''}`}
+                  className={`flex-row justify-between items-center p-4 border-b border-white/5 ${timezone === tz ? 'bg-[#22B573]/10' : ''}`}
                 >
-                  <Text className={`text-base ${timezone === tz ? 'text-[#22C55E] font-bold' : 'text-[#F3F4F6]'}`}>{tz}</Text>
+                  <Text className={`text-base ${timezone === tz ? 'text-[#22B573] font-bold' : 'text-[#F6F1EC]'}`}>{tz}</Text>
                   {timezone === tz && (
-                    <MaterialIcons name="check" size={20} color="#22C55E" />
+                    <MaterialIcons name="check" size={20} color="#22B573" />
                   )}
                 </TouchableOpacity>
               ))}

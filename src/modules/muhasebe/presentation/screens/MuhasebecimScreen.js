@@ -15,16 +15,16 @@ import { GlobalAppBar } from '../../../../shared';
 
 // -- DEĞİŞKENLER VE RENKLER --
 const COLORS = {
-  background: '#12141B',
+  background: '#201D24',
   cardBg: 'rgba(255, 255, 255, 0.03)',
   cardBorder: 'rgba(255, 255, 255, 0.08)',
-  accent: '#22D3EE', // Turkuaz
+  accent: '#22B573', // Turkuaz
   accentSubtle: 'rgba(0, 218, 243, 0.1)',
-  textPrimary: '#F3F4F6',
-  textSecondary: '#9CA3AF',
+  textPrimary: '#F6F1EC',
+  textSecondary: '#A79E96',
   error: '#FCA5A5',
   warning: '#F59E0B',
-  success: '#22C55E',
+  success: '#22B573',
 };
 
 const BORDER_WIDTH = 0.5;

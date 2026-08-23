@@ -71,7 +71,7 @@ const AnimatedBorderCard = ({ children, style, colors, padding = 20, borderRadiu
         transform: [{ rotate: spin }],
       }}>
         <LinearGradient
-          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#A855F7', '#ffffff']}
+          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#C2478D', '#ffffff']}
           locations={[0, 0.4, 0.9, 1]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -79,7 +79,7 @@ const AnimatedBorderCard = ({ children, style, colors, padding = 20, borderRadiu
         />
       </Animated.View>
       
-      <View style={{ flex: 1, backgroundColor: '#12141B', borderRadius: borderRadius - 3.5, padding }}>
+      <View style={{ flex: 1, backgroundColor: '#201D24', borderRadius: borderRadius - 3.5, padding }}>
         {children}
       </View>
     </View>
@@ -197,7 +197,7 @@ export default function AiMuhasebeScreen({ navigation }) {
   );
 
   return (
-    <View className="flex-1 bg-[#0A0B0F]">
+    <View className="flex-1 bg-[#17151A]">
       <ImageBackground 
         source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
         style={StyleSheet.absoluteFillObject}
@@ -220,13 +220,13 @@ export default function AiMuhasebeScreen({ navigation }) {
             resizeMode="cover"
           />
           <LinearGradient
-            colors={['transparent', '#12141B']}
+            colors={['transparent', '#201D24']}
             style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60%' }}
           />
           <View className="absolute bottom-12 left-5 right-5">
             <View className="mb-2">
-              <Text className="text-[#22D3EE] text-[28px] font-bold tracking-tight">{t('muhasebe.aiMuhasebe.financialSummary')}</Text>
-              <Text className="text-[#9CA3AF] text-sm opacity-70 mt-1">Bu Ayki Performans ({currentMonthName})</Text>
+              <Text className="text-[#22B573] text-[28px] font-bold tracking-tight">{t('muhasebe.aiMuhasebe.financialSummary')}</Text>
+              <Text className="text-[#A79E96] text-sm opacity-70 mt-1">Bu Ayki Performans ({currentMonthName})</Text>
             </View>
           </View>
         </View>
@@ -236,33 +236,33 @@ export default function AiMuhasebeScreen({ navigation }) {
           <View className="flex-row justify-between mb-4">
             <AnimatedBorderCard 
               style={{ flex: 1, marginRight: 8 }} 
-              colors={['#22D3EE', '#ffffff']} 
+              colors={['#22B573', '#ffffff']} 
               padding={16} 
               borderRadius={16}
             >
               <View className="flex-row justify-between items-start mb-1">
-                <Text className="text-[#9CA3AF] text-[10px] font-medium uppercase tracking-wider">Bu Ay Gelir</Text>
+                <Text className="text-[#A79E96] text-[10px] font-medium uppercase tracking-wider">Bu Ay Gelir</Text>
               </View>
               {isLoading ? (
                 <Skeleton width="100%" height={24} style={{ marginTop: 4 }} />
               ) : (
-                <Text className="text-[#F3F4F6] text-lg font-bold">{formatCurrency(financeData.income)} ₺</Text>
+                <Text className="text-[#F6F1EC] text-lg font-bold">{formatCurrency(financeData.income)} ₺</Text>
               )}
             </AnimatedBorderCard>
 
             <AnimatedBorderCard 
               style={{ flex: 1, marginLeft: 8 }} 
-              colors={['#A855F7', '#ffffff']} 
+              colors={['#C2478D', '#ffffff']} 
               padding={16} 
               borderRadius={16}
             >
               <View className="flex-row justify-between items-start mb-1">
-                <Text className="text-[#9CA3AF] text-[10px] font-medium uppercase tracking-wider">Bu Ay Gider</Text>
+                <Text className="text-[#A79E96] text-[10px] font-medium uppercase tracking-wider">Bu Ay Gider</Text>
               </View>
               {isLoading ? (
                 <Skeleton width="100%" height={24} style={{ marginTop: 4 }} />
               ) : (
-                <Text className="text-[#F3F4F6] text-lg font-bold">{formatCurrency(financeData.expense)} ₺</Text>
+                <Text className="text-[#F6F1EC] text-lg font-bold">{formatCurrency(financeData.expense)} ₺</Text>
               )}
             </AnimatedBorderCard>
           </View>
@@ -275,9 +275,9 @@ export default function AiMuhasebeScreen({ navigation }) {
               <CustomButton 
                 onPress={() => navigation.navigate('AiChat', { transactionType: 'income' })}
                 className="bg-transparent py-3 px-2 h-auto"
-                leftIcon={<MaterialIcons name="add-circle-outline" size={16} color="#22D3EE" />}
+                leftIcon={<MaterialIcons name="add-circle-outline" size={16} color="#22B573" />}
                 title={t('muhasebe.aiMuhasebe.enterIncome')}
-                textClassName="text-[#22D3EE] text-[11px] font-bold uppercase tracking-widest ml-1"
+                textClassName="text-[#22B573] text-[11px] font-bold uppercase tracking-widest ml-1"
               />
             </View>
             
@@ -285,9 +285,9 @@ export default function AiMuhasebeScreen({ navigation }) {
               <CustomButton 
                 onPress={() => navigation.navigate('AiChat', { transactionType: 'expense' })}
                 className="bg-transparent py-3 px-2 h-auto"
-                leftIcon={<MaterialIcons name="remove-circle-outline" size={16} color="#A855F7" />}
+                leftIcon={<MaterialIcons name="remove-circle-outline" size={16} color="#C2478D" />}
                 title={t('muhasebe.aiMuhasebe.enterExpense')}
-                textClassName="text-[#A855F7] text-[11px] font-bold uppercase tracking-widest ml-1"
+                textClassName="text-[#C2478D] text-[11px] font-bold uppercase tracking-widest ml-1"
               />
             </View>
           </View>
@@ -299,8 +299,8 @@ export default function AiMuhasebeScreen({ navigation }) {
                 onPress={() => navigation.navigate('Isletmem')}
                 className="bg-transparent py-4 px-4 h-auto"
                 title="İŞLETMEM (GEÇMİŞ DÖNEMLER)"
-                textClassName="text-[#22D3EE] text-[12px] font-bold uppercase tracking-widest"
-                leftIcon={<MaterialIcons name="history" size={16} color="#22D3EE" />}
+                textClassName="text-[#22B573] text-[12px] font-bold uppercase tracking-widest"
+                leftIcon={<MaterialIcons name="history" size={16} color="#22B573" />}
               />
             </View>
 
@@ -309,8 +309,8 @@ export default function AiMuhasebeScreen({ navigation }) {
                 onPress={() => navigation.navigate('OdemeTakvimi')}
                 className="bg-transparent py-4 px-4 h-auto"
                 title={t('muhasebe.aiMuhasebe.paymentCalendar')}
-                textClassName="text-[#22C55E] text-[12px] font-bold uppercase tracking-widest"
-                leftIcon={<MaterialIcons name="calendar-month" size={16} color="#22C55E" />}
+                textClassName="text-[#22B573] text-[12px] font-bold uppercase tracking-widest"
+                leftIcon={<MaterialIcons name="calendar-month" size={16} color="#22B573" />}
               />
             </View>
             
@@ -319,8 +319,8 @@ export default function AiMuhasebeScreen({ navigation }) {
                 onPress={() => navigation.navigate('AiAssistant', { mode: 'report' })}
                 className="bg-transparent py-4 px-4 h-auto"
                 title={t('muhasebe.aiMuhasebe.aiAssistant')}
-                textClassName="text-[#22C55E] text-[12px] font-bold uppercase tracking-widest"
-                leftIcon={<MaterialIcons name="auto-awesome" size={16} color="#22C55E" />}
+                textClassName="text-[#22B573] text-[12px] font-bold uppercase tracking-widest"
+                leftIcon={<MaterialIcons name="auto-awesome" size={16} color="#22B573" />}
               />
             </View>
 
@@ -329,8 +329,8 @@ export default function AiMuhasebeScreen({ navigation }) {
                 onPress={() => navigation.navigate('Muhasebecim')}
                 className="bg-transparent py-4 px-4 h-auto"
                 title="MUHASEBECİ BAĞLANTISI"
-                textClassName="text-[#22D3EE] text-[12px] font-bold uppercase tracking-widest"
-                leftIcon={<MaterialIcons name="vpn-key" size={16} color="#22D3EE" />}
+                textClassName="text-[#22B573] text-[12px] font-bold uppercase tracking-widest"
+                leftIcon={<MaterialIcons name="vpn-key" size={16} color="#22B573" />}
               />
             </View>
           </View>
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
   glassCard: {
     backgroundColor: 'rgba(32, 31, 34, 0.4)',
     borderWidth: 1,
-    borderColor: 'rgba(34, 211, 238, 0.2)',
+    borderColor: 'rgba(34, 181, 115, 0.2)',
     borderRadius: 20,
     shadowColor: '#000000',
     shadowOpacity: 0.15,

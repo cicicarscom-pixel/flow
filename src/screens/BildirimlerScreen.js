@@ -13,13 +13,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlobalAppBar, supabase } from '../shared';
 
 const COLORS = {
-  background: '#0A0B0F',
+  background: '#17151A',
   surface: 'rgba(39, 42, 46, 0.4)',
-  onSurface: '#F3F4F6',
-  onSurfaceVariant: '#9CA3AF',
-  primary: '#22D3EE',
+  onSurface: '#F6F1EC',
+  onSurfaceVariant: '#A79E96',
+  primary: '#22B573',
   error: '#FCA5A5',
-  success: '#22C55E',
+  success: '#22B573',
   warning: '#F59E0B'
 };
 

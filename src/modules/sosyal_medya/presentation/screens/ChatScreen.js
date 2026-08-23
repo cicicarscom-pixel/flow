@@ -262,7 +262,7 @@ export default function ChatScreen({ route, navigation }) {
             <Ionicons 
               name={selectedItems.includes(item.id) ? "checkmark-circle" : "ellipse-outline"} 
               size={24} 
-              color={selectedItems.includes(item.id) ? "#A855F7" : "#9CA3AF"} 
+              color={selectedItems.includes(item.id) ? "#C2478D" : "#A79E96"} 
             />
           </TouchableOpacity>
         )}
@@ -284,16 +284,16 @@ export default function ChatScreen({ route, navigation }) {
           activeOpacity={0.7}
           style={{ flexShrink: 1, flexDirection: 'row', ...(isSelectionMode ? { flex: 1 } : {}) }}
         >
-          <GlassBubble isOwn={isOwn} style={selectedItems.includes(item.id) ? { borderColor: '#A855F7', borderWidth: 1 } : {}}>
-            <Text className="text-[#F3F4F6] text-[14px] leading-5">{item.content}</Text>
+          <GlassBubble isOwn={isOwn} style={selectedItems.includes(item.id) ? { borderColor: '#C2478D', borderWidth: 1 } : {}}>
+            <Text className="text-[#F6F1EC] text-[14px] leading-5">{item.content}</Text>
             
             <View className="flex-row justify-end items-center mt-1">
               <Text className="text-white/50 text-[10px]">{msgTime}</Text>
-              {isOwn && <Ionicons name="checkmark-done" size={12} color="#22D3EE" style={{ marginLeft: 4 }} />}
+              {isOwn && <Ionicons name="checkmark-done" size={12} color="#22B573" style={{ marginLeft: 4 }} />}
             </View>
 
             {item.reactions && item.reactions.length > 0 && (
-              <View className={`absolute -bottom-3 ${isOwn ? '-left-2' : '-right-2'} bg-[#0A0B0F] rounded-full px-1.5 py-0.5 border border-white/10`}>
+              <View className={`absolute -bottom-3 ${isOwn ? '-left-2' : '-right-2'} bg-[#17151A] rounded-full px-1.5 py-0.5 border border-white/10`}>
                 <Text className="text-[10px]">{item.reactions.join(' ')}</Text>
               </View>
             )}
@@ -304,7 +304,7 @@ export default function ChatScreen({ route, navigation }) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0A0B0F]" edges={['top', 'left', 'right', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-[#17151A]" edges={['top', 'left', 'right', 'bottom']}>
       <ImageBackground 
         source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
         style={StyleSheet.absoluteFillObject}
@@ -326,17 +326,17 @@ export default function ChatScreen({ route, navigation }) {
         <View className="flex-row justify-between items-center bg-[#EF4444]/10 px-5 py-4 border-b border-[#EF4444]/30 z-10">
           <View className="flex-row items-center">
             <TouchableOpacity onPress={() => { setIsSelectionMode(false); setSelectedItems([]); }} className="mr-4">
-              <Ionicons name="close" size={24} color="#F3F4F6" />
+              <Ionicons name="close" size={24} color="#F6F1EC" />
             </TouchableOpacity>
-            <Text className="text-[#F3F4F6] font-bold text-[16px]">{selectedItems.length} Seçildi</Text>
+            <Text className="text-[#F6F1EC] font-bold text-[16px]">{selectedItems.length} Seçildi</Text>
           </View>
           <TouchableOpacity 
             onPress={handleDeleteSelected} 
             disabled={selectedItems.length === 0}
             className={`flex-row items-center px-4 py-2 rounded-lg border ${selectedItems.length > 0 ? 'bg-[#EF4444]/20 border-[#EF4444]/40' : 'bg-white/5 border-white/10'}`}
           >
-            <Feather name="trash-2" size={16} color={selectedItems.length > 0 ? "#EF4444" : "#9CA3AF"} />
-            <Text className={`ml-2 text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#9CA3AF]'}`}>Sil</Text>
+            <Feather name="trash-2" size={16} color={selectedItems.length > 0 ? "#EF4444" : "#A79E96"} />
+            <Text className={`ml-2 text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#A79E96]'}`}>Sil</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -371,7 +371,7 @@ export default function ChatScreen({ route, navigation }) {
         <TouchableWithoutFeedback onPress={() => setSelectedMessage(null)}>
           <View className="flex-1 bg-black/60 justify-center items-center px-6">
             <TouchableWithoutFeedback>
-              <View className="w-full bg-[#12141B] rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+              <View className="w-full bg-[#201D24] rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
                 
                 <View className="p-4 border-b border-white/5 flex-row justify-center space-x-6">
                   {['👍', '❤️', '🔥', '😂'].map(emoji => (
@@ -394,8 +394,8 @@ export default function ChatScreen({ route, navigation }) {
                       alert(t('sosyalMedya.alerts.editMessageTelegramOnly'));
                     }}
                   >
-                    <Feather name="edit-2" size={18} color="#22D3EE" style={{ marginRight: 12 }} />
-                    <Text className="text-[#22D3EE] font-medium text-[16px]">{t('sosyalMedya.chat.edit')}</Text>
+                    <Feather name="edit-2" size={18} color="#22B573" style={{ marginRight: 12 }} />
+                    <Text className="text-[#22B573] font-medium text-[16px]">{t('sosyalMedya.chat.edit')}</Text>
                   </TouchableOpacity>
                 )}
 
@@ -437,16 +437,16 @@ const styles = StyleSheet.create({
     backdropFilter: 'blur(10px)', // Note: backdropFilter doesn't work natively in RN, we use rgba backgrounds
   },
   glassBubbleOwn: {
-    backgroundColor: 'rgba(168, 85, 247, 0.15)', // Magenta tint
-    borderColor: 'rgba(168, 85, 247, 0.3)',
+    backgroundColor: 'rgba(194, 71, 141, 0.15)', // Magenta tint
+    borderColor: 'rgba(194, 71, 141, 0.3)',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 4,
   },
   glassBubbleOther: {
-    backgroundColor: 'rgba(34, 211, 238, 0.1)', // Cyan tint
-    borderColor: 'rgba(34, 211, 238, 0.2)',
+    backgroundColor: 'rgba(34, 181, 115, 0.1)', // Cyan tint
+    borderColor: 'rgba(34, 181, 115, 0.2)',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     borderBottomLeftRadius: 4,

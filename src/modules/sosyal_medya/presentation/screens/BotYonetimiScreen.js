@@ -342,7 +342,7 @@ export default function BotYonetimiScreen() {
       style={{ flex: 1 }} 
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View className="flex-1 bg-[#12141B]">
+      <View className="flex-1 bg-[#201D24]">
         <ImageBackground 
           source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
           style={StyleSheet.absoluteFillObject}
@@ -355,7 +355,7 @@ export default function BotYonetimiScreen() {
         
         {loading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#22C55E" />
+            <ActivityIndicator size="large" color="#22B573" />
           </View>
         ) : (
           <View style={{ flex: 1 }}>
@@ -367,13 +367,13 @@ export default function BotYonetimiScreen() {
               <View className="mb-6 px-1">
                   <View className="flex-row items-center justify-between mt-2">
                     <View className="flex-row items-center gap-2">
-                      <View className={`w-3 h-3 rounded-full ${botActive ? 'bg-[#22C55E]' : 'bg-red-500'}`} style={botActive ? styles.pulseGlow : {}} />
+                      <View className={`w-3 h-3 rounded-full ${botActive ? 'bg-[#22B573]' : 'bg-red-500'}`} style={botActive ? styles.pulseGlow : {}} />
                       <Text className="text-white text-base font-bold">Ai Asistan</Text>
                     </View>
                     <Switch
                       value={botActive}
                       onValueChange={(val) => { setBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
-                      trackColor={{ false: '#20242F', true: '#22C55E' }}
+                      trackColor={{ false: '#34303C', true: '#22B573' }}
                       thumbColor={'#ffffff'}
                       style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
                     />
@@ -383,12 +383,12 @@ export default function BotYonetimiScreen() {
                   {botActive && (
                     <View className="flex-row items-center justify-between bg-black/20 p-3 rounded-xl mt-1">
                         <View className="flex-row items-center mb-1">
-                          <Ionicons name="logo-whatsapp" size={16} color={whatsappBotActive ? "#25D366" : "#6B7280"} />
+                          <Ionicons name="logo-whatsapp" size={16} color={whatsappBotActive ? "#25D366" : "#756D66"} />
                           <Text className="text-white text-xs font-semibold ml-2">WhatsApp Asistanı</Text>
                           <Switch
                             value={whatsappBotActive}
                             onValueChange={(val) => { setWhatsappBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
-                            trackColor={{ false: '#20242F', true: '#25D366' }}
+                            trackColor={{ false: '#34303C', true: '#25D366' }}
                             thumbColor={'#ffffff'}
                             style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }], marginLeft: 'auto' }}
                           />
@@ -409,9 +409,9 @@ export default function BotYonetimiScreen() {
                       setIsSaveBtnActive(true); 
                     }}
                     placeholder="Örn: Sen bir berber dükkanı asistanısın, fiyat bilgisi verip randevu alırsın..."
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#A79E96"
                     multiline
-                    style={{ color: '#F3F4F6', fontSize: 13, minHeight: 60, textAlignVertical: 'top' }}
+                    style={{ color: '#F6F1EC', fontSize: 13, minHeight: 60, textAlignVertical: 'top' }}
                   />
                 </View>
               </View>
@@ -425,7 +425,7 @@ export default function BotYonetimiScreen() {
                   {/* Google Drive Compact Item */}
                   <View className="flex-row items-center justify-between mb-3 bg-black/20 p-3 rounded-xl border border-white/5">
                      <View className="flex-row items-center gap-3">
-                       <Ionicons name="logo-google" size={20} color={connectedFolderId ? "#22C55E" : "#9CA3AF"} />
+                       <Ionicons name="logo-google" size={20} color={connectedFolderId ? "#22B573" : "#A79E96"} />
                        <View>
                          <Text className="text-xs font-semibold text-white">Google Drive (Bilgi Bankası)</Text>
                          <Text className="text-[10px] text-gray-400">{connectedFolderId ? '🟢 Bağlı ve güncel' : '🔴 Bağlı değil'}</Text>
@@ -439,7 +439,7 @@ export default function BotYonetimiScreen() {
                   {/* WhatsApp Compact Item */}
                   <View className="flex-row items-center justify-between bg-black/20 p-3 rounded-xl border border-white/5">
                      <View className="flex-row items-center gap-3">
-                       <Ionicons name="logo-whatsapp" size={20} color={isWhatsAppConnected ? "#25D366" : "#9CA3AF"} />
+                       <Ionicons name="logo-whatsapp" size={20} color={isWhatsAppConnected ? "#25D366" : "#A79E96"} />
                        <View>
                          <Text className="text-xs font-semibold text-white">WhatsApp</Text>
                          <Text className="text-[10px] text-gray-400">{isWhatsAppConnected ? '🟢 Asistan aktif' : '🔴 Bağlı değil'}</Text>
@@ -457,7 +457,7 @@ export default function BotYonetimiScreen() {
                   padding: 2, 
                   borderRadius: 20,
                   marginBottom: 16,
-                  shadowColor: '#3B82F6',
+                  shadowColor: '#FF7A59',
                   shadowOpacity: 0.35,
                   shadowRadius: 20,
                   elevation: 10,
@@ -470,14 +470,14 @@ export default function BotYonetimiScreen() {
                     transform: [{ rotate: rgbSpin }],
                   }}>
                     <LinearGradient
-                      colors={['#22D3EE', '#3B82F6', '#A855F7', '#3B82F6', '#22D3EE']}
+                      colors={['#22B573', '#FF7A59', '#C2478D', '#FF7A59', '#22B573']}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 1 }}
                       style={{ flex: 1 }}
                     />
                   </Animated.View>
 
-                  <View style={{ backgroundColor: '#1A1D26', borderRadius: 16 }} className="p-4">
+                  <View style={{ backgroundColor: '#2A2631', borderRadius: 16 }} className="p-4">
                     <Text className="text-white text-sm font-bold mb-3">AI Kişiliği</Text>
                   
                   {/* 1. 👔 Roller (Sektör) */}
@@ -488,9 +488,9 @@ export default function BotYonetimiScreen() {
                         <TouchableOpacity 
                           key={role.id}
                           onPress={() => { setRole(role.id); setIsSaveBtnActive(true); }}
-                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.roleId === role.id ? 'bg-[#3B82F6]/30 border-2 border-[#3B82F6]' : 'bg-white/5 border border-white/10'}`}
+                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.roleId === role.id ? 'bg-[#FF7A59]/30 border-2 border-[#FF7A59]' : 'bg-white/5 border border-white/10'}`}
                         >
-                          <Text className={`text-[11px] font-semibold ${promptConfig.roleId === role.id ? 'text-[#3B82F6]' : 'text-gray-300'}`}>
+                          <Text className={`text-[11px] font-semibold ${promptConfig.roleId === role.id ? 'text-[#FF7A59]' : 'text-gray-300'}`}>
                             {role.icon} {role.title}
                           </Text>
                         </TouchableOpacity>
@@ -498,9 +498,9 @@ export default function BotYonetimiScreen() {
                       {/* Diğer (Custom Role) Chip */}
                       <TouchableOpacity 
                         onPress={() => { setRole('custom'); setIsSaveBtnActive(true); }}
-                        className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.roleId === 'custom' ? 'bg-[#3B82F6]/30 border-2 border-[#3B82F6]' : 'bg-white/5 border border-white/10'}`}
+                        className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.roleId === 'custom' ? 'bg-[#FF7A59]/30 border-2 border-[#FF7A59]' : 'bg-white/5 border border-white/10'}`}
                       >
-                        <Text className={`text-[11px] font-semibold ${promptConfig.roleId === 'custom' ? 'text-[#3B82F6]' : 'text-gray-300'}`}>
+                        <Text className={`text-[11px] font-semibold ${promptConfig.roleId === 'custom' ? 'text-[#FF7A59]' : 'text-gray-300'}`}>
                           ✨ Diğer
                         </Text>
                       </TouchableOpacity>
@@ -514,8 +514,8 @@ export default function BotYonetimiScreen() {
                         value={promptConfig.customRoleText}
                         onChangeText={(text) => { setCustomRole(text); setIsSaveBtnActive(true); }}
                         placeholder="Mesleğinizi yazın (Örn: Otomobil Tamircisi)..."
-                        placeholderTextColor="#9CA3AF"
-                        style={{ color: '#F3F4F6', fontSize: 12, paddingVertical: 4, paddingHorizontal: 8 }}
+                        placeholderTextColor="#A79E96"
+                        style={{ color: '#F6F1EC', fontSize: 12, paddingVertical: 4, paddingHorizontal: 8 }}
                       />
                     </View>
                   )}
@@ -528,9 +528,9 @@ export default function BotYonetimiScreen() {
                         <TouchableOpacity 
                           key={persona.id}
                           onPress={() => { setPersona(persona.id); setIsSaveBtnActive(true); }}
-                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.personaId === persona.id ? 'bg-[#A855F7]/30 border-2 border-[#A855F7]' : 'bg-[#A855F7]/5 border border-[#A855F7]/20'}`}
+                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.personaId === persona.id ? 'bg-[#C2478D]/30 border-2 border-[#C2478D]' : 'bg-[#C2478D]/5 border border-[#C2478D]/20'}`}
                         >
-                          <Text className={`text-[11px] font-semibold ${promptConfig.personaId === persona.id ? 'text-[#D8B4FE]' : 'text-[#D8B4FE]/60'}`}>
+                          <Text className={`text-[11px] font-semibold ${promptConfig.personaId === persona.id ? 'text-[#E8A8CD]' : 'text-[#E8A8CD]/60'}`}>
                             {persona.icon} {persona.name}
                           </Text>
                         </TouchableOpacity>
@@ -564,7 +564,7 @@ export default function BotYonetimiScreen() {
                   padding: 2, 
                   borderRadius: 20,
                   marginBottom: 16,
-                  shadowColor: '#3B82F6',
+                  shadowColor: '#FF7A59',
                   shadowOpacity: 0.35,
                   shadowRadius: 20,
                   elevation: 10,
@@ -577,36 +577,36 @@ export default function BotYonetimiScreen() {
                     transform: [{ rotate: rgbSpin }],
                   }}>
                     <LinearGradient
-                      colors={['#22D3EE', '#3B82F6', '#A855F7', '#3B82F6', '#22D3EE']}
+                      colors={['#22B573', '#FF7A59', '#C2478D', '#FF7A59', '#22B573']}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 1 }}
                       style={{ flex: 1 }}
                     />
                   </Animated.View>
 
-                  <View style={{ backgroundColor: '#1A1D26', borderRadius: 16 }} className="p-4">
+                  <View style={{ backgroundColor: '#2A2631', borderRadius: 16 }} className="p-4">
                     <TouchableOpacity 
                       onPress={() => setIsAdvancedExpanded(!isAdvancedExpanded)}
                       className="flex-row items-center justify-between"
                     >
                       <View className="flex-row items-center gap-2">
-                        <Ionicons name="code-slash-outline" size={18} color="#3B82F6" />
+                        <Ionicons name="code-slash-outline" size={18} color="#FF7A59" />
                         <Text className="text-sm font-bold text-white">İleri Seviye Ayarlar</Text>
                       </View>
-                      <Ionicons name={isAdvancedExpanded ? "chevron-up" : "chevron-down"} size={20} color="#9CA3AF" />
+                      <Ionicons name={isAdvancedExpanded ? "chevron-up" : "chevron-down"} size={20} color="#A79E96" />
                     </TouchableOpacity>
 
                     {isAdvancedExpanded && (
                       <View className="mt-4 pt-4 border-t border-white/10">
                         {/* Advanced Active Toggle */}
-                        <View className="flex-row items-center justify-between bg-black/40 p-3 rounded-xl mb-4 border border-[#3B82F6]/30">
-                          <Text className="text-[#3B82F6] text-[11px] font-bold uppercase tracking-widest">
+                        <View className="flex-row items-center justify-between bg-black/40 p-3 rounded-xl mb-4 border border-[#FF7A59]/30">
+                          <Text className="text-[#FF7A59] text-[11px] font-bold uppercase tracking-widest">
                             ÖZEL KURALLARI AKTİFLEŞTİR
                           </Text>
                           <Switch
                             value={promptConfig.advancedActive}
                             onValueChange={(val) => { setAdvancedActive(val); setIsSaveBtnActive(true); }}
-                            trackColor={{ false: '#20242F', true: '#3B82F6' }}
+                            trackColor={{ false: '#34303C', true: '#FF7A59' }}
                             thumbColor={'#ffffff'}
                             style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
                           />
@@ -628,7 +628,7 @@ export default function BotYonetimiScreen() {
                               transform: [{ rotate: rgbSpin }],
                             }}>
                               <LinearGradient
-                                colors={['#22D3EE', '#3B82F6', '#A855F7', '#3B82F6', '#22D3EE']}
+                                colors={['#22B573', '#FF7A59', '#C2478D', '#FF7A59', '#22B573']}
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 1 }}
                                 style={{ flex: 1 }}
@@ -640,10 +640,10 @@ export default function BotYonetimiScreen() {
                                 value={botInstruction}
                                 editable={false}
                                 placeholder="Asistanın müşteriye nasıl davranması gerektiğiyle ilgili ek talimatları buraya yazın..."
-                                placeholderTextColor="#9CA3AF"
+                                placeholderTextColor="#A79E96"
                                 multiline
                                 textAlignVertical="top"
-                                style={{ height: 280, color: '#F3F4F6', fontSize: 13, lineHeight: 18 }}
+                                style={{ height: 280, color: '#F6F1EC', fontSize: 13, lineHeight: 18 }}
                                 className="font-body-md"
                                 showsVerticalScrollIndicator={true}
                               />
@@ -660,7 +660,7 @@ export default function BotYonetimiScreen() {
                 {isSaveBtnActive && (
                   <Animated.View style={{ 
                     marginBottom: 16,
-                    shadowColor: '#22C55E',
+                    shadowColor: '#22B573',
                     shadowOpacity: 0.35,
                     shadowRadius: 15,
                     elevation: 10
@@ -669,9 +669,9 @@ export default function BotYonetimiScreen() {
                       title="Değişiklikleri Kaydet"
                       onPress={handleSave}
                       isLoading={isSavingSettings}
-                      leftIcon={<Ionicons name="save-outline" size={18} color="#132A1F" />}
-                      className="w-full bg-[#22C55E]"
-                      textClassName="text-[#132A1F] font-bold text-sm"
+                      leftIcon={<Ionicons name="save-outline" size={18} color="#1C3327" />}
+                      className="w-full bg-[#22B573]"
+                      textClassName="text-[#1C3327] font-bold text-sm"
                     />
                   </Animated.View>
                 )}
@@ -680,12 +680,12 @@ export default function BotYonetimiScreen() {
                 <View style={styles.glassCard} className="mb-4 overflow-hidden">
                   <View className="p-4 border-b border-white/5 flex-row justify-between items-center bg-white/2">
                     <View className="flex-row items-center gap-2">
-                      <Ionicons name="chatbubble-ellipses-outline" size={18} color="#22C55E" />
+                      <Ionicons name="chatbubble-ellipses-outline" size={18} color="#22B573" />
                       <Text className="text-sm font-semibold text-white">Canlı Test</Text>
                     </View>
                     <View className="flex-row items-center gap-1.5">
-                      <View className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
-                      <Text className="text-[9px] text-[#22C55E] font-bold uppercase tracking-wider">SİMÜLASYON</Text>
+                      <View className="w-1.5 h-1.5 rounded-full bg-[#22B573]" />
+                      <Text className="text-[9px] text-[#22B573] font-bold uppercase tracking-wider">SİMÜLASYON</Text>
                     </View>
                   </View>
 
@@ -701,27 +701,27 @@ export default function BotYonetimiScreen() {
                       {messages.map((item) => (
                         <View key={item.id} className={`flex-row ${item.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
                           {item.sender === 'bot' && (
-                            <View className="w-7 h-7 rounded-full bg-[#A855F7]/20 items-center justify-center mr-2 flex-shrink-0 border border-[#A855F7]/30">
-                              <Ionicons name="sparkles" size={12} color="#D8B4FE" />
+                            <View className="w-7 h-7 rounded-full bg-[#C2478D]/20 items-center justify-center mr-2 flex-shrink-0 border border-[#C2478D]/30">
+                              <Ionicons name="sparkles" size={12} color="#E8A8CD" />
                             </View>
                           )}
                           <View 
                             style={{
-                              backgroundColor: item.sender === 'user' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(32, 31, 34, 0.9)',
+                              backgroundColor: item.sender === 'user' ? 'rgba(34, 181, 115, 0.15)' : 'rgba(32, 31, 34, 0.9)',
                               borderWidth: 1,
-                              borderColor: item.sender === 'user' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(168, 85, 247, 0.3)',
+                              borderColor: item.sender === 'user' ? 'rgba(34, 181, 115, 0.3)' : 'rgba(194, 71, 141, 0.3)',
                               borderRadius: 16,
                               borderTopRightRadius: item.sender === 'user' ? 2 : 14,
                               borderTopLeftRadius: item.sender === 'bot' ? 2 : 14,
                               padding: 10,
                               maxWidth: '75%',
-                              shadowColor: item.sender === 'bot' ? '#A855F7' : 'transparent',
+                              shadowColor: item.sender === 'bot' ? '#C2478D' : 'transparent',
                               shadowOpacity: 0.2,
                               shadowRadius: 5,
                               elevation: item.sender === 'bot' ? 3 : 0
                             }}
                           >
-                            <Text style={{ color: item.sender === 'bot' ? '#D8B4FE' : '#F3F4F6', fontSize: 12, lineHeight: 16 }}>{item.text}</Text>
+                            <Text style={{ color: item.sender === 'bot' ? '#E8A8CD' : '#F6F1EC', fontSize: 12, lineHeight: 16 }}>{item.text}</Text>
                           </View>
                         </View>
                       ))}
@@ -729,10 +729,10 @@ export default function BotYonetimiScreen() {
                     
                     {isTyping && (
                       <View className="flex-row justify-start mb-3 items-center">
-                        <View className="w-7 h-7 rounded-full bg-[#A855F7]/20 items-center justify-center mr-2 border border-[#A855F7]/30">
-                          <Ionicons name="sparkles" size={12} color="#D8B4FE" />
+                        <View className="w-7 h-7 rounded-full bg-[#C2478D]/20 items-center justify-center mr-2 border border-[#C2478D]/30">
+                          <Ionicons name="sparkles" size={12} color="#E8A8CD" />
                         </View>
-                        <ActivityIndicator size="small" color="#A855F7" style={{ marginLeft: 6 }} />
+                        <ActivityIndicator size="small" color="#C2478D" style={{ marginLeft: 6 }} />
                       </View>
                     )}
 
@@ -742,7 +742,7 @@ export default function BotYonetimiScreen() {
                         value={chatInput}
                         onChangeText={setChatInput}
                         placeholder="Test mesajı gönder..."
-                        placeholderTextColor="#9CA3AF"
+                        placeholderTextColor="#A79E96"
                         onSubmitEditing={() => sendMessage(chatInput)}
                         style={{
                           backgroundColor: 'rgba(32, 31, 34, 0.8)',
@@ -760,7 +760,7 @@ export default function BotYonetimiScreen() {
                         onPress={() => sendMessage(chatInput)}
                         style={{ position: 'absolute', right: 8, top: 6 }}
                       >
-                        <Ionicons name="send" size={18} color="#22C55E" />
+                        <Ionicons name="send" size={18} color="#22B573" />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -771,14 +771,14 @@ export default function BotYonetimiScreen() {
                   <View className="space-y-3">
                     <TouchableOpacity 
                       onPress={() => navigation.navigate('RandevuMain')}
-                      style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', borderColor: 'rgba(34, 197, 94, 0.3)', borderWidth: 1 }}
+                      style={{ backgroundColor: 'rgba(34, 181, 115, 0.1)', borderColor: 'rgba(34, 181, 115, 0.3)', borderWidth: 1 }}
                       className="flex-row items-center justify-between p-3.5 rounded-xl mb-3"
                     >
                       <View className="flex-row items-center gap-3">
-                        <Ionicons name="calendar-outline" size={18} color="#22C55E" />
-                        <Text className="text-xs text-[#22C55E] font-semibold">Ai Randevu Yönetimi</Text>
+                        <Ionicons name="calendar-outline" size={18} color="#22B573" />
+                        <Text className="text-xs text-[#22B573] font-semibold">Ai Randevu Yönetimi</Text>
                       </View>
-                      <Ionicons name="chevron-forward-outline" size={16} color="#22C55E" />
+                      <Ionicons name="chevron-forward-outline" size={16} color="#22B573" />
                     </TouchableOpacity>
 
                     <TouchableOpacity 
@@ -787,10 +787,10 @@ export default function BotYonetimiScreen() {
                       className="flex-row items-center justify-between p-3.5 rounded-xl"
                     >
                       <View className="flex-row items-center gap-3">
-                        <Ionicons name="briefcase-outline" size={18} color="#3B82F6" />
-                        <Text className="text-xs text-[#3B82F6] font-semibold">Ai İşletme Hizmetleri</Text>
+                        <Ionicons name="briefcase-outline" size={18} color="#FF7A59" />
+                        <Text className="text-xs text-[#FF7A59] font-semibold">Ai İşletme Hizmetleri</Text>
                       </View>
-                      <Ionicons name="chevron-forward-outline" size={16} color="#3B82F6" />
+                      <Ionicons name="chevron-forward-outline" size={16} color="#FF7A59" />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -810,7 +810,7 @@ export default function BotYonetimiScreen() {
           onRequestClose={() => setWhatsappModalVisible(false)}
         >
           <View style={styles.modalOverlay}>
-            <View style={styles.modalContent} className="bg-[#1A1D26] border border-white/10">
+            <View style={styles.modalContent} className="bg-[#2A2631] border border-white/10">
               <View className="flex-row justify-between items-center mb-4">
                 <Text className="text-base font-bold text-white">WhatsApp Bağlantısı</Text>
                 <TouchableOpacity onPress={() => setWhatsappModalVisible(false)}>
@@ -863,14 +863,14 @@ export default function BotYonetimiScreen() {
                   <View className="flex-row bg-white/5 p-1 rounded-xl mb-4">
                     <TouchableOpacity 
                       onPress={() => setLoginMethod('qr')}
-                      style={{ flex: 1, backgroundColor: loginMethod === 'qr' ? 'rgba(34, 197, 94, 0.15)' : 'transparent' }}
+                      style={{ flex: 1, backgroundColor: loginMethod === 'qr' ? 'rgba(34, 181, 115, 0.15)' : 'transparent' }}
                       className="py-2 rounded-lg items-center"
                     >
                       <Text className="text-white text-xs font-semibold">QR Kod</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                       onPress={() => setLoginMethod('phone')}
-                      style={{ flex: 1, backgroundColor: loginMethod === 'phone' ? 'rgba(34, 197, 94, 0.15)' : 'transparent' }}
+                      style={{ flex: 1, backgroundColor: loginMethod === 'phone' ? 'rgba(34, 181, 115, 0.15)' : 'transparent' }}
                       className="py-2 rounded-lg items-center"
                     >
                       <Text className="text-white text-xs font-semibold">Telefon İle Bağlan</Text>
@@ -888,7 +888,7 @@ export default function BotYonetimiScreen() {
                           />
                         ) : (
                           <View className="items-center justify-center">
-                            <ActivityIndicator size="small" color="#22C55E" />
+                            <ActivityIndicator size="small" color="#22B573" />
                             <Text className="text-black text-[10px] font-semibold mt-2">QR Kod Bekleniyor...</Text>
                           </View>
                         )}
@@ -898,9 +898,9 @@ export default function BotYonetimiScreen() {
                         title="QR Kodu Yenile"
                         onPress={handleRefreshQr}
                         isLoading={qrLoading}
-                        leftIcon={<Ionicons name="refresh" size={16} color="#132A1F" />}
+                        leftIcon={<Ionicons name="refresh" size={16} color="#1C3327" />}
                         className="w-full mb-2"
-                        textClassName="text-[#132A1F] font-bold"
+                        textClassName="text-[#1C3327] font-bold"
                       />
                     </View>
                   ) : (
@@ -910,7 +910,7 @@ export default function BotYonetimiScreen() {
                         onChangeText={setWahaPhone}
                         placeholder="Telefon numarası"
                         keyboardType="phone-pad"
-                        leftIcon={<Ionicons name="call-outline" size={18} color="#22C55E" />}
+                        leftIcon={<Ionicons name="call-outline" size={18} color="#22B573" />}
                         containerClassName="mb-3"
                       />
 
@@ -918,15 +918,15 @@ export default function BotYonetimiScreen() {
                         title="Eşleşme Kodu Al"
                         onPress={handleGetPairingCode}
                         isLoading={pairingLoading}
-                        leftIcon={<Ionicons name="key-outline" size={16} color="#132A1F" />}
+                        leftIcon={<Ionicons name="key-outline" size={16} color="#1C3327" />}
                         className="w-full mb-4"
-                        textClassName="text-[#132A1F] font-bold"
+                        textClassName="text-[#1C3327] font-bold"
                       />
 
                       {wahaPairingCode && (
-                        <View className="bg-black/40 border border-[#22C55E]/30 rounded-xl p-4 items-center justify-center mb-4">
+                        <View className="bg-black/40 border border-[#22B573]/30 rounded-xl p-4 items-center justify-center mb-4">
                           <Text className="text-gray-400 text-[10px] mb-1">Eşleşme Kodunuz</Text>
-                          <Text className="text-[#22C55E] text-2xl font-bold tracking-widest">{wahaPairingCode}</Text>
+                          <Text className="text-[#22B573] text-2xl font-bold tracking-widest">{wahaPairingCode}</Text>
                         </View>
                       )}
                     </View>
@@ -945,7 +945,7 @@ export default function BotYonetimiScreen() {
           onRequestClose={() => setDriveModalVisible(false)}
         >
           <View style={styles.modalOverlay}>
-            <View style={styles.modalContent} className="bg-[#1A1D26] border border-white/10">
+            <View style={styles.modalContent} className="bg-[#2A2631] border border-white/10">
               <View className="flex-row justify-between items-center mb-4">
                 <Text className="text-base font-bold text-white">Bilgi Bankası (Google Drive)</Text>
                 <TouchableOpacity onPress={() => setDriveModalVisible(false)}>
@@ -958,7 +958,7 @@ export default function BotYonetimiScreen() {
                   <Text className="text-gray-300 text-xs leading-5 mb-2">
                     Google Drive klasörünüzü bağlamak için aşağıdaki servis e-postasını klasörünüze &apos;Görüntüleyen&apos; olarak ekleyin:
                   </Text>
-                  <Text selectable={true} className="text-[#22C55E] font-medium text-xs bg-black/40 p-2 rounded-lg mb-3 text-center">
+                  <Text selectable={true} className="text-[#22B573] font-medium text-xs bg-black/40 p-2 rounded-lg mb-3 text-center">
                     esnaf-drive-bot@gen-lang-client-0889039852.iam.gserviceaccount.com
                   </Text>
                   <Text className="text-gray-300 text-xs">
@@ -972,7 +972,7 @@ export default function BotYonetimiScreen() {
                   placeholder="Google Drive Klasör Linki"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  leftIcon={<Ionicons name="logo-google" size={18} color="#22C55E" />}
+                  leftIcon={<Ionicons name="logo-google" size={18} color="#22B573" />}
                   containerClassName="mb-4"
                 />
 
@@ -990,12 +990,12 @@ export default function BotYonetimiScreen() {
                     onPress={handleSyncFolder}
                     disabled={syncing}
                     style={{ flex: 2 }}
-                    className="bg-[#22C55E] py-3 rounded-xl items-center justify-center"
+                    className="bg-[#22B573] py-3 rounded-xl items-center justify-center"
                   >
                     {syncing ? (
-                      <ActivityIndicator size="small" color="#132A1F" />
+                      <ActivityIndicator size="small" color="#1C3327" />
                     ) : (
-                      <Text className="text-[#132A1F] text-xs font-bold">Bağla ve Senkronize Et</Text>
+                      <Text className="text-[#1C3327] text-xs font-bold">Bağla ve Senkronize Et</Text>
                     )}
                   </TouchableOpacity>
                 </View>
@@ -1013,7 +1013,7 @@ const styles = StyleSheet.create({
   glassCard: {
     backgroundColor: 'rgba(32, 31, 34, 0.4)',
     borderWidth: 1,
-    borderColor: 'rgba(34, 211, 238, 0.2)',
+    borderColor: 'rgba(34, 181, 115, 0.2)',
     borderRadius: 20,
     shadowColor: '#000000',
     shadowOpacity: 0.15,
@@ -1021,18 +1021,18 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   glowBorderCyanThick: {
-    backgroundColor: '#1A1D26', // Solid opaque dark grey to prevent Android elevation shadow bleed-through
+    backgroundColor: '#2A2631', // Solid opaque dark grey to prevent Android elevation shadow bleed-through
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#3B82F6',
-    shadowColor: '#3B82F6',
+    borderColor: '#FF7A59',
+    shadowColor: '#FF7A59',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.35,
     shadowRadius: 28,
     elevation: 10,
   },
   pulseGlow: {
-    shadowColor: '#22C55E',
+    shadowColor: '#22B573',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.35,
     shadowRadius: 4,

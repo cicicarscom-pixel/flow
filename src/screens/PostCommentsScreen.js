@@ -371,7 +371,7 @@ export default function PostCommentsScreen({ route, navigation }) {
     if (item.hidden) {
       return (
         <View key={item.id} className={`mb-4 bg-white/5 p-4 rounded-xl border border-white/10 flex-row justify-between items-center opacity-50 ${isNested ? 'ml-8' : ''}`}>
-          <Text className="text-[#9CA3AF] text-[12px] italic">Bu yorum gizlendi.</Text>
+          <Text className="text-[#A79E96] text-[12px] italic">Bu yorum gizlendi.</Text>
           <TouchableOpacity onPress={() => toggleHide(item.id)} className="bg-white/10 px-3 py-1 rounded">
             <Text className="text-white text-[10px]">Göster (Unhide)</Text>
           </TouchableOpacity>
@@ -396,13 +396,13 @@ export default function PostCommentsScreen({ route, navigation }) {
         delayLongPress={500}
       >
         {({ pressed }) => (
-          <View className={`mb-4 p-4 rounded-xl border flex-row items-start ${isNested ? 'ml-8' : ''} ${selectedItems.includes(item.id) ? 'bg-[#A855F7]/20 border-[#A855F7]/40' : 'bg-white/5 border-white/10'} ${pressed && !isSelectionMode ? 'opacity-80' : ''}`}>
+          <View className={`mb-4 p-4 rounded-xl border flex-row items-start ${isNested ? 'ml-8' : ''} ${selectedItems.includes(item.id) ? 'bg-[#C2478D]/20 border-[#C2478D]/40' : 'bg-white/5 border-white/10'} ${pressed && !isSelectionMode ? 'opacity-80' : ''}`}>
             {isSelectionMode && (
               <View className="mr-3 mt-1">
                 <Ionicons 
                   name={selectedItems.includes(item.id) ? "checkmark-circle" : "ellipse-outline"} 
                   size={20} 
-                  color={selectedItems.includes(item.id) ? "#A855F7" : "#9CA3AF"} 
+                  color={selectedItems.includes(item.id) ? "#C2478D" : "#A79E96"} 
                 />
               </View>
             )}
@@ -410,21 +410,21 @@ export default function PostCommentsScreen({ route, navigation }) {
             <View className="flex-row justify-between items-start mb-2">
               <View className="flex-row items-center flex-1 pr-2">
                 <View className="w-8 h-8 rounded-full bg-white/10 items-center justify-center mr-2">
-                  <Ionicons name="person" size={14} color="#22D3EE" />
+                  <Ionicons name="person" size={14} color="#22B573" />
                 </View>
                 <View className="flex-1">
                   <Text className="text-white font-bold text-[13px]" numberOfLines={1} ellipsizeMode="tail">{item.username}</Text>
-                  <Text className="text-[#9CA3AF] text-[10px]">
+                  <Text className="text-[#A79E96] text-[10px]">
                     {new Date(item.created_at).toLocaleDateString('tr-TR')}
                   </Text>
                 </View>
               </View>
               <View className="flex-row items-center space-x-3">
                 <TouchableOpacity onPress={() => toggleLike(item.id)}>
-                  <Ionicons name={item.liked ? "heart" : "heart-outline"} size={16} color={item.liked ? "#EF4444" : "#9CA3AF"} />
+                  <Ionicons name={item.liked ? "heart" : "heart-outline"} size={16} color={item.liked ? "#EF4444" : "#A79E96"} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => toggleHide(item.id)}>
-                  <Feather name="eye-off" size={16} color="#9CA3AF" />
+                  <Feather name="eye-off" size={16} color="#A79E96" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => handleDeleteComment(item.id)} style={{ marginLeft: 12 }}>
                   <Feather name="trash-2" size={16} color="#EF4444" />
@@ -432,23 +432,23 @@ export default function PostCommentsScreen({ route, navigation }) {
               </View>
             </View>
             
-            <Text className="text-[#F3F4F6] text-[13px] leading-5 mb-3">{item.content}</Text>
+            <Text className="text-[#F6F1EC] text-[13px] leading-5 mb-3">{item.content}</Text>
             
             <View className="flex-row items-center justify-between border-t border-white/5 pt-2">
               <TouchableOpacity 
                 onPress={() => initiatePublicReply(item)}
                 className="flex-row items-center"
               >
-                <Feather name="message-circle" size={14} color="#A855F7" style={{ marginRight: 4 }} />
-                <Text className="text-[#A855F7] text-[11px] font-bold">Yanıtla</Text>
+                <Feather name="message-circle" size={14} color="#C2478D" style={{ marginRight: 4 }} />
+                <Text className="text-[#C2478D] text-[11px] font-bold">Yanıtla</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
                 onPress={() => initiatePrivateReply(item)}
-                className="flex-row items-center bg-[#22D3EE]/10 px-2 py-1 rounded border border-[#22D3EE]/30"
+                className="flex-row items-center bg-[#22B573]/10 px-2 py-1 rounded border border-[#22B573]/30"
               >
-                <Ionicons name="mail" size={12} color="#22D3EE" style={{ marginRight: 4 }} />
-                <Text className="text-[#22D3EE] text-[10px] font-bold">DM Gönder</Text>
+                <Ionicons name="mail" size={12} color="#22B573" style={{ marginRight: 4 }} />
+                <Text className="text-[#22B573] text-[10px] font-bold">DM Gönder</Text>
               </TouchableOpacity>
               </View>
             </View>
@@ -465,7 +465,7 @@ export default function PostCommentsScreen({ route, navigation }) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0A0B0F]" edges={['top', 'left', 'right', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-[#17151A]" edges={['top', 'left', 'right', 'bottom']}>
       <ImageBackground 
         source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
         style={StyleSheet.absoluteFillObject}
@@ -486,17 +486,17 @@ export default function PostCommentsScreen({ route, navigation }) {
         <View className="flex-row justify-between items-center bg-[#EF4444]/10 px-5 py-4 border-b border-[#EF4444]/30">
           <View className="flex-row items-center">
             <TouchableOpacity onPress={() => { setIsSelectionMode(false); setSelectedItems([]); }} className="mr-4">
-              <Ionicons name="close" size={24} color="#F3F4F6" />
+              <Ionicons name="close" size={24} color="#F6F1EC" />
             </TouchableOpacity>
-            <Text className="text-[#F3F4F6] font-bold text-[16px]">{selectedItems.length} Seçildi</Text>
+            <Text className="text-[#F6F1EC] font-bold text-[16px]">{selectedItems.length} Seçildi</Text>
           </View>
           <TouchableOpacity 
             onPress={handleDeleteSelected} 
             disabled={selectedItems.length === 0}
             className={`flex-row items-center px-4 py-2 rounded-lg border ${selectedItems.length > 0 ? 'bg-[#EF4444]/20 border-[#EF4444]/40' : 'bg-white/5 border-white/10'}`}
           >
-            <Feather name="trash-2" size={16} color={selectedItems.length > 0 ? "#EF4444" : "#9CA3AF"} />
-            <Text className={`ml-2 text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#9CA3AF]'}`}>Sil</Text>
+            <Feather name="trash-2" size={16} color={selectedItems.length > 0 ? "#EF4444" : "#A79E96"} />
+            <Text className={`ml-2 text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#A79E96]'}`}>Sil</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -507,12 +507,12 @@ export default function PostCommentsScreen({ route, navigation }) {
       >
         {/* Post Summary Header */}
         {post && (
-          <View className="px-4 py-4 bg-[#12141B]/80 border-b border-white/10 flex-row items-center">
+          <View className="px-4 py-4 bg-[#201D24]/80 border-b border-white/10 flex-row items-center">
             {post.media_urls && post.media_urls[0] && (
               <Image source={{ uri: post.media_urls[0] }} className="w-12 h-12 rounded bg-white/10 mr-3" />
             )}
             <View className="flex-1">
-              <Text className="text-[#9CA3AF] text-[12px]" numberOfLines={2} ellipsizeMode="tail">{post.content || post.title || 'İçerik yok'}</Text>
+              <Text className="text-[#A79E96] text-[12px]" numberOfLines={2} ellipsizeMode="tail">{post.content || post.title || 'İçerik yok'}</Text>
             </View>
           </View>
         )}
@@ -527,14 +527,14 @@ export default function PostCommentsScreen({ route, navigation }) {
 
         {/* Public Reply Input Bar */}
         <View 
-          className="px-4 pt-3 bg-[#0A0B0F]/90 border-t border-white/10"
+          className="px-4 pt-3 bg-[#17151A]/90 border-t border-white/10"
           style={{ paddingBottom: Math.max(insets.bottom, 12) }}
         >
           {replyingTo && (
-            <View className="flex-row justify-between items-center mb-2 bg-white/5 px-3 py-1.5 rounded-lg border border-[#A855F7]/30">
-              <Text className="text-[#A855F7] text-[11px]">@{replyingTo.username} kişisine yanıt veriliyor</Text>
+            <View className="flex-row justify-between items-center mb-2 bg-white/5 px-3 py-1.5 rounded-lg border border-[#C2478D]/30">
+              <Text className="text-[#C2478D] text-[11px]">@{replyingTo.username} kişisine yanıt veriliyor</Text>
               <TouchableOpacity onPress={() => setReplyingTo(null)}>
-                <Ionicons name="close-circle" size={16} color="#9CA3AF" />
+                <Ionicons name="close-circle" size={16} color="#A79E96" />
               </TouchableOpacity>
             </View>
           )}
@@ -542,9 +542,9 @@ export default function PostCommentsScreen({ route, navigation }) {
             <View className="flex-1 bg-white/5 rounded-full px-4 py-2 border border-white/10 flex-row items-center">
               <TextInput
                 ref={inputRef}
-                className="flex-1 text-[#F3F4F6] text-[14px]"
+                className="flex-1 text-[#F6F1EC] text-[14px]"
                 placeholder={replyingTo ? "Yanıtınızı yazın..." : "Gönderiye yorum ekle..."}
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor="#A79E96"
                 value={replyText}
                 onChangeText={setReplyText}
               />
@@ -552,9 +552,9 @@ export default function PostCommentsScreen({ route, navigation }) {
             <TouchableOpacity 
               onPress={handleSendPublicReply}
               disabled={!replyText.trim()}
-              className={`ml-3 w-10 h-10 rounded-full items-center justify-center ${replyText.trim() ? 'bg-[#A855F7]' : 'bg-white/10'}`}
+              className={`ml-3 w-10 h-10 rounded-full items-center justify-center ${replyText.trim() ? 'bg-[#C2478D]' : 'bg-white/10'}`}
             >
-              <Ionicons name="send" size={16} color={replyText.trim() ? "#fff" : "#9CA3AF"} style={{ marginLeft: 2 }} />
+              <Ionicons name="send" size={16} color={replyText.trim() ? "#fff" : "#A79E96"} style={{ marginLeft: 2 }} />
             </TouchableOpacity>
           </View>
         </View>
@@ -565,27 +565,27 @@ export default function PostCommentsScreen({ route, navigation }) {
         <TouchableWithoutFeedback onPress={() => setPrivateReplyModalVisible(false)}>
           <View className="flex-1 bg-black/60 justify-end">
             <TouchableWithoutFeedback>
-              <View className="bg-[#12141B] rounded-t-3xl border-t border-white/10 p-6 pb-10">
+              <View className="bg-[#201D24] rounded-t-3xl border-t border-white/10 p-6 pb-10">
                 <View className="flex-row justify-between items-center mb-4">
                   <View>
                     <Text className="text-white font-bold text-[18px]">Hızlı Yanıt (DM)</Text>
-                    <Text className="text-[#9CA3AF] text-[12px] mt-1">@{selectedCommentForDM?.username} kullanıcısına gizli mesaj gönder</Text>
+                    <Text className="text-[#A79E96] text-[12px] mt-1">@{selectedCommentForDM?.username} kullanıcısına gizli mesaj gönder</Text>
                   </View>
                   <TouchableOpacity onPress={() => setPrivateReplyModalVisible(false)} className="bg-white/10 p-2 rounded-full">
-                    <Ionicons name="close" size={20} color="#F3F4F6" />
+                    <Ionicons name="close" size={20} color="#F6F1EC" />
                   </TouchableOpacity>
                 </View>
 
                 <View className="bg-white/5 rounded-xl border border-white/10 p-4 mb-4">
-                  <Text className="text-[#22D3EE] text-[11px] font-bold mb-2">YORUMU:</Text>
-                  <Text className="text-[#F3F4F6] text-[13px] italic" numberOfLines={3} ellipsizeMode="tail">&quot;{selectedCommentForDM?.content}&quot;</Text>
+                  <Text className="text-[#22B573] text-[11px] font-bold mb-2">YORUMU:</Text>
+                  <Text className="text-[#F6F1EC] text-[13px] italic" numberOfLines={3} ellipsizeMode="tail">&quot;{selectedCommentForDM?.content}&quot;</Text>
                 </View>
 
-                <View className="bg-white/5 rounded-xl border border-[#22D3EE]/30 p-2 mb-6 min-h-[100px]">
+                <View className="bg-white/5 rounded-xl border border-[#22B573]/30 p-2 mb-6 min-h-[100px]">
                   <TextInput
                     className="text-white text-[15px] flex-1"
                     placeholder="Özel mesajınızı buraya yazın..."
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#A79E96"
                     multiline
                     textAlignVertical="top"
                     value={privateMessageText}
@@ -596,9 +596,9 @@ export default function PostCommentsScreen({ route, navigation }) {
                 <TouchableOpacity 
                   onPress={handleSendPrivateReply}
                   disabled={!privateMessageText.trim()}
-                  className={`w-full py-4 rounded-xl items-center shadow-[0_0_15px_rgba(34, 211, 238,0.3)] ${privateMessageText.trim() ? 'bg-[#22D3EE]' : 'bg-[#22D3EE]/30'}`}
+                  className={`w-full py-4 rounded-xl items-center shadow-[0_0_15px_rgba(34, 181, 115,0.3)] ${privateMessageText.trim() ? 'bg-[#22B573]' : 'bg-[#22B573]/30'}`}
                 >
-                  <Text className={`font-bold text-[16px] ${privateMessageText.trim() ? 'text-[#0A0B0F]' : 'text-[#9CA3AF]'}`}>Gönder</Text>
+                  <Text className={`font-bold text-[16px] ${privateMessageText.trim() ? 'text-[#17151A]' : 'text-[#A79E96]'}`}>Gönder</Text>
                 </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>

@@ -67,14 +67,14 @@ const AnimatedBorderCard = ({ children, style, colors, padding = 16, borderRadiu
         transform: [{ rotate: spin }],
       }}>
         <LinearGradient
-          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#22D3EE', '#ffffff']}
+          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#22B573', '#ffffff']}
           locations={[0, 0.4, 0.9, 1]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ flex: 1 }}
         />
       </Animated.View>
-      <View style={{ flex: 1, backgroundColor: '#0A0B0F', borderRadius: borderRadius - 2, padding }}>
+      <View style={{ flex: 1, backgroundColor: '#17151A', borderRadius: borderRadius - 2, padding }}>
         {children}
       </View>
     </View>
@@ -191,17 +191,17 @@ const MesajlarTab = ({ navigation }) => {
     );
   };
 
-  if (loading) return <ActivityIndicator color="#22D3EE" style={{ marginTop: 20 }} />;
+  if (loading) return <ActivityIndicator color="#22B573" style={{ marginTop: 20 }} />;
 
   return (
     <View style={styles.tabContainer}>
       {isSelectionMode && (
-        <View className="flex-row justify-between items-center bg-[#A855F7]/10 px-5 py-4 border-b border-[#A855F7]/30">
+        <View className="flex-row justify-between items-center bg-[#C2478D]/10 px-5 py-4 border-b border-[#C2478D]/30">
           <View className="flex-row items-center">
             <TouchableOpacity onPress={() => { setIsSelectionMode(false); setSelectedItems([]); }} className="mr-4">
-              <Ionicons name="close" size={24} color="#F3F4F6" />
+              <Ionicons name="close" size={24} color="#F6F1EC" />
             </TouchableOpacity>
-            <Text className="text-[#F3F4F6] font-bold text-[16px]">{t('sosyalMedya.inbox.selectedCount', { count: selectedItems.length })}</Text>
+            <Text className="text-[#F6F1EC] font-bold text-[16px]">{t('sosyalMedya.inbox.selectedCount', { count: selectedItems.length })}</Text>
           </View>
           <View className="flex-row items-center">
             <TouchableOpacity onPress={handleSelectAll} className="mr-4 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
@@ -211,9 +211,9 @@ const MesajlarTab = ({ navigation }) => {
               onPress={handleDeleteSelected} 
             disabled={selectedItems.length === 0}
             className={`px-4 py-2 rounded-lg border ${selectedItems.length > 0 ? 'bg-[#EF4444]/20 border-[#EF4444]/40' : 'bg-white/5 border-white/10'}`}
-            textClassName={`text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#9CA3AF]'}`}
+            textClassName={`text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#A79E96]'}`}
             title={t('sosyalMedya.inbox.delete')}
-            leftIcon={<Feather name="trash-2" size={16} color={selectedItems.length > 0 ? "#EF4444" : "#9CA3AF"} />}
+            leftIcon={<Feather name="trash-2" size={16} color={selectedItems.length > 0 ? "#EF4444" : "#A79E96"} />}
           />
           </View>
         </View>
@@ -221,8 +221,8 @@ const MesajlarTab = ({ navigation }) => {
 
       {conversations.length === 0 ? (
         <View className="flex-1 items-center justify-center p-5">
-          <Ionicons name="chatbubbles-outline" size={48} color="#9CA3AF" />
-          <Text className="text-[#9CA3AF] mt-4 text-center">{t('sosyalMedya.inbox.noMessages')}</Text>
+          <Ionicons name="chatbubbles-outline" size={48} color="#A79E96" />
+          <Text className="text-[#A79E96] mt-4 text-center">{t('sosyalMedya.inbox.noMessages')}</Text>
         </View>
       ) : (
         <FlatList 
@@ -253,38 +253,38 @@ const MesajlarTab = ({ navigation }) => {
               }}
               delayLongPress={250}
             >
-              <GlassCard style={{ padding: 12, marginBottom: 12, borderRadius: 12, borderWidth: isSelectionMode && selectedItems.includes(item.zernio_conversation_id) ? 1 : 0, borderColor: isSelectionMode && selectedItems.includes(item.zernio_conversation_id) ? '#A855F7' : 'transparent' }}>
+              <GlassCard style={{ padding: 12, marginBottom: 12, borderRadius: 12, borderWidth: isSelectionMode && selectedItems.includes(item.zernio_conversation_id) ? 1 : 0, borderColor: isSelectionMode && selectedItems.includes(item.zernio_conversation_id) ? '#C2478D' : 'transparent' }}>
                 <View className="flex-row items-center justify-between">
                   {isSelectionMode && (
-                    <View className={`w-6 h-6 rounded-full border mr-3 items-center justify-center ${selectedItems.includes(item.zernio_conversation_id) ? 'bg-[#A855F7] border-[#A855F7]' : 'border-white/30'}`}>
+                    <View className={`w-6 h-6 rounded-full border mr-3 items-center justify-center ${selectedItems.includes(item.zernio_conversation_id) ? 'bg-[#C2478D] border-[#C2478D]' : 'border-white/30'}`}>
                       {selectedItems.includes(item.zernio_conversation_id) && <Ionicons name="checkmark" size={16} color="#fff" />}
                     </View>
                   )}
                   <View className="flex-row items-center flex-1">
                     <View className="w-12 h-12 rounded-full bg-white/10 items-center justify-center mr-3 relative">
-                      <Ionicons name={item.platform === 'instagram' ? 'logo-instagram' : 'logo-facebook'} size={24} color={item.platform === 'instagram' ? '#D8B4FE' : '#22D3EE'} />
+                      <Ionicons name={item.platform === 'instagram' ? 'logo-instagram' : 'logo-facebook'} size={24} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} />
                       {item.unread_count > 0 && (
-                        <View className="absolute -top-1 -right-1 bg-[#A855F7] w-5 h-5 rounded-full items-center justify-center border border-[#0A0B0F]">
+                        <View className="absolute -top-1 -right-1 bg-[#C2478D] w-5 h-5 rounded-full items-center justify-center border border-[#17151A]">
                           <Text className="text-white text-[10px] font-bold">{item.unread_count}</Text>
                         </View>
                       )}
                     </View>
                     <View className="flex-1">
-                      <Text className="text-[#F3F4F6] font-bold text-[14px]" numberOfLines={1} ellipsizeMode="tail">{item.participant_name}</Text>
-                      <Text className={`text-[12px] mt-1 ${item.unread_count > 0 ? 'text-[#22D3EE] font-medium' : 'text-[#9CA3AF]'}`} numberOfLines={1} ellipsizeMode="tail">
+                      <Text className="text-[#F6F1EC] font-bold text-[14px]" numberOfLines={1} ellipsizeMode="tail">{item.participant_name}</Text>
+                      <Text className={`text-[12px] mt-1 ${item.unread_count > 0 ? 'text-[#22B573] font-medium' : 'text-[#A79E96]'}`} numberOfLines={1} ellipsizeMode="tail">
                         {item.lastMessageSnippet}
                       </Text>
                     </View>
                   </View>
                   <View className="items-end">
-                    <Text className="text-[#9CA3AF] text-[10px] mb-2">
+                    <Text className="text-[#A79E96] text-[10px] mb-2">
                       {new Date(item.updated_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute:'2-digit' })}
                     </Text>
                     
                     <View className="flex-row">
                       {item.unread_count > 0 && (
-                        <TouchableOpacity className="w-7 h-7 rounded-full bg-[#22D3EE]/10 items-center justify-center border border-[#22D3EE]/30 mr-2">
-                          <Ionicons name="checkmark-done" size={14} color="#22D3EE" />
+                        <TouchableOpacity className="w-7 h-7 rounded-full bg-[#22B573]/10 items-center justify-center border border-[#22B573]/30 mr-2">
+                          <Ionicons name="checkmark-done" size={14} color="#22B573" />
                         </TouchableOpacity>
                       )}
                       <TouchableOpacity 
@@ -295,9 +295,9 @@ const MesajlarTab = ({ navigation }) => {
                           localConversationId: item.id,
                           accountId: item.accountId
                         })}
-                        className="w-7 h-7 rounded-full bg-[#A855F7]/10 items-center justify-center border border-[#A855F7]/30"
+                        className="w-7 h-7 rounded-full bg-[#C2478D]/10 items-center justify-center border border-[#C2478D]/30"
                       >
-                        <MaterialIcons name="reply" size={14} color="#A855F7" />
+                        <MaterialIcons name="reply" size={14} color="#C2478D" />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -311,9 +311,9 @@ const MesajlarTab = ({ navigation }) => {
       {/* Create Conversation FAB */}
       <TouchableOpacity 
         onPress={() => alert(t('sosyalMedya.alerts.newChatApiSoon'))}
-        className="absolute bottom-6 right-6 w-14 h-14 bg-[#22D3EE] rounded-full items-center justify-center shadow-[0_0_15px_rgba(34, 211, 238,0.6)]"
+        className="absolute bottom-6 right-6 w-14 h-14 bg-[#22B573] rounded-full items-center justify-center shadow-[0_0_15px_rgba(34, 181, 115,0.6)]"
       >
-        <Ionicons name="chatbubble-ellipses" size={24} color="#0A0B0F" />
+        <Ionicons name="chatbubble-ellipses" size={24} color="#17151A" />
       </TouchableOpacity>
     </View>
   );
@@ -863,7 +863,7 @@ const YorumlarTab = ({ navigation }) => {
     return parents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }, [comments, selectedPostId]);
 
-  if (loading) return <ActivityIndicator color="#A855F7" style={{ marginTop: 20 }} />;
+  if (loading) return <ActivityIndicator color="#C2478D" style={{ marginTop: 20 }} />;
 
   return (
     <View style={styles.tabContainer}>
@@ -871,9 +871,9 @@ const YorumlarTab = ({ navigation }) => {
         <View className="flex-row justify-between items-center bg-[#EF4444]/10 px-5 py-3 border-b border-[#EF4444]/30 z-10">
           <View className="flex-row items-center">
             <TouchableOpacity onPress={() => { setIsSelectionMode(false); setSelectedItems([]); }} className="mr-4">
-              <Ionicons name="close" size={24} color="#F3F4F6" />
+              <Ionicons name="close" size={24} color="#F6F1EC" />
             </TouchableOpacity>
-            <Text className="text-[#F3F4F6] font-bold text-[14px]">{selectedItems.length} {t('sosyalMedya.inbox.selected', 'Seçildi')}</Text>
+            <Text className="text-[#F6F1EC] font-bold text-[14px]">{selectedItems.length} {t('sosyalMedya.inbox.selected', 'Seçildi')}</Text>
           </View>
           <View className="flex-row items-center">
             <TouchableOpacity onPress={handleSelectAll} className="mr-3 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
@@ -884,8 +884,8 @@ const YorumlarTab = ({ navigation }) => {
             disabled={selectedItems.length === 0}
             className={`flex-row items-center px-4 py-2 rounded-lg border ${selectedItems.length > 0 ? 'bg-[#EF4444]/20 border-[#EF4444]/40' : 'bg-white/5 border-white/10'}`}
           >
-            <Feather name="trash-2" size={14} color={selectedItems.length > 0 ? "#EF4444" : "#9CA3AF"} />
-            <Text className={`ml-2 text-[12px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#9CA3AF]'}`}>{t('sosyalMedya.inbox.delete', 'Sil')}</Text>
+            <Feather name="trash-2" size={14} color={selectedItems.length > 0 ? "#EF4444" : "#A79E96"} />
+            <Text className={`ml-2 text-[12px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#A79E96]'}`}>{t('sosyalMedya.inbox.delete', 'Sil')}</Text>
           </TouchableOpacity>
           </View>
         </View>
@@ -913,23 +913,23 @@ const YorumlarTab = ({ navigation }) => {
                 <TouchableOpacity 
                   onPress={() => setSelectedPostId(item.id)}
                   activeOpacity={0.8}
-                  className={`mr-4 p-2 rounded-xl border-2 flex-row items-center w-[240px] bg-white/5 ${isSelected ? 'border-[#A855F7] bg-[#A855F7]/10' : 'border-transparent'}`}
+                  className={`mr-4 p-2 rounded-xl border-2 flex-row items-center w-[240px] bg-white/5 ${isSelected ? 'border-[#C2478D] bg-[#C2478D]/10' : 'border-transparent'}`}
                 >
                   <View className="relative">
                     {item.picture ? (
-                      <Image source={{ uri: item.picture }} className="w-14 h-14 rounded-lg bg-[#12141B]" />
+                      <Image source={{ uri: item.picture }} className="w-14 h-14 rounded-lg bg-[#201D24]" />
                     ) : (
-                      <View className="w-14 h-14 rounded-lg bg-[#12141B] items-center justify-center border border-white/5">
-                        <Ionicons name="image-outline" size={18} color="#9CA3AF" />
+                      <View className="w-14 h-14 rounded-lg bg-[#201D24] items-center justify-center border border-white/5">
+                        <Ionicons name="image-outline" size={18} color="#A79E96" />
                       </View>
                     )}
-                    <View className="absolute -bottom-1 -right-1 bg-[#0A0B0F] rounded-full p-0.5 border border-white/10">
-                      <Ionicons name={`logo-${item.platform}`} size={10} color={item.platform === 'instagram' ? '#D8B4FE' : '#22D3EE'} />
+                    <View className="absolute -bottom-1 -right-1 bg-[#17151A] rounded-full p-0.5 border border-white/10">
+                      <Ionicons name={`logo-${item.platform}`} size={10} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} />
                     </View>
                   </View>
                   
                   <View className="ml-3 flex-1 justify-center">
-                    <Text className="text-[#F3F4F6] text-[10px] leading-tight" numberOfLines={3} ellipsizeMode="tail">
+                    <Text className="text-[#F6F1EC] text-[10px] leading-tight" numberOfLines={3} ellipsizeMode="tail">
                       {snippet}
                     </Text>
                   </View>
@@ -951,15 +951,15 @@ const YorumlarTab = ({ navigation }) => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#A855F7"
-            colors={["#A855F7"]}
-            progressBackgroundColor="#12141B"
+            tintColor="#C2478D"
+            colors={["#C2478D"]}
+            progressBackgroundColor="#201D24"
           />
         }
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center p-5">
-            <Ionicons name="chatbubble-ellipses-outline" size={48} color="#9CA3AF" />
-            <Text className="text-[#9CA3AF] mt-4 text-center">
+            <Ionicons name="chatbubble-ellipses-outline" size={48} color="#A79E96" />
+            <Text className="text-[#A79E96] mt-4 text-center">
               {uniquePosts.length === 0 ? t('sosyalMedya.inbox.noComments') : 'Bu gönderide yorum bulunmuyor.'}
             </Text>
           </View>
@@ -979,13 +979,13 @@ const YorumlarTab = ({ navigation }) => {
                   borderRadius: 16, 
                   borderWidth: isSelectionMode && selectedItems.includes(item.id) ? 1 : 1, 
                   borderColor: isSelectionMode && selectedItems.includes(item.id) 
-                    ? '#A855F7' 
+                    ? '#C2478D' 
                     : 'rgba(255, 255, 255, 0.08)',
                   backgroundColor: 'rgba(32,31,34,0.4)'
                 }}>
                   <View className="flex-row">
                     {isSelectionMode && (
-                      <View className={`w-6 h-6 rounded-full border mr-3 items-center justify-center self-center ${selectedItems.includes(item.id) ? 'bg-[#A855F7] border-[#A855F7]' : 'border-white/30'}`}>
+                      <View className={`w-6 h-6 rounded-full border mr-3 items-center justify-center self-center ${selectedItems.includes(item.id) ? 'bg-[#C2478D] border-[#C2478D]' : 'border-white/30'}`}>
                         {selectedItems.includes(item.id) && <Ionicons name="checkmark" size={16} color="#fff" />}
                       </View>
                     )}
@@ -995,24 +995,24 @@ const YorumlarTab = ({ navigation }) => {
                       {item._pictureUrl ? (
                         <Image source={{ uri: item._pictureUrl }} className="w-full h-full" />
                       ) : (
-                        <Ionicons name="person" size={18} color="#9CA3AF" />
+                        <Ionicons name="person" size={18} color="#A79E96" />
                       )}
                     </View>
 
                     <View className="flex-1">
                       <View className="flex-row justify-between items-center mb-1">
                         <View className="flex-row items-center flex-1">
-                          <Text className="font-bold text-[13px] text-[#F3F4F6]" numberOfLines={1}>
+                          <Text className="font-bold text-[13px] text-[#F6F1EC]" numberOfLines={1}>
                             @{item.username}
                           </Text>
-                          <Ionicons name={`logo-${item.platform}`} size={12} color={item.platform === 'instagram' ? '#D8B4FE' : '#22D3EE'} style={{ marginLeft: 6 }} />
+                          <Ionicons name={`logo-${item.platform}`} size={12} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} style={{ marginLeft: 6 }} />
                         </View>
-                        <Text className="text-[#9CA3AF] text-[10px]">
+                        <Text className="text-[#A79E96] text-[10px]">
                           {new Date(item.created_at).toLocaleDateString('tr-TR')}
                         </Text>
                       </View>
                       
-                      <Text className="text-[#F3F4F6] text-[12px] leading-5 mb-3">{item.content || item.title || ''}</Text>
+                      <Text className="text-[#F6F1EC] text-[12px] leading-5 mb-3">{item.content || item.title || ''}</Text>
                       
                       {/* Action Bar */}
                       <View className="flex-row items-center mt-1" pointerEvents={isSelectionMode ? "none" : "auto"}>
@@ -1028,13 +1028,13 @@ const YorumlarTab = ({ navigation }) => {
                             }
                           }}
                         >
-                          <Ionicons name="return-down-forward" size={14} color="#9CA3AF" />
-                          <Text className="text-[#9CA3AF] text-[11px] ml-1 font-medium">{t('sosyalMedya.inbox.reply', 'Yanıtla')}</Text>
+                          <Ionicons name="return-down-forward" size={14} color="#A79E96" />
+                          <Text className="text-[#A79E96] text-[11px] ml-1 font-medium">{t('sosyalMedya.inbox.reply', 'Yanıtla')}</Text>
                         </TouchableOpacity>
                         
                         <TouchableOpacity onPress={() => handleDMClick(item)} className="flex-row items-center mr-4">
-                          <Feather name="send" size={12} color="#9CA3AF" />
-                          <Text className="text-[#9CA3AF] text-[11px] ml-1 font-medium">DM</Text>
+                          <Feather name="send" size={12} color="#A79E96" />
+                          <Text className="text-[#A79E96] text-[11px] ml-1 font-medium">DM</Text>
                         </TouchableOpacity>
 
                         {!isSelectionMode && (
@@ -1042,8 +1042,8 @@ const YorumlarTab = ({ navigation }) => {
                             onPress={() => handleHideComment(item)} 
                             className="flex-row items-center"
                           >
-                            <Feather name="eye-off" size={12} color="#9CA3AF" />
-                            <Text className="text-[#9CA3AF] text-[11px] ml-1 font-medium">{t('sosyalMedya.inbox.hide', 'Gizle')}</Text>
+                            <Feather name="eye-off" size={12} color="#A79E96" />
+                            <Text className="text-[#A79E96] text-[11px] ml-1 font-medium">{t('sosyalMedya.inbox.hide', 'Gizle')}</Text>
                           </TouchableOpacity>
                         )}
                       </View>
@@ -1091,11 +1091,11 @@ const YorumlarTab = ({ navigation }) => {
                                   <Text className="text-black text-[9px] font-bold">BEN</Text>
                                 </View>
                               </View>
-                              <Text className="text-[#9CA3AF] text-[9px]">
+                              <Text className="text-[#A79E96] text-[9px]">
                                 {new Date(reply.created_at).toLocaleDateString('tr-TR')}
                               </Text>
                             </View>
-                            <Text className="text-[#F3F4F6] text-[11px] leading-4">{reply.content}</Text>
+                            <Text className="text-[#F6F1EC] text-[11px] leading-4">{reply.content}</Text>
                           </View>
                         </View>
                       </GlassCard>
@@ -1112,8 +1112,8 @@ const YorumlarTab = ({ navigation }) => {
                       value={replyText}
                       onChangeText={setReplyText}
                       placeholder={`${item.username} kullanıcısına yanıt ver...`}
-                      placeholderTextColor="#9CA3AF"
-                      style={{ flex: 1, color: '#F3F4F6', fontSize: 12, padding: 0 }}
+                      placeholderTextColor="#A79E96"
+                      style={{ flex: 1, color: '#F6F1EC', fontSize: 12, padding: 0 }}
                       autoFocus
                       multiline
                       maxLength={500}
@@ -1122,12 +1122,12 @@ const YorumlarTab = ({ navigation }) => {
                   <TouchableOpacity 
                     onPress={() => submitReply(item)}
                     disabled={sendingReply || !replyText.trim()}
-                    className={`ml-2 w-9 h-9 rounded-full items-center justify-center ${sendingReply || !replyText.trim() ? 'bg-white/10' : 'bg-[#A855F7]'}`}
+                    className={`ml-2 w-9 h-9 rounded-full items-center justify-center ${sendingReply || !replyText.trim() ? 'bg-white/10' : 'bg-[#C2478D]'}`}
                   >
                     {sendingReply ? (
                       <ActivityIndicator size="small" color="#fff" />
                     ) : (
-                      <Ionicons name="send" size={14} color={sendingReply || !replyText.trim() ? '#9CA3AF' : '#fff'} style={{ marginLeft: 2 }} />
+                      <Ionicons name="send" size={14} color={sendingReply || !replyText.trim() ? '#A79E96' : '#fff'} style={{ marginLeft: 2 }} />
                     )}
                   </TouchableOpacity>
                 </View>
@@ -1141,8 +1141,8 @@ const YorumlarTab = ({ navigation }) => {
                       value={privateReplyText}
                       onChangeText={setPrivateReplyText}
                       placeholder={`${item.username} kullanıcısına DM gönder...`}
-                      placeholderTextColor="#9CA3AF"
-                      style={{ flex: 1, color: '#F3F4F6', fontSize: 12, padding: 0 }}
+                      placeholderTextColor="#A79E96"
+                      style={{ flex: 1, color: '#F6F1EC', fontSize: 12, padding: 0 }}
                       autoFocus
                       multiline
                       maxLength={500}
@@ -1151,12 +1151,12 @@ const YorumlarTab = ({ navigation }) => {
                   <TouchableOpacity 
                     onPress={() => submitPrivateReply(item)}
                     disabled={sendingPrivateReply || !privateReplyText.trim()}
-                    className={`ml-2 w-9 h-9 rounded-full items-center justify-center ${sendingPrivateReply || !privateReplyText.trim() ? 'bg-white/10' : 'bg-[#22D3EE]'}`}
+                    className={`ml-2 w-9 h-9 rounded-full items-center justify-center ${sendingPrivateReply || !privateReplyText.trim() ? 'bg-white/10' : 'bg-[#22B573]'}`}
                   >
                     {sendingPrivateReply ? (
                       <ActivityIndicator size="small" color="#fff" />
                     ) : (
-                      <Ionicons name="send" size={14} color={sendingPrivateReply || !privateReplyText.trim() ? '#9CA3AF' : '#000'} style={{ marginLeft: 2 }} />
+                      <Ionicons name="send" size={14} color={sendingPrivateReply || !privateReplyText.trim() ? '#A79E96' : '#000'} style={{ marginLeft: 2 }} />
                     )}
                   </TouchableOpacity>
                 </View>
@@ -1213,14 +1213,14 @@ const DegerlendirmelerTab = () => {
     };
   }, []);
 
-  if (loading) return <ActivityIndicator color="#22D3EE" style={{ marginTop: 20 }} />;
+  if (loading) return <ActivityIndicator color="#22B573" style={{ marginTop: 20 }} />;
 
   return (
     <View style={styles.tabContainer}>
       {reviews.length === 0 ? (
         <View className="flex-1 items-center justify-center p-5">
-          <Ionicons name="star-outline" size={48} color="#9CA3AF" />
-          <Text className="text-[#9CA3AF] mt-4 text-center">{t('sosyalMedya.inbox.noReviews')}</Text>
+          <Ionicons name="star-outline" size={48} color="#A79E96" />
+          <Text className="text-[#A79E96] mt-4 text-center">{t('sosyalMedya.inbox.noReviews')}</Text>
         </View>
       ) : (
         <FlatList 
@@ -1230,8 +1230,8 @@ const DegerlendirmelerTab = () => {
           renderItem={({ item }) => (
             <GlassCard style={{ padding: 16, marginBottom: 12, borderRadius: 12 }}>
               <View className="flex-row justify-between items-center mb-2">
-                <Text className="text-[#F3F4F6] font-bold text-[14px]" numberOfLines={1} ellipsizeMode="tail">{item.reviewer_name}</Text>
-                <Text className="text-[#9CA3AF] text-[10px]">
+                <Text className="text-[#F6F1EC] font-bold text-[14px]" numberOfLines={1} ellipsizeMode="tail">{item.reviewer_name}</Text>
+                <Text className="text-[#A79E96] text-[10px]">
                   {new Date(item.created_at).toLocaleDateString('tr-TR')}
                 </Text>
               </View>
@@ -1241,12 +1241,12 @@ const DegerlendirmelerTab = () => {
                     key={star} 
                     name={star <= item.rating ? "star" : "star-outline"} 
                     size={14} 
-                    color={star <= item.rating ? "#22D3EE" : "#9CA3AF"} 
+                    color={star <= item.rating ? "#22B573" : "#A79E96"} 
                     style={{ marginRight: 2 }}
                   />
                 ))}
               </View>
-              <Text className="text-[#9CA3AF] text-[12px] leading-5" numberOfLines={4} ellipsizeMode="tail">{item.content}</Text>
+              <Text className="text-[#A79E96] text-[12px] leading-5" numberOfLines={4} ellipsizeMode="tail">{item.content}</Text>
             </GlassCard>
           )}
         />
@@ -1264,7 +1264,7 @@ const BildirimlerTab = ({ navigation }) => {
 export default function InboxScreen({ navigation }) {
   const { t } = useTranslation();
   return (
-    <SafeAreaView className="flex-1 bg-[#0A0B0F]" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-[#17151A]" edges={['top', 'left', 'right']}>
       {/* Cybernetic Background */}
       <ImageBackground 
         source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
@@ -1288,9 +1288,9 @@ export default function InboxScreen({ navigation }) {
         screenOptions={{
           sceneStyle: { backgroundColor: 'transparent' },
           tabBarStyle: { backgroundColor: 'transparent', elevation: 0, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
-          tabBarActiveTintColor: '#22D3EE',
-          tabBarInactiveTintColor: '#9CA3AF',
-          tabBarIndicatorStyle: { backgroundColor: '#22D3EE', height: 3, borderRadius: 4 },
+          tabBarActiveTintColor: '#22B573',
+          tabBarInactiveTintColor: '#A79E96',
+          tabBarIndicatorStyle: { backgroundColor: '#22B573', height: 3, borderRadius: 4 },
           tabBarLabelStyle: { fontSize: 11, fontWeight: 'bold', textTransform: 'none' },
         }}
       >

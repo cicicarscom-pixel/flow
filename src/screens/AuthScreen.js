@@ -112,14 +112,14 @@ export default function AuthScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: '#0A0B0F' }]}>
+    <View style={[styles.container, { backgroundColor: '#17151A' }]}>
       {/* Premium Dark Background */}
-      <View style={StyleSheet.absoluteFillObject} className="bg-[#0A0B0F]" />
+      <View style={StyleSheet.absoluteFillObject} className="bg-[#17151A]" />
       
       {/* Background Decorative Gradients */}
       <View className="absolute top-0 left-0 right-0 h-[60%] opacity-20">
         <LinearGradient
-          colors={['#22D3EE', 'transparent']}
+          colors={['#22B573', 'transparent']}
           style={{ flex: 1 }}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
@@ -127,7 +127,7 @@ export default function AuthScreen() {
       </View>
       <View className="absolute bottom-0 left-0 right-0 h-[40%] opacity-10">
         <LinearGradient
-          colors={['transparent', '#D8B4FE']}
+          colors={['transparent', '#E8A8CD']}
           style={{ flex: 1 }}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
@@ -176,7 +176,7 @@ export default function AuthScreen() {
           {/* DIVIDER */}
           <View className="flex-row items-center mb-6">
             <View className="flex-1 h-[1px] bg-white/10" />
-            <Text className="text-[#9CA3AF] text-xs px-4">veya e-posta ile</Text>
+            <Text className="text-[#A79E96] text-xs px-4">veya e-posta ile</Text>
             <View className="flex-1 h-[1px] bg-white/10" />
           </View>
 
@@ -217,14 +217,14 @@ export default function AuthScreen() {
             onPress={() => isLogin ? signInWithEmail() : signUpWithEmail()}
             isLoading={loading}
             className="w-full shadow-[0_0_15px_rgba(0,218,243,0.3)] mb-4"
-            style={{ backgroundColor: '#22D3EE' }}
+            style={{ backgroundColor: '#22B573' }}
             textClassName="text-black font-extrabold"
           />
 
           <TouchableOpacity onPress={() => setIsLogin(!isLogin)} className="items-center mt-2">
-            <Text className="text-[#9CA3AF] text-sm">
+            <Text className="text-[#A79E96] text-sm">
               {isLogin ? 'Hesabınız yok mu? ' : 'Zaten hesabınız var mı? '}
-              <Text className="text-[#22D3EE] font-bold">
+              <Text className="text-[#22B573] font-bold">
                 {isLogin ? 'Kayıt Ol' : 'Giriş Yap'}
               </Text>
             </Text>

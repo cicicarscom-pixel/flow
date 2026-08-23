@@ -170,7 +170,7 @@ export default function AiAssistantScreen({ navigation, route }) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0A0B0F]" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-[#17151A]" edges={['top', 'left', 'right']}>
       <ImageBackground 
         source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
         style={StyleSheet.absoluteFillObject}
@@ -187,16 +187,16 @@ export default function AiAssistantScreen({ navigation, route }) {
         <ScrollView className="flex-1 px-4 pt-4">
           {messages.map((msg) => (
             <View key={msg.id} className={`mb-4 max-w-[80%] rounded-2xl p-3 ${
-              msg.sender === 'user' ? 'bg-[#22D3EE]/20 self-end' :
+              msg.sender === 'user' ? 'bg-[#22B573]/20 self-end' :
               msg.sender === 'system' ? 'bg-green-500/20 self-center border border-green-500/50' :
-              'bg-[#1A1D26] self-start border border-white/5'
+              'bg-[#2A2631] self-start border border-white/5'
             }`}>
-              <Text className={`${msg.sender === 'system' ? 'text-green-400 font-bold text-center' : 'text-[#F3F4F6]'} text-sm`}>{msg.text}</Text>
+              <Text className={`${msg.sender === 'system' ? 'text-green-400 font-bold text-center' : 'text-[#F6F1EC]'} text-sm`}>{msg.text}</Text>
             </View>
           ))}
           {loading && (
-            <View className="self-start bg-[#1A1D26] p-3 rounded-2xl mb-4">
-              <ActivityIndicator color="#22D3EE" />
+            <View className="self-start bg-[#2A2631] p-3 rounded-2xl mb-4">
+              <ActivityIndicator color="#22B573" />
             </View>
           )}
         </ScrollView>

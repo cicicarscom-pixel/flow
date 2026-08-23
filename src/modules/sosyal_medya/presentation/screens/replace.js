@@ -39,7 +39,7 @@ const yourAccountsStart = '<View className="flex-row justify-between items-cente
 
 const newAddAccount = `        {/* Add Account Panel */}
         <View style={{ marginBottom: 32 }}>
-          <Text className="text-[#F3F4F6] text-[18px] font-semibold mb-4">{t('sosyalMedya.ui.addAccount')}</Text>
+          <Text className="text-[#F6F1EC] text-[18px] font-semibold mb-4">{t('sosyalMedya.ui.addAccount')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16, paddingRight: 20, paddingLeft: 4 }}>
             {PLATFORMS_DATA.map((p) => {
                const isConnected = socialAccounts.some(acc => acc.platform.toLowerCase() === p.id);
@@ -65,7 +65,7 @@ const newAddAccount = `        {/* Add Account Panel */}
                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                      <View style={{
                        width: 36, height: 36, borderRadius: 12,
-                       backgroundColor: p.id === 'instagram' ? '#1A1D26' : p.color,
+                       backgroundColor: p.id === 'instagram' ? '#2A2631' : p.color,
                        alignItems: 'center', justifyContent: 'center',
                      }}>
                        {p.id === 'instagram' ? (
@@ -83,8 +83,8 @@ const newAddAccount = `        {/* Add Account Panel */}
                      </View>
                    </View>
                    
-                   <Text style={{ fontWeight: '600', fontSize: 13, color: '#F3F4F6', marginBottom: 4 }}>{p.name}</Text>
-                   <Text style={{ color: '#9CA3AF', fontSize: 10, marginBottom: 12 }}>Henüz bağlanmadı</Text>
+                   <Text style={{ fontWeight: '600', fontSize: 13, color: '#F6F1EC', marginBottom: 4 }}>{p.name}</Text>
+                   <Text style={{ color: '#A79E96', fontSize: 10, marginBottom: 12 }}>Henüz bağlanmadı</Text>
                    
                    <TouchableOpacity 
                      onPress={() => handleConnectZernio(p.id)}
@@ -117,12 +117,12 @@ const scrollViewEnd = '</ScrollView>';
 const newMainHub = `        {/* Main Platform Hub Panel */}
         <View style={{ marginBottom: 40 }}>
           {isLoadingAccounts ? (
-            <ActivityIndicator size="small" color="#22C55E" style={{ marginVertical: 20 }} />
+            <ActivityIndicator size="small" color="#22B573" style={{ marginVertical: 20 }} />
           ) : socialAccounts.length > 0 ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16, paddingRight: 20, paddingLeft: 4 }}>
               {socialAccounts.map((acc, index) => {
                 const platformInfo = PLATFORMS_DATA.find(p => p.id === acc.platform.toLowerCase()) || {
-                  id: acc.platform, name: acc.platform, color: '#22D3EE', glow: 'rgba(34, 211, 238,0.3)', icon: 'logo-edge'
+                  id: acc.platform, name: acc.platform, color: '#22B573', glow: 'rgba(34, 181, 115,0.3)', icon: 'logo-edge'
                 };
                 
                 return (
@@ -146,7 +146,7 @@ const newMainHub = `        {/* Main Platform Hub Panel */}
                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                      <View style={{
                        width: 36, height: 36, borderRadius: 12,
-                       backgroundColor: platformInfo.id === 'instagram' ? '#1A1D26' : platformInfo.color,
+                       backgroundColor: platformInfo.id === 'instagram' ? '#2A2631' : platformInfo.color,
                        alignItems: 'center', justifyContent: 'center',
                      }}>
                        {platformInfo.id === 'instagram' ? (
@@ -165,17 +165,17 @@ const newMainHub = `        {/* Main Platform Hub Panel */}
                      
                      <View style={{ 
                        paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12,
-                       backgroundColor: 'rgba(34, 197, 94,0.15)',
-                       borderColor: 'rgba(34, 197, 94,0.3)', borderWidth: 1
+                       backgroundColor: 'rgba(34, 181, 115,0.15)',
+                       borderColor: 'rgba(34, 181, 115,0.3)', borderWidth: 1
                      }}>
-                       <Text style={{ fontSize: 9, color: '#22C55E', fontWeight: '600' }}>✓ Bağlı</Text>
+                       <Text style={{ fontSize: 9, color: '#22B573', fontWeight: '600' }}>✓ Bağlı</Text>
                      </View>
                    </View>
                    
-                   <Text style={{ fontWeight: '600', fontSize: 13, color: '#F3F4F6', marginBottom: 4 }} numberOfLines={1}>
+                   <Text style={{ fontWeight: '600', fontSize: 13, color: '#F6F1EC', marginBottom: 4 }} numberOfLines={1}>
                      {acc.account_name ? \`@\${acc.account_name}\` : platformInfo.name}
                    </Text>
-                   <Text style={{ color: '#9CA3AF', fontSize: 10, marginBottom: 12 }}>Bağlı</Text>
+                   <Text style={{ color: '#A79E96', fontSize: 10, marginBottom: 12 }}>Bağlı</Text>
                    
                    <TouchableOpacity 
                      onPress={() => handleDisconnect(acc.id, acc.platform)}
@@ -188,7 +188,7 @@ const newMainHub = `        {/* Main Platform Hub Panel */}
                        paddingVertical: 6,
                      }}
                    >
-                     <Text style={{ color: '#9CA3AF', fontSize: 10, fontWeight: '600' }}>Ayır</Text>
+                     <Text style={{ color: '#A79E96', fontSize: 10, fontWeight: '600' }}>Ayır</Text>
                    </TouchableOpacity>
                  </View>
                 );
@@ -196,7 +196,7 @@ const newMainHub = `        {/* Main Platform Hub Panel */}
             </ScrollView>
           ) : (
             <View style={[styles.glassCard, { padding: 20, borderRadius: 16 }]}>
-              <Text className="text-[#9CA3AF] text-[12px] italic">{t('sosyalMedya.ui.noAccountsYet')}</Text>
+              <Text className="text-[#A79E96] text-[12px] italic">{t('sosyalMedya.ui.noAccountsYet')}</Text>
             </View>
           )}
         </View>`;

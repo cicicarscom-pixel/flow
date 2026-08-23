@@ -10,7 +10,7 @@ export const CommunicationLogsTable = () => {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center p-4">
-        <ActivityIndicator size="small" color="#22C55E" />
+        <ActivityIndicator size="small" color="#22B573" />
       </View>
     );
   }
@@ -19,10 +19,10 @@ export const CommunicationLogsTable = () => {
     return (
       <View className="mt-3 mb-4">
         <TouchableOpacity 
-          className="bg-[#1A1D26] border border-[#3B82F6]/50 rounded-xl overflow-hidden py-4 px-6 items-center flex-row justify-center"
+          className="bg-[#2A2631] border border-[#FF7A59]/50 rounded-xl overflow-hidden py-4 px-6 items-center flex-row justify-center"
           activeOpacity={0.7}
         >
-          <Ionicons name="chatbubbles-outline" size={24} color="#3B82F6" className="mr-3" />
+          <Ionicons name="chatbubbles-outline" size={24} color="#FF7A59" className="mr-3" />
           <View>
             <Text className="text-white text-sm font-bold">İletişim Raporları</Text>
             <Text className="text-white/50 text-xs mt-1">Henüz bir iletişim geçmişi bulunmuyor.</Text>
@@ -54,7 +54,7 @@ export const CommunicationLogsTable = () => {
         <Text className="text-white/80 text-xs mb-1.5" numberOfLines={2}>
           <Text className="font-bold">Soru: </Text>{item.user_message}
         </Text>
-        <Text className="text-[#22C55E]/80 text-xs" numberOfLines={2}>
+        <Text className="text-[#22B573]/80 text-xs" numberOfLines={2}>
           <Text className="font-bold">Yanıt: </Text>{item.ai_response}
         </Text>
       </View>
@@ -62,7 +62,7 @@ export const CommunicationLogsTable = () => {
   };
 
   return (
-    <View className="bg-[#12141B] border border-white/10 rounded-xl overflow-hidden mt-3 max-h-[350px]">
+    <View className="bg-[#201D24] border border-white/10 rounded-xl overflow-hidden mt-3 max-h-[350px]">
       <View className="bg-black/40 p-3 border-b border-white/5">
         <Text className="text-white/80 text-xs font-bold uppercase tracking-wider">
           <Ionicons name="list" size={12} color="#ffffff" /> İletişim Raporları

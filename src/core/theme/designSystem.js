@@ -1,54 +1,59 @@
 /**
  * designSystem.js
  * -----------------------------------------------------------------------
- * Uygulama genelinde kullanılan MERKEZİ tasarım token'ları.
+ * AI ESNAF — MARKA KİMLİĞİ (v2, sıfırdan tasarım)
  *
- * Amaç: Daha önce onlarca ekrana dağılmış, birbirinden habersiz hex renk
- * kodlarını ("#0a0a0b", "#0e0e0f", "#131314", "#1c1b1c" gibi 6 farklı
- * "neredeyse aynı" koyu ton) tek bir kaynaktan yönetilebilir, tutarlı ve
- * daha profesyonel görünen bir palete indirgemek.
+ * Neden bu palet?
+ * AI Esnaf, teknolojiyle arası az olabilecek bir esnafın/KOBİ sahibinin
+ * yanında duran bir "dijital çırak" gibi davranıyor: WhatsApp'a cevap
+ * veriyor, sosyal medyayı yönetiyor, geliri/gideri takip ediyor, randevu
+ * alıyor. Bu ürün soğuk bir "fintech/kripto" hissi değil, SICAK, GÜVEN
+ * VEREN ve SEVİMLİ ama yine de PREMİUM bir dijital asistan hissi vermeli.
+ *
+ * Bu yüzden eski soğuk neon cyan/mor (#00f0ff / #bc13fe) yerine:
+ *   - Mercan (Coral)  → Asistanın/AI'ın kendi rengi (samimi, insancıl)
+ *   - Zümrüt (Emerald)→ Para/Muhasebe modülü (güven, büyüme, "kazanç")
+ *   - Orkide (Berry)  → Sosyal Medya modülü (enerjik ama yumuşak)
+ * kullanılıyor; koyu tema korunuyor ama soğuk mavi-siyah yerine sıcak,
+ * nötr bir antrasit zemine geçiliyor — hem premium hem "ev sıcaklığı".
  *
  * NOT: Bu dosya SADECE görsel token'lar içerir. Hiçbir ekran/bileşenin
- * fonksiyonu, prop'u veya davranışı bu dosyadan etkilenmez — sadece
- * renk/ölçü referansı sağlar.
+ * fonksiyonu, prop'u veya davranışı bu dosyadan etkilenmez.
  * -----------------------------------------------------------------------
  */
 
 export const Colors = {
-  // --- Zemin (Surface) Katmanları -------------------------------------
-  // Eskiden #0a0a0b / #070b1f / #0e0e0f / #131314 / #131315 / #1c1b1c /
-  // #1c1b1d gibi 7 ayrı tonun yerini alan tutarlı 4 katmanlı sistem.
-  bgBase: '#0A0B0F',        // Ana uygulama arkaplanı (en alt katman)
-  surface: '#12141B',       // Kart / panel arkaplanı
-  surfaceElevated: '#1A1D26', // Yükseltilmiş kart, modal, input arkaplanı
-  surfaceHighlight: '#20242F', // Hover/basılı/aktif durum arkaplanı
+  // --- Zemin (Surface) Katmanları — sıcak, nötr antrasit -----------------
+  bgBase: '#17151A',          // Ana uygulama arkaplanı
+  surface: '#201D24',         // Kart / panel arkaplanı
+  surfaceElevated: '#2A2631', // Yükseltilmiş kart, modal, input arkaplanı
+  surfaceHighlight: '#34303C',// Hover/basılı/aktif durum arkaplanı
 
-  // --- Kenarlık / Ayraç --------------------------------------------------
-  border: 'rgba(255,255,255,0.08)',
-  borderStrong: 'rgba(255,255,255,0.14)',
+  // --- Kenarlık / Ayraç ---------------------------------------------------
+  border: 'rgba(255,247,240,0.08)',
+  borderStrong: 'rgba(255,247,240,0.14)',
 
-  // --- Marka Vurgu Renkleri (daha az "neon", daha "premium SaaS") -----
-  // Eskiden #00f0ff (Finans) → daha dengeli bir camgöbeği
-  accentCyan: '#22D3EE',
-  accentCyanSoft: 'rgba(34,211,238,0.14)',
-  // Eskiden #bc13fe (Sosyal) → daha zarif bir mor
-  accentPurple: '#A855F7',
-  accentPurpleSoft: 'rgba(168,85,247,0.14)',
-  // Eskiden #208AEF / #00a2ff (AI) → tutarlı marka mavisi
-  accentBlue: '#3B82F6',
-  accentBlueSoft: 'rgba(59,130,246,0.14)',
+  // --- Marka Vurgu Renkleri (sıcak, amaca göre anlamlandırılmış) --------
+  // Mercan — Asistanın/AI'ın kendi rengi. Genel CTA, "Kaydet/Gönder" gibi
+  // birincil aksiyonlar da bu rengi kullanır (asistan sizin için yapıyor hissi).
+  accentCoral: '#FF7A59',
+  accentCoralSoft: 'rgba(255,122,89,0.14)',
+  // Zümrüt — Muhasebe/Finans modülü ve genel "başarı/kazanç" anlamı.
+  accentEmerald: '#22B573',
+  accentEmeraldSoft: 'rgba(34,181,115,0.14)',
+  // Orkide — Sosyal Medya modülü.
+  accentBerry: '#C2478D',
+  accentBerrySoft: 'rgba(194,71,141,0.14)',
 
-  // --- Metin ------------------------------------------------------------
-  // Eskiden #e5e2e3 / #e5e1e4 / #e1e2e7 / #b9cacb / #bbcabf / #bac9cc /
-  // #bccbb9 / #849495 gibi 8 farklı gri-yeşilimsi ton kullanılıyordu.
-  textPrimary: '#F3F4F6',
-  textSecondary: '#9CA3AF',
-  textMuted: '#6B7280',
-  textOnAccent: '#0A0B0F',
+  // --- Metin ---------------------------------------------------------------
+  textPrimary: '#F6F1EC',   // sıcak kırık-beyaz (soğuk gri-beyaz değil)
+  textSecondary: '#A79E96', // sıcak gri
+  textMuted: '#756D66',
+  textOnAccent: '#17151A',
 
-  // --- Semantik Durum Renkleri -------------------------------------------
-  success: '#22C55E',
-  successSoft: 'rgba(34,197,94,0.14)',
+  // --- Semantik Durum Renkleri (evrensel tanınırlık için standart kalır) --
+  success: '#22B573',       // muhasebe ile aynı yeşil — "kazanç = başarı"
+  successSoft: 'rgba(34,181,115,0.14)',
   danger: '#EF4444',
   dangerSoft: 'rgba(239,68,68,0.14)',
   warning: '#F59E0B',
@@ -60,9 +65,9 @@ export const Colors = {
 
 // Modül bazlı vurgu rengi eşlemesi (GlobalAppBar ve modül kartlarında kullanılır)
 export const ModuleAccent = {
-  finans: Colors.accentCyan,
-  sosyal: Colors.accentPurple,
-  ai: Colors.accentBlue,
+  finans: Colors.accentEmerald, // Para = yeşil (sezgisel)
+  sosyal: Colors.accentBerry,   // Sosyal medya = orkide
+  ai: Colors.accentCoral,       // Asistanın kendi rengi = mercan
   genel: 'transparent',
 };
 
@@ -121,7 +126,7 @@ export const Shadow = {
 // JSX yapıları DEĞİŞMEDEN, sadece style={[...]} içine eklenerek kullanılabilir.
 export const CommonStyles = {
   primaryButton: {
-    backgroundColor: Colors.accentBlue,
+    backgroundColor: Colors.accentCoral,
     borderRadius: Radius.md,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
