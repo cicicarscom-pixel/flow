@@ -27,10 +27,10 @@ const TIME_SLOTS = (() => {
 
 // Renk paleti — randevu index'ine göre döngüsel
 const CARD_COLORS = [
-  { color: '#4edea3', border: 'rgba(78,222,163,0.35)', icon: 'cut-outline' },
-  { color: '#ffb95f', border: 'rgba(255,185,95,0.35)',  icon: 'color-wand-outline' },
-  { color: '#c0c1ff', border: 'rgba(192,193,255,0.25)', icon: 'leaf-outline' },
-  { color: '#4edea3', border: 'rgba(78,222,163,0.25)',  icon: 'brush-outline' },
+  { color: '#22C55E', border: 'rgba(34, 197, 94,0.35)', icon: 'cut-outline' },
+  { color: '#F59E0B', border: 'rgba(245, 158, 11,0.35)',  icon: 'color-wand-outline' },
+  { color: '#C4B5FD', border: 'rgba(192,193,255,0.25)', icon: 'leaf-outline' },
+  { color: '#22C55E', border: 'rgba(34, 197, 94,0.25)',  icon: 'brush-outline' },
 ];
 
 export default function RandevuScreen() {
@@ -143,7 +143,7 @@ export default function RandevuScreen() {
       <BlurView intensity={40} tint="dark" style={styles.header}>
         <View style={styles.headerLeft}>
           <View style={styles.avatarWrap}>
-            <Ionicons name="person" size={18} color="#4edea3" />
+            <Ionicons name="person" size={18} color="#22C55E" />
           </View>
           <View style={{ justifyContent: 'center' }}>
             <Text style={styles.headerLabel}>RANDEVU</Text>
@@ -152,11 +152,11 @@ export default function RandevuScreen() {
 
         <View style={styles.dateSelectorPill}>
           <TouchableOpacity onPress={handlePrevMonth} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ padding: 4 }}>
-            <Ionicons name="chevron-back" size={18} color="#bbcabf" />
+            <Ionicons name="chevron-back" size={18} color="#9CA3AF" />
           </TouchableOpacity>
           <Text style={styles.dateSelectorText}>{monthYearStr}</Text>
           <TouchableOpacity onPress={handleNextMonth} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ padding: 4 }}>
-            <Ionicons name="chevron-forward" size={18} color="#bbcabf" />
+            <Ionicons name="chevron-forward" size={18} color="#9CA3AF" />
           </TouchableOpacity>
         </View>
       </BlurView>
@@ -203,7 +203,7 @@ export default function RandevuScreen() {
               <Text style={styles.slotsTitle}>{t('randevu.randevuScreen.dailyAvailability')}</Text>
               <View style={styles.slotsLegend}>
                 <View style={styles.legendItem}>
-                  <View style={[styles.legendDot, { backgroundColor: '#4edea3' }]} />
+                  <View style={[styles.legendDot, { backgroundColor: '#22C55E' }]} />
                   <Text style={styles.legendText}>{t('randevu.randevuScreen.busy')}</Text>
                 </View>
                 <View style={styles.legendItem}>
@@ -256,10 +256,10 @@ export default function RandevuScreen() {
         {/* ── SCROLLABLE: Appointment Timeline ── */}
         <View style={styles.timeline}>
           {loading ? (
-            <ActivityIndicator color="#4edea3" style={{ marginTop: 24 }} />
+            <ActivityIndicator color="#22C55E" style={{ marginTop: 24 }} />
           ) : appointments.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="calendar-outline" size={40} color="#3c4a42" />
+              <Ionicons name="calendar-outline" size={40} color="#6B7280" />
               <Text style={styles.emptyText}>{t('randevu.randevuScreen.noAppointments')}</Text>
             </View>
           ) : (
@@ -275,7 +275,7 @@ export default function RandevuScreen() {
                   <View style={[styles.card, { borderLeftColor: palette.border }]}>
                     <View style={[styles.cardTint, { backgroundColor: palette.color + '08' }]} />
                     <View style={styles.cardContent}>
-                      <View style={[styles.iconBox, { backgroundColor: '#2a2a2c' }]}>
+                      <View style={[styles.iconBox, { backgroundColor: '#20242F' }]}>
                         <Ionicons name={palette.icon} size={20} color={palette.color} />
                       </View>
                       <View style={styles.cardInfo}>
@@ -284,7 +284,7 @@ export default function RandevuScreen() {
                         </Text>
                         <Text style={styles.cardService}>{appt.serviceId}</Text>
                         <View style={styles.cardTimeRow}>
-                          <Ionicons name="time-outline" size={12} color="#bbcabf" />
+                          <Ionicons name="time-outline" size={12} color="#9CA3AF" />
                           <Text style={styles.cardTimeText}>{apptTime}</Text>
                         </View>
                       </View>
@@ -300,7 +300,7 @@ export default function RandevuScreen() {
       {/* ── FAB ── */}
       <Animated.View style={[styles.fab, { bottom: fabBottom, transform: [{ scale: pulseAnim }] }]}>
         <TouchableOpacity style={styles.fabInner} activeOpacity={0.8} onPress={() => setIsModalVisible(true)}>
-          <Ionicons name="add" size={28} color="#003824" />
+          <Ionicons name="add" size={28} color="#132A1F" />
         </TouchableOpacity>
       </Animated.View>
 
@@ -320,7 +320,7 @@ export default function RandevuScreen() {
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>{t('randevu.randevuScreen.addAppointment', 'Yeni Randevu Ekle')}</Text>
                 <TouchableOpacity onPress={() => setIsModalVisible(false)}>
-                  <Ionicons name="close" size={24} color="#bbcabf" />
+                  <Ionicons name="close" size={24} color="#9CA3AF" />
                 </TouchableOpacity>
               </View>
               
@@ -373,7 +373,7 @@ export default function RandevuScreen() {
                 disabled={isSaving}
               >
                 {isSaving ? (
-                  <ActivityIndicator color="#003824" />
+                  <ActivityIndicator color="#132A1F" />
                 ) : (
                   <Text style={styles.saveButtonText}>Kaydet</Text>
                 )}
@@ -388,7 +388,7 @@ export default function RandevuScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#131315' },
+  safeArea: { flex: 1, backgroundColor: '#12141B' },
   scroll: { flex: 1 },
 
   /* Header */
@@ -399,51 +399,51 @@ const styles = StyleSheet.create({
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   avatarWrap: {
-    width: 38, height: 38, borderRadius: 19,
-    backgroundColor: 'rgba(78,222,163,0.12)',
-    borderWidth: 1, borderColor: 'rgba(78,222,163,0.25)',
+    width: 38, height: 38, borderRadius: 20,
+    backgroundColor: 'rgba(34, 197, 94,0.12)',
+    borderWidth: 1, borderColor: 'rgba(34, 197, 94,0.25)',
     alignItems: 'center', justifyContent: 'center',
   },
-  headerLabel: { fontSize: 12, fontWeight: '700', color: '#4edea3', letterSpacing: 1.5 },
+  headerLabel: { fontSize: 12, fontWeight: '700', color: '#22C55E', letterSpacing: 1.5 },
   dateSelectorPill: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     backgroundColor: 'rgba(32,31,34,0.4)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
     borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8,
   },
-  dateSelectorText: { fontSize: 15, fontWeight: '700', color: '#e5e1e4' },
+  dateSelectorText: { fontSize: 15, fontWeight: '700', color: '#F3F4F6' },
   headerBtn: {
-    width: 38, height: 38, borderRadius: 10,
+    width: 38, height: 38, borderRadius: 12,
     backgroundColor: 'rgba(53,52,55,0.5)',
     alignItems: 'center', justifyContent: 'center',
   },
   headerDot: {
     position: 'absolute', top: 6, right: 6,
     width: 7, height: 7, borderRadius: 4,
-    backgroundColor: '#4edea3', borderWidth: 1.5, borderColor: '#131315',
+    backgroundColor: '#22C55E', borderWidth: 1, borderColor: '#12141B',
   },
 
   /* Sticky Block */
-  stickyBlock: { backgroundColor: '#131315', paddingBottom: 6 },
+  stickyBlock: { backgroundColor: '#12141B', paddingBottom: 6 },
 
   /* Calendar Strip */
   calendarScroll: { marginTop: 12, marginBottom: 4 },
   calendarStrip: { paddingHorizontal: 14, gap: 8 },
   dayCard: {
     alignItems: 'center', justifyContent: 'center',
-    width: 52, height: 64, borderRadius: 14,
+    width: 52, height: 64, borderRadius: 16,
     backgroundColor: 'rgba(32,31,34,0.4)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
   },
   dayCardActive: {
-    backgroundColor: '#4edea3',
-    shadowColor: '#4edea3', shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
+    backgroundColor: '#22C55E',
+    shadowColor: '#22C55E', shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
     transform: [{ scale: 1.1 }],
   },
-  dayName: { fontSize: 10, fontWeight: '700', color: '#bbcabf' },
-  dayNameActive: { color: '#003824', opacity: 0.85 },
-  dayDate: { fontSize: 16, fontWeight: '700', color: '#e5e1e4', marginTop: 2 },
-  dayDateActive: { color: '#003824' },
+  dayName: { fontSize: 10, fontWeight: '700', color: '#9CA3AF' },
+  dayNameActive: { color: '#132A1F', opacity: 0.85 },
+  dayDate: { fontSize: 16, fontWeight: '700', color: '#F3F4F6', marginTop: 2 },
+  dayDateActive: { color: '#132A1F' },
 
   /* Slots Card */
   slotsCard: {
@@ -456,35 +456,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     marginBottom: 10,
   },
-  slotsTitle: { fontSize: 14, fontWeight: '600', color: '#e5e1e4' },
+  slotsTitle: { fontSize: 14, fontWeight: '600', color: '#F3F4F6' },
   slotsLegend: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   legendDot: { width: 7, height: 7, borderRadius: 4 },
-  legendDotEmpty: { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#3c4a42' },
-  legendText: { fontSize: 10, fontWeight: '700', color: '#bbcabf', letterSpacing: 0.5 },
+  legendDotEmpty: { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#6B7280' },
+  legendText: { fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 0.5 },
 
   /* Heatmap grid */
   heatmapWrap: { flexDirection: 'row', alignItems: 'stretch', gap: 6 },
   rowLabels: { justifyContent: 'space-around', paddingVertical: 2, gap: 5 },
   rowLabel: {
-    fontSize: 8, fontWeight: '700', color: '#bbcabf',
+    fontSize: 8, fontWeight: '700', color: '#9CA3AF',
     letterSpacing: 0.5, textAlign: 'right', width: 36,
   },
   heatmapGrid: { flexDirection: 'row', gap: 4, paddingVertical: 2 },
   heatmapCol: { flexDirection: 'column', gap: 5 },
   heatCell: {
-    width: 44, height: 28, borderRadius: 7,
+    width: 44, height: 28, borderRadius: 8,
     backgroundColor: 'rgba(42,42,44,0.7)',
     borderWidth: 1, borderColor: 'rgba(60,74,66,0.2)',
     alignItems: 'center', justifyContent: 'center',
   },
   heatCellFull: {
-    backgroundColor: '#4edea3',
+    backgroundColor: '#22C55E',
     borderColor: 'transparent',
-    shadowColor: '#4edea3', shadowOpacity: 0.3, shadowRadius: 4, elevation: 3,
+    shadowColor: '#22C55E', shadowOpacity: 0.3, shadowRadius: 4, elevation: 3,
   },
   heatLabel: { fontSize: 9, fontWeight: '700', color: '#7a8a80' },
-  heatLabelFull: { color: '#003824' },
+  heatLabelFull: { color: '#132A1F' },
 
   /* Timeline */
   timeline: { paddingHorizontal: 14, paddingTop: 16, gap: 0 },
@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
   timeText: { fontSize: 10, fontWeight: '700', marginBottom: 6 },
   timeLine: {
     width: 1.5, flex: 1,
-    backgroundColor: 'rgba(60,74,66,0.3)', borderRadius: 2,
+    backgroundColor: 'rgba(60,74,66,0.3)', borderRadius: 4,
   },
 
   /* Appointment Card */
@@ -508,14 +508,14 @@ const styles = StyleSheet.create({
   cardContent: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, zIndex: 1 },
   iconBox: { width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   cardInfo: { flex: 1 },
-  cardName: { fontSize: 14, fontWeight: '700', color: '#e5e1e4' },
-  cardService: { fontSize: 10, color: '#bbcabf', marginTop: 2 },
+  cardName: { fontSize: 14, fontWeight: '700', color: '#F3F4F6' },
+  cardService: { fontSize: 10, color: '#9CA3AF', marginTop: 2 },
   cardTimeRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 5 },
-  cardTimeText: { fontSize: 10, fontWeight: '600', color: '#bbcabf' },
+  cardTimeText: { fontSize: 10, fontWeight: '600', color: '#9CA3AF' },
 
   badge: {
     borderLeftWidth: 2, paddingHorizontal: 8, paddingVertical: 4,
-    borderRadius: 6, zIndex: 1,
+    borderRadius: 8, zIndex: 1,
   },
   badgeText: { fontSize: 9, fontWeight: '800', letterSpacing: 0.8 },
 
@@ -523,9 +523,9 @@ const styles = StyleSheet.create({
   fab: { position: 'absolute', right: 18 },
   fabInner: {
     width: 54, height: 54, borderRadius: 27,
-    backgroundColor: '#4edea3', alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#4edea3', shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.45, shadowRadius: 12, elevation: 8,
+    backgroundColor: '#22C55E', alignItems: 'center', justifyContent: 'center',
+    shadowColor: '#22C55E', shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35, shadowRadius: 12, elevation: 8,
   },
 
   /* Empty State */
@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
     paddingVertical: 40, gap: 10,
   },
   emptyText: {
-    fontSize: 13, color: '#3c4a42', fontWeight: '600',
+    fontSize: 13, color: '#6B7280', fontWeight: '600',
   },
 
   /* Modal Styles */
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#131315',
+    backgroundColor: '#12141B',
     borderTopLeftRadius: 24, borderTopRightRadius: 24,
     padding: 20, paddingBottom: 40,
     borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
@@ -552,19 +552,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     marginBottom: 20,
   },
-  modalTitle: { fontSize: 18, fontWeight: '700', color: '#e5e1e4' },
-  modalLabel: { fontSize: 12, fontWeight: '600', color: '#bbcabf', marginBottom: 6, marginTop: 12 },
+  modalTitle: { fontSize: 18, fontWeight: '700', color: '#F3F4F6' },
+  modalLabel: { fontSize: 12, fontWeight: '600', color: '#9CA3AF', marginBottom: 6, marginTop: 12 },
   modalInput: {
     backgroundColor: 'rgba(32,31,34,0.4)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
     borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12,
-    color: '#e5e1e4', fontSize: 14,
+    color: '#F3F4F6', fontSize: 14,
   },
   saveButton: {
-    backgroundColor: '#4edea3',
+    backgroundColor: '#22C55E',
     borderRadius: 12, paddingVertical: 16,
     alignItems: 'center', marginTop: 24,
-    shadowColor: '#4edea3', shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
+    shadowColor: '#22C55E', shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  saveButtonText: { fontSize: 15, fontWeight: '700', color: '#003824' }
+  saveButtonText: { fontSize: 15, fontWeight: '700', color: '#132A1F' }
 });

@@ -148,7 +148,7 @@ export default function AiChatScreen({ route, navigation }) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0A0A0B]" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-[#0A0B0F]" edges={['top', 'left', 'right']}>
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
         behavior={Platform.OS === 'ios' ? 'padding' : (Platform.Version < 30 ? 'padding' : undefined)}
@@ -166,17 +166,17 @@ export default function AiChatScreen({ route, navigation }) {
         {/* Chat Area */}
         <ScrollView className="flex-1 px-4 pt-4">
           {messages.map((msg) => (
-            <View key={msg.id} className={`mb-4 max-w-[80%] rounded-2xl p-3 ${msg.sender === 'user' ? 'bg-[#00f0ff]/20 self-end' : 'bg-[#1c1c1e] self-start border border-white/5'}`}>
+            <View key={msg.id} className={`mb-4 max-w-[80%] rounded-2xl p-3 ${msg.sender === 'user' ? 'bg-[#22D3EE]/20 self-end' : 'bg-[#1A1D26] self-start border border-white/5'}`}>
               {msg.isImage ? (
-                <Image source={{ uri: msg.text }} style={{ width: 200, height: 200, borderRadius: 10 }} />
+                <Image source={{ uri: msg.text }} style={{ width: 200, height: 200, borderRadius: 12 }} />
               ) : (
-                <Text className="text-[#e5e2e3] text-sm">{msg.text}</Text>
+                <Text className="text-[#F3F4F6] text-sm">{msg.text}</Text>
               )}
             </View>
           ))}
           {loading && (
-            <View className="self-start bg-[#1c1c1e] p-3 rounded-2xl mb-4">
-              <ActivityIndicator color="#00f0ff" />
+            <View className="self-start bg-[#1A1D26] p-3 rounded-2xl mb-4">
+              <ActivityIndicator color="#22D3EE" />
             </View>
           )}
         </ScrollView>

@@ -121,7 +121,7 @@ export default function AddressSelector({ onAddressChange, initialData }) {
         <MaterialIcons 
           name="keyboard-arrow-down" 
           size={24} 
-          color={isActive ? '#00e5ff' : '#bac9cc'} 
+          color={isActive ? '#22D3EE' : '#9CA3AF'} 
         />
       </TouchableOpacity>
     );
@@ -140,7 +140,7 @@ export default function AddressSelector({ onAddressChange, initialData }) {
         <TextInput
           style={styles.textInput}
           placeholder="Street, Building No, Apartment..."
-          placeholderTextColor="#bac9cc80"
+          placeholderTextColor="#9CA3AF80"
           multiline
           numberOfLines={4}
           value={fullAddress}
@@ -182,11 +182,11 @@ export default function AddressSelector({ onAddressChange, initialData }) {
               </Text>
 
               <View style={styles.searchContainer}>
-                <Ionicons name="search" size={20} color="#bac9cc" style={styles.searchIcon} />
+                <Ionicons name="search" size={20} color="#9CA3AF" style={styles.searchIcon} />
                 <TextInput
                   style={styles.searchInput}
                   placeholder="Search..."
-                  placeholderTextColor="#bac9cc80"
+                  placeholderTextColor="#9CA3AF80"
                   value={searchQuery}
                   onChangeText={setSearchQuery}
                   autoCapitalize="words"
@@ -207,7 +207,7 @@ export default function AddressSelector({ onAddressChange, initialData }) {
                       onPress={() => handleSelect(item)}
                     >
                       <Text style={styles.optionText}>{item.name}</Text>
-                      <MaterialIcons name="chevron-right" size={20} color="#bac9cc50" />
+                      <MaterialIcons name="chevron-right" size={20} color="#9CA3AF50" />
                     </TouchableOpacity>))
                 ) : (
                   <View style={styles.emptyState}>
@@ -246,18 +246,18 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   selectorLabel: {
-    color: '#bac9cc', // onSurfaceVariant
+    color: '#9CA3AF', // onSurfaceVariant
     fontSize: 12,
     fontWeight: '500',
     marginBottom: 4,
   },
   selectorValue: {
-    color: '#e1e2e7', // onSurface
+    color: '#F3F4F6', // onSurface
     fontSize: 16,
     fontWeight: '600',
   },
   selectorPlaceholder: {
-    color: '#bac9cc80',
+    color: '#9CA3AF80',
     fontWeight: '400',
   },
   inputContainer: {
@@ -269,11 +269,11 @@ const styles = StyleSheet.create({
     minHeight: 120,
   },
   inputContainerActive: {
-    borderColor: 'rgba(188, 19, 254, 0.4)', // purple neon for text input when filled
-    backgroundColor: 'rgba(188, 19, 254, 0.03)',
+    borderColor: 'rgba(168, 85, 247, 0.4)', // purple neon for text input when filled
+    backgroundColor: 'rgba(168, 85, 247, 0.03)',
   },
   textInput: {
-    color: '#e1e2e7',
+    color: '#F3F4F6',
     fontSize: 15,
     marginTop: 8,
     textAlignVertical: 'top',
@@ -309,11 +309,11 @@ const styles = StyleSheet.create({
   dragHandle: {
     width: 40,
     height: 4,
-    borderRadius: 2,
+    borderRadius: 4,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   sheetTitle: {
-    color: '#e1e2e7',
+    color: '#F3F4F6',
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 16,
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: '#e1e2e7',
+    color: '#F3F4F6',
     fontSize: 16,
   },
   optionsList: {
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255, 255, 255, 0.05)',
   },
   optionText: {
-    color: '#e1e2e7',
+    color: '#F3F4F6',
     fontSize: 16,
   },
   emptyState: {
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyStateText: {
-    color: '#bac9cc',
+    color: '#9CA3AF',
     fontSize: 14,
   },
 });

@@ -50,11 +50,11 @@ export default function HizmetAyarlariScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerLeft} onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={20} color="#4edea3" />
+          <Ionicons name="chevron-back" size={20} color="#22C55E" />
           <Text style={styles.headerTitle}>{t('randevu.hizmetAyarlari.title')}</Text>
         </TouchableOpacity>
         <View style={styles.avatar}>
-          <Ionicons name="person" size={18} color="#bbcabf" />
+          <Ionicons name="person" size={18} color="#9CA3AF" />
         </View>
       </View>
 
@@ -75,7 +75,7 @@ export default function HizmetAyarlariScreen() {
           <Switch
             value={isActive}
             onValueChange={setIsActive}
-            trackColor={{ false: '#353437', true: '#10b981' }}
+            trackColor={{ false: '#2A2E3A', true: '#10b981' }}
             thumbColor="#ffffff"
             style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
           />
@@ -86,7 +86,7 @@ export default function HizmetAyarlariScreen() {
           <Text style={styles.sectionTitle}>
             {isActive ? t('randevu.hizmetAyarlari.activeServices') : t('randevu.hizmetAyarlari.inactiveServices')} ({services.length}/10)
           </Text>
-          <Ionicons name="information-circle-outline" size={16} color="#4edea3" />
+          <Ionicons name="information-circle-outline" size={16} color="#22C55E" />
         </View>
 
         {/* Service Cards */}
@@ -103,13 +103,13 @@ export default function HizmetAyarlariScreen() {
                       value={service.name}
                       onChangeText={v => updateService(index, 'name', v)}
                       placeholder={t('randevu.hizmetAyarlari.serviceNamePlaceholder')}
-                      placeholderTextColor="#3c4a42"
+                      placeholderTextColor="#6B7280"
                     />
                     <TouchableOpacity
                       style={styles.deleteBtn}
                       onPress={() => removeService(index)}
                     >
-                      <Ionicons name="trash-outline" size={15} color="#ff6b6b" />
+                      <Ionicons name="trash-outline" size={15} color="#EF4444" />
                     </TouchableOpacity>
                   </View>
                   <View style={styles.editBottomRow}>
@@ -118,7 +118,7 @@ export default function HizmetAyarlariScreen() {
                       value={service.price}
                       onChangeText={v => updateService(index, 'price', v)}
                       placeholder={t('randevu.hizmetAyarlari.pricePlaceholder')}
-                      placeholderTextColor="#3c4a42"
+                      placeholderTextColor="#6B7280"
                       keyboardType="numeric"
                     />
                     <Text style={styles.sep}>{t('randevu.hizmetAyarlari.currencyUnit')}</Text>
@@ -127,7 +127,7 @@ export default function HizmetAyarlariScreen() {
                       value={service.unit}
                       onChangeText={v => updateService(index, 'unit', v)}
                       placeholder={t('randevu.hizmetAyarlari.unitPlaceholder')}
-                      placeholderTextColor="#3c4a42"
+                      placeholderTextColor="#6B7280"
                     />
                   </View>
                 </View>
@@ -148,7 +148,7 @@ export default function HizmetAyarlariScreen() {
           {/* Add button — only in edit mode */}
           {isEditing && services.length < 10 && (
             <TouchableOpacity style={styles.addBtn} onPress={addService}>
-              <Ionicons name="add-circle-outline" size={18} color="#4edea3" />
+              <Ionicons name="add-circle-outline" size={18} color="#22C55E" />
               <Text style={styles.addBtnText}>{t('randevu.hizmetAyarlari.addService', { current: services.length, max: 10 })}</Text>
             </TouchableOpacity>
           )}
@@ -161,7 +161,7 @@ export default function HizmetAyarlariScreen() {
           <TouchableOpacity
             style={[
               styles.mainBtn,
-              { backgroundColor: isEditing ? '#10b981' : '#4edea3' }
+              { backgroundColor: isEditing ? '#10b981' : '#22C55E' }
             ]}
             onPress={() => setIsEditing(!isEditing)}
             activeOpacity={0.85}
@@ -169,7 +169,7 @@ export default function HizmetAyarlariScreen() {
             <Ionicons
               name={isEditing ? 'checkmark-circle-outline' : 'create-outline'}
               size={20}
-              color="#003824"
+              color="#132A1F"
             />
             <Text style={styles.mainBtnText}>
               {isEditing ? t('randevu.hizmetAyarlari.save') : t('randevu.hizmetAyarlari.edit')}
@@ -183,7 +183,7 @@ export default function HizmetAyarlariScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#131315' },
+  safeArea: { flex: 1, backgroundColor: '#12141B' },
 
   /* Header */
   header: {
@@ -197,9 +197,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(32,31,34,0.5)',
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#4edea3' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: '#22C55E' },
   avatar: {
-    width: 36, height: 36, borderRadius: 18,
+    width: 36, height: 36, borderRadius: 16,
     backgroundColor: 'rgba(53,52,55,0.6)',
     alignItems: 'center', justifyContent: 'center',
     borderWidth: 1, borderColor: 'rgba(60,74,66,0.3)',
@@ -212,13 +212,13 @@ const styles = StyleSheet.create({
   visibilityCard: {
     backgroundColor: 'rgba(32,31,34,0.4)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 14, padding: 14,
+    borderRadius: 16, padding: 14,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     marginBottom: 6,
   },
   visibilityTextWrap: { flex: 1, marginRight: 12, gap: 4 },
-  visibilityTitle: { fontSize: 15, fontWeight: '600', color: '#e5e1e4' },
-  visibilitySubtitle: { fontSize: 11, color: '#bbcabf', lineHeight: 16 },
+  visibilityTitle: { fontSize: 15, fontWeight: '600', color: '#F3F4F6' },
+  visibilitySubtitle: { fontSize: 11, color: '#9CA3AF', lineHeight: 16 },
 
   /* Section header */
   sectionHeader: {
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', paddingHorizontal: 2, marginBottom: 6,
   },
   sectionTitle: {
-    fontSize: 11, fontWeight: '700', color: '#bbcabf', letterSpacing: 1,
+    fontSize: 11, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1,
   },
 
   /* Service Cards */
@@ -240,20 +240,20 @@ const styles = StyleSheet.create({
   viewRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
-  serviceName: { fontSize: 14, fontWeight: '600', color: '#e5e1e4', flex: 1 },
-  servicePrice: { fontSize: 11, fontWeight: '700', color: '#4edea3', letterSpacing: 0.3 },
+  serviceName: { fontSize: 14, fontWeight: '600', color: '#F3F4F6', flex: 1 },
+  servicePrice: { fontSize: 11, fontWeight: '700', color: '#22C55E', letterSpacing: 0.3 },
 
   /* Edit Mode */
   editWrap: { gap: 8 },
   editTopRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   editBottomRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   input: {
-    backgroundColor: '#1c1b1d',
+    backgroundColor: '#1A1D26',
     borderWidth: 1, borderColor: 'rgba(60,74,66,0.4)',
     borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7,
-    fontSize: 13, color: '#e5e1e4',
+    fontSize: 13, color: '#F3F4F6',
   },
-  sep: { fontSize: 12, color: '#bbcabf' },
+  sep: { fontSize: 12, color: '#9CA3AF' },
   deleteBtn: {
     width: 32, height: 32, alignItems: 'center', justifyContent: 'center',
     backgroundColor: 'rgba(255,107,107,0.1)', borderRadius: 8,
@@ -263,10 +263,10 @@ const styles = StyleSheet.create({
   addBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: 8, padding: 12, borderRadius: 12,
-    borderWidth: 1.5, borderColor: 'rgba(78,222,163,0.3)',
+    borderWidth: 1, borderColor: 'rgba(34, 197, 94,0.3)',
     borderStyle: 'dashed', marginTop: 2,
   },
-  addBtnText: { fontSize: 13, fontWeight: '600', color: '#4edea3' },
+  addBtnText: { fontSize: 13, fontWeight: '600', color: '#22C55E' },
 
   /* Action Bar */
   actionBar: { position: 'absolute', left: 0, right: 0 },
@@ -275,10 +275,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(19,19,21,0.97)',
   },
   mainBtn: {
-    height: 52, borderRadius: 14,
+    height: 52, borderRadius: 16,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    shadowColor: '#4edea3', shadowOffset: { width: 0, height: 6 },
+    shadowColor: '#22C55E', shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3, shadowRadius: 10, elevation: 6,
   },
-  mainBtnText: { fontSize: 16, fontWeight: '700', color: '#003824' },
+  mainBtnText: { fontSize: 16, fontWeight: '700', color: '#132A1F' },
 });

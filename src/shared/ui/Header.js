@@ -16,7 +16,7 @@ export default function Header({ title }) {
       >
         <View className="flex-row items-center">
           <TouchableOpacity className="mr-3">
-            <Ionicons name="apps-outline" size={24} color="#e5e2e3" />
+            <Ionicons name="apps-outline" size={24} color="#F3F4F6" />
           </TouchableOpacity>
           <Text className="text-xl font-bold text-white tracking-wide">
             {title || "Digital Assistant"}

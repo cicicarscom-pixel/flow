@@ -17,24 +17,26 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { CommunicationLogsTable } from '../modules/sosyal_medya/presentation/components/CommunicationLogsTable';
 import { supabase } from '../shared/lib/supabase';
 
+// Not: Bu değerler artık src/core/theme/designSystem.js içindeki merkezi
+// palet ile uyumludur (aynı marka renkleri, daha profesyonel/dengeli tonlar).
 const COLORS = {
-  background: '#0b0e11',
-  surface: '#111417',
-  surfaceContainer: '#1d2023',
-  surfaceContainerHigh: '#272a2e',
-  surfaceContainerHighest: '#323538',
-  onSurface: '#e1e2e7',
-  onSurfaceVariant: '#bac9cc',
-  primary: '#00daf3',
-  primaryContainer: '#00e5ff',
-  primaryFixed: '#9cf0ff',
-  primaryFixedDim: '#00daf3',
-  secondary: '#ecb2ff',
-  secondaryFixed: '#f8d8ff',
-  tertiary: '#aeffc0',
-  tertiaryContainer: '#56eb8c',
-  tertiaryFixed: '#6bfe9c',
-  error: '#ffb4ab',
+  background: '#0A0B0F',
+  surface: '#12141B',
+  surfaceContainer: '#1A1D26',
+  surfaceContainerHigh: '#20242F',
+  surfaceContainerHighest: '#262B38',
+  onSurface: '#F3F4F6',
+  onSurfaceVariant: '#9CA3AF',
+  primary: '#22D3EE',
+  primaryContainer: '#38BDF8',
+  primaryFixed: '#67E8F9',
+  primaryFixedDim: '#22D3EE',
+  secondary: '#C084FC',
+  secondaryFixed: '#E9D5FF',
+  tertiary: '#4ADE80',
+  tertiaryContainer: '#22C55E',
+  tertiaryFixed: '#86EFAC',
+  error: '#FCA5A5',
 };
 
 // --- Utilities ---
@@ -428,7 +430,7 @@ export default function DashboardScreen({ navigation }) {
                 <View key={i} style={[
                   styles.barChartBar, 
                   { height: `${h}%`, backgroundColor: i === 6 ? COLORS.tertiary : `rgba(174, 255, 192, ${0.2 + (i * 0.1)})` },
-                  i === 6 ? { shadowColor: COLORS.tertiary, shadowOffset: {width:0,height:0}, shadowOpacity:0.5, shadowRadius:8, elevation: 5 } : null
+                  i === 6 ? { shadowColor: COLORS.tertiary, shadowOffset: {width:0,height:0}, shadowOpacity:0.35, shadowRadius:8, elevation: 5 } : null
                 ]} />
               ))}
             </View>
@@ -452,7 +454,7 @@ export default function DashboardScreen({ navigation }) {
                 <View key={i} style={[
                   styles.barChartBar, 
                   { height: `${h}%`, backgroundColor: i === 6 ? COLORS.error : `rgba(255, 180, 171, ${0.2 + (i * 0.1)})` },
-                  i === 6 ? { shadowColor: COLORS.error, shadowOffset: {width:0,height:0}, shadowOpacity:0.5, shadowRadius:8, elevation: 5 } : null
+                  i === 6 ? { shadowColor: COLORS.error, shadowOffset: {width:0,height:0}, shadowOpacity:0.35, shadowRadius:8, elevation: 5 } : null
                 ]} />
               ))}
             </View>
@@ -522,7 +524,7 @@ export default function DashboardScreen({ navigation }) {
         </View>
 
         {/* Fatura Tarayıcı */}
-        <CustomGlassCard style={[styles.invoiceCard, { borderColor: 'rgba(255, 185, 95, 0.3)' }]} glowColor="#ffb95f">
+        <CustomGlassCard style={[styles.invoiceCard, { borderColor: 'rgba(245, 158, 11, 0.3)' }]} glowColor="#F59E0B">
           <Text style={styles.invoiceCardHeader}>FATURA TARAYICI · SON FATURA</Text>
           <View style={styles.invoiceContentRow}>
             <View style={styles.invoiceImageWrapper}>
@@ -689,7 +691,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 18,
+    borderRadius: 16,
   },
   onlineDot: {
     position: 'absolute',
@@ -698,7 +700,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     backgroundColor: COLORS.tertiaryContainer,
-    borderRadius: 6,
+    borderRadius: 8,
     borderWidth: 2,
     borderColor: COLORS.surface,
   },
@@ -738,7 +740,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     shadowColor: COLORS.secondary,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
+    shadowOpacity: 0.35,
     shadowRadius: 4,
   },
   scrollContent: {
@@ -835,7 +837,7 @@ const styles = StyleSheet.create({
   },
   barChartBar: {
     flex: 1,
-    borderRadius: 2,
+    borderRadius: 4,
   },
   socialCardWrapper: {
     borderRadius: 12,
@@ -862,7 +864,7 @@ const styles = StyleSheet.create({
   socialAvatar: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: 16,
     backgroundColor: COLORS.surfaceContainerHigh,
     alignItems: 'center',
     justifyContent: 'center',
@@ -926,7 +928,7 @@ const styles = StyleSheet.create({
     width: 110,
     height: 10,
     backgroundColor: COLORS.surfaceContainer,
-    borderRadius: 5,
+    borderRadius: 8,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
@@ -1108,7 +1110,7 @@ const styles = StyleSheet.create({
   appointmentDivider: {
     width: 3,
     height: 36,
-    borderRadius: 2,
+    borderRadius: 4,
     opacity: 0.6,
   },
   appointmentBody: {
@@ -1126,7 +1128,7 @@ const styles = StyleSheet.create({
   },
   invoiceCardHeader: {
     fontSize: 11,
-    color: '#ffb95f',
+    color: '#F59E0B',
     fontWeight: '700',
     letterSpacing: 1,
     marginBottom: 16,
@@ -1140,7 +1142,7 @@ const styles = StyleSheet.create({
     height: 90,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,185,95,0.2)',
+    borderColor: 'rgba(245, 158, 11,0.2)',
     overflow: 'hidden',
   },
   invoiceImage: {
@@ -1167,15 +1169,15 @@ const styles = StyleSheet.create({
   },
   invoiceBtn: {
     marginTop: 16,
-    backgroundColor: 'rgba(255, 185, 95, 0.1)',
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 185, 95, 0.3)',
+    borderColor: 'rgba(245, 158, 11, 0.3)',
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
   },
   invoiceBtnText: {
-    color: '#ffb95f',
+    color: '#F59E0B',
     fontWeight: '600',
     fontSize: 13,
   }

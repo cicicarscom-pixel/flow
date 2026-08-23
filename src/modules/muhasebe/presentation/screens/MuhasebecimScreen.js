@@ -15,16 +15,16 @@ import { GlobalAppBar } from '../../../../shared';
 
 // -- DEĞİŞKENLER VE RENKLER --
 const COLORS = {
-  background: '#151518',
+  background: '#12141B',
   cardBg: 'rgba(255, 255, 255, 0.03)',
   cardBorder: 'rgba(255, 255, 255, 0.08)',
-  accent: '#00daf3', // Turkuaz
+  accent: '#22D3EE', // Turkuaz
   accentSubtle: 'rgba(0, 218, 243, 0.1)',
-  textPrimary: '#e5e2e3',
-  textSecondary: '#8e939c',
-  error: '#ffb4ab',
-  warning: '#ffb95f',
-  success: '#4edea3',
+  textPrimary: '#F3F4F6',
+  textSecondary: '#9CA3AF',
+  error: '#FCA5A5',
+  warning: '#F59E0B',
+  success: '#22C55E',
 };
 
 const BORDER_WIDTH = 0.5;
@@ -260,7 +260,7 @@ export default function MuhasebecimScreen({ navigation }) {
           <Text style={[styles.actionCardValue, { color: COLORS.error }]}>2 Adet</Text>
         </View>
         <View style={[styles.actionCard, { marginLeft: 8 }]}>
-          <View style={[styles.iconWrapper, { backgroundColor: 'rgba(255, 185, 95, 0.1)' }]}>
+          <View style={[styles.iconWrapper, { backgroundColor: 'rgba(245, 158, 11, 0.1)' }]}>
             <MaterialIcons name="event" size={20} color={COLORS.warning} />
           </View>
           <Text style={styles.actionCardTitle}>Yaklaşan Vergi</Text>
@@ -586,10 +586,10 @@ const styles = StyleSheet.create({
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 185, 95, 0.1)',
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 8,
     marginRight: 12,
   },
   ratingStars: {

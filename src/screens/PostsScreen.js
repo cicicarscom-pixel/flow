@@ -58,14 +58,14 @@ const AnimatedBorderCard = ({ children, style, colors, padding = 16, borderRadiu
         transform: [{ rotate: spin }],
       }}>
         <LinearGradient
-          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#bc13fe', '#ffffff']}
+          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#A855F7', '#ffffff']}
           locations={[0, 0.4, 0.9, 1]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ flex: 1 }}
         />
       </Animated.View>
-      <View style={{ flex: 1, backgroundColor: '#0A0A0B', borderRadius: borderRadius - 2, padding }}>
+      <View style={{ flex: 1, backgroundColor: '#0A0B0F', borderRadius: borderRadius - 2, padding }}>
         {children}
       </View>
     </View>
@@ -122,10 +122,10 @@ export default function PostsScreen({ navigation }) {
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 'scheduled': return '#00f0ff'; // Cyan
-      case 'published': return '#bc13fe'; // Magenta
-      case 'failed': return '#ff0050'; // Red
-      default: return '#849495'; // Gray
+      case 'scheduled': return '#22D3EE'; // Cyan
+      case 'published': return '#A855F7'; // Magenta
+      case 'failed': return '#EF4444'; // Red
+      default: return '#9CA3AF'; // Gray
     }
   };
 
@@ -198,7 +198,7 @@ export default function PostsScreen({ navigation }) {
       <View className="flex-row items-center border-b border-white/5 py-3 px-5" style={{ opacity: isScheduled ? 0.7 : 1 }}>
         {/* Checkbox Placeholder */}
         <View style={{ width: 40 }} className="justify-center">
-           <View className="w-4 h-4 rounded border border-[#849495]/50 bg-transparent" />
+           <View className="w-4 h-4 rounded border border-[#9CA3AF]/50 bg-transparent" />
         </View>
         
         {/* Content */}
@@ -206,15 +206,15 @@ export default function PostsScreen({ navigation }) {
            {item.media_urls && item.media_urls.length > 0 ? (
               <Image 
                 source={{ uri: item.media_urls[0] }} 
-                style={{ width: 40, height: 40, borderRadius: 6, marginRight: 12 }} 
+                style={{ width: 40, height: 40, borderRadius: 8, marginRight: 12 }} 
                 resizeMode="cover"
               />
            ) : (
-              <View style={{ width: 40, height: 40, borderRadius: 6, marginRight: 12, backgroundColor: 'rgba(255,255,255,0.05)' }} className="items-center justify-center">
-                 <Feather name="image" size={16} color="#849495" />
+              <View style={{ width: 40, height: 40, borderRadius: 8, marginRight: 12, backgroundColor: 'rgba(255,255,255,0.05)' }} className="items-center justify-center">
+                 <Feather name="image" size={16} color="#9CA3AF" />
               </View>
            )}
-           <Text className="text-[#e5e2e3] text-[13px] font-medium flex-1" numberOfLines={2}>
+           <Text className="text-[#F3F4F6] text-[13px] font-medium flex-1" numberOfLines={2}>
               {getPreviewText(item.content || item.title)}
            </Text>
         </View>
@@ -227,31 +227,31 @@ export default function PostsScreen({ navigation }) {
               let iconName = `logo-${platName.toLowerCase()}`;
               if (platName.toLowerCase() === 'twitter') iconName = 'close';
               return (
-                <Ionicons key={idx} name={iconName} size={14} color="#e5e2e3" style={{ marginHorizontal: 2 }} />
+                <Ionicons key={idx} name={iconName} size={14} color="#F3F4F6" style={{ marginHorizontal: 2 }} />
               );
             })}
         </View>
 
         {/* Date */}
         <View style={{ width: 150 }} className="items-center justify-center">
-           <Text className="text-[#b9cacb] text-[12px]">{item.scheduled_for ? formatDate(item.scheduled_for) : 'Belirtilmedi'}</Text>
+           <Text className="text-[#9CA3AF] text-[12px]">{item.scheduled_for ? formatDate(item.scheduled_for) : 'Belirtilmedi'}</Text>
         </View>
 
         {/* Status */}
         <View style={{ width: 120 }} className="items-center justify-center">
            <View className="flex-row items-center px-2 py-1 rounded border" style={{ 
-              backgroundColor: isScheduled ? 'rgba(0, 240, 255, 0.15)' : `${statusColor}15`,
-              borderColor: isScheduled ? 'rgba(0, 240, 255, 0.4)' : `${statusColor}30` 
+              backgroundColor: isScheduled ? 'rgba(34, 211, 238, 0.15)' : `${statusColor}15`,
+              borderColor: isScheduled ? 'rgba(34, 211, 238, 0.4)' : `${statusColor}30` 
            }}>
-              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: isScheduled ? '#00f0ff' : statusColor, marginRight: 6 }} />
-              <Text style={{ color: isScheduled ? '#00f0ff' : statusColor, fontSize: 10, fontWeight: 'bold' }}>{getStatusLabel(item.status)}</Text>
+              <View style={{ width: 6, height: 6, borderRadius: 4, backgroundColor: isScheduled ? '#22D3EE' : statusColor, marginRight: 6 }} />
+              <Text style={{ color: isScheduled ? '#22D3EE' : statusColor, fontSize: 10, fontWeight: 'bold' }}>{getStatusLabel(item.status)}</Text>
            </View>
         </View>
 
         {/* Profile */}
         <View style={{ width: 150 }} className="flex-row items-center">
-           <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#ffb95f', marginRight: 8 }} />
-           <Text className="text-[#e5e2e3] text-[12px]" numberOfLines={1}>Al Esnaf Profil</Text>
+           <View style={{ width: 6, height: 6, borderRadius: 4, backgroundColor: '#F59E0B', marginRight: 8 }} />
+           <Text className="text-[#F3F4F6] text-[12px]" numberOfLines={1}>Al Esnaf Profil</Text>
         </View>
 
         {/* Metrics (Dynamic Data) */}
@@ -266,29 +266,29 @@ export default function PostsScreen({ navigation }) {
           item.metrics?.reach ?? item.reach
         ].map((metricValue, idx) => (
            <View key={idx} style={{ width: 60 }} className="items-center justify-center">
-              <Text className="text-[#849495] text-[12px]">{metricValue != null ? metricValue : '-'}</Text>
+              <Text className="text-[#9CA3AF] text-[12px]">{metricValue != null ? metricValue : '-'}</Text>
            </View>
         ))}
 
         {/* Actions (Delete/Retry) placed at the end */}
         <View style={{ width: 80 }} className="flex-row justify-center items-center">
           {item.status === 'failed' && (
-            <TouchableOpacity className="p-2 rounded bg-[#ff0050]/20 border border-[#ff0050]/40">
-              <Ionicons name="refresh" size={14} color="#ff0050" />
+            <TouchableOpacity className="p-2 rounded bg-[#EF4444]/20 border border-[#EF4444]/40">
+              <Ionicons name="refresh" size={14} color="#EF4444" />
             </TouchableOpacity>
           )}
           {item.status === 'scheduled' && (
-            <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="p-2 rounded bg-[#00f0ff]/10 border border-[#00f0ff]/30">
-              <Ionicons name="trash-outline" size={14} color="#00f0ff" />
+            <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="p-2 rounded bg-[#22D3EE]/10 border border-[#22D3EE]/30">
+              <Ionicons name="trash-outline" size={14} color="#22D3EE" />
             </TouchableOpacity>
           )}
           {item.status === 'published' && (
             <>
-              <TouchableOpacity className="p-2 rounded bg-[#bc13fe]/10 border border-[#bc13fe]/30">
-                <Ionicons name="cloud-offline-outline" size={14} color="#bc13fe" />
+              <TouchableOpacity className="p-2 rounded bg-[#A855F7]/10 border border-[#A855F7]/30">
+                <Ionicons name="cloud-offline-outline" size={14} color="#A855F7" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="p-2 rounded bg-[#ff0050]/10 border border-[#ff0050]/30 ml-1">
-                <Ionicons name="trash-outline" size={14} color="#ff0050" />
+              <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="p-2 rounded bg-[#EF4444]/10 border border-[#EF4444]/30 ml-1">
+                <Ionicons name="trash-outline" size={14} color="#EF4444" />
               </TouchableOpacity>
             </>
           )}
@@ -302,25 +302,25 @@ export default function PostsScreen({ navigation }) {
     <View className="flex-row items-center border-b border-white/10 pb-3 pt-4 mb-2 px-5" style={{ backgroundColor: 'rgba(10, 10, 11, 0.95)' }}>
       {/* Checkbox placeholder */}
       <View style={{ width: 40 }} />
-      <Text className="text-[#849495] text-[12px] font-semibold" style={{ width: 250 }}>Content</Text>
-      <Text className="text-[#849495] text-[12px] font-semibold text-center" style={{ width: 100 }}>Platforms</Text>
-      <Text className="text-[#849495] text-[12px] font-semibold text-center" style={{ width: 150 }}>Date</Text>
-      <Text className="text-[#849495] text-[12px] font-semibold text-center" style={{ width: 120 }}>Status</Text>
-      <Text className="text-[#849495] text-[12px] font-semibold" style={{ width: 150 }}>Profile</Text>
-      <Text className="text-[#849495] text-[10px] font-semibold text-center" style={{ width: 60 }}>Likes</Text>
-      <Text className="text-[#849495] text-[10px] font-semibold text-center" style={{ width: 60 }}>Cmts</Text>
-      <Text className="text-[#849495] text-[10px] font-semibold text-center" style={{ width: 60 }}>Shrs</Text>
-      <Text className="text-[#849495] text-[10px] font-semibold text-center" style={{ width: 60 }}>Saves</Text>
-      <Text className="text-[#849495] text-[10px] font-semibold text-center" style={{ width: 60 }}>Clicks</Text>
-      <Text className="text-[#849495] text-[10px] font-semibold text-center" style={{ width: 60 }}>Views</Text>
-      <Text className="text-[#849495] text-[10px] font-semibold text-center" style={{ width: 60 }}>Impr.</Text>
-      <Text className="text-[#849495] text-[10px] font-semibold text-center" style={{ width: 60 }}>Reach</Text>
-      <Text className="text-[#849495] text-[10px] font-semibold text-center" style={{ width: 80 }}>Actions</Text>
+      <Text className="text-[#9CA3AF] text-[12px] font-semibold" style={{ width: 250 }}>Content</Text>
+      <Text className="text-[#9CA3AF] text-[12px] font-semibold text-center" style={{ width: 100 }}>Platforms</Text>
+      <Text className="text-[#9CA3AF] text-[12px] font-semibold text-center" style={{ width: 150 }}>Date</Text>
+      <Text className="text-[#9CA3AF] text-[12px] font-semibold text-center" style={{ width: 120 }}>Status</Text>
+      <Text className="text-[#9CA3AF] text-[12px] font-semibold" style={{ width: 150 }}>Profile</Text>
+      <Text className="text-[#9CA3AF] text-[10px] font-semibold text-center" style={{ width: 60 }}>Likes</Text>
+      <Text className="text-[#9CA3AF] text-[10px] font-semibold text-center" style={{ width: 60 }}>Cmts</Text>
+      <Text className="text-[#9CA3AF] text-[10px] font-semibold text-center" style={{ width: 60 }}>Shrs</Text>
+      <Text className="text-[#9CA3AF] text-[10px] font-semibold text-center" style={{ width: 60 }}>Saves</Text>
+      <Text className="text-[#9CA3AF] text-[10px] font-semibold text-center" style={{ width: 60 }}>Clicks</Text>
+      <Text className="text-[#9CA3AF] text-[10px] font-semibold text-center" style={{ width: 60 }}>Views</Text>
+      <Text className="text-[#9CA3AF] text-[10px] font-semibold text-center" style={{ width: 60 }}>Impr.</Text>
+      <Text className="text-[#9CA3AF] text-[10px] font-semibold text-center" style={{ width: 60 }}>Reach</Text>
+      <Text className="text-[#9CA3AF] text-[10px] font-semibold text-center" style={{ width: 80 }}>Actions</Text>
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0A0A0B]" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-[#0A0B0F]" edges={['top', 'left', 'right']}>
       {/* Cybernetic Background */}
       <ImageBackground 
         source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
@@ -349,8 +349,8 @@ export default function PostsScreen({ navigation }) {
           renderItem={({ item }) => (
             <CustomButton 
               onPress={() => setActiveFilter(item.id)}
-              className={`px-4 py-2 rounded-full mr-2 border ${activeFilter === item.id ? 'bg-[#00f0ff]/20 border-[#00f0ff]' : 'bg-white/5 border-white/10'}`}
-              textClassName={`text-[12px] font-bold ${activeFilter === item.id ? 'text-[#00f0ff]' : 'text-[#849495]'}`}
+              className={`px-4 py-2 rounded-full mr-2 border ${activeFilter === item.id ? 'bg-[#22D3EE]/20 border-[#22D3EE]' : 'bg-white/5 border-white/10'}`}
+              textClassName={`text-[12px] font-bold ${activeFilter === item.id ? 'text-[#22D3EE]' : 'text-[#9CA3AF]'}`}
               title={item.label}
             />
           )}
@@ -371,8 +371,8 @@ export default function PostsScreen({ navigation }) {
             renderItem={renderPostItem}
             ListEmptyComponent={() => (
               <View className="items-center justify-center mt-20" style={{ width: '100%' }}>
-                <Feather name="file-text" size={48} color="#849495" style={{ opacity: 0.5, marginBottom: 16 }} />
-                <Text className="text-[#849495] text-[14px] mt-4">Bu duruma ait gönderi bulunamadı.</Text>
+                <Feather name="file-text" size={48} color="#9CA3AF" style={{ opacity: 0.5, marginBottom: 16 }} />
+                <Text className="text-[#9CA3AF] text-[14px] mt-4">Bu duruma ait gönderi bulunamadı.</Text>
               </View>
             )}
           />
@@ -385,7 +385,7 @@ export default function PostsScreen({ navigation }) {
           <View style={{ width: '100%', maxWidth: 400, backgroundColor: '#ffffff', borderRadius: 16, overflow: 'hidden' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Feather name="trash-2" size={18} color="#ff3b30" />
+                <Feather name="trash-2" size={18} color="#EF4444" />
                 <Text style={{ fontSize: 16, fontWeight: '600', color: '#111827', marginLeft: 8 }}>Gönderiyi sil</Text>
               </View>
               <TouchableOpacity onPress={() => !isDeleting && setDeleteModal({ isOpen: false, postId: null })} disabled={isDeleting} style={{ padding: 4 }}>
@@ -402,7 +402,7 @@ export default function PostsScreen({ navigation }) {
                 style={{ flexDirection: 'row', padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#e5e7eb', marginBottom: 12 }}
               >
                 <View style={{ backgroundColor: 'rgba(255, 59, 48, 0.1)', padding: 8, borderRadius: 8, marginRight: 12, alignSelf: 'flex-start', marginTop: 2 }}>
-                  <Feather name="trash-2" size={18} color="#ff3b30" />
+                  <Feather name="trash-2" size={18} color="#EF4444" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: 15, fontWeight: '500', color: '#111827', marginBottom: 4 }}>Sadece Workigom Flow'dan sil</Text>

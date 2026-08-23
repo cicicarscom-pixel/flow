@@ -34,10 +34,10 @@ const GlassCard = ({ children, style }) => (
 
 // Let's replace PLATFORMS and TIME_RANGES inside the component so they can be translated
 const getPlatforms = (t) => [
-  { id: 'all', name: t('sosyalMedya.analytics.platforms.all'), icon: 'apps-outline', color: '#849495' },
+  { id: 'all', name: t('sosyalMedya.analytics.platforms.all'), icon: 'apps-outline', color: '#9CA3AF' },
   { id: 'tiktok', name: t('sosyalMedya.analytics.platforms.tiktok'), icon: 'musical-notes', color: '#ff0050' },
-  { id: 'instagram', name: t('sosyalMedya.analytics.platforms.instagram'), icon: 'logo-instagram', color: '#ebb2ff' },
-  { id: 'facebook', name: t('sosyalMedya.analytics.platforms.facebook'), icon: 'logo-facebook', color: '#00f0ff' },
+  { id: 'instagram', name: t('sosyalMedya.analytics.platforms.instagram'), icon: 'logo-instagram', color: '#D8B4FE' },
+  { id: 'facebook', name: t('sosyalMedya.analytics.platforms.facebook'), icon: 'logo-facebook', color: '#22D3EE' },
   { id: 'youtube', name: t('sosyalMedya.analytics.platforms.youtube'), icon: 'logo-youtube', color: '#ff0000' },
   { id: 'linkedin', name: t('sosyalMedya.analytics.platforms.linkedin'), icon: 'logo-linkedin', color: '#0077b5' },
   { id: 'googlebusiness', name: t('sosyalMedya.analytics.platforms.googlebusiness'), icon: 'business', color: '#34a853' }
@@ -80,14 +80,14 @@ const AnimatedBorderCard = ({ children, style, colors, padding = 16, borderRadiu
         transform: [{ rotate: spin }],
       }}>
         <LinearGradient
-          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#bc13fe', '#ffffff']}
+          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#A855F7', '#ffffff']}
           locations={[0, 0.4, 0.9, 1]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ flex: 1 }}
         />
       </Animated.View>
-      <View style={{ flex: 1, backgroundColor: '#0A0A0B', borderRadius: borderRadius - 2, padding }}>
+      <View style={{ flex: 1, backgroundColor: '#0A0B0F', borderRadius: borderRadius - 2, padding }}>
         {children}
       </View>
     </View>
@@ -99,14 +99,14 @@ const TopToggle = ({ activeTab, setActiveTab, t }) => {
   return (
     <View className="flex-row mx-5 mt-4 mb-4 bg-white/5 rounded-xl p-1 border border-white/10">
       <CustomButton 
-        className={`flex-1 py-2.5 px-0 rounded-lg ${activeTab === 'posting' ? 'bg-[#00f0ff]/20 border border-[#00f0ff]/50' : 'bg-transparent'}`}
-        textClassName={`text-[12px] font-bold ${activeTab === 'posting' ? 'text-[#00f0ff]' : 'text-[#849495]'}`}
+        className={`flex-1 py-2.5 px-0 rounded-lg ${activeTab === 'posting' ? 'bg-[#22D3EE]/20 border border-[#22D3EE]/50' : 'bg-transparent'}`}
+        textClassName={`text-[12px] font-bold ${activeTab === 'posting' ? 'text-[#22D3EE]' : 'text-[#9CA3AF]'}`}
         title={t('sosyalMedya.analytics.tabs.posting')}
         onPress={() => setActiveTab('posting')}
       />
       <CustomButton 
-        className={`flex-1 py-2.5 px-0 rounded-lg ${activeTab === 'inbox' ? 'bg-[#bc13fe]/20 border border-[#bc13fe]/50' : 'bg-transparent'}`}
-        textClassName={`text-[12px] font-bold ${activeTab === 'inbox' ? 'text-[#ebb2ff]' : 'text-[#849495]'}`}
+        className={`flex-1 py-2.5 px-0 rounded-lg ${activeTab === 'inbox' ? 'bg-[#A855F7]/20 border border-[#A855F7]/50' : 'bg-transparent'}`}
+        textClassName={`text-[12px] font-bold ${activeTab === 'inbox' ? 'text-[#D8B4FE]' : 'text-[#9CA3AF]'}`}
         title={t('sosyalMedya.analytics.tabs.inbox')}
         onPress={() => setActiveTab('inbox')}
       />
@@ -121,15 +121,15 @@ const FilterRow = ({ selectedPlatform, onOpenPlatformSelector, selectedTimeRange
       onPress={onOpenPlatformSelector}
       className="flex-row items-center bg-white/5 px-3 py-1.5 rounded border border-white/10"
     >
-      <Text className="text-[10px] text-[#e5e2e3] mr-1">{selectedPlatform.name}</Text>
-      <MaterialIcons name="keyboard-arrow-down" size={14} color="#849495" />
+      <Text className="text-[10px] text-[#F3F4F6] mr-1">{selectedPlatform.name}</Text>
+      <MaterialIcons name="keyboard-arrow-down" size={14} color="#9CA3AF" />
     </TouchableOpacity>
     <TouchableOpacity 
       onPress={onOpenTimeSelector}
       className="flex-row items-center bg-white/5 px-3 py-1.5 rounded border border-white/10"
     >
-      <Text className="text-[10px] text-[#e5e2e3] mr-1">{selectedTimeRange.name}</Text>
-      <MaterialIcons name="keyboard-arrow-down" size={14} color="#849495" />
+      <Text className="text-[10px] text-[#F3F4F6] mr-1">{selectedTimeRange.name}</Text>
+      <MaterialIcons name="keyboard-arrow-down" size={14} color="#9CA3AF" />
     </TouchableOpacity>
   </View>
 );
@@ -287,7 +287,7 @@ export default function AnalyticsScreen({ navigation }) {
             const genderAge = actualDemo.data[0].values[0].value;
             const mapped = Object.keys(genderAge).map((key, index) => ({
               value: genderAge[key],
-              color: ['#00f0ff', '#bc13fe', '#ebb2ff', '#0077b5'][index % 4],
+              color: ['#22D3EE', '#A855F7', '#D8B4FE', '#0077b5'][index % 4],
               text: key
             }));
             newZernioData.demographics = mapped;
@@ -382,61 +382,61 @@ export default function AnalyticsScreen({ navigation }) {
     <View className="px-5 pb-32">
       {/* Key Metrics Grid */}
       <View className="flex-row justify-between mb-4">
-        <AnimatedBorderCard style={{ flex: 1, marginRight: 6 }} colors={['#00f0ff', '#131314']} padding={12}>
-          <Text className="text-[#849495] text-[10px] mb-1">{t('sosyalMedya.analytics.totalPosts')}</Text>
-          <Text className="text-[#00f0ff] text-[18px] font-bold">{zernioData.totalPosts || 0}</Text>
+        <AnimatedBorderCard style={{ flex: 1, marginRight: 6 }} colors={['#22D3EE', '#12141B']} padding={12}>
+          <Text className="text-[#9CA3AF] text-[10px] mb-1">{t('sosyalMedya.analytics.totalPosts')}</Text>
+          <Text className="text-[#22D3EE] text-[18px] font-bold">{zernioData.totalPosts || 0}</Text>
         </AnimatedBorderCard>
-        <AnimatedBorderCard style={{ flex: 1, marginLeft: 6 }} colors={['#bc13fe', '#131314']} padding={12}>
-          <Text className="text-[#849495] text-[10px] mb-1">{t('sosyalMedya.analytics.totalComments')}</Text>
-          <Text className="text-[#ebb2ff] text-[18px] font-bold">{zernioData.totalComments || 0}</Text>
+        <AnimatedBorderCard style={{ flex: 1, marginLeft: 6 }} colors={['#A855F7', '#12141B']} padding={12}>
+          <Text className="text-[#9CA3AF] text-[10px] mb-1">{t('sosyalMedya.analytics.totalComments')}</Text>
+          <Text className="text-[#D8B4FE] text-[18px] font-bold">{zernioData.totalComments || 0}</Text>
         </AnimatedBorderCard>
       </View>
 
       <View className="flex-row justify-between mb-4">
         <GlassCard style={{ flex: 1, marginRight: 6, padding: 12, borderRadius: 12 }}>
           <View className="flex-row items-center mb-1">
-            <Ionicons name="people" size={12} color="#849495" style={{ marginRight: 4 }} />
-            <Text className="text-[#849495] text-[10px]">{t('sosyalMedya.analytics.totalFollowers')}</Text>
+            <Ionicons name="people" size={12} color="#9CA3AF" style={{ marginRight: 4 }} />
+            <Text className="text-[#9CA3AF] text-[10px]">{t('sosyalMedya.analytics.totalFollowers')}</Text>
           </View>
-          <Text className="text-[#e5e2e3] text-[16px] font-bold">
+          <Text className="text-[#F3F4F6] text-[16px] font-bold">
             {zernioData.totalFollowers > 0 ? zernioData.totalFollowers : '--'}
           </Text>
         </GlassCard>
         <GlassCard style={{ flex: 1, marginLeft: 6, padding: 12, borderRadius: 12 }}>
           <View className="flex-row items-center mb-1">
-            <MaterialIcons name="post-add" size={12} color="#849495" style={{ marginRight: 4 }} />
-            <Text className="text-[#849495] text-[10px]">{t('sosyalMedya.analytics.reviews')}</Text>
+            <MaterialIcons name="post-add" size={12} color="#9CA3AF" style={{ marginRight: 4 }} />
+            <Text className="text-[#9CA3AF] text-[10px]">{t('sosyalMedya.analytics.reviews')}</Text>
           </View>
-          <Text className="text-[#e5e2e3] text-[16px] font-bold">{stats.totalReviews}</Text>
+          <Text className="text-[#F3F4F6] text-[16px] font-bold">{stats.totalReviews}</Text>
         </GlassCard>
       </View>
 
       {/* Chart: Posts / Impressions over time */}
-      <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#131314']}>
+      <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#12141B']}>
         <View className="flex-row justify-between items-center mb-1">
-          <Text className="text-[#e5e2e3] text-[14px] font-bold">{t('sosyalMedya.analytics.engagementImpressions')}</Text>
+          <Text className="text-[#F3F4F6] text-[14px] font-bold">{t('sosyalMedya.analytics.engagementImpressions')}</Text>
           <View className="flex-row items-center">
-             <View className="w-2 h-2 rounded-full bg-[#00f0ff] mr-1" />
-             <Text className="text-[#849495] text-[8px] mr-3">Views</Text>
-             <View className="w-2 h-2 rounded-full bg-[#bc13fe] mr-1" />
-             <Text className="text-[#849495] text-[8px]">Likes</Text>
+             <View className="w-2 h-2 rounded-full bg-[#22D3EE] mr-1" />
+             <Text className="text-[#9CA3AF] text-[8px] mr-3">Views</Text>
+             <View className="w-2 h-2 rounded-full bg-[#A855F7] mr-1" />
+             <Text className="text-[#9CA3AF] text-[8px]">Likes</Text>
           </View>
         </View>
-        <Text className="text-[#849495] text-[10px] mb-4">{t('sosyalMedya.analytics.changeOverTime')}</Text>
+        <Text className="text-[#9CA3AF] text-[10px] mb-4">{t('sosyalMedya.analytics.changeOverTime')}</Text>
         
         {zernioData.timelineData.length > 0 ? (
           <View style={{marginLeft: -20}}>
             <LineChart
               data={zernioData.timelineData}
               data2={zernioData.timelineDataLikes && zernioData.timelineDataLikes.length > 0 ? zernioData.timelineDataLikes : undefined}
-              color="#00f0ff"
-              color2="#bc13fe"
+              color="#22D3EE"
+              color2="#A855F7"
               thickness={3}
-              dataPointsColor="#00f0ff"
-              dataPointsColor2="#bc13fe"
+              dataPointsColor="#22D3EE"
+              dataPointsColor2="#A855F7"
               hideRules
-              yAxisTextStyle={{color: '#849495', fontSize: 10}}
-              xAxisLabelTextStyle={{color: '#849495', fontSize: 8}}
+              yAxisTextStyle={{color: '#9CA3AF', fontSize: 10}}
+              xAxisLabelTextStyle={{color: '#9CA3AF', fontSize: 8}}
               animationDuration={1500}
               isAnimated
               height={120}
@@ -446,37 +446,37 @@ export default function AnalyticsScreen({ navigation }) {
           </View>
         ) : (
            <View className="h-32 justify-center items-center">
-             <Text className="text-[#849495] text-[10px]">{t('sosyalMedya.analytics.noChartData')}</Text>
+             <Text className="text-[#9CA3AF] text-[10px]">{t('sosyalMedya.analytics.noChartData')}</Text>
            </View>
         )}
       </AnimatedBorderCard>
 
       {/* Chart: Follower Growth History */}
       {zernioData.followerStats && zernioData.followerStats.length > 0 && (
-        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#131314']}>
+        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#12141B']}>
           <View className="flex-row items-center mb-1">
-            <Ionicons name="trending-up" size={14} color="#4edea3" style={{ marginRight: 4 }} />
-            <Text className="text-[#e5e2e3] text-[14px] font-bold">Takipçi Büyümesi (Follower History)</Text>
+            <Ionicons name="trending-up" size={14} color="#22C55E" style={{ marginRight: 4 }} />
+            <Text className="text-[#F3F4F6] text-[14px] font-bold">Takipçi Büyümesi (Follower History)</Text>
           </View>
-          <Text className="text-[#849495] text-[10px] mb-4">Seçili dönemdeki net takipçi değişimi</Text>
+          <Text className="text-[#9CA3AF] text-[10px] mb-4">Seçili dönemdeki net takipçi değişimi</Text>
           
           <View style={{marginLeft: -20}}>
             <LineChart
               data={zernioData.followerStats}
-              color="#4edea3"
+              color="#22C55E"
               thickness={3}
-              dataPointsColor="#4edea3"
+              dataPointsColor="#22C55E"
               hideRules
-              yAxisTextStyle={{color: '#849495', fontSize: 10}}
-              xAxisLabelTextStyle={{color: '#849495', fontSize: 8}}
+              yAxisTextStyle={{color: '#9CA3AF', fontSize: 10}}
+              xAxisLabelTextStyle={{color: '#9CA3AF', fontSize: 8}}
               animationDuration={1500}
               isAnimated
               height={120}
               initialSpacing={20}
               spacing={width * 0.12}
               areaChart
-              startFillColor="#4edea3"
-              endFillColor="rgba(78,222,163,0.01)"
+              startFillColor="#22C55E"
+              endFillColor="rgba(34, 197, 94,0.01)"
               startOpacity={0.3}
               endOpacity={0.0}
             />
@@ -486,8 +486,8 @@ export default function AnalyticsScreen({ navigation }) {
 
       {/* Demographics / Follower History for specific platforms */}
       {selectedPlatform.id === 'instagram' && zernioData.demographics.length > 0 && (
-        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#131314']}>
-          <Text className="text-[#e5e2e3] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.demographics')}</Text>
+        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#12141B']}>
+          <Text className="text-[#F3F4F6] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.demographics')}</Text>
           <View className="items-center py-4">
             <PieChart
               data={zernioData.demographics}
@@ -505,17 +505,17 @@ export default function AnalyticsScreen({ navigation }) {
       
       {/* Platform Breakdown Placeholder for "All" */}
       {selectedPlatform.id === 'all' && (
-        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#131314']}>
-          <Text className="text-[#e5e2e3] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.platformOverview')}</Text>
+        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#12141B']}>
+          <Text className="text-[#F3F4F6] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.platformOverview')}</Text>
           <View className="mt-4 flex-row justify-around">
             <View className="items-center">
-              <Ionicons name="logo-instagram" size={24} color="#ebb2ff" />
-              <Text className="text-[#e5e2e3] text-[12px] font-bold mt-2">{t('sosyalMedya.analytics.active')}</Text>
+              <Ionicons name="logo-instagram" size={24} color="#D8B4FE" />
+              <Text className="text-[#F3F4F6] text-[12px] font-bold mt-2">{t('sosyalMedya.analytics.active')}</Text>
             </View>
             <View className="w-[1px] h-full bg-white/10" />
             <View className="items-center">
               <Ionicons name="business" size={24} color="#34a853" />
-              <Text className="text-[#e5e2e3] text-[12px] font-bold mt-2">{t('sosyalMedya.analytics.active')}</Text>
+              <Text className="text-[#F3F4F6] text-[12px] font-bold mt-2">{t('sosyalMedya.analytics.active')}</Text>
             </View>
           </View>
         </AnimatedBorderCard>
@@ -530,55 +530,55 @@ export default function AnalyticsScreen({ navigation }) {
     <View className="px-5 pb-32">
       {/* Key Metrics Grid */}
       <View className="flex-row justify-between mb-4">
-        <AnimatedBorderCard style={{ flex: 1, marginRight: 6 }} colors={['#bc13fe', '#131314']} padding={12}>
+        <AnimatedBorderCard style={{ flex: 1, marginRight: 6 }} colors={['#A855F7', '#12141B']} padding={12}>
           <View className="flex-row items-center mb-1">
-            <Feather name="inbox" size={12} color="#849495" style={{ marginRight: 4 }} />
-            <Text className="text-[#849495] text-[10px]">{t('sosyalMedya.analytics.received')}</Text>
+            <Feather name="inbox" size={12} color="#9CA3AF" style={{ marginRight: 4 }} />
+            <Text className="text-[#9CA3AF] text-[10px]">{t('sosyalMedya.analytics.received')}</Text>
           </View>
-          <Text className="text-[#ebb2ff] text-[18px] font-bold">{zernioData.messagesReceived || 0}</Text>
+          <Text className="text-[#D8B4FE] text-[18px] font-bold">{zernioData.messagesReceived || 0}</Text>
         </AnimatedBorderCard>
         
-        <AnimatedBorderCard style={{ flex: 1, marginLeft: 6 }} colors={['#00f0ff', '#131314']} padding={12}>
+        <AnimatedBorderCard style={{ flex: 1, marginLeft: 6 }} colors={['#22D3EE', '#12141B']} padding={12}>
           <View className="flex-row items-center mb-1">
-            <Feather name="send" size={12} color="#849495" style={{ marginRight: 4 }} />
-            <Text className="text-[#849495] text-[10px]">{t('sosyalMedya.analytics.sent')}</Text>
+            <Feather name="send" size={12} color="#9CA3AF" style={{ marginRight: 4 }} />
+            <Text className="text-[#9CA3AF] text-[10px]">{t('sosyalMedya.analytics.sent')}</Text>
           </View>
-          <Text className="text-[#00f0ff] text-[18px] font-bold">0</Text>
+          <Text className="text-[#22D3EE] text-[18px] font-bold">0</Text>
         </AnimatedBorderCard>
       </View>
 
       <View className="flex-row justify-between mb-4">
         <GlassCard style={{ flex: 1, marginRight: 6, padding: 12, borderRadius: 12 }}>
           <View className="flex-row items-center mb-1">
-            <Feather name="eye" size={12} color="#849495" style={{ marginRight: 4 }} />
-            <Text className="text-[#849495] text-[10px]">{t('sosyalMedya.analytics.read')}</Text>
+            <Feather name="eye" size={12} color="#9CA3AF" style={{ marginRight: 4 }} />
+            <Text className="text-[#9CA3AF] text-[10px]">{t('sosyalMedya.analytics.read')}</Text>
           </View>
-          <Text className="text-[#e5e2e3] text-[16px] font-bold">--</Text>
+          <Text className="text-[#F3F4F6] text-[16px] font-bold">--</Text>
         </GlassCard>
         
         <GlassCard style={{ flex: 1, marginLeft: 6, padding: 12, borderRadius: 12 }}>
           <View className="flex-row items-center mb-1">
-            <Feather name="clock" size={12} color="#849495" style={{ marginRight: 4 }} />
-            <Text className="text-[#849495] text-[10px]">{t('sosyalMedya.analytics.avgResponse')}</Text>
+            <Feather name="clock" size={12} color="#9CA3AF" style={{ marginRight: 4 }} />
+            <Text className="text-[#9CA3AF] text-[10px]">{t('sosyalMedya.analytics.avgResponse')}</Text>
           </View>
-          <Text className="text-[#e5e2e3] text-[16px] font-bold">{t('sosyalMedya.analytics.responseTimeMin')}</Text>
+          <Text className="text-[#F3F4F6] text-[16px] font-bold">{t('sosyalMedya.analytics.responseTimeMin')}</Text>
         </GlassCard>
       </View>
 
       {/* Response Time Info */}
-      <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#131314']}>
-        <Text className="text-[#e5e2e3] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.responseTimeAnalysis')}</Text>
-        <Text className="text-[#849495] text-[10px] mb-4">{t('sosyalMedya.analytics.firstResponseText')}</Text>
+      <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#12141B']}>
+        <Text className="text-[#F3F4F6] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.responseTimeAnalysis')}</Text>
+        <Text className="text-[#9CA3AF] text-[10px] mb-4">{t('sosyalMedya.analytics.firstResponseText')}</Text>
         <View className="items-center py-6">
-          <MaterialIcons name="speed" size={32} color="#00f0ff" style={{ opacity: 0.5, marginBottom: 8 }} />
-          <Text className="text-[#e5e2e3] text-[12px]">{t('sosyalMedya.analytics.greatSpeed')}</Text>
+          <MaterialIcons name="speed" size={32} color="#22D3EE" style={{ opacity: 0.5, marginBottom: 8 }} />
+          <Text className="text-[#F3F4F6] text-[12px]">{t('sosyalMedya.analytics.greatSpeed')}</Text>
         </View>
       </AnimatedBorderCard>
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0A0A0B]" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-[#0A0B0F]" edges={['top', 'left', 'right']}>
       {/* Cybernetic Background */}
       <ImageBackground 
         source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
@@ -601,8 +601,8 @@ export default function AnalyticsScreen({ navigation }) {
 
       {isLoading ? (
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#00f0ff" />
-          <Text className="text-[#849495] text-[12px] mt-4">{t('sosyalMedya.analytics.loading')}</Text>
+          <ActivityIndicator size="large" color="#22D3EE" />
+          <Text className="text-[#9CA3AF] text-[12px] mt-4">{t('sosyalMedya.analytics.loading')}</Text>
         </View>
       ) : (
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -622,9 +622,9 @@ export default function AnalyticsScreen({ navigation }) {
             <TouchableWithoutFeedback>
               <View style={styles.modalContent}>
                 <View className="flex-row justify-between items-center mb-4 pb-3 border-b border-white/10">
-                  <Text className="text-[#e5e2e3] font-bold text-[14px]">{t('sosyalMedya.analytics.selectPlatform')}</Text>
+                  <Text className="text-[#F3F4F6] font-bold text-[14px]">{t('sosyalMedya.analytics.selectPlatform')}</Text>
                   <TouchableOpacity onPress={() => setPlatformModalVisible(false)}>
-                    <MaterialIcons name="close" size={20} color="#849495" />
+                    <MaterialIcons name="close" size={20} color="#9CA3AF" />
                   </TouchableOpacity>
                 </View>
                 <ScrollView showsVerticalScrollIndicator={false}>
@@ -632,14 +632,14 @@ export default function AnalyticsScreen({ navigation }) {
                     <TouchableOpacity
                       key={platform.id}
                       onPress={() => handleSelectPlatform(platform)}
-                      className={`flex-row items-center py-3 px-2 rounded-lg mb-1 ${selectedPlatform.id === platform.id ? 'bg-[#00f0ff]/10' : ''}`}
+                      className={`flex-row items-center py-3 px-2 rounded-lg mb-1 ${selectedPlatform.id === platform.id ? 'bg-[#22D3EE]/10' : ''}`}
                     >
                       <Ionicons name={platform.icon} size={18} color={platform.color} style={{ marginRight: 12, width: 24, textAlign: 'center' }} />
-                      <Text className={`text-[12px] ${selectedPlatform.id === platform.id ? 'text-[#00f0ff] font-bold' : 'text-[#e5e2e3]'}`}>
+                      <Text className={`text-[12px] ${selectedPlatform.id === platform.id ? 'text-[#22D3EE] font-bold' : 'text-[#F3F4F6]'}`}>
                         {platform.name}
                       </Text>
                       {selectedPlatform.id === platform.id && (
-                        <MaterialIcons name="check" size={16} color="#00f0ff" style={{ marginLeft: 'auto' }} />
+                        <MaterialIcons name="check" size={16} color="#22D3EE" style={{ marginLeft: 'auto' }} />
                       )}
                     </TouchableOpacity>
                   ))}
@@ -662,9 +662,9 @@ export default function AnalyticsScreen({ navigation }) {
             <TouchableWithoutFeedback>
               <View style={styles.modalContent}>
                 <View className="flex-row justify-between items-center mb-4 pb-3 border-b border-white/10">
-                  <Text className="text-[#e5e2e3] font-bold text-[14px]">{t('sosyalMedya.analytics.selectTimeRange')}</Text>
+                  <Text className="text-[#F3F4F6] font-bold text-[14px]">{t('sosyalMedya.analytics.selectTimeRange')}</Text>
                   <TouchableOpacity onPress={() => setTimeModalVisible(false)}>
-                    <MaterialIcons name="close" size={20} color="#849495" />
+                    <MaterialIcons name="close" size={20} color="#9CA3AF" />
                   </TouchableOpacity>
                 </View>
                 <ScrollView showsVerticalScrollIndicator={false}>
@@ -672,14 +672,14 @@ export default function AnalyticsScreen({ navigation }) {
                     <TouchableOpacity
                       key={range.id}
                       onPress={() => handleSelectTimeRange(range)}
-                      className={`flex-row items-center py-3 px-2 rounded-lg mb-1 ${selectedTimeRange.id === range.id ? 'bg-[#00f0ff]/10' : ''}`}
+                      className={`flex-row items-center py-3 px-2 rounded-lg mb-1 ${selectedTimeRange.id === range.id ? 'bg-[#22D3EE]/10' : ''}`}
                     >
-                      <MaterialIcons name="access-time" size={18} color="#849495" style={{ marginRight: 12, width: 24, textAlign: 'center' }} />
-                      <Text className={`text-[12px] ${selectedTimeRange.id === range.id ? 'text-[#00f0ff] font-bold' : 'text-[#e5e2e3]'}`}>
+                      <MaterialIcons name="access-time" size={18} color="#9CA3AF" style={{ marginRight: 12, width: 24, textAlign: 'center' }} />
+                      <Text className={`text-[12px] ${selectedTimeRange.id === range.id ? 'text-[#22D3EE] font-bold' : 'text-[#F3F4F6]'}`}>
                         {range.name}
                       </Text>
                       {selectedTimeRange.id === range.id && (
-                        <MaterialIcons name="check" size={16} color="#00f0ff" style={{ marginLeft: 'auto' }} />
+                        <MaterialIcons name="check" size={16} color="#22D3EE" style={{ marginLeft: 'auto' }} />
                       )}
                     </TouchableOpacity>
                   ))}
@@ -707,13 +707,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   modalContent: {
-    backgroundColor: '#131314',
+    backgroundColor: '#12141B',
     borderRadius: 16,
     padding: 20,
     maxHeight: height * 0.7,
     borderWidth: 1,
-    borderColor: 'rgba(0, 240, 255, 0.3)',
-    shadowColor: '#00f0ff',
+    borderColor: 'rgba(34, 211, 238, 0.3)',
+    shadowColor: '#22D3EE',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
     shadowRadius: 20,

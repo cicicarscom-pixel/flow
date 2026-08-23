@@ -80,12 +80,12 @@ export default function OdemeTakvimiScreen({ navigation }) {
     const expenses = transactions.filter(t => t.type === 'expense' || t.type === 'ALIS' || (!t.type && t.amount < 0));
 
     return (
-      <View key={`day-${day}`} className="flex-row bg-[#121412] min-h-[64px] mb-1 rounded-xl overflow-hidden border border-[#2d332d]">
+      <View key={`day-${day}`} className="flex-row bg-[#12141B] min-h-[64px] mb-1 rounded-xl overflow-hidden border border-[#20242F]">
         {/* Left: Gelir (Income) + Date */}
         <View className="flex-1 flex-row relative p-2">
           {/* Date */}
           <View className="flex-col mr-2 w-6">
-            <Text className="text-[#22c55e] font-bold leading-tight text-sm">{day}</Text>
+            <Text className="text-[#22C55E] font-bold leading-tight text-sm">{day}</Text>
             <Text className="text-gray-500 font-mono uppercase text-[8px] tracking-tighter">{shortMonth}</Text>
           </View>
           
@@ -94,13 +94,13 @@ export default function OdemeTakvimiScreen({ navigation }) {
             {incomes.map((t, idx) => (
               <View key={idx} className="flex-row justify-between items-start mb-1">
                 <Text numberOfLines={1} className="text-[11px] text-gray-300 flex-1 mr-1">{t.title}</Text>
-                <Text className="text-[11px] text-[#22c55e] font-mono">{Math.abs(t.amount)} ₺</Text>
+                <Text className="text-[11px] text-[#22C55E] font-mono">{Math.abs(t.amount)} ₺</Text>
               </View>
             ))}
           </View>
           
           {/* Vertical center divider */}
-          <View className="absolute right-0 top-2 bottom-2 w-[1px] bg-[#2d332d]" />
+          <View className="absolute right-0 top-2 bottom-2 w-[1px] bg-[#20242F]" />
         </View>
 
         {/* Right: Gider (Expense) */}
@@ -108,7 +108,7 @@ export default function OdemeTakvimiScreen({ navigation }) {
           {expenses.map((t, idx) => (
             <View key={idx} className="flex-row justify-between items-start mb-1">
               <Text numberOfLines={1} className="text-[11px] text-gray-300 flex-1 mr-1">{t.title}</Text>
-              <Text className="text-[11px] text-[#ff3b30] font-mono">{Math.abs(t.amount)} ₺</Text>
+              <Text className="text-[11px] text-[#EF4444] font-mono">{Math.abs(t.amount)} ₺</Text>
             </View>
           ))}
         </View>
@@ -138,25 +138,25 @@ export default function OdemeTakvimiScreen({ navigation }) {
             </View>
             <View className="flex-row gap-4">
               <TouchableOpacity onPress={handlePrev}>
-                <MaterialIcons name="chevron-left" size={28} color="#9ca3af" />
+                <MaterialIcons name="chevron-left" size={28} color="#9CA3AF" />
               </TouchableOpacity>
               <TouchableOpacity onPress={handleNext}>
-                <MaterialIcons name="chevron-right" size={28} color="#9ca3af" />
+                <MaterialIcons name="chevron-right" size={28} color="#9CA3AF" />
               </TouchableOpacity>
             </View>
           </View>
           
           <View className="mb-4">
-            <Text className="text-[#22c55e] font-mono text-sm tracking-widest uppercase">{t('muhasebe.odemeTakvimi.title', 'ÖDEME TAKVİMİ')}</Text>
+            <Text className="text-[#22C55E] font-mono text-sm tracking-widest uppercase">{t('muhasebe.odemeTakvimi.title', 'ÖDEME TAKVİMİ')}</Text>
           </View>
 
           {/* Weekdays / Category Header */}
           <View className="flex-row justify-between mb-2 px-1">
             <View className="flex-1 items-center">
-              <Text className="text-[10px] font-mono tracking-widest text-[#22c55e]/60 uppercase">GELİR</Text>
+              <Text className="text-[10px] font-mono tracking-widest text-[#22C55E]/60 uppercase">GELİR</Text>
             </View>
             <View className="flex-1 items-center">
-              <Text className="text-[10px] font-mono tracking-widest text-[#22c55e]/60 uppercase">GİDER</Text>
+              <Text className="text-[10px] font-mono tracking-widest text-[#22C55E]/60 uppercase">GİDER</Text>
             </View>
           </View>
 
@@ -171,7 +171,7 @@ export default function OdemeTakvimiScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0A0A0B]" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-[#0A0B0F]" edges={['top', 'left', 'right']}>
       <ImageBackground 
         source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
         style={StyleSheet.absoluteFillObject}
@@ -203,7 +203,7 @@ export default function OdemeTakvimiScreen({ navigation }) {
             setCurrentIndex(newIndex);
           }}
           renderItem={renderMonth}
-          className="bg-[#0a0d0a]" // noir-bg
+          className="bg-[#0A0B0F]" // noir-bg
         />
       </View>
     </SafeAreaView>

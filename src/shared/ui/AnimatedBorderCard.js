@@ -37,7 +37,7 @@ export default function AnimatedBorderCard({ children, style, colors, padding = 
         transform: [{ rotate: spin }],
       }}>
         <LinearGradient
-          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#bc13fe', '#ffffff']}
+          colors={colors ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', colors[0], '#ffffff'] : ['rgba(255,255,255,0)', 'rgba(255,255,255,0)', '#A855F7', '#ffffff']}
           locations={[0, 0.4, 0.9, 1]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -46,7 +46,7 @@ export default function AnimatedBorderCard({ children, style, colors, padding = 
       </Animated.View>
       
       {/* Inner Mask to hide the middle of the gradient, showing only the border */}
-      <View style={{ flex: 1, backgroundColor: '#131314', borderRadius: borderRadius - 3.5, padding }}>
+      <View style={{ flex: 1, backgroundColor: '#12141B', borderRadius: borderRadius - 3.5, padding }}>
         {children}
       </View>
     </View>

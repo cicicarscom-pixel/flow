@@ -89,19 +89,19 @@ export default function ChatInputBar({
       >
         {onAttachImage && (
           <TouchableOpacity onPress={() => handleAction(onAttachImage)} style={styles.menuItem}>
-            <MaterialIcons name="camera-alt" size={22} color="#00f0ff" />
+            <MaterialIcons name="camera-alt" size={22} color="#22D3EE" />
             <Text style={styles.menuText}>Kamera</Text>
           </TouchableOpacity>
         )}
         {onAttachGallery && (
           <TouchableOpacity onPress={() => handleAction(onAttachGallery)} style={styles.menuItem}>
-            <MaterialIcons name="photo-library" size={22} color="#00f0ff" />
+            <MaterialIcons name="photo-library" size={22} color="#22D3EE" />
             <Text style={styles.menuText}>Galeri</Text>
           </TouchableOpacity>
         )}
         {onAttachDocument && (
           <TouchableOpacity onPress={() => handleAction(onAttachDocument)} style={[styles.menuItem, { borderBottomWidth: 0 }]}>
-            <MaterialIcons name="picture-as-pdf" size={22} color="#00f0ff" />
+            <MaterialIcons name="picture-as-pdf" size={22} color="#22D3EE" />
             <Text style={styles.menuText}>Belge</Text>
           </TouchableOpacity>
         )}
@@ -112,7 +112,7 @@ export default function ChatInputBar({
         className="flex-row items-center px-3 py-3 mx-4 rounded-3xl border border-white/5 relative z-40"
         style={{
           backgroundColor: 'rgba(22, 27, 38, 0.85)',
-          shadowColor: '#00F2FE',
+          shadowColor: '#22D3EE',
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.1,
           shadowRadius: 10,
@@ -126,7 +126,7 @@ export default function ChatInputBar({
           className="w-10 h-10 rounded-full items-center justify-center bg-white/5 mr-2"
         >
           <Animated.View style={{ transform: [{ rotate: isMenuOpen ? '45deg' : '0deg' }] }}>
-            <MaterialIcons name="add" size={24} color={isMenuOpen ? "#00f0ff" : "#b9cacb"} />
+            <MaterialIcons name="add" size={24} color={isMenuOpen ? "#22D3EE" : "#9CA3AF"} />
           </Animated.View>
         </TouchableOpacity>
         
@@ -136,8 +136,8 @@ export default function ChatInputBar({
             value={inputText}
             onChangeText={setInputText}
             placeholder={placeholder}
-            placeholderTextColor="rgba(132, 148, 149, 0.5)"
-            className="flex-1 text-[#e5e2e3] text-sm py-2 min-h-[40px] max-h-[120px]"
+            placeholderTextColor="rgba(156, 163, 175, 0.5)"
+            className="flex-1 text-[#F3F4F6] text-sm py-2 min-h-[40px] max-h-[120px]"
             multiline={true}
             textAlignVertical="center"
           />
@@ -151,9 +151,9 @@ export default function ChatInputBar({
               setIsMenuOpen(false);
             }
           }}
-          className={`ml-2 w-10 h-10 rounded-full items-center justify-center mb-1 ${inputText.trim() ? 'bg-[#00f0ff]/20' : 'bg-white/5'}`}
+          className={`ml-2 w-10 h-10 rounded-full items-center justify-center mb-1 ${inputText.trim() ? 'bg-[#22D3EE]/20' : 'bg-white/5'}`}
         >
-          <MaterialIcons name="send" size={18} color={inputText.trim() ? "#00f0ff" : "#b9cacb"} />
+          <MaterialIcons name="send" size={18} color={inputText.trim() ? "#22D3EE" : "#9CA3AF"} />
         </TouchableOpacity>
 
       </View>
@@ -170,11 +170,11 @@ const styles = StyleSheet.create({
       borderRadius: 24,
       paddingVertical: 8,
       paddingHorizontal: 8,
-      shadowColor: '#00F2FE',
+      shadowColor: '#22D3EE',
       shadowOffset: { width: 0, height: 8 },
       shadowOpacity: 0.2,
       shadowRadius: 15,
-      elevation: 20,
+      elevation: 10,
       borderWidth: 1,
       borderColor: 'rgba(255, 255, 255, 0.08)',
       zIndex: 50,
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255, 255, 255, 0.05)',
   },
   menuText: {
-    color: '#e5e2e3',
+    color: '#F3F4F6',
     fontSize: 15,
     marginLeft: 14,
     fontWeight: '500',
