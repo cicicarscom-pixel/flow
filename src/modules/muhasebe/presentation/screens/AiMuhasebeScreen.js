@@ -6,12 +6,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { CustomButton, GlobalAppBar, supabase } from '../../../../shared';
+import { GlobalAppBar, supabase } from '../../../../shared';
 import { useTranslation } from 'react-i18next';
 
 // --- Utilities ---
 const Skeleton = ({ width, height, style, borderRadius = 8 }) => {
-  const animValue = useRef(new Animated.Value(0)).current;
+  const [animValue] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     Animated.loop(
@@ -33,6 +33,22 @@ const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('tr-TR');
 };
 
+// Sayı sayarak artan (count-up) değer gösterimi — sadece görsel.
+const AnimatedNumber = ({ value, isLoading, style, suffix = ' ₺' }) => {
+  const [animValue] = useState(() => new Animated.Value(0));
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    if (isLoading) return;
+    const listenerId = animValue.addListener(({ value: v }) => setDisplayValue(v));
+    animValue.setValue(0);
+    Animated.timing(animValue, { toValue: value, duration: 900, useNativeDriver: false }).start();
+    return () => animValue.removeListener(listenerId);
+  }, [value, isLoading]);
+
+  return <Text style={style}>{formatCurrency(Math.round(displayValue))}{suffix}</Text>;
+};
+
 const getDaysLeft = (dateStr) => {
   const diffTime = Math.max(new Date(dateStr) - new Date(), 0);
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -40,7 +56,7 @@ const getDaysLeft = (dateStr) => {
 };
 
 const AnimatedBorderCard = ({ children, style, colors, padding = 20, borderRadius = 16, marginBottom = 0 }) => {
-  const spinValue = useRef(new Animated.Value(0)).current;
+  const [spinValue] = useState(() => new Animated.Value(0));
 
   useFocusEffect(
     useCallback(() => {
@@ -95,6 +111,17 @@ export default function AiMuhasebeScreen({ navigation }) {
   const [financeData, setFinanceData] = useState({ income: 0, expense: 0, net: 0, receivable: 0, payable: 0 });
   
   const currentMonthName = new Date().toLocaleString(i18n.language || 'tr-TR', { month: 'long' });
+
+  // --- Sadece görsel: ekran girişinde içerik yumuşakça belirir ---
+  const [fadeAnim] = useState(() => new Animated.Value(0));
+  const [slideAnim] = useState(() => new Animated.Value(20));
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
+    ]).start();
+  }, []);
 
   const fetchData = useCallback(async () => {
     try {
@@ -196,6 +223,13 @@ export default function AiMuhasebeScreen({ navigation }) {
     }, [fetchData])
   );
 
+  const menuItems = [
+    { icon: 'history', label: 'İşletmem (Geçmiş Dönemler)', color: '#22B573', onPress: () => navigation.navigate('Isletmem') },
+    { icon: 'calendar-month', label: t('muhasebe.aiMuhasebe.paymentCalendar'), color: '#22B573', onPress: () => navigation.navigate('OdemeTakvimi') },
+    { icon: 'auto-awesome', label: t('muhasebe.aiMuhasebe.aiAssistant'), color: '#FF7A59', onPress: () => navigation.navigate('AiAssistant', { mode: 'report' }) },
+    { icon: 'vpn-key', label: 'Muhasebeci Bağlantısı', color: '#C2478D', onPress: () => navigation.navigate('Muhasebecim') },
+  ];
+
   return (
     <View className="flex-1 bg-[#17151A]">
       <ImageBackground 
@@ -203,7 +237,7 @@ export default function AiMuhasebeScreen({ navigation }) {
         style={StyleSheet.absoluteFillObject}
         resizeMode="cover"
       >
-        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(10, 10, 11, 0.8)' }]} />
+        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(10, 10, 11, 0.85)' }]} />
       </ImageBackground>
       {/* Top Navigation Bar */}
       <GlobalAppBar level={2} module="finans" title={t('muhasebe.aiMuhasebe.title')} showProfile={true} />
@@ -212,7 +246,9 @@ export default function AiMuhasebeScreen({ navigation }) {
         contentContainerStyle={{ paddingBottom: 130 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero Section */}
+        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+
+        {/* Hero: Net Bakiye */}
         <View className="relative w-full aspect-[16/10]">
           <Image 
             source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuADpQLzK3KlOHrAkmBuzvSGufJQAu1Zc49a9sefZZVnNhSUsnZKCnLqRabQjcd-DvPLJbL9F8pWVNcFPpeGsmltliUUREeZAtKVXtYR4v0ZlZNAfByDxcXlmMnQNQIpF8zakz3JkZbDH6e09olSUJzIZEjpYdASmhKlpcCtWAITtVIEN1bpYc8xP21RA_OOW7CeiZyjyie0xJCmDMEhJeSkpNzFuVZ1SMnf1Uvm_8Rrwr9DkxZlpyveDbD0UD5QqlyeX8aKwxbG_GFk' }}
@@ -221,32 +257,40 @@ export default function AiMuhasebeScreen({ navigation }) {
           />
           <LinearGradient
             colors={['transparent', '#201D24']}
-            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60%' }}
+            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '65%' }}
           />
           <View className="absolute bottom-12 left-5 right-5">
-            <View className="mb-2">
-              <Text className="text-[#22B573] text-[28px] font-bold tracking-tight">{t('muhasebe.aiMuhasebe.financialSummary')}</Text>
-              <Text className="text-[#A79E96] text-sm opacity-70 mt-1">Bu Ayki Performans ({currentMonthName})</Text>
-            </View>
+            <Text style={styles.heroLabel}>NET BAKİYE · {currentMonthName.toUpperCase()}</Text>
+            {isLoading ? (
+              <Skeleton width={180} height={38} style={{ marginTop: 8 }} />
+            ) : (
+              <AnimatedNumber
+                value={financeData.net}
+                isLoading={isLoading}
+                style={[styles.heroNetValue, { color: financeData.net >= 0 ? '#22B573' : '#EF4444' }]}
+              />
+            )}
           </View>
         </View>
 
         <View className="px-5 -mt-8 relative z-10">
-          {/* Summary Cards Section */}
-          <View className="flex-row justify-between mb-4">
+
+          {/* Gelir / Gider */}
+          <View className="flex-row justify-between mb-3">
             <AnimatedBorderCard 
               style={{ flex: 1, marginRight: 8 }} 
               colors={['#22B573', '#ffffff']} 
               padding={16} 
-              borderRadius={16}
+              borderRadius={20}
             >
               <View className="flex-row justify-between items-start mb-1">
                 <Text className="text-[#A79E96] text-[10px] font-medium uppercase tracking-wider">Bu Ay Gelir</Text>
+                <MaterialIcons name="trending-up" size={14} color="#22B573" />
               </View>
               {isLoading ? (
                 <Skeleton width="100%" height={24} style={{ marginTop: 4 }} />
               ) : (
-                <Text className="text-[#F6F1EC] text-lg font-bold">{formatCurrency(financeData.income)} ₺</Text>
+                <AnimatedNumber value={financeData.income} isLoading={isLoading} style={{ color: '#F6F1EC', fontSize: 18, fontWeight: '700' }} />
               )}
             </AnimatedBorderCard>
 
@@ -254,87 +298,86 @@ export default function AiMuhasebeScreen({ navigation }) {
               style={{ flex: 1, marginLeft: 8 }} 
               colors={['#C2478D', '#ffffff']} 
               padding={16} 
-              borderRadius={16}
+              borderRadius={20}
             >
               <View className="flex-row justify-between items-start mb-1">
                 <Text className="text-[#A79E96] text-[10px] font-medium uppercase tracking-wider">Bu Ay Gider</Text>
+                <MaterialIcons name="trending-down" size={14} color="#C2478D" />
               </View>
               {isLoading ? (
                 <Skeleton width="100%" height={24} style={{ marginTop: 4 }} />
               ) : (
-                <Text className="text-[#F6F1EC] text-lg font-bold">{formatCurrency(financeData.expense)} ₺</Text>
+                <AnimatedNumber value={financeData.expense} isLoading={isLoading} style={{ color: '#F6F1EC', fontSize: 18, fontWeight: '700' }} />
               )}
             </AnimatedBorderCard>
           </View>
 
-
-
-          {/* Action Buttons Section */}
-          <View className="flex-row justify-between pt-2 pb-6">
-            <View style={[styles.glassCard, { flex: 1, borderRadius: 12, marginRight: 6 }]}>
-              <CustomButton 
-                onPress={() => navigation.navigate('AiChat', { transactionType: 'income' })}
-                className="bg-transparent py-3 px-2 h-auto"
-                leftIcon={<MaterialIcons name="add-circle-outline" size={16} color="#22B573" />}
-                title={t('muhasebe.aiMuhasebe.enterIncome')}
-                textClassName="text-[#22B573] text-[11px] font-bold uppercase tracking-widest ml-1"
-              />
+          {/* Alacak / Borç mini istatistikler */}
+          <View style={styles.miniStatsRow}>
+            <View style={styles.miniStat}>
+              <MaterialIcons name="call-received" size={15} color="#22B573" />
+              <Text style={styles.miniStatLabel}>Alacak</Text>
+              {isLoading ? (
+                <Skeleton width={60} height={14} />
+              ) : (
+                <Text style={styles.miniStatValue}>{formatCurrency(financeData.receivable)} ₺</Text>
+              )}
             </View>
-            
-            <View style={[styles.glassCard, { flex: 1, borderRadius: 12, marginLeft: 6 }]}>
-              <CustomButton 
-                onPress={() => navigation.navigate('AiChat', { transactionType: 'expense' })}
-                className="bg-transparent py-3 px-2 h-auto"
-                leftIcon={<MaterialIcons name="remove-circle-outline" size={16} color="#C2478D" />}
-                title={t('muhasebe.aiMuhasebe.enterExpense')}
-                textClassName="text-[#C2478D] text-[11px] font-bold uppercase tracking-widest ml-1"
-              />
+            <View style={styles.miniStatDivider} />
+            <View style={styles.miniStat}>
+              <MaterialIcons name="call-made" size={15} color="#EF4444" />
+              <Text style={styles.miniStatLabel}>Borç</Text>
+              {isLoading ? (
+                <Skeleton width={60} height={14} />
+              ) : (
+                <Text style={styles.miniStatValue}>{formatCurrency(financeData.payable)} ₺</Text>
+              )}
             </View>
           </View>
 
-          {/* New Bottom Buttons */}
-          <View className="pb-10 flex-col space-y-4">
-            <View style={[styles.glassCard, { borderRadius: 12 }]}>
-              <CustomButton 
-                onPress={() => navigation.navigate('Isletmem')}
-                className="bg-transparent py-4 px-4 h-auto"
-                title="İŞLETMEM (GEÇMİŞ DÖNEMLER)"
-                textClassName="text-[#22B573] text-[12px] font-bold uppercase tracking-widest"
-                leftIcon={<MaterialIcons name="history" size={16} color="#22B573" />}
-              />
-            </View>
+          {/* Hızlı Aksiyonlar */}
+          <View className="flex-row justify-between mt-5 mb-3">
+            <TouchableOpacity
+              onPress={() => navigation.navigate('AiChat', { transactionType: 'income' })}
+              style={[styles.quickActionBtn, { backgroundColor: 'rgba(34, 181, 115, 0.12)', borderColor: 'rgba(34, 181, 115, 0.3)', marginRight: 8 }]}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(34, 181, 115, 0.18)' }]}>
+                <MaterialIcons name="add" size={18} color="#22B573" />
+              </View>
+              <Text style={[styles.quickActionText, { color: '#22B573' }]}>{t('muhasebe.aiMuhasebe.enterIncome')}</Text>
+            </TouchableOpacity>
 
-            <View style={[styles.glassCard, { borderRadius: 12 }]}>
-              <CustomButton 
-                onPress={() => navigation.navigate('OdemeTakvimi')}
-                className="bg-transparent py-4 px-4 h-auto"
-                title={t('muhasebe.aiMuhasebe.paymentCalendar')}
-                textClassName="text-[#22B573] text-[12px] font-bold uppercase tracking-widest"
-                leftIcon={<MaterialIcons name="calendar-month" size={16} color="#22B573" />}
-              />
-            </View>
-            
-            <View style={[styles.glassCard, { borderRadius: 12 }]}>
-              <CustomButton 
-                onPress={() => navigation.navigate('AiAssistant', { mode: 'report' })}
-                className="bg-transparent py-4 px-4 h-auto"
-                title={t('muhasebe.aiMuhasebe.aiAssistant')}
-                textClassName="text-[#22B573] text-[12px] font-bold uppercase tracking-widest"
-                leftIcon={<MaterialIcons name="auto-awesome" size={16} color="#22B573" />}
-              />
-            </View>
-
-            <View style={[styles.glassCard, { borderRadius: 12, marginTop: 16 }]}>
-              <CustomButton 
-                onPress={() => navigation.navigate('Muhasebecim')}
-                className="bg-transparent py-4 px-4 h-auto"
-                title="MUHASEBECİ BAĞLANTISI"
-                textClassName="text-[#22B573] text-[12px] font-bold uppercase tracking-widest"
-                leftIcon={<MaterialIcons name="vpn-key" size={16} color="#22B573" />}
-              />
-            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('AiChat', { transactionType: 'expense' })}
+              style={[styles.quickActionBtn, { backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.25)', marginLeft: 8 }]}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: 'rgba(239, 68, 68, 0.16)' }]}>
+                <MaterialIcons name="remove" size={18} color="#EF4444" />
+              </View>
+              <Text style={[styles.quickActionText, { color: '#EF4444' }]}>{t('muhasebe.aiMuhasebe.enterExpense')}</Text>
+            </TouchableOpacity>
           </View>
+
+          {/* Menü */}
+          <View style={styles.menuCard}>
+            {menuItems.map((item, index) => (
+              <TouchableOpacity
+                key={item.label}
+                onPress={item.onPress}
+                style={[styles.menuRow, index < menuItems.length - 1 && styles.menuRowBorder]}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.menuIconWrapper, { backgroundColor: `${item.color}1F` }]}>
+                  <MaterialIcons name={item.icon} size={18} color={item.color} />
+                </View>
+                <Text style={styles.menuRowText}>{item.label}</Text>
+                <MaterialIcons name="chevron-right" size={20} color="#756D66" />
+              </TouchableOpacity>
+            ))}
+          </View>
+
         </View>
+        </Animated.View>
       </ScrollView>
     </View>
   );
@@ -347,8 +390,111 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(34, 181, 115, 0.2)',
     borderRadius: 20,
     shadowColor: '#000000',
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 2,
-  }
+    shadowOpacity: 0.28,
+    shadowRadius: 14,
+    elevation: 6,
+  },
+  heroLabel: {
+    color: '#A79E96',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+    marginBottom: 6,
+  },
+  heroNetValue: {
+    fontSize: 34,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+  miniStatsRow: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(42, 38, 49, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,247,240,0.06)',
+    borderRadius: 18,
+    padding: 14,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  miniStat: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 2,
+  },
+  miniStatDivider: {
+    width: 1,
+    height: 32,
+    backgroundColor: 'rgba(255,247,240,0.08)',
+  },
+  miniStatLabel: {
+    color: '#A79E96',
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  miniStatValue: {
+    color: '#F6F1EC',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  quickActionBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 10,
+    gap: 8,
+  },
+  quickActionIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickActionText: {
+    fontSize: 11,
+    fontWeight: '700',
+    flexShrink: 1,
+  },
+  menuCard: {
+    backgroundColor: 'rgba(42, 38, 49, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,247,240,0.06)',
+    borderRadius: 20,
+    marginTop: 8,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  menuRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    gap: 12,
+  },
+  menuRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,247,240,0.06)',
+  },
+  menuIconWrapper: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuRowText: {
+    flex: 1,
+    color: '#F6F1EC',
+    fontSize: 13,
+    fontWeight: '600',
+  },
 });
