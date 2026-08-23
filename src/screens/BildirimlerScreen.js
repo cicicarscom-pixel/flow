@@ -19,8 +19,8 @@ const COLORS = {
   onSurfaceVariant: '#9CA3AF',
   primary: '#22D3EE',
   error: '#FCA5A5',
-  success: '#aeffc0',
-  warning: '#ecb2ff'
+  success: '#22C55E',
+  warning: '#F59E0B'
 };
 
 const formatRelativeTime = (dateStr) => {

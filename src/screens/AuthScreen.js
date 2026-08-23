@@ -127,7 +127,7 @@ export default function AuthScreen() {
       </View>
       <View className="absolute bottom-0 left-0 right-0 h-[40%] opacity-10">
         <LinearGradient
-          colors={['transparent', '#ecb2ff']}
+          colors={['transparent', '#D8B4FE']}
           style={{ flex: 1 }}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}

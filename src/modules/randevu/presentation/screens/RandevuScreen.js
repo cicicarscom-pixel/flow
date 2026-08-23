@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     shadowColor: '#22C55E', shadowOpacity: 0.3, shadowRadius: 4, elevation: 3,
   },
-  heatLabel: { fontSize: 9, fontWeight: '700', color: '#7a8a80' },
+  heatLabel: { fontSize: 9, fontWeight: '700', color: '#9CA3AF' },
   heatLabelFull: { color: '#132A1F' },
 
   /* Timeline */

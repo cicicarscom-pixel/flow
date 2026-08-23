@@ -166,7 +166,7 @@ export default function IsletmemScreen({ navigation }) {
 
         {/* Summary Bento Grid */}
         <View className="flex-row flex-wrap justify-between mb-5 gap-y-3">
-          <View className="w-full bg-[#1b1b1c] rounded-xl p-4 relative overflow-hidden" style={styles.glowBorder}>
+          <View className="w-full bg-[#1A1D26] rounded-xl p-4 relative overflow-hidden" style={styles.glowBorder}>
             <Text className="text-[#9CA3AF] text-[10px] uppercase tracking-widest mb-1 font-['JetBrainsMono-Medium']">Toplam Bakiye</Text>
             <Text className="text-[#22C55E] text-4xl font-bold font-['HankenGrotesk-Bold'] tracking-tighter">₺{formatCurrency(currentData.balance)}</Text>
             {prevMonthStr && (
