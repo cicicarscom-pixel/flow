@@ -206,12 +206,12 @@ export default function AiMuhasebeScreen({ navigation }) {
       fetchData();
 
       // Supabase Realtime Subscription for auto-updates
-      const docChannel = supabase.channel('muhasebe_finance_docs')
+      const docChannel = supabase.channel(`muhasebe_finance_docs_${Math.random()}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'finance_documents' }, () => {
            fetchData();
         }).subscribe();
 
-      const transChannel = supabase.channel('muhasebe_transactions')
+      const transChannel = supabase.channel(`muhasebe_transactions_${Math.random()}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
            fetchData();
         }).subscribe();

@@ -346,10 +346,10 @@ export default function AnalyticsScreen({ navigation }) {
     }, 0);
     
     // Subscribe to internal tables
-    const channel1 = supabase.channel('stats_posts').on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, fetchInternalStats).subscribe();
-    const channel2 = supabase.channel('stats_messages').on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, fetchInternalStats).subscribe();
-    const channel3 = supabase.channel('stats_comments').on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, fetchInternalStats).subscribe();
-    const channel4 = supabase.channel('stats_reviews').on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, fetchInternalStats).subscribe();
+    const channel1 = supabase.channel(`stats_posts_${Math.random()}`).on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, fetchInternalStats).subscribe();
+    const channel2 = supabase.channel(`stats_messages_${Math.random()}`).on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, fetchInternalStats).subscribe();
+    const channel3 = supabase.channel(`stats_comments_${Math.random()}`).on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, fetchInternalStats).subscribe();
+    const channel4 = supabase.channel(`stats_reviews_${Math.random()}`).on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, fetchInternalStats).subscribe();
 
     return () => {
       supabase.removeChannel(channel1);
