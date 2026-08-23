@@ -42,6 +42,37 @@ import { container } from '../../../../core/container';
 import { ManageBotUseCase } from '@application/useCases/ManageBotUseCase';
 const botUseCase = container.resolve(ManageBotUseCase);
 
+// "Asistan çalışıyor" hissi: durum noktasının arkasında yavaşça büyüyüp
+// küçülen bir nefes alma animasyonu — sadece görsel.
+const BreathingDot = ({ active, children }) => {
+  const pulse = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    let loop;
+    if (active) {
+      loop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulse, { toValue: 1, duration: 1200, useNativeDriver: true }),
+          Animated.timing(pulse, { toValue: 0, duration: 1200, useNativeDriver: true }),
+        ])
+      );
+      loop.start();
+    } else {
+      pulse.setValue(0);
+    }
+    return () => { if (loop) loop.stop(); };
+  }, [active]);
+
+  const scale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.35] });
+  const opacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 0.6] });
+
+  return (
+    <Animated.View style={{ transform: [{ scale }], opacity }}>
+      {children}
+    </Animated.View>
+  );
+};
+
 export default function BotYonetimiScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -50,6 +81,17 @@ export default function BotYonetimiScreen() {
   const insets = useSafeAreaInsets();
   const fabBottom = Math.max(insets.bottom + 10, 20) + 64 + 14;
   const [rgbSpinValue] = useState(new Animated.Value(0));
+
+  // --- Sadece görsel: ekran girişinde içerik yumuşakça belirir ---
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
+    ]).start();
+  }, []);
 
   useEffect(() => {
     Animated.loop(
@@ -363,34 +405,41 @@ export default function BotYonetimiScreen() {
               contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 130 }}
               keyboardShouldPersistTaps="handled"
             >
+              <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
               {/* SECTION 1: AI Status (Always Visible) */}
-              <View className="mb-6 px-1">
-                  <View className="flex-row items-center justify-between mt-2">
-                    <View className="flex-row items-center gap-2">
-                      <View className={`w-3 h-3 rounded-full ${botActive ? 'bg-[#22B573]' : 'bg-red-500'}`} style={botActive ? styles.pulseGlow : {}} />
-                      <Text className="text-white text-base font-bold">Ai Asistan</Text>
+              <View style={styles.statusHeroCard}>
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center gap-3">
+                      <BreathingDot active={botActive}>
+                        <View style={[styles.statusDot, { backgroundColor: botActive ? '#22B573' : '#EF4444' }]} />
+                      </BreathingDot>
+                      <View>
+                        <Text style={styles.statusTitle}>Ai Asistan</Text>
+                        <Text style={styles.statusSubtitle}>{botActive ? 'Aktif ve çalışıyor' : 'Şu an kapalı'}</Text>
+                      </View>
                     </View>
                     <Switch
                       value={botActive}
                       onValueChange={(val) => { setBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
-                      trackColor={{ false: '#34303C', true: '#22B573' }}
-                      thumbColor={'#ffffff'}
-                      style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
+                      trackColor={{ false: 'rgba(255,255,255,0.15)', true: 'rgba(34, 181, 115, 0.4)' }}
+                      thumbColor={botActive ? '#22B573' : '#ffffff'}
                     />
                   </View>
 
                   {/* Platform Toggles */}
                   {botActive && (
-                    <View className="flex-row items-center justify-between bg-black/20 p-3 rounded-xl mt-1">
-                        <View className="flex-row items-center mb-1">
-                          <Ionicons name="logo-whatsapp" size={16} color={whatsappBotActive ? "#25D366" : "#756D66"} />
+                    <View style={styles.statusSubRow}>
+                        <View className="flex-row items-center flex-1">
+                          <View style={styles.statusSubIconWrapper}>
+                            <Ionicons name="logo-whatsapp" size={16} color={whatsappBotActive ? "#25D366" : "#756D66"} />
+                          </View>
                           <Text className="text-white text-xs font-semibold ml-2">WhatsApp Asistanı</Text>
                           <Switch
                             value={whatsappBotActive}
                             onValueChange={(val) => { setWhatsappBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
-                            trackColor={{ false: '#34303C', true: '#25D366' }}
-                            thumbColor={'#ffffff'}
-                            style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }], marginLeft: 'auto' }}
+                            trackColor={{ false: 'rgba(255,255,255,0.15)', true: 'rgba(37, 211, 102, 0.4)' }}
+                            thumbColor={whatsappBotActive ? '#25D366' : '#ffffff'}
+                            style={{ marginLeft: 'auto' }}
                           />
                         </View>
                       </View>
@@ -796,6 +845,8 @@ export default function BotYonetimiScreen() {
                 </View>
 
               </View>
+
+              </Animated.View>
             </ScrollView>
 
             {/* FLOATING SAVE BUTTON MOVED INLINE */}
@@ -1010,15 +1061,61 @@ export default function BotYonetimiScreen() {
 }
 
 const styles = StyleSheet.create({
+  statusHeroCard: {
+    backgroundColor: 'rgba(42, 38, 49, 0.6)',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 181, 115, 0.25)',
+    borderRadius: 24,
+    padding: 18,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.28,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  statusDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  statusTitle: {
+    color: '#F6F1EC',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  statusSubtitle: {
+    color: '#A79E96',
+    fontSize: 11,
+    fontWeight: '500',
+    marginTop: 1,
+  },
+  statusSubRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    padding: 12,
+    borderRadius: 16,
+    marginTop: 14,
+  },
+  statusSubIconWrapper: {
+    width: 28,
+    height: 28,
+    borderRadius: 10,
+    backgroundColor: 'rgba(37, 211, 102, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   glassCard: {
     backgroundColor: 'rgba(32, 31, 34, 0.4)',
     borderWidth: 1,
     borderColor: 'rgba(34, 181, 115, 0.2)',
     borderRadius: 20,
     shadowColor: '#000000',
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowOpacity: 0.28,
+    shadowRadius: 14,
+    elevation: 6,
   },
   glowBorderCyanThick: {
     backgroundColor: '#2A2631', // Solid opaque dark grey to prevent Android elevation shadow bleed-through

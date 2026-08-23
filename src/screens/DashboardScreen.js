@@ -391,17 +391,20 @@ export default function DashboardScreen({ navigation }) {
           <View style={styles.hero}>
             <View style={[styles.heroTopRow, { paddingTop: Math.max(insets.top, 16) }]}>
               <TouchableOpacity
-                style={styles.heroAvatarWrapper}
+                style={styles.heroAvatarOuter}
                 onPress={() => navigation.navigate('Profil')}
               >
-                {isLoading ? (
-                  <Skeleton width="100%" height="100%" borderRadius={22} />
-                ) : (
-                  <Image
-                    source={{ uri: userProfile.avatarUrl || 'https://ui-avatars.com/api/?name=Kullanici' }}
-                    style={styles.heroAvatarImage}
-                  />
-                )}
+                <View style={styles.heroAvatarHalo} />
+                <View style={styles.heroAvatarWrapper}>
+                  {isLoading ? (
+                    <Skeleton width="100%" height="100%" borderRadius={22} />
+                  ) : (
+                    <Image
+                      source={{ uri: userProfile.avatarUrl || 'https://ui-avatars.com/api/?name=Kullanici' }}
+                      style={styles.heroAvatarImage}
+                    />
+                  )}
+                </View>
                 {!isLoading && <View style={styles.onlineDot} />}
               </TouchableOpacity>
 
@@ -442,8 +445,8 @@ export default function DashboardScreen({ navigation }) {
                 <Switch
                   value={aiActive}
                   onValueChange={handleToggleAiActive}
-                  trackColor={{ false: 'rgba(255,255,255,0.2)', true: COLORS.background }}
-                  thumbColor={aiActive ? COLORS.primary : '#fff'}
+                  trackColor={{ false: 'rgba(255,255,255,0.15)', true: 'rgba(255, 122, 89, 0.35)' }}
+                  thumbColor={aiActive ? '#FF7A59' : '#fff'}
                   ios_backgroundColor="rgba(255,255,255,0.2)"
                 />
               )}
@@ -698,13 +701,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 18,
   },
+  heroAvatarOuter: {
+    width: 56,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroAvatarHalo: {
+    position: 'absolute',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(23, 21, 26, 0.55)',
+  },
   heroAvatarWrapper: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
+    width: 46,
+    height: 46,
+    borderRadius: 15,
     overflow: 'hidden',
     borderWidth: 2,
-    borderColor: 'rgba(23, 21, 26, 0.25)',
+    borderColor: '#F6F1EC',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   heroAvatarImage: {
     width: '100%',
@@ -712,8 +733,8 @@ const styles = StyleSheet.create({
   },
   onlineDot: {
     position: 'absolute',
-    bottom: -2,
-    right: -2,
+    bottom: 2,
+    right: 2,
     width: 12,
     height: 12,
     backgroundColor: COLORS.tertiaryContainer,
