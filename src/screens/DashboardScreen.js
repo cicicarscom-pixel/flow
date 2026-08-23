@@ -445,8 +445,8 @@ export default function DashboardScreen({ navigation }) {
                 <Switch
                   value={aiActive}
                   onValueChange={handleToggleAiActive}
-                  trackColor={{ false: 'rgba(255,255,255,0.15)', true: 'rgba(255, 122, 89, 0.35)' }}
-                  thumbColor={aiActive ? '#FF7A59' : '#fff'}
+                  trackColor={{ false: 'rgba(255,255,255,0.15)', true: 'rgba(56, 189, 248, 0.35)' }}
+                  thumbColor={aiActive ? '#38BDF8' : '#fff'}
                   ios_backgroundColor="rgba(255,255,255,0.2)"
                 />
               )}
@@ -689,7 +689,7 @@ const styles = StyleSheet.create({
 
   // --- HERO ------------------------------------------------------------
   hero: {
-    backgroundColor: '#FF7A59',
+    backgroundColor: '#38BDF8',
     paddingHorizontal: 20,
     paddingBottom: 24,
     borderBottomLeftRadius: 32,
@@ -740,7 +740,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.tertiaryContainer,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#FF7A59',
+    borderColor: '#38BDF8',
   },
   heroIconBtn: {
     width: 38,
@@ -759,7 +759,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EF4444',
     borderRadius: 5,
     borderWidth: 1.5,
-    borderColor: '#FF7A59',
+    borderColor: '#38BDF8',
   },
   heroGreeting: {
     color: 'rgba(23, 21, 26, 0.65)',
@@ -889,7 +889,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   seeAllBtn: {
-    color: '#FF7A59',
+    color: '#38BDF8',
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
