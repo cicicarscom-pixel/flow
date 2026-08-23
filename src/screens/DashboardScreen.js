@@ -4,7 +4,8 @@ import {
   Text, 
   ScrollView, 
   TouchableOpacity, 
-  Image, 
+  Image,
+  ImageBackground,
   StyleSheet, 
   Switch,
   Animated
@@ -388,7 +389,7 @@ export default function DashboardScreen({ navigation }) {
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
 
           {/* HERO: cesur renk bloğu — profil, bildirim ve AI durumu tek odakta */}
-          <View style={styles.hero}>
+          <ImageBackground source={require('../../image/image4.jpg')} style={styles.hero} imageStyle={{ borderBottomLeftRadius: 32, borderBottomRightRadius: 32 }}>
             <View style={[styles.heroTopRow, { paddingTop: Math.max(insets.top, 16) }]}>
               <TouchableOpacity
                 style={styles.heroAvatarOuter}
@@ -451,7 +452,7 @@ export default function DashboardScreen({ navigation }) {
                 />
               )}
             </View>
-          </View>
+          </ImageBackground>
 
           <View style={styles.body}>
 
