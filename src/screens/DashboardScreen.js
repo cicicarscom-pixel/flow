@@ -958,10 +958,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
-    backgroundColor: 'rgba(239, 68, 68, 0.14)',
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
   },
   liveBadgeText: {
-    color: '#EF4444',
+    color: '#38BDF8',
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 0.5,
