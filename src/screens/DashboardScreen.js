@@ -8,7 +8,8 @@ import {
   ImageBackground,
   StyleSheet, 
   Switch,
-  Animated
+  Animated,
+  Dimensions
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -140,6 +141,19 @@ const BreathingIcon = ({ active, children }) => {
     </Animated.View>
   );
 };
+const BAR_IMAGES = [
+  require('../../image/bar_image/bar1.jpg'),
+  require('../../image/bar_image/bar2.jpg'),
+  require('../../image/bar_image/bar3.jpg'),
+  require('../../image/bar_image/bar4.jpg'),
+  require('../../image/bar_image/bar5.jpg'),
+  require('../../image/bar_image/bar6.jpg'),
+  require('../../image/bar_image/bar7.jpg'),
+  require('../../image/bar_image/bar8.jpg'),
+  require('../../image/bar_image/bar9.jpg'),
+  require('../../image/bar_image/bar10.jpg'),
+];
+const { width: screenWidth } = Dimensions.get('window');
 
 export default function DashboardScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -380,6 +394,21 @@ export default function DashboardScreen({ navigation }) {
     tabBarHeight = useBottomTabBarHeight();
   } catch (e) {}
 
+  const scrollRef = useRef(null);
+  useEffect(() => {
+    const hour = new Date().getHours();
+    let initialIndex = 0; // Sabah (06-12) -> bar1
+    if (hour >= 12 && hour < 18) initialIndex = 1; // Öğlen (12-18) -> bar2
+    else if (hour >= 18 && hour < 22) initialIndex = 2; // Akşam (18-22) -> bar3
+    else if (hour >= 22 || hour < 6) initialIndex = 3; // Gece (22-06) -> bar4
+    
+    setTimeout(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({ x: screenWidth * initialIndex, animated: false });
+      }
+    }, 150);
+  }, []);
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -389,7 +418,19 @@ export default function DashboardScreen({ navigation }) {
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
 
           {/* HERO: cesur renk bloğu — profil, bildirim ve AI durumu tek odakta */}
-          <ImageBackground source={require('../../image/image4.jpg')} style={styles.hero} imageStyle={{ borderBottomLeftRadius: 32, borderBottomRightRadius: 32 }}>
+          <View style={[styles.hero, { overflow: 'hidden' }]}>
+            <View style={StyleSheet.absoluteFill}>
+              <ScrollView
+                ref={scrollRef}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+              >
+                {BAR_IMAGES.map((img, idx) => (
+                  <Image key={idx} source={img} style={{ width: screenWidth, height: '100%', resizeMode: 'cover' }} />
+                ))}
+              </ScrollView>
+            </View>
             <View style={[styles.heroTopRow, { paddingTop: Math.max(insets.top, 16) }]}>
               <TouchableOpacity
                 style={styles.heroAvatarOuter}
@@ -452,7 +493,7 @@ export default function DashboardScreen({ navigation }) {
                 />
               )}
             </View>
-          </ImageBackground>
+          </View>
 
           <View style={styles.body}>
 
