@@ -199,10 +199,6 @@ export default function AiUretimScreen({ route, navigation }) {
   const [ttSaveToInbox, setTtSaveToInbox] = useState(false);
   const [ttCustomCaption, setTtCustomCaption] = useState('');
 
-  // Pinterest Settings
-  const [pinTitle, setPinTitle] = useState('');
-  const [pinLink, setPinLink] = useState('');
-  const [pinCustomCaption, setPinCustomCaption] = useState('');
 
   // Google Business Profile Settings
   const [gbpPostType, setGbpPostType] = useState('STANDARD');
@@ -220,6 +216,7 @@ export default function AiUretimScreen({ route, navigation }) {
   const [pinBoardId, setPinBoardId] = useState('');
   const [pinTitle, setPinTitle] = useState('');
   const [pinLink, setPinLink] = useState('');
+  const [pinCustomCaption, setPinCustomCaption] = useState('');
 
   // Reddit Settings
   const [redditSubreddit, setRedditSubreddit] = useState('');
