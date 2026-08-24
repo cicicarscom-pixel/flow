@@ -1,4 +1,4 @@
-# AI Esnaf - Ekranlar ve Backend İşlevleri (README_SCREENS)
+# Workigom Flow - Ekranlar ve Backend İşlevleri (README_SCREENS)
 
 Bu dosya, `AI-Esnaf` uygulamasındaki ekranların (UI) ne işe yaradığını, içerisindeki buton ve şalterlerin (switch) görevlerini ve bu bileşenlerin backend (Supabase, Zernio, vb.) ile nasıl haberleştiğini belgelemek için oluşturulmuştur. 
 

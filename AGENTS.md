@@ -1,4 +1,4 @@
-# AI Esnaf — Agent Kuralları ve Proje Hafızası
+# Workigom Flow — Agent Kuralları ve Proje Hafızası
 
 ## 🚨 Kritik Kural: Ortak Veritabanı Etkileşimi (Web & Mobil)
 
@@ -397,3 +397,11 @@ ull\ veya boş string dönülmeyecek.
 ### [23.08.2026] Mobil Versiyon Profil Fetch Hatasının Çözümü (PGRST116)
 1. **Mobil Uygulama (React Native) .maybeSingle() Düzenlemesi:** Web versiyonunda çözülen ancak Mobil versiyonda ('flow') unutulan profil veri getirme sorunu giderildi. ProfilScreen, BotYonetimiScreen ve DashboardScreen gibi ekranlarda organizasyon veya profil verisi çekerken kullanılan '.single()' metodu yüzünden yeni kullanıcıların ('PGRST116: The result contains 0 rows') hatası alması engellendi. '.single()' yerine boş durumlarda hatasız olarak 'null' döndüren güvenli '.maybeSingle()' metoduna geçiş yapıldı.
 
+
+
+## 📝 Son Gelistirme Gunlugu (24 Agustos 2026) - Multi-Tenancy & Zernio Sync Fallback Mimarisi
+
+### Yapilan Degisiklikler ve Mimari Kararlar:
+1. **Multi-Tenancy & Zernio Sync (Organizasyon Fallback Sistemi):** Kullanicilarin Zernio ile senkronize olabilmesi icin gereken organizasyon baglantisinda (organization_members), bireysel (freelancer) kullanicilarin organizasyon kaydi bulunmamasi durumunda yasanilan Organizasyon bulunamadi hatasi giderilmistir.
+2. **Kural:** Zernio Edge Functions (zernio-client, vb.) cagrilirken, kullanicinin bagli oldugu bir organization_id yoksa, zorunlu olarak kullanicinin kendi benzersiz kimligi (userId) izole bir kiraci (tenant) olarak kullanilarak (fallback) Zernioya iletilecektir. Boylece coklu kiraci (multi-tenancy) izolasyonu bozulmadan bireysel hesaplar da Zernioyu sorunsuz kullanabilir.
+3. **Guvenilir Oturum Okumasi (Session Destructuring):** React Native tarafinda hot-reload ve onbellek kayiplari nedeniyle olusan gecersiz oturum hatalarini onlemek icin hatali getSession okumalari iptal edilmis, yerine garanti sunan supabase.auth.getUser metodu standart kabul edilmistir.

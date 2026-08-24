@@ -30,9 +30,9 @@ Workigom projesi monorepo mimarisinden bağımsız ve modüler 4 ayrı projeye (
 
 ---
 
-# 🚀 AI Esnaf - Dijital Asistan SaaS Mobil Uygulaması
+# 🚀 Workigom Flow - Dijital Asistan SaaS Mobil Uygulaması
 
-AI Esnaf, yerel işletmelerin (esnaf, KOBİ) sosyal medya yönetimini, müşteri iletişimini ve ön muhasebe süreçlerini tek bir merkezden, yapay zeka gücüyle otonom hale getiren tam yerel (native) bir mobil uygulamadır.
+Workigom Flow, yerel işletmelerin (esnaf, KOBİ) sosyal medya yönetimini, müşteri iletişimini ve ön muhasebe süreçlerini tek bir merkezden, yapay zeka gücüyle otonom hale getiren tam yerel (native) bir mobil uygulamadır.
 
 Bu doküman, projeyi **Sıfırdan Canlıya Almak** için gereken tüm teknik adımları ve altyapı detaylarını içerir.
 
@@ -264,7 +264,7 @@ Proje, genişletilebilirlik ve bakım kolaylığı sağlamak amacıyla katı **D
 
 ## 🔗 5. Adım: Sosyal Medya Bağlantı Mimarisi (Zernio OAuth)
 
-Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf uygulamasına bağlarken izlediğimiz güvenli ve modern mimari şu şekildedir:
+Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom Flow uygulamasına bağlarken izlediğimiz güvenli ve modern mimari şu şekildedir:
 
 1. **Bağlantı Başlatma:** Uygulama içerisinden "Hesabınızı Ekleyin" ikonlarına tıklandığında, `zernio-client` Edge fonksiyonuna istek atılır ve Zernio'nun OAuth yetkilendirme linki (`authUrl`) alınarak telefonun tarayıcısında açılır.
 2. **Doğrudan API Çekimi (DB Bypass):** Test ortamlarındaki geri yönlendirme (Redirect URI) kısıtlamaları ve Supabase RLS (Row Level Security) kurallarının yaratabileceği UUID/yabancı anahtar çakışmalarını tamamen sıfıra indirmek adına, **aradaki Supabase veritabanı kayıt katmanı tamamen devreden çıkarılmıştır.**
@@ -469,7 +469,7 @@ Proje, genişletilebilirlik ve bakım kolaylığı sağlamak amacıyla katı **D
 
 ## 🔗 5. Adım: Sosyal Medya Bağlantı Mimarisi (Zernio OAuth)
 
-Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını AI Esnaf uygulamasına bağlarken izlediğimiz güvenli ve modern mimari şu şekildedir:
+Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom Flow uygulamasına bağlarken izlediğimiz güvenli ve modern mimari şu şekildedir:
 
 1. **Bağlantı Başlatma:** Uygulama içerisinden "Hesabınızı Ekleyin" ikonlarına tıklandığında, `zernio-client` Edge fonksiyonuna istek atılır ve Zernio'nun OAuth yetkilendirme linki (`authUrl`) alınarak telefonun tarayıcısında açılır.
 2. **Doğrudan API Çekimi (DB Bypass):** Test ortamlarındaki geri yönlendirme (Redirect URI) kısıtlamaları ve Supabase RLS (Row Level Security) kurallarının yaratabileceği UUID/yabancı anahtar çakışmalarını tamamen sıfıra indirmek adına, **aradaki Supabase veritabanı kayıt katmanı tamamen devreden çıkarılmıştır.**
@@ -936,7 +936,7 @@ Son yapılan geliştirmeler ile Zernio ve Sosyal Medya altyapısı genişletilmi
 
 ## 🌐 Web Versiyonu İçin Yol Haritası (Web Version Roadmap)
 
-AI Esnaf projesi halihazırda React Native (Expo) kullanılarak mobil odaklı (Native) geliştirilmiştir. Ancak Expo'nun web desteği (SPA) göz önüne alınarak projenin bir Web paneline dönüştürülmesi için aşağıdaki adımlar izlenmelidir:
+Workigom Flow projesi halihazırda React Native (Expo) kullanılarak mobil odaklı (Native) geliştirilmiştir. Ancak Expo'nun web desteği (SPA) göz önüne alınarak projenin bir Web paneline dönüştürülmesi için aşağıdaki adımlar izlenmelidir:
 
 ### Faz 1: Web Uyumluluğu & Navigasyon
 - **React Navigation Web Entegrasyonu:** Mevcut `AppNavigator` ve `TabNavigator` yapıları, `react-navigation`'ın web link (deep-linking) desteğiyle güncellenmelidir. (URL yapısı oluşturma).

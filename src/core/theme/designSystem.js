@@ -1,10 +1,10 @@
 /**
  * designSystem.js
  * -----------------------------------------------------------------------
- * AI ESNAF — MARKA KİMLİĞİ (v2, sıfırdan tasarım)
+ * Workigom Flow — MARKA KİMLİĞİ (v2, sıfırdan tasarım)
  *
  * Neden bu palet?
- * AI Esnaf, teknolojiyle arası az olabilecek bir esnafın/KOBİ sahibinin
+ * Workigom Flow, teknolojiyle arası az olabilecek bir esnafın/KOBİ sahibinin
  * yanında duran bir "dijital çırak" gibi davranıyor: WhatsApp'a cevap
  * veriyor, sosyal medyayı yönetiyor, geliri/gideri takip ediyor, randevu
  * alıyor. Bu ürün soğuk bir "fintech/kripto" hissi değil, SICAK, GÜVEN

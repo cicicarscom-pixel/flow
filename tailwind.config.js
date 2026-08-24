@@ -3,7 +3,7 @@ module.exports = {
   content: ["./App.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      // AI Esnaf marka paleti — src/core/theme/designSystem.js ile birebir
+      // Workigom Flow marka paleti — src/core/theme/designSystem.js ile birebir
       // aynı değerler. (Not: NativeWind v2 CSS custom property okuyamadığı
       // için burada literal hex tekrar tanımlanır; iki dosya arasında
       // tutarlılık manuel korunmalıdır.)

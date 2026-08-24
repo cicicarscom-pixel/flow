@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Program Files/7-Zip/**)",
+      "Read(//c/Program Files \\(x86\\)/7-Zip/**)",
+      "Read(//c/Program Files/WinRAR//**)",
+      "Bash(\"/c/Program Files/WinRAR/UnRAR.exe\" x -y \"/c/Users/roman/flow.rar\" \"/c/Users/roman/flow/files/\")",
+      "Bash(\"/c/Program Files/WinRAR/UnRAR.exe\" t \"/c/Users/roman/flow.rar\")"
+    ]
+  }
+}
