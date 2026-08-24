@@ -432,37 +432,37 @@ export default function SosyalMedyaScreen({ navigation }) {
            )}
         </View>
 
-        {/* Analytics + Paylaşım Merkezi */}
-        <View className="flex-row justify-between mb-6">
+        {/* Paylaşım Merkezi (Yatay) */}
+        <AnimatedBorderCard 
+          style={[styles.glowBorderMagenta, { width: '100%', marginBottom: 24 }]} 
+          colors={['#C2478D', '#201D24', '#C2478D', '#201D24']}
+          padding={0}
+          borderRadius={22}
+        >
           <TouchableOpacity
-            onPress={() => navigation.navigate('Analytics')}
-            style={[styles.featureCard, { marginRight: 8 }]}
+            onPress={() => navigation.navigate('AiUretim')}
+            style={{ 
+              padding: 16, 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              backgroundColor: 'rgba(42, 38, 49, 0.55)',
+              borderRadius: 22
+            }}
             activeOpacity={0.85}
           >
-            <View style={[styles.featureIcon, { backgroundColor: 'rgba(34, 181, 115, 0.14)' }]}>
-              <MaterialIcons name="insights" size={20} color="#22B573" />
-            </View>
-            <Text style={styles.featureCardText}>{t('sosyalMedya.ui.analytics')}</Text>
-          </TouchableOpacity>
-
-          <AnimatedBorderCard 
-            style={[styles.glowBorderMagenta, { flex: 1, marginLeft: 8 }]} 
-            colors={['#C2478D', '#201D24', '#C2478D', '#201D24']}
-            padding={0}
-            borderRadius={20}
-          >
-            <TouchableOpacity
-              onPress={() => navigation.navigate('AiUretim')}
-              style={{ padding: 16, alignItems: 'center' }}
-              activeOpacity={0.85}
-            >
-              <View style={[styles.featureIcon, { backgroundColor: 'rgba(194, 71, 141, 0.14)' }]}>
+            <View className="flex-row items-center">
+              <View style={[styles.aiIconWrapper, { backgroundColor: 'rgba(194, 71, 141, 0.14)' }]}>
                 <MaterialIcons name="auto-awesome" size={20} color="#E8A8CD" />
               </View>
-              <Text style={[styles.featureCardText, { color: '#E8A8CD' }]}>{t('sosyalMedya.ui.shareCenter')}</Text>
-            </TouchableOpacity>
-          </AnimatedBorderCard>
-        </View>
+              <View className="ml-3 flex-1">
+                <Text className="text-[#F6F1EC] text-[14px] font-semibold">{t('sosyalMedya.ui.shareCenter')}</Text>
+                <Text className="text-[10px] text-[#A79E96] mt-0.5">Sosyal medya gönderileri oluşturun ve paylaşın</Text>
+              </View>
+            </View>
+            <MaterialIcons name="chevron-right" size={24} color="#A79E96" />
+          </TouchableOpacity>
+        </AnimatedBorderCard>
 
 
         {/* Add Account Panel */}
