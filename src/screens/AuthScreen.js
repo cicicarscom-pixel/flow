@@ -112,7 +112,7 @@ export default function AuthScreen() {
     if (error) {
       Alert.alert('Kayıt Hatası', error.message);
     } else {
-      Alert.alert('Başarılı', 'Kayıt başarılı! Lütfen giriş yapın.');
+      Alert.alert('Başarılı', 'Kayıt başarılı! Lütfen e-posta adresinize gönderilen bağlantıya tıklayarak hesabınızı onaylayın.');
       setIsLogin(true);
     }
     setLoading(false);
