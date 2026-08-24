@@ -747,6 +747,53 @@ export default function BotYonetimiScreen() {
                       style={{ flex: 1 }}
                       contentContainerStyle={{ paddingBottom: 10 }}
                     >
+                      {messages.length === 0 && (
+                        <View>
+                          <View className="items-center mb-6 mt-2">
+                            <Text className="text-[#A79E96]/50 text-[9px] font-bold tracking-widest uppercase">
+                              SİMÜLASYON BAŞLADI
+                            </Text>
+                          </View>
+                          
+                          <View className="flex-row justify-end mb-3">
+                            <View 
+                              style={{
+                                backgroundColor: 'rgba(34, 181, 115, 0.15)',
+                                borderWidth: 1,
+                                borderColor: 'rgba(34, 181, 115, 0.3)',
+                                borderRadius: 16,
+                                padding: 10,
+                                maxWidth: '85%'
+                              }}
+                            >
+                              <Text style={{ color: '#F6F1EC', fontSize: 11 }}>
+                                Merhaba, stoklarınızda mavi renk M beden kışlık mont var mı? Fiyatı nedir?
+                              </Text>
+                            </View>
+                          </View>
+
+                          <View className="flex-row justify-start mb-3">
+                            <View className="w-7 h-7 rounded-full bg-[#C2478D]/20 items-center justify-center mr-2 flex-shrink-0 border border-[#C2478D]/30">
+                              <Ionicons name="sparkles" size={12} color="#E8A8CD" />
+                            </View>
+                            <View 
+                              style={{
+                                backgroundColor: 'rgba(32, 31, 34, 0.9)',
+                                borderWidth: 1,
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderRadius: 16,
+                                padding: 10,
+                                maxWidth: '85%'
+                              }}
+                            >
+                              <Text style={{ color: '#F6F1EC', fontSize: 11, lineHeight: 16 }}>
+                                Merhaba! 👋 Evet, mavi renk M beden kışlık montumuz stoklarımızda mevcuttur. Güncel fiyatımız 1.450 TL'dir. Hemen sipariş oluşturmak isterseniz size bir bağlantı gönderebilirim. Başka yardımcı olabileceğim bir konu var mı?
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                      )}
+
                       {messages.map((item) => (
                         <View key={item.id} className={`flex-row ${item.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
                           {item.sender === 'bot' && (
