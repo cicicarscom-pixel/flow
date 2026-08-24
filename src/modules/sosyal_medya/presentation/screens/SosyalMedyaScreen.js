@@ -457,7 +457,7 @@ export default function SosyalMedyaScreen({ navigation }) {
               </View>
               <View className="ml-3 flex-1">
                 <Text className="text-[#F6F1EC] text-[14px] font-semibold">{t('sosyalMedya.ui.shareCenter')}</Text>
-                <Text className="text-[10px] text-[#A79E96] mt-0.5">Sosyal medya gönderileri oluşturun ve paylaşın</Text>
+                <Text className="text-[10px] text-[#A79E96] mt-0.5">{t('sosyalMedya.ui.shareCenterDesc', { defaultValue: 'Sosyal medya gönderileri oluşturun ve paylaşın' })}</Text>
               </View>
             </View>
             <MaterialIcons name="chevron-right" size={24} color="#A79E96" />
@@ -603,7 +603,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                        backgroundColor: 'rgba(34, 181, 115,0.15)',
                        borderColor: 'rgba(34, 181, 115,0.3)', borderWidth: 1
                      }}>
-                       <Text style={{ fontSize: 9, color: '#22B573', fontWeight: '600' }}>✓ {t('sosyalMedya.connected', { defaultValue: 'Bağlı' })}</Text>
+                       <Text style={{ fontSize: 9, color: '#22B573', fontWeight: '600' }}>{'\u2713'} {t('sosyalMedya.connected', { defaultValue: 'Bağlı' })}</Text>
                      </View>
                    </View>
                    
