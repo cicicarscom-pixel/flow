@@ -253,16 +253,19 @@ export default function SosyalMedyaScreen({ navigation }) {
       const userId = user?.id;
       if (!userId) throw new Error(t('sosyalMedya.alerts.noSession'));
 
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id, organizations(name)').eq('user_id', userId).maybeSingle();
       let orgId = organizationId;
       if (!orgId) {
-         orgId = await fetchOrganizationId(userId);
+         orgId = orgMember?.organization_id || userId;
          setOrganizationId(orgId);
       }
 
       if (!orgId) throw new Error("Organizasyon bulunamadı");
+      
+      const organizationName = orgMember?.organizations?.name || 'Bireysel Hesap';
 
       const { data, error } = await supabase.functions.invoke('zernio-client', {
-        body: { action: 'get-connect-url', payload: { platform, redirectUrl, organizationId: orgId } }
+        body: { action: 'get-connect-url', payload: { platform, redirectUrl, organizationId: orgId, organizationName, userId, profileId: orgId } }
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
