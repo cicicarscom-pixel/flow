@@ -199,6 +199,11 @@ export default function AiUretimScreen({ route, navigation }) {
   const [ttSaveToInbox, setTtSaveToInbox] = useState(false);
   const [ttCustomCaption, setTtCustomCaption] = useState('');
 
+  // Pinterest Settings
+  const [pinTitle, setPinTitle] = useState('');
+  const [pinLink, setPinLink] = useState('');
+  const [pinCustomCaption, setPinCustomCaption] = useState('');
+
   // Google Business Profile Settings
   const [gbpPostType, setGbpPostType] = useState('STANDARD');
   const [gbpCallToAction, setGbpCallToAction] = useState('NONE');
@@ -364,7 +369,13 @@ export default function AiUretimScreen({ route, navigation }) {
       const p = acc.platform.toLowerCase();
       let platformOptions = {};
 
-      if (p === 'instagram') {
+      if (p === 'facebook') {
+        platformOptions = {
+          format: fbFormat,
+          firstComment: fbFirstComment,
+          caption: fbCustomCaption || undefined
+        };
+      } else if (p === 'instagram') {
         platformOptions = {
           contentType: igFormat.toLowerCase(),
           aiGenerated: igAiLabel,
@@ -385,6 +396,18 @@ export default function AiUretimScreen({ route, navigation }) {
         platformOptions = {
           saveToInboxAsDraft: ttSaveToInbox,
           caption: ttCustomCaption || undefined
+        };
+      } else if (p === 'pinterest') {
+        platformOptions = {
+          title: pinTitle || undefined,
+          link: pinLink || undefined,
+          caption: pinCustomCaption || undefined
+        };
+      } else if (p === 'youtube') {
+        platformOptions = {
+          title: ytTitle || undefined,
+          privacyStatus: ytVisibility,
+          caption: ytCustomCaption || undefined
         };
       }
 
@@ -1166,8 +1189,48 @@ export default function AiUretimScreen({ route, navigation }) {
                maxLength={2200}
              />
              <Text className="text-[#A79E96]/50 text-[10px] text-right mt-1">{ttCustomCaption.length}/2200</Text>
-          </View>
-        )}
+             </View>
+          )}
+
+          {/* --- PINTEREST SETTINGS --- */}
+          {selectedPlatforms['pinterest'] && (
+            <View className="mb-4 bg-[#2A2631]/50 rounded-xl p-4 border border-[#E60023]/30">
+               <View className="flex-row items-center mb-4">
+                 <View className="w-6 h-6 rounded bg-[#E60023]/10 items-center justify-center mr-2 border border-[#E60023]/20">
+                   <Ionicons name="logo-pinterest" size={14} color="#E60023" />
+                 </View>
+                 <Text className="text-[#F6F1EC] font-semibold text-sm">Pinterest</Text>
+               </View>
+
+               <Text className="text-[#A79E96] text-xs font-medium mb-1">title (optional)</Text>
+               <TextInput 
+                 value={pinTitle} onChangeText={setPinTitle}
+                 placeholder="Enter a custom title for your Pin..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                 className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1"
+               />
+               <Text className="text-[#A79E96]/60 text-[10px] mb-4">Custom title for your Pin. If not provided, the first line of the main content will be used.</Text>
+
+               <Text className="text-[#A79E96] text-xs font-medium mb-1">destination link (optional)</Text>
+               <TextInput 
+                 value={pinLink} onChangeText={setPinLink}
+                 placeholder="https://example.com" placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                 keyboardType="url"
+                 autoCapitalize="none"
+                 className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1"
+               />
+               <Text className="text-[#A79E96]/60 text-[10px] mb-4">Set the clickable URL for your Pin. This becomes the Pin's outbound link.</Text>
+
+               <Text className="text-[#A79E96] text-xs font-medium mb-1">custom caption</Text>
+               <TextInput 
+                 value={pinCustomCaption} onChangeText={setPinCustomCaption}
+                 placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                 multiline
+                 className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 min-h-[60px]"
+                 maxLength={500}
+               />
+               <Text className="text-[#A79E96]/50 text-[10px] text-right mt-1">{pinCustomCaption.length}/500</Text>
+            </View>
+          )}
 
         {/* --- GOOGLE BUSINESS PROFILE SETTINGS --- */}
         {selectedPlatforms['googlebusiness'] && (
