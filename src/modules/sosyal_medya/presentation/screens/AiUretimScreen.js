@@ -196,12 +196,8 @@ export default function AiUretimScreen({ route, navigation }) {
   };
 
   // TikTok Settings
-  const [ttPrivacyLevel, setTtPrivacyLevel] = useState('PUBLIC_TO_EVERYONE');
-  const [ttAllowComment, setTtAllowComment] = useState(true);
-  const [ttAllowDuet, setTtAllowDuet] = useState(true);
-  const [ttAllowStitch, setTtAllowStitch] = useState(true);
-  const [ttCommercialContent, setTtCommercialContent] = useState('none');
-  const [ttVideoMadeWithAi, setTtVideoMadeWithAi] = useState(false);
+  const [ttSaveToInbox, setTtSaveToInbox] = useState(false);
+  const [ttCustomCaption, setTtCustomCaption] = useState('');
 
   // Google Business Profile Settings
   const [gbpPostType, setGbpPostType] = useState('STANDARD');
@@ -338,10 +334,14 @@ export default function AiUretimScreen({ route, navigation }) {
       return;
     }
 
-    const contentToShare = localText || prompt || t('sosyalMedya.generate.fallbackContent');
+    let contentToShare = localText || prompt || t('sosyalMedya.generate.fallbackContent');
+    if (tags.length > 0) {
+      contentToShare += "\n\n" + tags.map(t => `#${t}`).join(" ");
+    }
+
     const { data: session } = await supabase.auth.getSession();
     const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session?.session?.user?.id || session?.user?.id).maybeSingle();
-      const organizationId = orgMember?.organization_id || session?.session?.user?.id || session?.user?.id;
+    const organizationId = orgMember?.organization_id || session?.session?.user?.id || session?.user?.id;
 
     let finalScheduledFor = undefined;
     let finalTimezone = timezone.split(' ')[0];
@@ -360,39 +360,63 @@ export default function AiUretimScreen({ route, navigation }) {
       }
     }
 
-    let successCount = 0;
-    // Döngü (for...of) ile sadece filtreden geçen uygun platformların Zernio API endpoint'lerine istek atılsın
-    for (const acc of allowedPlatforms) {
-      try {
-        // Gerçek Zernio API çağrısı
-        const { data: postData, error: postError } = await supabase.functions.invoke('zernio-client', {
-          body: { 
-            action: 'create-post', 
-            payload: { 
-              content: contentToShare,
-              platforms: [{ platform: acc.platform, accountId: acc._id || acc.id || acc.accountId || acc.uuid }],
-              publishNow: publishMode === 'now',
-              scheduledFor: finalScheduledFor,
-              timezone: finalTimezone,
-              mediaItems: localImage ? [{ type: contentType, url: localImage }] : undefined
-            } 
-          }
-        });
-        
-        if (postError || postData?.error) {
-          const actualError = postError?.message || (typeof postData?.error === 'string' ? postData.error : postData?.error?.message) || "Zernio API hatası";
-          throw new Error(actualError);
-        }
-        successCount++;
-      } catch (err) {
-        // Zero UI: Kullanıcıya asla hata gösterme
-        console.warn(`[Zernio API Hatası] ${acc.platform}:`, err);
-      }
-    }
+    const platformsPayload = allowedPlatforms.map(acc => {
+      const p = acc.platform.toLowerCase();
+      let platformOptions = {};
 
-    if (successCount === 0) {
-      Alert.alert("Hata", "Gönderi paylaşılamadı. Lütfen bildirimleri kontrol edin.");
-      return;
+      if (p === 'instagram') {
+        platformOptions = {
+          contentType: igFormat.toLowerCase(),
+          aiGenerated: igAiLabel,
+          firstComment: igFirstComment,
+          caption: igCustomCaption || undefined
+        };
+      } else if (p === 'linkedin') {
+        platformOptions = {
+          firstComment: liFirstComment,
+          caption: liCustomCaption || undefined
+        };
+      } else if (p === 'twitter') {
+        platformOptions = {
+          isThread: twIsThread,
+          caption: twCustomCaption || undefined
+        };
+      } else if (p === 'tiktok') {
+        platformOptions = {
+          saveToInboxAsDraft: ttSaveToInbox,
+          caption: ttCustomCaption || undefined
+        };
+      }
+
+      return {
+        platform: acc.platform,
+        accountId: acc._id || acc.id || acc.accountId || acc.uuid,
+        platformSpecificData: Object.keys(platformOptions).length > 0 ? platformOptions : undefined
+      };
+    });
+
+    try {
+      const { data: postData, error: postError } = await supabase.functions.invoke('zernio-client', {
+        body: { 
+          action: 'create-post', 
+          payload: { 
+            content: contentToShare,
+            platforms: platformsPayload,
+            publishNow: publishMode === 'now',
+            scheduledFor: finalScheduledFor,
+            timezone: finalTimezone,
+            mediaItems: localImage ? [{ type: contentType, url: localImage }] : undefined
+          } 
+        }
+      });
+      
+      if (postError || postData?.error) {
+        const actualError = postError?.message || (typeof postData?.error === 'string' ? postData.error : postData?.error?.message) || "Zernio API hatası";
+        throw new Error(actualError);
+      }
+    } catch (err) {
+      console.warn(`[Zernio API Hatası]:`, err);
+      throw err;
     }
 
     // Başarılı olan gönderimleri veritabanına kaydet
@@ -1111,58 +1135,37 @@ export default function AiUretimScreen({ route, navigation }) {
 
          {/* --- TIKTOK SETTINGS --- */}
         {selectedPlatforms['tiktok'] && (
-          <View className="mb-4">
-             <View className="flex-row items-center mb-3">
+          <View className="mb-4 bg-[#2A2631]/50 rounded-xl p-4 border border-[#00f0ff]/30">
+             <View className="flex-row items-center mb-4">
                <View className="w-6 h-6 rounded bg-[#000] items-center justify-center mr-2 border border-white/10">
-                 <Ionicons name="logo-tiktok" size={14} color="#fff" />
+                 <Ionicons name="logo-tiktok" size={14} color="#00f0ff" />
                </View>
-               <Text className="text-[#F6F1EC] font-semibold">TikTok</Text>
+               <Text className="text-[#F6F1EC] font-semibold text-sm">TikTok</Text>
              </View>
 
-             <Text className="text-[#A79E96] text-xs font-medium mb-1">Privacy Level</Text>
-             <View className="flex-row flex-wrap mb-3 gap-2">
-                {['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'FOLLOWER_OF_CREATOR', 'SELF_ONLY'].map(level => (
-                  <TouchableOpacity 
-                    key={level} onPress={() => setTtPrivacyLevel(level)}
-                    className={`px-3 py-1.5 rounded-lg border ${ttPrivacyLevel === level ? 'bg-[#22B573]/10 border-[#22B573]' : 'bg-[#2A2631] border-white/10'}`}
-                  >
-                    <Text className={`text-[10px] ${ttPrivacyLevel === level ? 'text-[#22B573]' : 'text-[#A79E96]'}`}>
-                      {level.replace(/_/g, ' ')}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-             </View>
+             <TouchableOpacity 
+               activeOpacity={0.8} 
+               onPress={() => setTtSaveToInbox(!ttSaveToInbox)} 
+               className="flex-row items-start mb-4 bg-[#201D24]/50 p-3 rounded-lg border border-white/5"
+             >
+                <View className={`w-4 h-4 rounded border mt-0.5 mr-3 items-center justify-center ${ttSaveToInbox ? 'bg-[#22B573] border-[#22B573]' : 'border-white/20 bg-transparent'}`}>
+                   {ttSaveToInbox && <MaterialIcons name="check" size={12} color="#1C3327" />}
+                </View>
+                <View className="flex-1">
+                  <Text className="text-[#F6F1EC] text-xs font-semibold mb-1">Save to TikTok inbox as draft</Text>
+                  <Text className="text-[#A79E96]/80 text-[10px] leading-4">Uploads to the creator's TikTok inbox instead of publishing. They finish the caption, add music, and post from TikTok.</Text>
+                </View>
+             </TouchableOpacity>
 
-             <View className="flex-row justify-between mb-3">
-               <View className="flex-1 mr-2">
-                 <TouchableOpacity activeOpacity={0.8} onPress={() => setTtAllowComment(!ttAllowComment)} className="flex-row items-center mb-2">
-                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttAllowComment ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
-                       {ttAllowComment && <MaterialIcons name="check" size={12} color="#1C3327" />}
-                    </View>
-                    <Text className="text-[#F6F1EC] text-xs">Allow Comment</Text>
-                 </TouchableOpacity>
-                 <TouchableOpacity activeOpacity={0.8} onPress={() => setTtAllowDuet(!ttAllowDuet)} className="flex-row items-center mb-2">
-                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttAllowDuet ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
-                       {ttAllowDuet && <MaterialIcons name="check" size={12} color="#1C3327" />}
-                    </View>
-                    <Text className="text-[#F6F1EC] text-xs">Allow Duet</Text>
-                 </TouchableOpacity>
-               </View>
-               <View className="flex-1">
-                 <TouchableOpacity activeOpacity={0.8} onPress={() => setTtAllowStitch(!ttAllowStitch)} className="flex-row items-center mb-2">
-                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttAllowStitch ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
-                       {ttAllowStitch && <MaterialIcons name="check" size={12} color="#1C3327" />}
-                    </View>
-                    <Text className="text-[#F6F1EC] text-xs">Allow Stitch</Text>
-                 </TouchableOpacity>
-                 <TouchableOpacity activeOpacity={0.8} onPress={() => setTtVideoMadeWithAi(!ttVideoMadeWithAi)} className="flex-row items-center mb-2">
-                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${ttVideoMadeWithAi ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
-                       {ttVideoMadeWithAi && <MaterialIcons name="check" size={12} color="#1C3327" />}
-                    </View>
-                    <Text className="text-[#F6F1EC] text-xs">AI Generated</Text>
-                 </TouchableOpacity>
-               </View>
-             </View>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1">custom caption</Text>
+             <TextInput 
+               value={ttCustomCaption} onChangeText={setTtCustomCaption}
+               placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+               multiline
+               className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 min-h-[60px]"
+               maxLength={2200}
+             />
+             <Text className="text-[#A79E96]/50 text-[10px] text-right mt-1">{ttCustomCaption.length}/2200</Text>
           </View>
         )}
 
