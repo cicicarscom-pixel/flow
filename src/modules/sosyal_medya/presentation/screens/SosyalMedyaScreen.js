@@ -408,7 +408,7 @@ export default function SosyalMedyaScreen({ navigation }) {
 
         {/* Sosyal Medya Asistanı */}
         <View style={styles.aiCard}>
-           <View className="flex-row items-center">
+           <View className="flex-row items-center flex-1 pr-4">
              <BreathingIcon active={socialBotActive && systemBotActive}>
                <View style={styles.aiIconWrapper}>
                  <Ionicons name="logo-instagram" size={20} color={socialBotActive ? "#22B573" : "#756D66"} />
@@ -434,7 +434,7 @@ export default function SosyalMedyaScreen({ navigation }) {
 
         {/* Paylaşım Merkezi (Yatay) */}
         <AnimatedBorderCard 
-          style={[styles.glowBorderMagenta, { width: '100%', marginBottom: 24 }]} 
+          style={[styles.glowBorderMagenta, { width: '100%', marginBottom: 36 }]} 
           colors={['#C2478D', '#201D24', '#C2478D', '#201D24']}
           padding={0}
           borderRadius={22}
@@ -451,7 +451,7 @@ export default function SosyalMedyaScreen({ navigation }) {
             }}
             activeOpacity={0.85}
           >
-            <View className="flex-row items-center">
+            <View className="flex-row items-center flex-1 pr-4">
               <View style={[styles.aiIconWrapper, { backgroundColor: 'rgba(194, 71, 141, 0.14)' }]}>
                 <MaterialIcons name="auto-awesome" size={20} color="#E8A8CD" />
               </View>
@@ -466,7 +466,7 @@ export default function SosyalMedyaScreen({ navigation }) {
 
 
         {/* Add Account Panel */}
-        <View style={{ marginBottom: 32 }}>
+        <View style={{ marginBottom: 32, marginTop: 12 }}>
           <Text className="text-[#F6F1EC] text-[18px] font-semibold mb-4">{t('sosyalMedya.ui.addAccount')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16, paddingRight: 20, paddingLeft: 4 }}>
             {PLATFORMS_DATA.map((p) => {

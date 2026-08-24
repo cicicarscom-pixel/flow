@@ -44,7 +44,7 @@ export default function GlobalAppBar({
             style={styles.title}
             numberOfLines={1}
           >
-            {level === 1 ? "Workigom AI" : title}
+            {title || (level === 1 ? "Workigom AI" : "")}
           </Text>
         </View>
 
