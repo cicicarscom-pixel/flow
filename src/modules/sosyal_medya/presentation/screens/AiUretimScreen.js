@@ -119,6 +119,9 @@ export default function AiUretimScreen({ route, navigation }) {
   const [mediaType, setMediaType] = useState(persistedMediaType);
   const [isSharing, setIsSharing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [tags, setTags] = useState(['yaz', 'yenisezon']);
+  const [isAddingTag, setIsAddingTag] = useState(false);
+  const [newTagText, setNewTagText] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   
   React.useEffect(() => {
@@ -239,14 +242,21 @@ export default function AiUretimScreen({ route, navigation }) {
   React.useEffect(() => {
     const fetchAccounts = async () => {
       const { data: session } = await supabase.auth.getSession();
-      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session?.session?.user?.id || session?.user?.id).maybeSingle();
-      const organizationId = orgMember?.organization_id || session?.session?.user?.id || session?.user?.id;
+      const userId = session?.session?.user?.id || session?.user?.id;
+      if (!userId) return;
+
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', userId).maybeSingle();
+      const organizationId = orgMember?.organization_id || userId;
+
       if (organizationId) {
         try {
-          const { data: accData } = await supabase.functions.invoke('zernio-client', {
-            body: { action: 'sync-accounts', payload: { organizationId } }
-          });
-          const accounts = accData?.data?.accounts || [];
+          const { data } = await supabase
+            .from('social_accounts')
+            .select('*')
+            .eq('profile_id', organizationId)
+            .eq('status', 'active');
+            
+          const accounts = data || [];
           setZernioAccounts(accounts);
           
           const initialSelected = {};
@@ -679,16 +689,49 @@ export default function AiUretimScreen({ route, navigation }) {
           </View>
           
           <View className="flex-row flex-wrap gap-2">
-            <View className="bg-[#22B573]/10 px-3 py-1 rounded-full border border-[#22B573]/20">
-              <Text className="text-[#22B573] text-xs font-medium">{t('sosyalMedya.generate.tagSummer')}</Text>
-            </View>
-            <View className="bg-[#22B573]/10 px-3 py-1 rounded-full border border-[#22B573]/20">
-              <Text className="text-[#22B573] text-xs font-medium">{t('sosyalMedya.generate.tagNewSeason')}</Text>
-            </View>
-            <TouchableOpacity className="px-2 flex-row items-center">
-              <MaterialIcons name="add" size={16} color="#A79E96" />
-              <Text className="text-[#A79E96] text-xs font-medium ml-1">{t('sosyalMedya.generate.addTag')}</Text>
-            </TouchableOpacity>
+            {tags.map(tag => (
+              <TouchableOpacity 
+                key={tag} 
+                onPress={() => setLocalText(prev => prev + (prev && !prev.endsWith(' ') && !prev.endsWith('\n') ? ' ' : '') + '#' + tag)}
+                className="bg-[#22B573]/10 px-3 py-1 rounded-full border border-[#22B573]/20"
+              >
+                <Text className="text-[#22B573] text-xs font-medium">#{tag}</Text>
+              </TouchableOpacity>
+            ))}
+            
+            {isAddingTag ? (
+              <View className="flex-row items-center bg-[#2A2631] px-2 py-0 border border-[#22B573]/30 rounded-full h-7">
+                <Text className="text-[#22B573] text-xs mr-1">#</Text>
+                <TextInput
+                  value={newTagText}
+                  onChangeText={text => setNewTagText(text.replace(/[^a-zA-Z0-9_ğüşıöçĞÜŞİÖÇ]/g, ''))}
+                  onSubmitEditing={() => {
+                    if (newTagText.trim() && !tags.includes(newTagText.trim())) {
+                      setTags(prev => [...prev, newTagText.trim()]);
+                    }
+                    setNewTagText("");
+                    setIsAddingTag(false);
+                  }}
+                  onBlur={() => {
+                    if (newTagText.trim() && !tags.includes(newTagText.trim())) {
+                      setTags(prev => [...prev, newTagText.trim()]);
+                    }
+                    setNewTagText("");
+                    setIsAddingTag(false);
+                  }}
+                  autoFocus
+                  placeholder="yaz"
+                  placeholderTextColor="#A79E96"
+                  className="text-[#F6F1EC] text-xs p-0 m-0 w-16"
+                  returnKeyType="done"
+                />
+              </View>
+            ) : (
+              <TouchableOpacity onPress={() => setIsAddingTag(true)} className="px-2 flex-row items-center py-1 bg-[#2A2631]/50 rounded-full border border-white/5 h-7">
+                <MaterialIcons name="add" size={14} color="#A79E96" />
+                <Text className="text-[#A79E96] text-xs font-medium ml-1">{t('sosyalMedya.generate.addTag')}</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </AnimatedBorderCard>
 
