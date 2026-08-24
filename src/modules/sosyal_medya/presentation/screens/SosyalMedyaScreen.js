@@ -608,9 +608,11 @@ export default function SosyalMedyaScreen({ navigation }) {
                    </View>
                    
                    <Text style={{ fontWeight: '600', fontSize: 13, color: '#F6F1EC', marginBottom: 4 }} numberOfLines={1}>
-                     {acc.account_name ? `@${acc.account_name}` : platformInfo.name}
+                     {platformInfo.name}
                    </Text>
-                   <Text style={{ color: '#A79E96', fontSize: 10, marginBottom: 12 }}>{t('sosyalMedya.connected', { defaultValue: 'Bağlı' })}</Text>
+                   <Text style={{ color: '#A79E96', fontSize: 10, marginBottom: 12 }} numberOfLines={1}>
+                     {acc.account_name ? (acc.account_name.startsWith('@') ? acc.account_name : `@${acc.account_name}`) : t('sosyalMedya.connected', { defaultValue: 'Bağlı' })}
+                   </Text>
                    
                    <TouchableOpacity 
                      onPress={() => handleDisconnect(acc.id, acc.platform)}
