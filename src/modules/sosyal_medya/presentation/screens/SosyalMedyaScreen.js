@@ -270,34 +270,11 @@ export default function SosyalMedyaScreen({ navigation }) {
       const resultData = data?.data;
 
       if (resultData?.authUrl) {
-        if (platform === 'instagram') {
-           Alert.alert(
-             "Instagram Uygulaması Çakışması",
-             "Cihazınızdaki Instagram uygulaması araya girip bağlantıyı engelliyor olabilir. En kesin çözüm linki kopyalayıp tarayıcınızda 'Gizli Sekme' (Incognito) üzerinden açmaktır.",
-             [
-               {
-                 text: "Linki Paylaş / Kopyala",
-                 onPress: () => Share.share({ message: resultData.authUrl })
-               },
-               {
-                 text: "Yine de Uygulama İçi Dene",
-                 onPress: async () => {
-                    const browserResult = await WebBrowser.openAuthSessionAsync(resultData.authUrl, redirectUrl);
-                    if (browserResult.type === 'success' && browserResult.url) {
-                       const { queryParams } = Linking.parse(browserResult.url);
-                       if (queryParams?.accountId) saveZernioAccount(queryParams);
-                    }
-                 }
-               }
-             ]
-           );
-        } else {
-           const browserResult = await WebBrowser.openAuthSessionAsync(resultData.authUrl, redirectUrl);
-           if (browserResult.type === 'success' && browserResult.url) {
-              const { queryParams } = Linking.parse(browserResult.url);
-              if (queryParams?.accountId) {
-                saveZernioAccount(queryParams);
-              }
+        const browserResult = await WebBrowser.openAuthSessionAsync(resultData.authUrl, redirectUrl);
+        if (browserResult.type === 'success' && browserResult.url) {
+           const { queryParams } = Linking.parse(browserResult.url);
+           if (queryParams?.accountId) {
+             saveZernioAccount(queryParams);
            }
         }
       } else {
