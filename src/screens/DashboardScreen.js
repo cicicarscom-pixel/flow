@@ -212,8 +212,9 @@ export default function DashboardScreen({ navigation }) {
     }, [])
   );
 
-  useEffect(() => {
-    const fetchData = async () => {
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
       try {
         // 1. Auth & Profile
         const { data: { session } } = await supabase.auth.getSession();
@@ -367,9 +368,9 @@ export default function DashboardScreen({ navigation }) {
         setIsLoading(false);
       }
     };
-    
     fetchData();
-  }, []);
+    }, [])
+  );
 
   const handleToggleAiActive = async (val) => {
     setAiActive(val);
