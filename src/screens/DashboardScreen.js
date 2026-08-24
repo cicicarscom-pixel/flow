@@ -14,7 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import { CommunicationLogsTable } from '../modules/sosyal_medya/presentation/components/CommunicationLogsTable';
 import { supabase } from '../shared/lib/supabase';
@@ -157,6 +157,7 @@ const { width: screenWidth } = Dimensions.get('window');
 
 export default function DashboardScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const isFocused = useIsFocused();
   
   const [isLoading, setIsLoading] = useState(true);
   const [aiActive, setAiActive] = useState(true);
@@ -465,11 +466,13 @@ export default function DashboardScreen({ navigation }) {
             <View style={styles.heroAiCard}>
               <BreathingIcon active={aiActive && !isLoading}>
                 <View style={styles.heroAiIconWrapper}>
-                  <Image
-                    source={require('../../image/robot1.gif')}
-                    style={{ width: '100%', height: '100%' }}
-                    resizeMode="cover"
-                  />
+                  {isFocused && (
+                    <Image
+                      source={require('../../image/robot1.gif')}
+                      style={{ width: '100%', height: '100%' }}
+                      resizeMode="cover"
+                    />
+                  )}
                 </View>
               </BreathingIcon>
               <View style={styles.heroAiTexts}>
