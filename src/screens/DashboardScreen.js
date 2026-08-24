@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -824,11 +824,11 @@ const styles = StyleSheet.create({
   },
   heroAiCard: {
     backgroundColor: '#17151A',
-    borderRadius: 20,
-    padding: 14,
+    borderRadius: 24,
+    padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
@@ -836,25 +836,26 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   heroAiIconWrapper: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255, 122, 89, 0.18)',
+    width: 68,
+    height: 68,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 122, 89, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   heroAiTexts: {
     flex: 1,
   },
   heroAiTitle: {
     color: '#F6F1EC',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '700',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   heroAiSubtitle: {
     color: '#A79E96',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '500',
   },
 
