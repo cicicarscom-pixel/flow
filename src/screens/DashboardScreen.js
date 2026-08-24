@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -465,13 +465,10 @@ export default function DashboardScreen({ navigation }) {
             <View style={styles.heroAiCard}>
               <BreathingIcon active={aiActive && !isLoading}>
                 <View style={styles.heroAiIconWrapper}>
-                  <Video
-                    source={require('../../image/robot.mp4')}
+                  <Image
+                    source={require('../../image/robot1.gif')}
                     style={{ width: '100%', height: '100%' }}
-                    resizeMode={ResizeMode.COVER}
-                    shouldPlay
-                    isLooping
-                    isMuted
+                    resizeMode="cover"
                   />
                 </View>
               </BreathingIcon>
