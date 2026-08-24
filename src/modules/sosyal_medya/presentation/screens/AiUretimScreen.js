@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+﻿import React, { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   View, 
@@ -838,7 +838,7 @@ export default function AiUretimScreen({ route, navigation }) {
                <Text className="text-[#F6F1EC] text-sm font-semibold ml-2">YouTube</Text>
             </View>
             
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">title (optional)</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">Başlık (Opsiyonel)</Text>
             <TextInput 
                value={ytTitle} onChangeText={setYtTitle}
                placeholder="Custom title for your video..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -877,10 +877,10 @@ export default function AiUretimScreen({ route, navigation }) {
                <MaterialIcons name="keyboard-arrow-down" size={18} color="#A79E96" />
             </TouchableOpacity>
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">custom caption</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">Özel Açıklama (Opsiyonel)</Text>
             <TextInput 
                value={ytCustomCaption} onChangeText={setYtCustomCaption}
-               placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+               placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 min-h-[80px]"
                multiline textAlignVertical="top" maxLength={5000}
             />
@@ -912,19 +912,19 @@ export default function AiUretimScreen({ route, navigation }) {
                <Text className="text-[#A79E96]/70 text-[11px] mb-4">İçerik 24 saat sonra kaybolur. Medya (görsel veya video) gerektirir.</Text>
             )}
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">first comment</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">İlk Yorum (Opsiyonel)</Text>
             <TextInput 
                value={fbFirstComment} onChangeText={setFbFirstComment}
-               placeholder="Drop any extra context or a CTA here." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+               placeholder="İlk yoruma eklemek istediğiniz bağlantı veya notu girin..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                multiline textAlignVertical="top" maxLength={8000}
             />
             <Text className="text-[#A79E96]/50 text-[10px] text-right mb-4">{fbFirstComment.length}/8000</Text>
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">custom caption</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">Özel Açıklama (Opsiyonel)</Text>
             <TextInput 
                value={fbCustomCaption} onChangeText={setFbCustomCaption}
-               placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+               placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                multiline textAlignVertical="top" maxLength={63206}
             />
@@ -967,19 +967,19 @@ export default function AiUretimScreen({ route, navigation }) {
                </View>
             </TouchableOpacity>
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">first comment</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">İlk Yorum (Opsiyonel)</Text>
             <TextInput 
                value={igFirstComment} onChangeText={setIgFirstComment}
-               placeholder="Drop any extra context or a CTA here." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+               placeholder="İlk yoruma eklemek istediğiniz bağlantı veya notu girin..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                multiline textAlignVertical="top" maxLength={2200}
             />
             <Text className="text-[#A79E96]/50 text-[10px] text-right mb-4">{igFirstComment.length}/2200</Text>
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">custom caption</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">Özel Açıklama (Opsiyonel)</Text>
             <TextInput 
                value={igCustomCaption} onChangeText={setIgCustomCaption}
-               placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+               placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                multiline textAlignVertical="top" maxLength={2200}
             />
@@ -1067,19 +1067,19 @@ export default function AiUretimScreen({ route, navigation }) {
                 <Text className="text-[#F6F1EC] text-[13px]">Disable link preview</Text>
              </TouchableOpacity>
 
-             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">first comment</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">İlk Yorum (Opsiyonel)</Text>
              <TextInput 
                 value={liFirstComment} onChangeText={setLiFirstComment}
-                placeholder="Add a first comment to boost engagement." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                placeholder="Add a İlk Yorum (Opsiyonel) to boost engagement." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                 className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                 multiline textAlignVertical="top" maxLength={1250}
              />
              <Text className="text-[#A79E96]/50 text-[10px] text-right mb-4">{liFirstComment.length}/1250</Text>
 
-             <Text className="text-[#A79E96] text-xs font-medium mb-1">custom caption</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1">Özel Açıklama (Opsiyonel)</Text>
              <TextInput 
                 value={liCustomCaption} onChangeText={setLiCustomCaption}
-                placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                 className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                 multiline textAlignVertical="top" maxLength={3000}
              />
@@ -1110,7 +1110,7 @@ export default function AiUretimScreen({ route, navigation }) {
              
              {twIsThread && (
                 <View className="mb-4">
-                   <Text className="text-[#A79E96]/70 text-[10px] mb-3">Main content + media become tweet 1. Add more below.</Text>
+                   <Text className="text-[#A79E96]/70 text-[10px] mb-3">Ana metin ilk tweet olur. Altına zincir eklenebilir.</Text>
                    
                    {twThreadTweets.map((tweet, index) => (
                       <View key={tweet.id} className="bg-[#2A2631] border border-white/5 rounded-lg p-3 mb-2">
@@ -1141,10 +1141,10 @@ export default function AiUretimScreen({ route, navigation }) {
                 </View>
              )}
 
-             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">custom caption</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">Özel Açıklama (Opsiyonel)</Text>
              <TextInput 
                 value={twCustomCaption} onChangeText={setTwCustomCaption}
-                placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                 className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1 min-h-[60px]"
                 multiline textAlignVertical="top" maxLength={280}
              />
@@ -1172,15 +1172,15 @@ export default function AiUretimScreen({ route, navigation }) {
                    {ttSaveToInbox && <MaterialIcons name="check" size={12} color="#1C3327" />}
                 </View>
                 <View className="flex-1">
-                  <Text className="text-[#F6F1EC] text-xs font-semibold mb-1">Save to TikTok inbox as draft</Text>
-                  <Text className="text-[#A79E96]/80 text-[10px] leading-4">Uploads to the creator's TikTok inbox instead of publishing. They finish the caption, add music, and post from TikTok.</Text>
+                  <Text className="text-[#F6F1EC] text-xs font-semibold mb-1">TikTok taslaklarına kaydet</Text>
+                  <Text className="text-[#A79E96]/80 text-[10px] leading-4">Video direkt yayınlanmaz, taslak olarak yüklenir. İsterseniz TikTok üzerinden müzik ekleyip yayınlayabilirsiniz.</Text>
                 </View>
              </TouchableOpacity>
 
-             <Text className="text-[#A79E96] text-xs font-medium mb-1">custom caption</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1">Özel Açıklama (Opsiyonel)</Text>
              <TextInput 
                value={ttCustomCaption} onChangeText={setTtCustomCaption}
-               placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+               placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                multiline
                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 min-h-[60px]"
                maxLength={2200}
@@ -1199,15 +1199,15 @@ export default function AiUretimScreen({ route, navigation }) {
                  <Text className="text-[#F6F1EC] font-semibold text-sm">Pinterest</Text>
                </View>
 
-               <Text className="text-[#A79E96] text-xs font-medium mb-1">title (optional)</Text>
+               <Text className="text-[#A79E96] text-xs font-medium mb-1">Başlık (Opsiyonel)</Text>
                <TextInput 
                  value={pinTitle} onChangeText={setPinTitle}
-                 placeholder="Enter a custom title for your Pin..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                 placeholder="Pin'iniz için özel bir başlık girin..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                  className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1"
                />
-               <Text className="text-[#A79E96]/60 text-[10px] mb-4">Custom title for your Pin. If not provided, the first line of the main content will be used.</Text>
+               <Text className="text-[#A79E96]/60 text-[10px] mb-4">Zorunlu değildir. Boş bırakılırsa ana metnin ilk satırı başlık yapılır.</Text>
 
-               <Text className="text-[#A79E96] text-xs font-medium mb-1">destination link (optional)</Text>
+               <Text className="text-[#A79E96] text-xs font-medium mb-1">Hedef Bağlantı (Opsiyonel)</Text>
                <TextInput 
                  value={pinLink} onChangeText={setPinLink}
                  placeholder="https://example.com" placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1215,12 +1215,12 @@ export default function AiUretimScreen({ route, navigation }) {
                  autoCapitalize="none"
                  className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1"
                />
-               <Text className="text-[#A79E96]/60 text-[10px] mb-4">Set the clickable URL for your Pin. This becomes the Pin's outbound link.</Text>
+               <Text className="text-[#A79E96]/60 text-[10px] mb-4">Pin'e tıklandığında gidilecek URL bağlantısını belirler.</Text>
 
-               <Text className="text-[#A79E96] text-xs font-medium mb-1">custom caption</Text>
+               <Text className="text-[#A79E96] text-xs font-medium mb-1">Özel Açıklama (Opsiyonel)</Text>
                <TextInput 
                  value={pinCustomCaption} onChangeText={setPinCustomCaption}
-                 placeholder="Leave blank to use main content..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                 placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                  multiline
                  className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 min-h-[60px]"
                  maxLength={500}
