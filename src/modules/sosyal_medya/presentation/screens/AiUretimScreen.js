@@ -692,54 +692,55 @@ export default function AiUretimScreen({ route, navigation }) {
           </View>
         </AnimatedBorderCard>
 
-        {/* Profiles Section */}
+        {/* Platforms Section */}
         <View className="mb-6 mt-6">
-          <Text className="text-[#A79E96] text-xs font-medium mb-3">profiller</Text>
-          <TouchableOpacity className="flex-row items-center justify-between bg-[#2A2631]/50 rounded-lg border border-white/5 p-4 mb-4">
-             <View className="flex-row items-center">
-               <View className="w-3 h-3 rounded-full bg-[#F59E0B] mr-3" />
-               <Text className="text-[#F6F1EC] text-sm">Al Esnaf Profil</Text>
-             </View>
-             <MaterialIcons name="keyboard-arrow-down" size={20} color="#A79E96" />
-          </TouchableOpacity>
-
-          <Text className="text-[#A79E96] text-xs font-medium mb-3">Seçilen platformlarda paylaş</Text>
-          <View className="flex-row flex-wrap justify-between">
-          {zernioAccounts.map((acc, index) => {
-            const isSelected = selectedPlatforms[acc.platform];
-            const platformId = acc.platform.toLowerCase();
-            const platformColor = platformId === 'instagram' ? '#C2478D' : 
-                                  platformId === 'facebook' ? '#1877F2' : 
-                                  platformId === 'youtube' ? '#ff0000' : 
-                                  platformId === 'twitter' ? '#1DA1F2' : 
-                                  platformId === 'linkedin' ? '#0A66C2' : 
-                                  platformId.includes('google') ? '#4285F4' : '#A79E96';
-            
-            let iconName = `logo-${platformId}`;
-            if (platformId.includes('google')) iconName = 'business';
-
-            return (
-              <TouchableOpacity 
-                key={index}
-                onPress={() => setSelectedPlatforms(prev => ({ ...prev, [acc.platform]: !prev[acc.platform] }))}
-                className={`flex-row items-center justify-between rounded-lg border p-2 mb-3 w-[31%] ${isSelected ? 'bg-[#22B573]/10 border-[#22B573]/50' : 'bg-[#2A2631]/50 border-white/5'}`}
-              >
-                <View className="flex-row items-center flex-1">
-                   <Ionicons name={iconName} size={16} color={platformColor} style={{ marginRight: 6 }} />
-                   <View className="flex-1">
-                     <Text className="text-[#F6F1EC] text-[10px] capitalize font-medium" numberOfLines={1}>{acc.platform}</Text>
-                     <Text className="text-[#A79E96]/60 text-[8px]" numberOfLines={1}>@{acc.username || 'hesap'}</Text>
-                   </View>
-                </View>
-                {isSelected && (
-                   <View className="w-3.5 h-3.5 rounded-full bg-[#22B573] items-center justify-center ml-1">
-                      <MaterialIcons name="check" size={10} color="#1C3327" />
-                   </View>
-                )}
+          <Text className="text-[#A79E96] text-xs font-medium mb-3">Bağlantılı Hesaplar (Platformlar)</Text>
+          
+          {zernioAccounts.length === 0 ? (
+            <View className="items-center p-4 bg-[#2A2631]/30 rounded-lg border border-white/5">
+              <Text className="text-[#A79E96]/70 text-xs mb-2">Henüz bağlı bir hesap yok.</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('SosyalMedya')}>
+                <Text className="text-[#22B573] text-xs font-medium">Hesap Bağla</Text>
               </TouchableOpacity>
-            )
-          })}
-          </View>
+            </View>
+          ) : (
+            <View className="flex-row flex-wrap justify-between">
+            {zernioAccounts.map((acc, index) => {
+              const isSelected = selectedPlatforms[acc.platform];
+              const platformId = acc.platform.toLowerCase();
+              const platformColor = platformId === 'instagram' ? '#C2478D' : 
+                                    platformId === 'facebook' ? '#1877F2' : 
+                                    platformId === 'youtube' ? '#ff0000' : 
+                                    platformId === 'twitter' ? '#1DA1F2' : 
+                                    platformId === 'linkedin' ? '#0A66C2' : 
+                                    platformId.includes('google') ? '#4285F4' : '#A79E96';
+              
+              let iconName = `logo-${platformId}`;
+              if (platformId.includes('google')) iconName = 'business';
+
+              return (
+                <TouchableOpacity 
+                  key={index}
+                  onPress={() => setSelectedPlatforms(prev => ({ ...prev, [acc.platform]: !prev[acc.platform] }))}
+                  className={`flex-row items-center justify-between rounded-lg border p-3 mb-3 w-[48%] ${isSelected ? 'bg-[#22B573]/10 border-[#22B573]/50' : 'bg-[#2A2631]/50 border-white/5'}`}
+                >
+                  <View className="flex-row items-center flex-1 overflow-hidden">
+                     <Ionicons name={iconName} size={18} color={platformColor} style={{ marginRight: 8 }} />
+                     <View className="flex-1 overflow-hidden">
+                       <Text className="text-[#F6F1EC] text-[12px] capitalize font-semibold" numberOfLines={1}>{acc.platform}</Text>
+                       <Text className="text-[#A79E96]/60 text-[10px]" numberOfLines={1}>@{acc.username || 'hesap'}</Text>
+                     </View>
+                  </View>
+                  {isSelected && (
+                     <View className="w-4 h-4 rounded-full bg-[#22B573] items-center justify-center ml-2 shrink-0">
+                        <MaterialIcons name="check" size={12} color="#1C3327" />
+                     </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+            </View>
+          )}
         </View>
 
         {/* --- YOUTUBE SETTINGS --- */}
