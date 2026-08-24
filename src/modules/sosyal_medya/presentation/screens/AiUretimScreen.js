@@ -118,6 +118,7 @@ export default function AiUretimScreen({ route, navigation }) {
   const [localText, setLocalText] = useState(persistedText);
   const [mediaType, setMediaType] = useState(persistedMediaType);
   const [isSharing, setIsSharing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   
   React.useEffect(() => {
@@ -409,21 +410,35 @@ export default function AiUretimScreen({ route, navigation }) {
   };
 
   const handleShare = async () => {
+    let progressInterval;
     try {
       setIsSharing(true);
+      setUploadProgress(0);
+      
+      progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) return prev;
+          return prev + Math.floor(Math.random() * 5) + 1;
+        });
+      }, 500);
+
       const { data: session } = await supabase.auth.getSession();
       const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session?.session?.user?.id || session?.user?.id).maybeSingle();
       const organizationId = orgMember?.organization_id || session?.session?.user?.id || session?.user?.id;
       
       if (!organizationId) {
+        clearInterval(progressInterval);
         Alert.alert(t('sosyalMedya.alerts.error'), t('sosyalMedya.alerts.noSession'));
         setIsSharing(false);
+        setUploadProgress(0);
         return;
       }
 
       if (zernioAccounts.length === 0) {
+        clearInterval(progressInterval);
         Alert.alert(t('sosyalMedya.alerts.info'), t('sosyalMedya.alerts.connectAccountFirst'));
         setIsSharing(false);
+        setUploadProgress(0);
         return;
       }
 
@@ -433,11 +448,19 @@ export default function AiUretimScreen({ route, navigation }) {
       // Otonom yönlendirmeyi başlatan ana fonksiyonu çağır
       await publishPost(zernioAccounts, currentContentType);
 
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      setTimeout(() => {
+        setIsSharing(false);
+        setUploadProgress(0);
+      }, 500);
+
     } catch (err) {
+      clearInterval(progressInterval);
+      setIsSharing(false);
+      setUploadProgress(0);
       console.error("Paylaşım istisnası:", err);
       // Zero UI gereği kullanıcıya hata fırlatma
-    } finally {
-      setIsSharing(false);
     }
   };
 
@@ -1296,21 +1319,29 @@ export default function AiUretimScreen({ route, navigation }) {
             onPress={handleShare}
             disabled={isSharing}
           >
-            <LinearGradient
-              colors={['#22B573', '#C2478D']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              className={`rounded-full py-4 px-6 flex-row items-center justify-center shadow-[0_4px_15px_rgba(34, 181, 115,0.3)] ${isSharing ? 'opacity-50' : ''}`}
-            >
-              {isSharing ? (
-                <ActivityIndicator size="small" color="#17151A" style={{ marginRight: 8 }} />
-              ) : (
-                <MaterialIcons name="send" size={20} color="#17151A" style={{ marginRight: 8 }} />
+            <View className="rounded-full overflow-hidden w-full relative bg-[#2A2631]">
+              <LinearGradient
+                colors={['#22B573', '#C2478D']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                className="py-4 px-6 flex-row items-center justify-center"
+                style={{ opacity: isSharing ? 0.7 : 1 }}
+              >
+                {isSharing ? (
+                  <ActivityIndicator size="small" color="#17151A" style={{ marginRight: 8, zIndex: 10 }} />
+                ) : (
+                  <MaterialIcons name="send" size={20} color="#17151A" style={{ marginRight: 8, zIndex: 10 }} />
+                )}
+                <Text className="text-[#17151A] font-bold text-lg" style={{ zIndex: 10 }}>
+                  {isSharing ? `Yükleniyor... ${uploadProgress}%` : t('sosyalMedya.generate.shareSelected')}
+                </Text>
+              </LinearGradient>
+              {isSharing && (
+                <View 
+                  style={{ position: 'absolute', left: 0, top: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.4)', width: `${uploadProgress}%`, zIndex: 5 }}
+                />
               )}
-              <Text className="text-[#17151A] font-bold text-lg">
-                {isSharing ? t('sosyalMedya.generate.sharing') : t('sosyalMedya.generate.shareSelected')}
-              </Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
         </View>
         )}
