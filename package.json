@@ -18,7 +18,6 @@
     "country-state-city": "^3.2.1",
     "expo": "~57.0.11",
     "expo-auth-session": "~57.0.6",
-    "expo-av": "^16.0.8",
     "expo-blur": "~57.0.2",
     "expo-constants": "~57.0.2",
     "expo-crypto": "~57.0.1",
@@ -75,8 +74,8 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
     "test:boundaries": "depcruise src --config .dependency-cruiser.js",
