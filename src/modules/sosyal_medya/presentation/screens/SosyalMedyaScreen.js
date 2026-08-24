@@ -209,8 +209,8 @@ export default function SosyalMedyaScreen({ navigation }) {
 
       if (!orgId) return;
 
-      const { error: upsertError } = await supabase.schema('integration').from('social_accounts').upsert({
-        organization_id: orgId,
+      const { error: upsertError } = await supabase.from('social_accounts').upsert({
+        profile_id: orgId,
         zernio_account_id: accountId,
         platform: platform || 'unknown',
         account_name: username || 'User',
@@ -327,7 +327,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                await supabase.functions.invoke('zernio-client', {
                   body: { action: 'disconnect-account', payload: { accountId } }
                });
-               await supabase.schema('integration').from('social_accounts').delete().eq('zernio_account_id', accountId);
+               await supabase.from('social_accounts').delete().eq('zernio_account_id', accountId);
                
                // Zernio ile eşitle
                await fetchAccountsFromZernio();
