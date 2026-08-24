@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Video, ResizeMode } from 'expo-av';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { CommunicationLogsTable } from '../modules/sosyal_medya/presentation/components/CommunicationLogsTable';
@@ -465,7 +466,14 @@ export default function DashboardScreen({ navigation }) {
             <View style={styles.heroAiCard}>
               <BreathingIcon active={aiActive && !isLoading}>
                 <View style={styles.heroAiIconWrapper}>
-                  <MaterialIcons name="smart-toy" size={22} color={COLORS.background} />
+                  <Video
+                    source={require('../../image/robot.mp4')}
+                    style={{ width: '100%', height: '100%' }}
+                    resizeMode={ResizeMode.COVER}
+                    shouldPlay
+                    isLooping
+                    isMuted
+                  />
                 </View>
               </BreathingIcon>
               <View style={styles.heroAiTexts}>
