@@ -150,25 +150,27 @@ export default function SosyalMedyaScreen({ navigation }) {
         if (botSettings.is_active !== undefined) setSystemBotActive(botSettings.is_active);
       }
 
-      const { data, error } = await supabase.functions.invoke('zernio-client', {
-        body: { action: 'sync-accounts', payload: { organizationId: orgId } }
-      });
-      
-      if (error || data?.error) {
-        console.error("Fetch Error:", error || data?.error);
-        if (showSuccessAlert) Alert.alert(t('sosyalMedya.alerts.error'), error?.message || data?.error);
-        setIsLoadingAccounts(false);
-        return;
+      if (showSuccessAlert) {
+        await supabase.functions.invoke('zernio-client', {
+          body: { action: 'sync-accounts', payload: { organizationId: orgId } }
+        });
       }
 
-      const zernioAccounts = data?.data?.accounts || [];
-      
-      // Gelen veriyi arayüz için uygun formata çevir
-      const formattedAccounts = zernioAccounts.map(acc => ({
-        id: acc._id || acc.id || acc.accountId || acc.uuid,
+      const { data: dbAccounts, error: dbError } = await supabase
+        .from('social_accounts')
+        .select('*')
+        .eq('profile_id', orgId)
+        .eq('status', 'active');
+        
+      if (dbError) {
+        throw dbError;
+      }
+
+      const formattedAccounts = (dbAccounts || []).map(acc => ({
+        id: acc.zernio_account_id || acc.id,
         platform: acc.platform || 'unknown',
-        account_name: acc.username || acc.displayName || acc.name || acc.platform,
-        status: 'active'
+        account_name: acc.account_name || acc.platform,
+        status: acc.status
       }));
 
       setSocialAccounts(formattedAccounts);
@@ -177,7 +179,7 @@ export default function SosyalMedyaScreen({ navigation }) {
          if (formattedAccounts.length > 0) {
            Alert.alert(t('sosyalMedya.alerts.success'), t('sosyalMedya.alerts.accountsFetched'));
          } else {
-           Alert.alert(t('sosyalMedya.alerts.info'), t('sosyalMedya.alerts.noAccounts'));
+           Alert.alert(t('sosyalMedya.alerts.info'), "Zernio üzerinde bağlı bir hesap bulunamadı.");
          }
       }
     } catch (err) {
