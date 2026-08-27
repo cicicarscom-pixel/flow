@@ -416,8 +416,24 @@ export default function DashboardScreen({ navigation }) {
       >
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
 
-          {/* HERO: cesur renk bloğu — profil, bildirim ve AI durumu tek odakta */}
-          <View style={[styles.hero, { overflow: 'hidden' }]}>
+          {/* HERO SHADOW WRAPPER */}
+          <View style={{
+            borderBottomLeftRadius: 32,
+            borderBottomRightRadius: 32,
+            borderBottomWidth: 1.5,
+            borderLeftWidth: 1,
+            borderRightWidth: 1,
+            borderColor: 'rgba(0, 162, 255, 0.6)',
+            shadowColor: '#00a2ff',
+            shadowOffset: { width: 0, height: 12 },
+            shadowOpacity: 0.6,
+            shadowRadius: 20,
+            elevation: 15,
+            backgroundColor: '#131315',
+            marginBottom: 20,
+          }}>
+            {/* HERO: cesur renk bloğu - profil, bildirim ve AI durumu tek odakta */}
+            <View style={[styles.hero, { overflow: 'hidden', marginBottom: 0 }]}>
             <View style={StyleSheet.absoluteFill}>
               <ScrollView
                 ref={scrollRef}
@@ -498,6 +514,7 @@ export default function DashboardScreen({ navigation }) {
                 />
               )}
             </View>
+          </View>
           </View>
 
           <View style={styles.body}>
