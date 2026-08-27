@@ -453,7 +453,6 @@ export default function BotYonetimiScreen() {
                   <TextInput
                     value={promptConfig.roleId === 'custom' ? promptConfig.customRoleText : ''}
                     onChangeText={(text) => { 
-                      setRole('custom'); // Otomatik olarak "Diğer" rolüne geçir ki bu metni kullansın
                       setCustomRole(text); 
                       setIsSaveBtnActive(true); 
                     }}

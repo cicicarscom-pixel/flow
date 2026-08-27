@@ -467,14 +467,9 @@ export default function SosyalMedyaScreen({ navigation }) {
 
         {/* Add Account Panel */}
         <View style={{ marginBottom: 32, marginTop: 12 }}>
-          <Text className="text-[#F6F1EC] text-[18px] font-semibold mb-4">{t('sosyalMedya.ui.addAccount')}</Text>
+          <Text className="text-[#F6F1EC] text-[18px] font-semibold mb-4">Yeni Hesap Bağla</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16, paddingRight: 20, paddingLeft: 4 }}>
             {PLATFORMS_DATA.map((p) => {
-               const isConnected = socialAccounts.some(acc => {
-                 const pid = acc.platform.toLowerCase();
-                 return (pid.includes('google') ? 'googlebusiness' : pid) === p.id;
-               });
-               if (isConnected) return null; // Zaten bağlıysa gösterme
                return (
                  <View
                    key={p.id}

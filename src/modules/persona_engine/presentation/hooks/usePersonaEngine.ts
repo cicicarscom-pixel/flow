@@ -30,7 +30,7 @@ export const usePersonaEngine = (initialConfig?: UIConfig) => {
     setConfig(prev => ({ 
       ...prev, 
       customRoleText: text, 
-      roleId: text.trim().length > 0 ? '' : prev.roleId 
+      roleId: 'custom'
     }));
   }, []);
 
