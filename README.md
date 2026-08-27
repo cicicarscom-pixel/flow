@@ -1040,3 +1040,14 @@ Web platformu ile tam eşlenik görsel deneyim için Sosyal Medya ekranı başta
 ### [23.08.2026] Mobil Versiyon Profil Fetch Hatasının Çözümü (PGRST116)
 1. **Mobil Uygulama (React Native) .maybeSingle() Düzenlemesi:** Web versiyonunda çözülen ancak Mobil versiyonda ('flow') unutulan profil veri getirme sorunu giderildi. ProfilScreen, BotYonetimiScreen ve DashboardScreen gibi ekranlarda organizasyon veya profil verisi çekerken kullanılan '.single()' metodu yüzünden yeni kullanıcıların ('PGRST116: The result contains 0 rows') hatası alması engellendi. '.single()' yerine boş durumlarda hatasız olarak 'null' döndüren güvenli '.maybeSingle()' metoduna geçiş yapıldı.
 
+
+## 📝 Son Geliştirme Günlüğü (27 Ağustos 2026)
+
+### UI/UX & Bug Fix Güncellemeleri (Mobil Uygulama)
+1. **Frontend-Only Patch Entegrasyonu:** Mobil arayüz hatalarını çözen .patch dosyası sıfır çakışma (conflict) ile main dalına entegre edildi.
+2. **Kırık Import Hatası:** Silinen 	heme.ts dosyasının src/core/index.ts üzerindeki ölü (dead) export bağlantısı temizlendi ve uygulamanın çökmesi engellendi.
+3. **Expo Image Picker Çökmesi:** SDK güncellemesi sonrası katı (strict) veri tipi denetimine geçen xpo-image-picker nedeniyle profil fotoğrafı yükleme ekranında oluşan crash, mediaTypes: ['image'] parametresinin ['images'] olarak çoğullaştırılmasıyla tamamen çözüldü.
+4. **Dashboard Neon Glow Efekti:** Dashboard en üstündeki değiştirilebilir hero (resim) alanına estetik bir görünüm katmak için özel bir "Shadow Wrapper" tasarlandı ve overflow: hidden kısıtlamasının etrafından dolaşılarak alt kenarlardan sızan şık bir mavi (#00a2ff) neon ışık eklendi.
+5. **Dizin / Path Hatası:** MuhasebecimScreen.js içerisinde modüle yanlış bağlanan (../../../../../shared) kırık relative import, doğru seviyeye (../../../../shared) çekilerek çözüldü.
+
+Tüm bu geliştirmeler sırasıyla commitlenip origin/main sunucusuna başarıyla pushlandı.
