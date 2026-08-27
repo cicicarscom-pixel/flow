@@ -46,7 +46,7 @@ export default function MuhasebecimScreen({ navigation }) {
 
   const checkConnection = async () => {
     try {
-      const { supabase } = require('../../../../../shared');
+      const { supabase } = require('../../../../shared');
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
