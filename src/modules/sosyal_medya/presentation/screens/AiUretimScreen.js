@@ -606,12 +606,11 @@ export default function AiUretimScreen({ route, navigation }) {
         <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(10, 10, 11, 0.8)' }]} />
       </ImageBackground>
 
-      <GlobalAppBar 
-        level={3} 
-        module="sosyal" 
-        title={t('sosyalMedya.generate.title')} 
-        showProfile={false} 
-        actions={[{ icon: 'more-vert', onPress: () => {} }]} 
+      <GlobalAppBar
+        level={3}
+        module="sosyal"
+        title={t('sosyalMedya.generate.title')}
+        showProfile={false}
       />
 
       <KeyboardAvoidingView 
@@ -681,9 +680,12 @@ export default function AiUretimScreen({ route, navigation }) {
         >
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-[#F6F1EC] text-lg font-semibold">{t('sosyalMedya.generate.contentTitle')}</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               className="p-1"
               onPress={() => setIsEditingCaption(!isEditingCaption)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              accessibilityRole="button"
+              accessibilityLabel={isEditingCaption ? "Düzenlemeyi onayla" : "Metni düzenle"}
             >
               <MaterialIcons name={isEditingCaption ? "check" : "edit"} size={20} color={isEditingCaption ? "#C2478D" : "#22B573"} />
             </TouchableOpacity>
@@ -1028,8 +1030,20 @@ export default function AiUretimScreen({ route, navigation }) {
                   placeholder="display name" placeholderTextColor="rgba(185, 202, 203, 0.5)"
                   className="flex-1 bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mr-2"
                 />
-                <TouchableOpacity className="bg-[#A79E96]/20 px-3 py-2 rounded-lg items-center justify-center">
-                  <Text className="text-white text-xs font-medium">Insert</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    const mentionLabel = (liMentionDisplayName || liMentionUsername || '').trim();
+                    if (!mentionLabel) return;
+                    setLiCustomCaption((prev) => `${prev}${prev && !prev.endsWith(' ') ? ' ' : ''}@${mentionLabel} `);
+                    setLiMentionUsername('');
+                    setLiMentionDisplayName('');
+                  }}
+                  disabled={!liMentionUsername && !liMentionDisplayName}
+                  className={`px-3 py-2 rounded-lg items-center justify-center ${(liMentionUsername || liMentionDisplayName) ? 'bg-[#A79E96]/20' : 'bg-[#A79E96]/10'}`}
+                  accessibilityRole="button"
+                  accessibilityLabel="Etiketi metne ekle"
+                >
+                  <Text className={`text-xs font-medium ${(liMentionUsername || liMentionDisplayName) ? 'text-white' : 'text-[#A79E96]/50'}`}>Insert</Text>
                 </TouchableOpacity>
              </View>
 
@@ -1100,8 +1114,12 @@ export default function AiUretimScreen({ route, navigation }) {
              {/* Thread Toggle */}
              <View className="flex-row items-center justify-between mb-2">
                 <Text className="text-[#A79E96] text-xs font-medium">thread</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                    activeOpacity={0.8} onPress={() => setTwIsThread(!twIsThread)}
+                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                   accessibilityRole="switch"
+                   accessibilityLabel="Thread olarak paylaş"
+                   accessibilityState={{ checked: twIsThread }}
                    className={`w-9 h-5 rounded-full px-0.5 justify-center ${twIsThread ? 'bg-[#22B573]' : 'bg-[#A79E96]/50'}`}
                 >
                    <View className={`w-4 h-4 rounded-full bg-white ${twIsThread ? 'self-end' : 'self-start'}`} />
@@ -1386,11 +1404,18 @@ export default function AiUretimScreen({ route, navigation }) {
 
           {publishMode === 'schedule' && (
             <>
-              <Text className="text-[#A79E96] text-xs font-medium mb-2">tarih & saat (opsiyonel)</Text>
-              <TouchableOpacity className="flex-row items-center justify-between bg-[#2A2631]/50 rounded-lg border border-white/5 p-3 mb-4">
-                 <Text className="text-[#F6F1EC] text-sm">{scheduleDate}</Text>
+              <Text className="text-[#A79E96] text-xs font-medium mb-2">tarih & saat (GG.AA.YYYY SS:DD)</Text>
+              <View className="flex-row items-center justify-between bg-[#2A2631]/50 rounded-lg border border-white/5 p-3 mb-4">
+                 <TextInput
+                   value={scheduleDate}
+                   onChangeText={setScheduleDate}
+                   placeholder="16.08.2026 16:26"
+                   placeholderTextColor="#A79E96"
+                   className="flex-1 text-[#F6F1EC] text-sm"
+                   accessibilityLabel="Paylaşım tarihi ve saati"
+                 />
                  <MaterialIcons name="calendar-today" size={18} color="#A79E96" />
-              </TouchableOpacity>
+              </View>
 
               <Text className="text-[#A79E96] text-xs font-medium mb-2">timezone</Text>
               <TouchableOpacity 

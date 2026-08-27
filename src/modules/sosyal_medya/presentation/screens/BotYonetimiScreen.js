@@ -940,10 +940,11 @@ export default function BotYonetimiScreen() {
                                 setWahaQrCode(null);
                                 setWahaPairingCode(null);
                                 setWhatsappModalVisible(false);
-                                Alert.alert('Başarılı', 'Ayarlar kaydedildi');
+                                Alert.alert('Bağlantı Kesildi', 'WhatsApp bağlantınız kaldırıldı.');
                               }
                             } catch (e) {
                               console.error(e);
+                              Alert.alert('Hata', 'Bağlantı kesilirken bir sorun oluştu. Lütfen tekrar deneyin.');
                             } finally {
                               setQrLoading(false);
                             }
@@ -1041,6 +1042,10 @@ export default function BotYonetimiScreen() {
           transparent={true}
           onRequestClose={() => setDriveModalVisible(false)}
         >
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent} className="bg-[#2A2631] border border-white/10">
               <View className="flex-row justify-between items-center mb-4">
@@ -1099,6 +1104,7 @@ export default function BotYonetimiScreen() {
               </ScrollView>
             </View>
           </View>
+          </KeyboardAvoidingView>
         </Modal>
 
       </View>

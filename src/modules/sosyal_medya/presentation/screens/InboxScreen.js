@@ -1012,7 +1012,7 @@ const YorumlarTab = ({ navigation }) => {
                         </Text>
                       </View>
                       
-                      <Text className="text-[#F6F1EC] text-[12px] leading-5 mb-3">{item.content || item.title || ''}</Text>
+                      <Text className="text-[#F6F1EC] text-[12px] leading-5 mb-3" numberOfLines={4} ellipsizeMode="tail">{item.content || item.title || ''}</Text>
                       
                       {/* Action Bar */}
                       <View className="flex-row items-center mt-1" pointerEvents={isSelectionMode ? "none" : "auto"}>
