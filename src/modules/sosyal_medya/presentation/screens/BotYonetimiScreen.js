@@ -418,32 +418,24 @@ export default function BotYonetimiScreen() {
                         <Text style={styles.statusSubtitle}>{botActive ? 'Aktif ve çalışıyor' : 'Şu an kapalı'}</Text>
                       </View>
                     </View>
-                    <Switch
-                      value={botActive}
-                      onValueChange={(val) => { setBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
-                      trackColor={{ false: 'rgba(255,255,255,0.15)', true: 'rgba(34, 181, 115, 0.4)' }}
-                      thumbColor={botActive ? '#22B573' : '#ffffff'}
-                    />
                   </View>
 
                   {/* Platform Toggles */}
-                  {botActive && (
-                    <View style={styles.statusSubRow}>
-                        <View className="flex-row items-center flex-1">
-                          <View style={styles.statusSubIconWrapper}>
-                            <Ionicons name="logo-whatsapp" size={16} color={whatsappBotActive ? "#25D366" : "#756D66"} />
-                          </View>
-                          <Text className="text-white text-xs font-semibold ml-2">WhatsApp Asistanı</Text>
-                          <Switch
-                            value={whatsappBotActive}
-                            onValueChange={(val) => { setWhatsappBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
-                            trackColor={{ false: 'rgba(255,255,255,0.15)', true: 'rgba(37, 211, 102, 0.4)' }}
-                            thumbColor={whatsappBotActive ? '#25D366' : '#ffffff'}
-                            style={{ marginLeft: 'auto' }}
-                          />
+                  <View style={styles.statusSubRow}>
+                      <View className="flex-row items-center flex-1">
+                        <View style={styles.statusSubIconWrapper}>
+                          <Ionicons name="logo-whatsapp" size={16} color={whatsappBotActive ? "#25D366" : "#756D66"} />
                         </View>
+                        <Text className="text-white text-xs font-semibold ml-2">WhatsApp Asistanı</Text>
+                        <Switch
+                          value={whatsappBotActive}
+                          onValueChange={(val) => { setWhatsappBotActive(val); setIsSaveBtnActive(true); setIsEditing(true); }}
+                          trackColor={{ false: 'rgba(255,255,255,0.15)', true: 'rgba(37, 211, 102, 0.4)' }}
+                          thumbColor={whatsappBotActive ? '#25D366' : '#ffffff'}
+                          style={{ marginLeft: 'auto' }}
+                        />
                       </View>
-                  )}
+                    </View>
               </View>
 
               {/* YENİ EKLENEN BASİT ALAN: Asistan Talimatı Oluştur */}
