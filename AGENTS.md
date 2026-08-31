@@ -433,3 +433,7 @@ buna göre önekle (ledger- veya flow-), ve eğer ledger- ise yukarıdaki yasakl
 ekle. İki platformun aynı fonksiyonu paylaşması (eski gemini-chat'in başına geldiği gibi)
 KESİNLİKLE YAPILMAZ — paylaşım, bir platform için yapılan düzeltmenin diğerine yanlışlıkla
 dokunulmasına yol açar.
+
+
+## 🚨 Kritik Kural: Deploy Süreci ve Yasaklı Fonksiyonlar
+Deploy komutları ASLA toplu (supabase functions deploy argümansız) çalıştırılmaz, her zaman hedef fonksiyon adıyla tek tek çalıştırılır. Deploy sırasında yasaklı veya hedef dışı bir fonksiyonda hata çıkarsa, o dosyaya dokunulmaz — durum olduğu gibi raporlanır ve talimat beklenir.
