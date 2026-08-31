@@ -404,4 +404,32 @@ ull\ veya boş string dönülmeyecek.
 ### Yapilan Degisiklikler ve Mimari Kararlar:
 1. **Multi-Tenancy & Zernio Sync (Organizasyon Fallback Sistemi):** Kullanicilarin Zernio ile senkronize olabilmesi icin gereken organizasyon baglantisinda (organization_members), bireysel (freelancer) kullanicilarin organizasyon kaydi bulunmamasi durumunda yasanilan Organizasyon bulunamadi hatasi giderilmistir.
 2. **Kural:** Zernio Edge Functions (zernio-client, vb.) cagrilirken, kullanicinin bagli oldugu bir organization_id yoksa, zorunlu olarak kullanicinin kendi benzersiz kimligi (userId) izole bir kiraci (tenant) olarak kullanilarak (fallback) Zernioya iletilecektir. Boylece coklu kiraci (multi-tenancy) izolasyonu bozulmadan bireysel hesaplar da Zernioyu sorunsuz kullanabilir.
-3. **Guvenilir Oturum Okumasi (Session Destructuring):** React Native tarafinda hot-reload ve onbellek kayiplari nedeniyle olusan gecersiz oturum hatalarini onlemek icin hatali getSession okumalari iptal edilmis, yerine garanti sunan supabase.auth.getUser metodu standart kabul edilmistir.
+3. **Guvenilir Oturum Okumasi (Session Destructuring):** React Native tarafinda hot-reload ve onbellek kayiplari nedeniyle olusan gecersiz oturum hatalarini onlemek icin hatali getSession okumalari iptal edilmis, yerine garanti sunan supabase.auth.getUser metodu standart kabul edilmistir.## 🚨 Kritik Kural: Fonksiyon Sahipliği ve İsimlendirme (31.08.2026)
+
+Her Supabase Edge Function'ın TEK bir sahibi vardır, isminden bellidir:
+
+**ledger- öneki → Ledger'a ait, mali müşavir/muhasebe amaçlı, ASLA DOKUNULMAZ:**
+| Fonksiyon | Amaç |
+|---|---|
+| ledger-ai-chat | Mali müşavir ↔ mükellef sohbet köprüsü (şu an client'tan çağrılmıyor, yetim) |
+| ledger-process-document | Belge işleme |
+| mutabakat-chat | Mutabakat sohbeti |
+| ledger-generate-schema | Şema üretimi |
+| ledger-isleyici-api | İşleyici API |
+| ledger_mimar_google_api | Google API entegrasyonu |
+| ledger-gemini-chat | Fatura/işlem fotoğrafı → JSON (eski gemini-chat'in muhasebe kısmı) |
+
+**low- öneki veya persona-engine'e özgü isimler → Flow'a ait, sosyal medya + WhatsApp/
+Instagram müşteri ilişkileri, serbestçe geliştirilebilir:**
+| Fonksiyon | Amaç |
+|---|---|
+| flow-gemini-chat | Sosyal medya gönderi metni (caption) üretimi |
+| persona-test | Canlı Test / persona önizleme (executionMode: simulation) |
+| waha-webhook | WhatsApp gerçek müşteri mesajları → AIOrchestrator |
+| zernio-webhook | Instagram/sosyal medya gerçek müşteri mesajları → AIOrchestrator |
+
+KURAL: Yeni bir fonksiyon eklerken önce hangi platforma ait olduğuna karar ver, ismini
+buna göre önekle (ledger- veya flow-), ve eğer ledger- ise yukarıdaki yasaklı listeye
+ekle. İki platformun aynı fonksiyonu paylaşması (eski gemini-chat'in başına geldiği gibi)
+KESİNLİKLE YAPILMAZ — paylaşım, bir platform için yapılan düzeltmenin diğerine yanlışlıkla
+dokunulmasına yol açar.
