@@ -44,7 +44,7 @@ export function MusterilerScreen() {
     const year = d.getFullYear();
     const hours = String(d.getHours()).padStart(2, '0');
     const mins = String(d.getMinutes()).padStart(2, '0');
-    return \\.\.\ \:\\;
+    return `${day}.${month}.${year} ${hours}:${mins}`;
   };
 
   if (loading) {
