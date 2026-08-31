@@ -1,18 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, Switch, TextInput
+  StyleSheet, Switch, TextInput, ActivityIndicator, Alert
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-
-const defaultServices = [
-  { name: 'Sac Kesimi', price: '150', unit: 'seans' },
-  { name: 'Sac Boyama', price: '300', unit: 'seans' },
-  { name: 'Fon Teknik', price: '500', unit: 'seans' },
-];
+import { supabase } from '../../../../shared';
 
 export default function HizmetAyarlariScreen() {
   const { t } = useTranslation();
@@ -21,13 +16,113 @@ export default function HizmetAyarlariScreen() {
 
   const [isActive, setIsActive] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [services, setServices] = useState(defaultServices);
+  const [services, setServices] = useState([]);
+  const [initialServices, setInitialServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const tabBarBottom = Math.max(insets.bottom + 10, 20);
   const tabBarHeight = 64;
   const actionBarBottom = tabBarBottom + tabBarHeight;
   const FAB_SIZE = 52;
   const scrollPaddingBottom = actionBarBottom + FAB_SIZE * 2.5;
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const userId = session.user.id;
+
+      // Load AI setting
+      const { data: orgData } = await supabase
+        .from('organization_ai_settings')
+        .select('appointment_module_enabled')
+        .eq('merchant_id', userId)
+        .single();
+      if (orgData) {
+        setIsActive(orgData.appointment_module_enabled);
+      }
+
+      // Load services
+      const { data: srvData } = await supabase
+        .from('business_services')
+        .select('*')
+        .eq('merchant_id', userId)
+        .order('created_at', { ascending: true });
+        
+      if (srvData) {
+        setServices(srvData);
+        setInitialServices(srvData);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggle = async (val) => {
+    setIsActive(val);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    await supabase
+      .from('organization_ai_settings')
+      .update({ appointment_module_enabled: val })
+      .eq('merchant_id', session.user.id);
+  };
+
+  const handleAction = async () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      return;
+    }
+    
+    // Save mode
+    setSaving(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const userId = session.user.id;
+      
+      const currentIds = services.map(s => s.id).filter(Boolean);
+      const toDelete = initialServices.filter(s => !currentIds.includes(s.id)).map(s => s.id);
+      
+      if (toDelete.length > 0) {
+        await supabase.from('business_services').delete().in('id', toDelete);
+      }
+      
+      const validServices = services.filter(s => s.name?.trim());
+      for (const srv of validServices) {
+        const payload = {
+          merchant_id: userId,
+          name: srv.name,
+          price: parseFloat(srv.price) || 0,
+          currency: 'TRY',
+          unit: srv.unit || 'seans',
+          duration_minutes: 30, // Default if missing
+          is_visible: true
+        };
+        
+        if (srv.id) {
+          await supabase.from('business_services').update(payload).eq('id', srv.id);
+        } else {
+          await supabase.from('business_services').insert([payload]);
+        }
+      }
+      
+      await loadData();
+      setIsEditing(false);
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Hata", "Kaydedilirken bir hata oluştu.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const updateService = (index, field, value) => {
     const updated = [...services];
@@ -43,6 +138,14 @@ export default function HizmetAyarlariScreen() {
   const removeService = (index) => {
     setServices(services.filter((_, i) => i !== index));
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#22B573" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -74,7 +177,7 @@ export default function HizmetAyarlariScreen() {
           </View>
           <Switch
             value={isActive}
-            onValueChange={setIsActive}
+            onValueChange={handleToggle}
             trackColor={{ false: '#3A3540', true: '#10b981' }}
             thumbColor="#ffffff"
             style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
@@ -115,7 +218,7 @@ export default function HizmetAyarlariScreen() {
                   <View style={styles.editBottomRow}>
                     <TextInput
                       style={[styles.input, { flex: 1 }]}
-                      value={service.price}
+                      value={service.price?.toString()}
                       onChangeText={v => updateService(index, 'price', v)}
                       placeholder={t('randevu.hizmetAyarlari.pricePlaceholder')}
                       placeholderTextColor="#756D66"
@@ -163,17 +266,24 @@ export default function HizmetAyarlariScreen() {
               styles.mainBtn,
               { backgroundColor: isEditing ? '#10b981' : '#22B573' }
             ]}
-            onPress={() => setIsEditing(!isEditing)}
+            onPress={handleAction}
             activeOpacity={0.85}
+            disabled={saving}
           >
-            <Ionicons
-              name={isEditing ? 'checkmark-circle-outline' : 'create-outline'}
-              size={20}
-              color="#1C3327"
-            />
-            <Text style={styles.mainBtnText}>
-              {isEditing ? t('randevu.hizmetAyarlari.save') : t('randevu.hizmetAyarlari.edit')}
-            </Text>
+            {saving ? (
+              <ActivityIndicator color="#1C3327" />
+            ) : (
+              <>
+                <Ionicons
+                  name={isEditing ? 'checkmark-circle-outline' : 'create-outline'}
+                  size={20}
+                  color="#1C3327"
+                />
+                <Text style={styles.mainBtnText}>
+                  {isEditing ? t('randevu.hizmetAyarlari.save') : t('randevu.hizmetAyarlari.edit')}
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -184,8 +294,6 @@ export default function HizmetAyarlariScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#201D24' },
-
-  /* Header */
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -204,11 +312,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     borderWidth: 1, borderColor: 'rgba(60,74,66,0.3)',
   },
-
-  /* Scroll */
   scrollContent: { padding: 14, gap: 10 },
-
-  /* Visibility Card */
   visibilityCard: {
     backgroundColor: 'rgba(32,31,34,0.4)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
@@ -219,8 +323,6 @@ const styles = StyleSheet.create({
   visibilityTextWrap: { flex: 1, marginRight: 12, gap: 4 },
   visibilityTitle: { fontSize: 15, fontWeight: '600', color: '#F6F1EC' },
   visibilitySubtitle: { fontSize: 11, color: '#A79E96', lineHeight: 16 },
-
-  /* Section header */
   sectionHeader: {
     flexDirection: 'row', alignItems: 'center',
     justifyContent: 'space-between', paddingHorizontal: 2, marginBottom: 6,
@@ -228,22 +330,16 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 11, fontWeight: '700', color: '#A79E96', letterSpacing: 1,
   },
-
-  /* Service Cards */
   serviceCard: {
     backgroundColor: 'rgba(32,31,34,0.4)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
     borderRadius: 12, padding: 12, marginBottom: 8,
   },
-
-  /* View Mode */
   viewRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
   serviceName: { fontSize: 14, fontWeight: '600', color: '#F6F1EC', flex: 1 },
   servicePrice: { fontSize: 11, fontWeight: '700', color: '#22B573', letterSpacing: 0.3 },
-
-  /* Edit Mode */
   editWrap: { gap: 8 },
   editTopRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   editBottomRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
@@ -258,8 +354,6 @@ const styles = StyleSheet.create({
     width: 32, height: 32, alignItems: 'center', justifyContent: 'center',
     backgroundColor: 'rgba(255,107,107,0.1)', borderRadius: 8,
   },
-
-  /* Add button */
   addBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: 8, padding: 12, borderRadius: 12,
@@ -267,8 +361,6 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed', marginTop: 2,
   },
   addBtnText: { fontSize: 13, fontWeight: '600', color: '#22B573' },
-
-  /* Action Bar */
   actionBar: { position: 'absolute', left: 0, right: 0 },
   actionGradient: {
     paddingHorizontal: 14, paddingTop: 24, paddingBottom: 10,

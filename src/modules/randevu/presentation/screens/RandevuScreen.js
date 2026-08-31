@@ -282,7 +282,9 @@ export default function RandevuScreen() {
                         <Text style={styles.cardName}>
                           {appt.customerName || appt.customerPhone}
                         </Text>
-                        <Text style={styles.cardService}>{appt.serviceId}</Text>
+                        <Text style={styles.cardService}>
+                          {appt.services?.length > 0 ? appt.services.join(' + ') : appt.serviceId}
+                        </Text>
                         <View style={styles.cardTimeRow}>
                           <Ionicons name="time-outline" size={12} color="#A79E96" />
                           <Text style={styles.cardTimeText}>{apptTime}</Text>
