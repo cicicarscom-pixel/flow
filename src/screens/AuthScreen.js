@@ -37,7 +37,10 @@ export default function AuthScreen() {
     setLoading(true);
     try {
       // Expo Go'da otomatik olarak exp://..., canlıda workigomflow://... üretir
-      const redirectTo = makeRedirectUri();
+      const redirectTo = makeRedirectUri({
+        scheme: 'workigomflow',
+        path: 'auth/callback',
+      });
       // Supabase'in bu URL'i kabul etmesi için dashboard'da whiteliste eklenmesi gerekir!
       console.log('Redirect URI (Supabase panele eklenmeli):', redirectTo);
 
