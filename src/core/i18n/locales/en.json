@@ -248,5 +248,13 @@
       "evening": "Evening",
       "noAppointments": "No appointments for today"
     }
+  },
+  "musteriler": {
+    "title": "Customers",
+    "empty": "No customers found yet.",
+    "appointments": "Appointments",
+    "lastVisit": "Last Visit",
+    "history": "Appointment History",
+    "noHistory": "No past appointments."
   }
 }

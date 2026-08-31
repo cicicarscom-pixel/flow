@@ -26,5 +26,13 @@
       "evening": "Abend",
       "noAppointments": "Keine Termine für heute"
     }
+  },
+  "musteriler": {
+    "title": "Kunden",
+    "empty": "Noch keine Kunden gefunden.",
+    "appointments": "Termine",
+    "lastVisit": "Letzter Besuch",
+    "history": "Terminhistorie",
+    "noHistory": "Keine vergangenen Termine."
   }
 }

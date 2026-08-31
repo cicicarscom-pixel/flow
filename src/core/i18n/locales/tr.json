@@ -78,7 +78,7 @@
     },
     "bot": {
       "title": "Bot Yönetimi",
-      "status": "Bot Durumu",
+      "status": "Durum:",
       "statusActive": "Otonom operasyonlar aktif",
       "statusInactive": "Bot şu anda devre dışı.",
       "instructionsTitle": "Bot Talimatları",
@@ -116,7 +116,6 @@
       "lastSync": "Son Senkronizasyon: 2 dakika önce",
       "whatsappConnection": "WhatsApp Bağlantısı",
       "connect": "Bağlantı Kur",
-      "status": "Durum:",
       "todayChats": "Bugünkü Sohbet",
       "responseSpeed": "Yanıt Süresi",
       "successRate": "Başarı Oranı",
@@ -267,5 +266,13 @@
       "evening": "Akşam",
       "noAppointments": "Bugün için randevu yok"
     }
+  },
+  "musteriler": {
+    "title": "Müşteriler",
+    "empty": "Henüz müşteri bulunmuyor.",
+    "appointments": "Randevu",
+    "lastVisit": "Son",
+    "history": "Geçmiş Randevular",
+    "noHistory": "Geçmiş randevu yok."
   }
 }

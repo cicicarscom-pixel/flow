@@ -3,6 +3,7 @@ import { SupabaseTransactionRepository } from '../modules/muhasebe/infrastructur
 import { ManageBotUseCase } from '../modules/sosyal_medya/application/useCases/ManageBotUseCase';
 import { GetTransactionsUseCase } from '../modules/muhasebe/application/useCases/GetTransactionsUseCase';
 import { SupabaseAppointmentRepository } from '../modules/randevu/infrastructure/repositories/SupabaseAppointmentRepository';
+import { SupabaseCustomerRepository } from '../modules/musteriler/infrastructure/repositories/SupabaseCustomerRepository';
 import { WahaRandevuService } from '../modules/randevu/infrastructure/services/WahaRandevuService';
 import { ApproveAppointmentUseCase } from '../modules/randevu/application/useCases/ApproveAppointmentUseCase';
 import { CancelAppointmentUseCase } from '../modules/randevu/application/useCases/CancelAppointmentUseCase';
@@ -12,6 +13,7 @@ import { StartAppointmentFlowUseCase } from '../modules/randevu/application/useC
 const wahaService = new WahaService();
 const transactionRepository = new SupabaseTransactionRepository();
 const appointmentRepository = new SupabaseAppointmentRepository();
+const customerRepository = new SupabaseCustomerRepository();
 const wahaRandevuService = new WahaRandevuService();
 
 // --- Use Cases (Singletons) ---
@@ -32,6 +34,7 @@ const container: IDIContainer = {
     if (cls === 'WahaService' || cls?.name === 'WahaService') return wahaService;
     if (cls === 'SupabaseTransactionRepository' || cls?.name === 'SupabaseTransactionRepository') return transactionRepository;
     if (cls === 'AppointmentRepository') return appointmentRepository;
+    if (cls === 'CustomerRepository') return customerRepository;
     if (cls === ManageBotUseCase) return manageBotUseCase;
     if (cls === GetTransactionsUseCase) return getTransactionsUseCase;
     if (cls === ApproveAppointmentUseCase) return approveAppointmentUseCase;

@@ -10,6 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BotYonetimiScreen, SosyalMedyaScreen, AnalyticsScreen } from '../../modules/sosyal_medya';
 import { AiMuhasebeScreen, MuhasebecimScreen } from '../../modules/muhasebe';
 import { RandevuScreen, HizmetAyarlariScreen } from '../../modules/randevu';
+import { MusterilerScreen } from '../../modules/musteriler';
 import DashboardScreen from '../../screens/DashboardScreen';
 
 const Tab = createBottomTabNavigator();
@@ -21,6 +22,7 @@ function BotYonetimiStack() {
       <Stack.Screen name="BotYonetimiMain" component={BotYonetimiScreen} />
       <Stack.Screen name="RandevuMain" component={RandevuScreen} />
       <Stack.Screen name="HizmetAyarlari" component={HizmetAyarlariScreen} />
+      <Stack.Screen name="Musteriler" component={MusterilerScreen} />
     </Stack.Navigator>
   );
 }
