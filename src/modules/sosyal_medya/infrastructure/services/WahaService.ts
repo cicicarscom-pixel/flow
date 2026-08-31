@@ -1,11 +1,11 @@
-import { supabase } from '@infrastructure/api/supabaseClient';
+import { supabase } from '../../../../shared';
 import { IWahaService, IServiceResponse } from '@domain/interfaces/IWahaService';
 
 const WAHA_BASE_URL = 'http://31.97.37.208:3000';
 
 export class WahaService implements IWahaService {
   /**
-   * Esnafýn mevcut bot ayarlarýný ve promptunu çeker.
+   * Esnafï¿½n mevcut bot ayarlarï¿½nï¿½ ve promptunu ï¿½eker.
    * Tablo: bot_settings
    */
   async getBotSettings(merchantId: string | number): Promise<IServiceResponse<any>> {
@@ -29,7 +29,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * Prompt veya ayar deðiþikliklerini kaydeder.
+   * Prompt veya ayar deï¿½iï¿½ikliklerini kaydeder.
    * Tablo: bot_settings
    */
   async updateBotSettings(merchantId: string | number, settingsData: any): Promise<IServiceResponse<any>> {
@@ -57,7 +57,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * Esnafýn WAHA baðlantý durumunu (QR, status vs.) çeker.
+   * Esnafï¿½n WAHA baï¿½lantï¿½ durumunu (QR, status vs.) ï¿½eker.
    * Tablo: waha_sessions
    */
   async getWahaSession(merchantId: string | number): Promise<IServiceResponse<any>> {
@@ -79,7 +79,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * Yeni oturum açýldýðýnda veya QR/Status güncellendiðinde tabloyu günceller (upsert).
+   * Yeni oturum aï¿½ï¿½ldï¿½ï¿½ï¿½nda veya QR/Status gï¿½ncellendiï¿½inde tabloyu gï¿½nceller (upsert).
    * Tablo: waha_sessions
    */
   async upsertWahaSession(merchantId: string | number, sessionData: any): Promise<IServiceResponse<any>> {
@@ -107,12 +107,12 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * WAHA üzerinde yeni bir oturum baþlatýr.
+   * WAHA ï¿½zerinde yeni bir oturum baï¿½latï¿½r.
    */
   async startSession(merchantId: string | number): Promise<IServiceResponse<any>> {
     if (!merchantId) {
-      console.error('merchantId bulunamadý');
-      return { data: null, error: new Error('merchantId bulunamadý') };
+      console.error('merchantId bulunamadï¿½');
+      return { data: null, error: new Error('merchantId bulunamadï¿½') };
     }
 
     try {
@@ -157,7 +157,7 @@ export class WahaService implements IWahaService {
           });
           
           if (!retryResponse.ok) {
-            throw new Error('Oto-onarým sonrasý oturum baþlatýlamadý.');
+            throw new Error('Oto-onarï¿½m sonrasï¿½ oturum baï¿½latï¿½lamadï¿½.');
           }
           
           await new Promise(resolve => setTimeout(resolve, 4000));
@@ -179,7 +179,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * Baþlatýlan oturumun QR kodunu getirir.
+   * Baï¿½latï¿½lan oturumun QR kodunu getirir.
    */
   async getQrCode(merchantId: string | number): Promise<IServiceResponse<any>> {
     try {
@@ -206,7 +206,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * Numara eþleþtirme (Pairing Code) için kod alýr.
+   * Numara eï¿½leï¿½tirme (Pairing Code) iï¿½in kod alï¿½r.
    */
   async getPairingCode(merchantId: string | number, phoneNumber: string): Promise<IServiceResponse<any>> {
     try {
@@ -233,7 +233,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * WAHA üzerinden mevcut oturumun durumunu getirir.
+   * WAHA ï¿½zerinden mevcut oturumun durumunu getirir.
    */
   async getSessionStatus(merchantId: string | number): Promise<IServiceResponse<any>> {
     try {
