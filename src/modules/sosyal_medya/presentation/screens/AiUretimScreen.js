@@ -294,12 +294,11 @@ export default function AiUretimScreen({ route, navigation }) {
       const base64Data = isBase64 ? localImage.split(',')[1] : undefined;
       const mimeType = isBase64 ? localImage.match(/data:(.*?);/)[1] : undefined;
       
-      const { data, error } = await supabase.functions.invoke('gemini-chat', {
+      const { data, error } = await supabase.functions.invoke('flow-gemini-chat', {
         body: {
           prompt: `SADECE bir sosyal medya gönderi metni (caption) üret. KESİNLİKLE yeni bir görsel üretme. Eğer sana bir görsel verildiyse o görseli analiz et ve şu kullanıcı talimatına göre metin yaz: ${aiPrompt}`,
           image: isBase64 ? base64Data : undefined,
-          mimeType: isBase64 ? mimeType : undefined,
-          mode: 'social'
+          mimeType: isBase64 ? mimeType : undefined
         }
       });
 
