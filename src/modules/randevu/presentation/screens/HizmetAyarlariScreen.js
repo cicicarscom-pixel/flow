@@ -101,9 +101,9 @@ export default function HizmetAyarlariScreen() {
           merchant_id: userId,
           name: srv.name,
           price: parseFloat(srv.price) || 0,
-          currency: 'TRY',
+          currency: 'TL',
           unit: srv.unit || 'seans',
-          duration_minutes: 30, // Default if missing
+          duration_minutes: parseInt(srv.duration_minutes, 10) || 30,
           is_visible: true
         };
         
@@ -132,7 +132,7 @@ export default function HizmetAyarlariScreen() {
 
   const addService = () => {
     if (services.length >= 10) return;
-    setServices([...services, { name: '', price: '', unit: 'seans' }]);
+    setServices([...services, { name: '', price: '', unit: 'seans', duration_minutes: 30 }]);
   };
 
   const removeService = (index) => {
@@ -232,6 +232,14 @@ export default function HizmetAyarlariScreen() {
                       placeholder={t('randevu.hizmetAyarlari.unitPlaceholder')}
                       placeholderTextColor="#756D66"
                     />
+                    <TextInput
+                      style={[styles.input, { width: 66 }]}
+                      value={service.duration_minutes?.toString()}
+                      onChangeText={v => updateService(index, 'duration_minutes', v)}
+                      placeholder="Süre(dk)"
+                      placeholderTextColor="#756D66"
+                      keyboardType="numeric"
+                    />
                   </View>
                 </View>
               ) : (
@@ -242,6 +250,7 @@ export default function HizmetAyarlariScreen() {
                   </Text>
                   <Text style={styles.servicePrice}>
                     {service.price ? `${service.price} TL / ${service.unit}` : '—'}
+                    {service.duration_minutes ? ` • ${service.duration_minutes} dk` : ''}
                   </Text>
                 </View>
               )}
