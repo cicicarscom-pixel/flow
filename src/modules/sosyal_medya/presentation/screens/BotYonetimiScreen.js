@@ -408,20 +408,8 @@ export default function BotYonetimiScreen() {
               <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
               {/* SECTION 1: AI Status (Always Visible) */}
               <View style={styles.statusHeroCard}>
-                  <View className="flex-row items-center justify-between">
-                    <View className="flex-row items-center gap-3">
-                      <BreathingDot active={botActive}>
-                        <View style={[styles.statusDot, { backgroundColor: botActive ? '#22B573' : '#EF4444' }]} />
-                      </BreathingDot>
-                      <View>
-                        <Text style={styles.statusTitle}>Ai Asistan</Text>
-                        <Text style={styles.statusSubtitle}>{botActive ? 'Aktif ve çalışıyor' : 'Şu an kapalı'}</Text>
-                      </View>
-                    </View>
-                  </View>
-
                   {/* Platform Toggles */}
-                  <View style={styles.statusSubRow}>
+                  <View style={[styles.statusSubRow, { marginTop: 0 }]}>
                       <View className="flex-row items-center flex-1">
                         <View style={styles.statusSubIconWrapper}>
                           <Ionicons name="logo-whatsapp" size={16} color={whatsappBotActive ? "#25D366" : "#756D66"} />
