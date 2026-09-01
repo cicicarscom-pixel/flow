@@ -655,36 +655,7 @@ export default function BotYonetimiScreen() {
                           />
                         </View>
 
-                        {/* Timezone and Appointment Toggle */}
-                        <View className="bg-black/40 p-3 rounded-xl mb-4 border border-white/5">
-                          <View className="flex-row justify-between items-center mb-4">
-                            <View className="flex-1 pr-2">
-                              <Text className="text-white text-sm font-bold mb-1">Randevu / Rezervasyon</Text>
-                              <Text className="text-gray-400 text-[10px] leading-3">Kapatırsanız AI randevu almaya çalışmaz, sadece bilgi verir.</Text>
-                            </View>
-                            <Switch
-                              value={appointmentModuleEnabled}
-                              onValueChange={(val) => { setAppointmentModuleEnabled(val); setIsSaveBtnActive(true); }}
-                              trackColor={{ false: '#34303C', true: '#22B573' }}
-                              thumbColor="#ffffff"
-                              style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-                            />
-                          </View>
 
-                          <View className="flex-row justify-between items-center border-t border-white/5 pt-4">
-                            <View className="flex-1 mr-4">
-                              <Text className="text-white text-sm font-bold mb-1">Saat Dilimi</Text>
-                              <Text className="text-gray-400 text-[10px] leading-3">Örn: Europe/Istanbul</Text>
-                            </View>
-                            <View className="bg-white/5 border border-white/10 rounded-lg overflow-hidden" style={{ width: 140 }}>
-                              <TextInput
-                                value={timezone}
-                                onChangeText={(val) => { setTimezone(val); setIsSaveBtnActive(true); }}
-                                className="text-white text-xs px-2 py-2 text-center"
-                              />
-                            </View>
-                          </View>
-                        </View>
 
                         {/* AI Instruction / System Prompt */}
                         <View className="mb-2">
@@ -727,6 +698,37 @@ export default function BotYonetimiScreen() {
                         </View>
                       </View>
                     )}
+                  </View>
+                </View>
+
+                                {/* SECTION 4.5: Timezone and Appointment (Moved outside) */}
+                <View style={styles.glassCard} className="p-4 mb-4">
+                  <View className="flex-row justify-between items-center mb-4">
+                    <View className="flex-1 pr-2">
+                      <Text className="text-white text-sm font-bold mb-1">Randevu / Rezervasyon Özelliği</Text>
+                      <Text className="text-gray-400 text-[10px] leading-3">Kapatırsanız AI randevu almaya çalışmaz, sadece bilgi verir.</Text>
+                    </View>
+                    <Switch
+                      value={appointmentModuleEnabled}
+                      onValueChange={(val) => { setAppointmentModuleEnabled(val); setIsSaveBtnActive(true); }}
+                      trackColor={{ false: '#34303C', true: '#22B573' }}
+                      thumbColor="#ffffff"
+                      style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+                    />
+                  </View>
+
+                  <View className="flex-row justify-between items-center border-t border-white/5 pt-4">
+                    <View className="flex-1 mr-4">
+                      <Text className="text-white text-sm font-bold mb-1">Saat Dilimi (Timezone)</Text>
+                      <Text className="text-gray-400 text-[10px] leading-3">Örn: Europe/Istanbul</Text>
+                    </View>
+                    <View className="bg-white/5 border border-white/10 rounded-lg overflow-hidden" style={{ width: 140 }}>
+                      <TextInput
+                        value={timezone}
+                        onChangeText={(val) => { setTimezone(val); setIsSaveBtnActive(true); }}
+                        className="text-white text-xs px-2 py-2 text-center"
+                      />
+                    </View>
                   </View>
                 </View>
 
