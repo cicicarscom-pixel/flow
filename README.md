@@ -157,14 +157,12 @@ npx supabase link --project-ref <YOUR_PROJECT_REFERENCE_ID>
 
 # Dışarıdan tetiklenecek webhook fonksiyonlarını JWT doğrulaması olmadan dağıtın (Meta, Google ve Zernio'nun erişebilmesi için --no-verify-jwt zorunludur):
 npx supabase functions deploy zernio-webhook --no-verify-jwt
-npx supabase functions deploy whatsapp-webhook --no-verify-jwt
 npx supabase functions deploy drive-webhook --no-verify-jwt
 
 # Uygulama içinden tetiklenecek diğer fonksiyonları normal şekilde dağıtın:
 npx supabase functions deploy zernio-client
 npx supabase functions deploy gemini-chat
 npx supabase functions deploy imagen-edit
-npx supabase functions deploy meta-auth-callback
 ```
 
 ### Edge Functions Görev Dağılımı
@@ -172,9 +170,7 @@ npx supabase functions deploy meta-auth-callback
 2. **`zernio-client`**: Mobil uygulamadan gelen gönderi paylaşımı ve sosyal hesap OAuth entegrasyonu isteklerini yönetir.
 3. **`gemini-chat`**: Gemini 2.5 Flash entegrasyonu ile metin üretimi, Imagen 4 entegrasyonu ile görsel üretimi ve Gemini 3.1 Flash Image ile görsel analiz/düzenleme işlemlerini yürütür.
 4. **`imagen-edit`**: Gemini 3.1 Flash Image modelini kullanarak yüklenen görselleri art direktör seviyesinde yeniden yapılandırır ve tasarlar.
-5. **`whatsapp-webhook`**: Meta WhatsApp Cloud API entegrasyonunu sağlar. Kullanıcıların WhatsApp'tan attığı mesajları yakalar, kullanıcının veritabanındaki dinamik `system_prompt` talimatına göre Gemini ile cevap üretir ve Meta API'si üzerinden geri yanıtlar.
 6. **`drive-webhook`**: Google Drive Push Notifications (Anlık Bildirimler) webhook'unu dinler. Yeni eklenen veya güncellenen dosyaları tespit edip indirme, Gemini ile multimodal içerik/görsel analizi, embedding (vektör) üretimi ve pgvector tablosuna (`company_documents`) yazma adımlarını tetikler.
-7. **`meta-auth-callback`**: Mobil uygulamadaki Meta OAuth akışından dönen yetkilendirme kodunu (`authCode`) alır, Meta API üzerinden kalıcı erişim jetonuna (`access_token`) dönüştürür. Ardından kullanıcının WhatsApp Business Account ID (WABA) ve Telefon Numarası ID'sini çekip veritabanındaki `profiles` tablosuna kaydeder.
 
 ### Çevresel Değişkenler (Secrets / Environment Variables)
 Edge fonksiyonlarının çalışması için Supabase panelinizde `Edge Functions -> Secrets` menüsünden veya CLI üzerinden (`npx supabase secrets set KEY=VALUE`) şu anahtarları eklemeniz gerekir:
@@ -183,9 +179,6 @@ Edge fonksiyonlarının çalışması için Supabase panelinizde `Edge Functions
 - `SUPABASE_SERVICE_ROLE_KEY` : Edge fonksiyonlarının (özellikle webhook'lar ve OAuth callback) RLS güvenlik kurallarını aşarak veritabanına doğrudan yazabilmesi için gerekli servis rolü anahtarı.
 - `ZERNIO_API_KEY` : Zernio geliştirici panelinizden edindiğiniz API anahtarı.
 - `GEMINI_API_KEY` : Görsel düzenleme (`imagen-edit`) mikroservisinde ve sistemin genelinde varsayılan / fallback olarak kullanılacak Google AI Studio API anahtarı.
-- `WHATSAPP_TOKEN` : Meta Developer panelinden aldığınız WhatsApp Cloud API erişim jetonu (Permanent Access Token).
-- `WHATSAPP_PHONE_NUMBER_ID` : Meta Developer panelinde size atanan WhatsApp Telefon Numarası Kimliği.
-- `WHATSAPP_VERIFY_TOKEN` : Meta Webhook kurulumunda doğrulama için belirleyeceğiniz özel şifre (varsayılan: `aiesnaf_verify`).
 - `META_APP_ID` : Meta Geliştirici panelindeki uygulamanızın kimlik numarası (Facebook App ID).
 - `META_APP_SECRET` : Meta Geliştirici panelindeki uygulamanızın gizli anahtarı (Facebook App Secret).
 
@@ -351,14 +344,12 @@ npx supabase link --project-ref <YOUR_PROJECT_REFERENCE_ID>
 
 # Dışarıdan tetiklenecek webhook fonksiyonlarını JWT doğrulaması olmadan dağıtın (Meta, Google ve Zernio'nun erişebilmesi için --no-verify-jwt zorunludur):
 npx supabase functions deploy zernio-webhook --no-verify-jwt
-npx supabase functions deploy whatsapp-webhook --no-verify-jwt
 npx supabase functions deploy drive-webhook --no-verify-jwt
 
 # Uygulama içinden tetiklenecek diğer fonksiyonları normal şekilde dağıtın:
 npx supabase functions deploy zernio-client
 npx supabase functions deploy gemini-chat
 npx supabase functions deploy imagen-edit
-npx supabase functions deploy meta-auth-callback
 ```
 
 ### Edge Functions Görev Dağılımı
@@ -366,9 +357,7 @@ npx supabase functions deploy meta-auth-callback
 2. **`zernio-client`**: Mobil uygulamadan gelen gönderi paylaşımı ve sosyal hesap OAuth entegrasyonu isteklerini yönetir.
 3. **`gemini-chat`**: Gemini 2.5 Flash entegrasyonu ile metin üretimi, Imagen 4 entegrasyonu ile görsel üretimi ve Gemini 3.1 Flash Image ile görsel analiz/düzenleme işlemlerini yürütür.
 4. **`imagen-edit`**: Gemini 3.1 Flash Image modelini kullanarak yüklenen görselleri art direktör seviyesinde yeniden yapılandırır ve tasarlar.
-5. **`whatsapp-webhook`**: Meta WhatsApp Cloud API entegrasyonunu sağlar. Kullanıcıların WhatsApp'tan attığı mesajları yakalar, kullanıcının veritabanındaki dinamik `system_prompt` talimatına göre Gemini ile cevap üretir ve Meta API'si üzerinden geri yanıtlar.
 6. **`drive-webhook`**: Google Drive Push Notifications (Anlık Bildirimler) webhook'unu dinler. Yeni eklenen veya güncellenen dosyaları tespit edip indirme, Gemini ile multimodal içerik/görsel analizi, embedding (vektör) üretimi ve pgvector tablosuna (`company_documents`) yazma adımlarını tetikler.
-7. **`meta-auth-callback`**: Mobil uygulamadaki Meta OAuth akışından dönen yetkilendirme kodunu (`authCode`) alır, Meta API üzerinden kalıcı erişim jetonuna (`access_token`) dönüştürür. Ardından kullanıcının WhatsApp Business Account ID (WABA) ve Telefon Numarası ID'sini çekip veritabanındaki `profiles` tablosuna kaydeder.
 
 ### Çevresel Değişkenler (Secrets / Environment Variables)
 Edge fonksiyonlarının çalışması için Supabase panelinizde `Edge Functions -> Secrets` menüsünden veya CLI üzerinden (`npx supabase secrets set KEY=VALUE`) şu anahtarları eklemeniz gerekir:
@@ -377,9 +366,6 @@ Edge fonksiyonlarının çalışması için Supabase panelinizde `Edge Functions
 - `SUPABASE_SERVICE_ROLE_KEY` : Edge fonksiyonlarının (özellikle webhook'lar ve OAuth callback) RLS güvenlik kurallarını aşarak veritabanına doğrudan yazabilmesi için gerekli servis rolü anahtarı.
 - `ZERNIO_API_KEY` : Zernio geliştirici panelinizden edindiğiniz API anahtarı.
 - `GEMINI_API_KEY` : Görsel düzenleme (`imagen-edit`) mikroservisinde ve sistemin genelinde varsayılan / fallback olarak kullanılacak Google AI Studio API anahtarı.
-- `WHATSAPP_TOKEN` : Meta Developer panelinden aldığınız WhatsApp Cloud API erişim jetonu (Permanent Access Token).
-- `WHATSAPP_PHONE_NUMBER_ID` : Meta Developer panelinde size atanan WhatsApp Telefon Numarası Kimliği.
-- `WHATSAPP_VERIFY_TOKEN` : Meta Webhook kurulumunda doğrulama için belirleyeceğiniz özel şifre (varsayılan: `aiesnaf_verify`).
 - `META_APP_ID` : Meta Geliştirici panelindeki uygulamanızın kimlik numarası (Facebook App ID).
 - `META_APP_SECRET` : Meta Geliştirici panelindeki uygulamanızın gizli anahtarı (Facebook App Secret).
 
