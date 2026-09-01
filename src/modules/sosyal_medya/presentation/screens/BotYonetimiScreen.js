@@ -162,6 +162,9 @@ export default function BotYonetimiScreen() {
     faq: false
   });
 
+  const [timezone, setTimezone] = useState("Europe/Istanbul");
+  const [appointmentModuleEnabled, setAppointmentModuleEnabled] = useState(true);
+
   const fetchInitialData = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
