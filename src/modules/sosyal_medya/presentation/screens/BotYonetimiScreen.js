@@ -234,6 +234,20 @@ export default function BotYonetimiScreen() {
     }, 0);
   }, []);
 
+  const handleAutoSave = async (updates) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await supabase
+          .from('organization_ai_settings')
+          .update(updates)
+          .eq('merchant_id', session.user.id);
+      }
+    } catch (e) {
+      console.warn('Auto save error', e);
+    }
+  };
+
   const handleSave = async () => {
     try {
       // 1. Supabase ve Infrastructure Katmanı (Yeni Sistem)
@@ -710,7 +724,7 @@ export default function BotYonetimiScreen() {
                     </View>
                     <Switch
                       value={appointmentModuleEnabled}
-                      onValueChange={(val) => { setAppointmentModuleEnabled(val); setIsSaveBtnActive(true); }}
+                      onValueChange={(val) => { setAppointmentModuleEnabled(val); handleAutoSave({ appointment_module_enabled: val }); }}
                       trackColor={{ false: '#34303C', true: '#22B573' }}
                       thumbColor="#ffffff"
                       style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
@@ -725,7 +739,8 @@ export default function BotYonetimiScreen() {
                     <View className="bg-white/5 border border-white/10 rounded-lg overflow-hidden" style={{ width: 140 }}>
                       <TextInput
                         value={timezone}
-                        onChangeText={(val) => { setTimezone(val); setIsSaveBtnActive(true); }}
+                        onChangeText={(val) => setTimezone(val)}
+                        onEndEditing={(e) => handleAutoSave({ timezone: e.nativeEvent.text })}
                         className="text-white text-xs px-2 py-2 text-center"
                       />
                     </View>
