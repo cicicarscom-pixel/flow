@@ -183,6 +183,18 @@ export default function BotYonetimiScreen() {
         }
 
         // Fetch WAHA settings (Prompt)
+        // Fetch org settings for timezone and appointment toggle
+        const { data: orgAiSettings } = await supabase
+          .from('organization_ai_settings')
+          .select('timezone, appointment_module_enabled')
+          .eq('merchant_id', session.user.id)
+          .maybeSingle();
+
+        if (orgAiSettings) {
+          if (orgAiSettings.timezone) setTimezone(orgAiSettings.timezone);
+          if (orgAiSettings.appointment_module_enabled !== undefined) setAppointmentModuleEnabled(orgAiSettings.appointment_module_enabled);
+        }
+
         const { data: botSettingsData, error: botSettingsError } = await botUseCase.getSettings(session.user.id);
         if (!botSettingsError && botSettingsData) {
           const fullPrompt = botSettingsData.system_prompt || '';
@@ -222,7 +234,7 @@ export default function BotYonetimiScreen() {
   const handleSave = async () => {
     try {
       // 1. Supabase ve Infrastructure Katmanı (Yeni Sistem)
-      await saveConfig(promptConfig, botInstruction, isV2Ready, botActive, whatsappBotActive, socialBotActive);
+      await saveConfig({ ...promptConfig, appointmentModuleEnabled, timezone }, botInstruction, isV2Ready, botActive, whatsappBotActive, socialBotActive);
 
       // 2. Yan Etkiler (Background sync ve lokal önbellek)
       if (connectedFolderId) {

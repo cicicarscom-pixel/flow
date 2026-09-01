@@ -14,8 +14,7 @@ export default function HizmetAyarlariScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
-  const [isActive, setIsActive] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
   const [services, setServices] = useState([]);
   const [initialServices, setInitialServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,15 +36,7 @@ export default function HizmetAyarlariScreen() {
       if (!session) return;
       const userId = session.user.id;
 
-      // Load AI setting
-      const { data: orgData } = await supabase
-        .from('organization_ai_settings')
-        .select('appointment_module_enabled')
-        .eq('merchant_id', userId)
-        .single();
-      if (orgData) {
-        setIsActive(orgData.appointment_module_enabled);
-      }
+
 
       // Load services
       const { data: srvData } = await supabase
@@ -65,17 +56,7 @@ export default function HizmetAyarlariScreen() {
     }
   };
 
-  const handleToggle = async (val) => {
-    setIsActive(val);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-    await supabase
-      .from('organization_ai_settings')
-      .update({ appointment_module_enabled: val })
-      .eq('merchant_id', session.user.id);
-  };
-
-  const handleAction = async () => {
+    const handleAction = async () => {
     if (!isEditing) {
       setIsEditing(true);
       return;
@@ -165,36 +146,16 @@ export default function HizmetAyarlariScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.scrollContent, { paddingBottom: scrollPaddingBottom }]}
       >
-        {/* Visibility Toggle */}
-        <View style={styles.visibilityCard}>
-          <View style={styles.visibilityTextWrap}>
-            <Text style={styles.visibilityTitle}>{t('randevu.hizmetAyarlari.visibilityTitle')}</Text>
-            <Text style={styles.visibilitySubtitle}>
-              {isActive
-                ? t('randevu.hizmetAyarlari.visibilitySubtitleActive')
-                : t('randevu.hizmetAyarlari.visibilitySubtitleInactive')}
-            </Text>
-          </View>
-          <Switch
-            value={isActive}
-            onValueChange={handleToggle}
-            trackColor={{ false: '#3A3540', true: '#10b981' }}
-            thumbColor="#ffffff"
-            style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
-          />
-        </View>
-
-        {/* Section Header */}
+                {/* Section Header */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
-            {isActive ? t('randevu.hizmetAyarlari.activeServices') : t('randevu.hizmetAyarlari.inactiveServices')} ({services.length}/10)
+            {t('randevu.hizmetAyarlari.activeServices')} ({services.length}/10)
           </Text>
           <Ionicons name="information-circle-outline" size={16} color="#22B573" />
         </View>
 
         {/* Service Cards */}
-        <View style={{ opacity: isActive ? 1 : 0.4 }} pointerEvents={isActive ? 'auto' : 'none'}>
-
+        
           {services.map((service, index) => (
             <View key={index} style={styles.serviceCard}>
               {isEditing ? (
@@ -264,7 +225,6 @@ export default function HizmetAyarlariScreen() {
               <Text style={styles.addBtnText}>{t('randevu.hizmetAyarlari.addService', { current: services.length, max: 10 })}</Text>
             </TouchableOpacity>
           )}
-        </View>
       </ScrollView>
 
       {/* Bottom Action Bar */}
@@ -322,16 +282,10 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(60,74,66,0.3)',
   },
   scrollContent: { padding: 14, gap: 10 },
-  visibilityCard: {
-    backgroundColor: 'rgba(32,31,34,0.4)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 16, padding: 14,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    marginBottom: 6,
-  },
-  visibilityTextWrap: { flex: 1, marginRight: 12, gap: 4 },
-  visibilityTitle: { fontSize: 15, fontWeight: '600', color: '#F6F1EC' },
-  visibilitySubtitle: { fontSize: 11, color: '#A79E96', lineHeight: 16 },
+  
+  
+  
+  
   sectionHeader: {
     flexDirection: 'row', alignItems: 'center',
     justifyContent: 'space-between', paddingHorizontal: 2, marginBottom: 6,
