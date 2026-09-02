@@ -1,7 +1,7 @@
 // ==============================================================================
-// PERSONA ENGINE — Üslup: web ile birebir veri paritesi (Faz 1)
+// PERSONA ENGINE — Üslup: web ile birebir veri paritesi (Faz 1 + Faz 2)
 // ==============================================================================
-// Web'in src/components/ai-asistan/AICharacterPanel.tsx içindeki TONES
+// Faz 1: web'in src/components/ai-asistan/AICharacterPanel.tsx içindeki TONES
 // sabitiyle BİREBİR aynı `id` değerleri (organization_ai_settings.tone
 // kolonuna ham string olarak yazılır). Önemli: mevcut 4 üslubun id'leri
 // eskiden küçük harfliydi ('standart', 'komik', 'resmi', 'samimi') — web'de
@@ -12,13 +12,21 @@
 // web'in 5 yeni mizacı (Neşeli/Sakin/Dedikoducu/Huysuz/Sinirli) eklendi.
 // "Standart" ikonu, kullanıcının web tarafında özellikle istediği robot
 // temasıyla (🤖) eşleştirildi.
+//
+// Faz 2: web'deki gibi sadece bu 5 yeni mizacın görseli var — mevcut 4 üslup
+// (Standart/Komik/Resmi/Samimi) kasıtlı olarak avatarUrl'siz, sadece emoji
+// ile kalıyor (web'de de tam olarak öyle, bkz. AICharacterPanel.tsx). Görsel
+// URL'leri flowweb'in kendi barındırdığı statik dosyalara işaret ediyor
+// (kullanıcının "web'den URL ile çek" kararı — mobil bundle'a gömme yok).
 // ==============================================================================
+const TONE_AVATAR_BASE = 'https://flow.workigom.com/ai-asistan/tones';
 
 export interface MoodConfig {
   id: string;
   title: string;
   icon: string;
   prompt: string;
+  avatarUrl?: string;
 }
 
 export const MOODS: MoodConfig[] = [
@@ -50,30 +58,35 @@ export const MOODS: MoodConfig[] = [
     id: 'Neşeli',
     title: 'Neşeli',
     icon: '😄',
-    prompt: 'Enerjik, pozitif ve neşeli bir tavırla, gülümseten bir dille müşterilere yardımcı ol.'
+    prompt: 'Enerjik, pozitif ve neşeli bir tavırla, gülümseten bir dille müşterilere yardımcı ol.',
+    avatarUrl: `${TONE_AVATAR_BASE}/neseli.png`
   },
   {
     id: 'Sakin',
     title: 'Sakin',
     icon: '😌',
-    prompt: 'Sakin, huzurlu ve yumuşak bir tonla, müşteriyi rahatlatan bir dille konuş.'
+    prompt: 'Sakin, huzurlu ve yumuşak bir tonla, müşteriyi rahatlatan bir dille konuş.',
+    avatarUrl: `${TONE_AVATAR_BASE}/sakin.png`
   },
   {
     id: 'Dedikoducu',
     title: 'Dedikoducu',
     icon: '🗣️',
-    prompt: 'Sohbetçi, meraklı ve dedikodu sever bir mahalle esnafı gibi samimi ama gevezelik eden bir dille konuş.'
+    prompt: 'Sohbetçi, meraklı ve dedikodu sever bir mahalle esnafı gibi samimi ama gevezelik eden bir dille konuş.',
+    avatarUrl: `${TONE_AVATAR_BASE}/dedikoducu.png`
   },
   {
     id: 'Huysuz',
     title: 'Huysuz',
     icon: '😤',
-    prompt: 'Biraz huysuz ve aksi ama işini iyi yapan bir esnaf gibi kısa, ters ama yine de yardımcı bir dille cevap ver.'
+    prompt: 'Biraz huysuz ve aksi ama işini iyi yapan bir esnaf gibi kısa, ters ama yine de yardımcı bir dille cevap ver.',
+    avatarUrl: `${TONE_AVATAR_BASE}/huysuz.png`
   },
   {
     id: 'Sinirli',
     title: 'Sinirli',
     icon: '😠',
-    prompt: 'Sinirli ve sabırsız görünen ama yine de doğru bilgiyi veren bir tavırla, kısa ve keskin cümlelerle cevap ver.'
+    prompt: 'Sinirli ve sabırsız görünen ama yine de doğru bilgiyi veren bir tavırla, kısa ve keskin cümlelerle cevap ver.',
+    avatarUrl: `${TONE_AVATAR_BASE}/sinirli.png`
   }
 ];

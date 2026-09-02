@@ -14,6 +14,16 @@ export interface PlaygroundPromptConfig {
   moodId?: string;
 }
 
+export interface PlaygroundOptions {
+  appointmentModuleEnabled?: boolean;
+  // Faz 2: Karakter Ayarları kadranları. Opsiyonel — eğer verilmezse
+  // persona-test seçili personanın kendi varsayılan değerlerini kullanır
+  // (bkz. supabase/functions/persona-test/index.ts, ledger reposu).
+  personaIntensity?: number;
+  humorLevel?: number;
+  modernAdaptation?: number;
+}
+
 // ==============================================================================
 // PERSONA ENGINE — Faz 1: Canlı Test artık gerçek persona-test fonksiyonunu
 // kullanıyor (eski bare 'gemini-chat' çağrısı kaldırıldı)
@@ -31,12 +41,10 @@ export interface PlaygroundPromptConfig {
 // "simulation" ile çalıştırır, hiçbir gerçek müşteri yan etkisi üretmez
 // (bkz. supabase/functions/persona-test/index.ts, ledger reposu).
 //
-// personaIntensity/humorLevel/modernAdaptation kasıtlı olarak GÖNDERİLMİYOR:
-// mobilde henüz bu üç kadran (slider) UI'da yok (Faz 2'ye bırakıldı) —
-// persona-test bu alanlar eksikse otomatik olarak seçili personanın kendi
-// varsayılan (default_persona_intensity vb.) değerlerini kullanıyor, bu
-// yüzden eksik göndermek hiçbir hataya yol açmaz.
-export function usePlayground(promptConfig: PlaygroundPromptConfig, appointmentModuleEnabled: boolean = true) {
+// Faz 2 güncellemesi: personaIntensity/humorLevel/modernAdaptation artık
+// (BotYonetimiScreen.js'teki yeni kadranlardan) gönderiliyor — web'in Canlı
+// Test çağrısıyla artık tam parametre paritesi var.
+export function usePlayground(promptConfig: PlaygroundPromptConfig, options: PlaygroundOptions = {}) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -76,7 +84,10 @@ export function usePlayground(promptConfig: PlaygroundPromptConfig, appointmentM
           businessRole,
           tone: promptConfig?.moodId || null,
           customInstruction: isCustomRole ? (promptConfig?.customRoleText || null) : null,
-          appointmentModuleEnabled,
+          appointmentModuleEnabled: options.appointmentModuleEnabled ?? true,
+          personaIntensity: options.personaIntensity,
+          humorLevel: options.humorLevel,
+          modernAdaptation: options.modernAdaptation,
         }
       });
 

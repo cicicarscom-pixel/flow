@@ -65,6 +65,12 @@ export interface RestoredPersonaConfig {
   customInstruction: string | null;
   personaSlug: string | null;
   appointmentModuleEnabled: boolean;
+  // Faz 2: Karakter Ayarları kadranları (0-100). Web'in kendi initial state'i
+  // ile birebir aynı varsayılan (50/50/50) — bkz. flowweb
+  // src/app/(dashboard)/ai-asistan/page.tsx satır 276-278.
+  personaIntensity: number;
+  humorLevel: number;
+  modernAdaptation: number;
 }
 
 // Ekran açılışında (fetchInitialData) merchant'ın daha önce kaydettiği
@@ -74,7 +80,7 @@ export async function getPersonaConfig(userId: string): Promise<RestoredPersonaC
 
   const { data: settings, error } = await supabase
     .from('organization_ai_settings')
-    .select('business_role, tone, custom_instruction, persona_id, appointment_module_enabled')
+    .select('business_role, tone, custom_instruction, persona_id, appointment_module_enabled, persona_intensity, humor_level, modern_adaptation')
     .eq('merchant_id', userId)
     .maybeSingle();
 
@@ -96,6 +102,9 @@ export async function getPersonaConfig(userId: string): Promise<RestoredPersonaC
     customInstruction: settings.custom_instruction ?? null,
     personaSlug,
     appointmentModuleEnabled: settings.appointment_module_enabled ?? true,
+    personaIntensity: settings.persona_intensity ?? 50,
+    humorLevel: settings.humor_level ?? 50,
+    modernAdaptation: settings.modern_adaptation ?? 50,
   };
 }
 
@@ -130,6 +139,11 @@ export class SupabasePersonaRepository {
         tone: config?.moodId,
         custom_instruction: config?.customRoleText,
         assistant_enabled: isActive,
+        // Faz 2: Karakter Ayarları kadranları — web'in saveAiPersonaSettings'i
+        // gibi, tanımlıysa doğrudan kullanıcının ayarladığı değeri yazar.
+        persona_intensity: config?.personaIntensity ?? 50,
+        humor_level: config?.humorLevel ?? 50,
+        modern_adaptation: config?.modernAdaptation ?? 50,
         updated_at: new Date().toISOString()
       };
 

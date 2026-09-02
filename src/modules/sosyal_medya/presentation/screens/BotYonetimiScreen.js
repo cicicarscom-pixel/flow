@@ -36,7 +36,9 @@ import {
   useSavePersona,
   usePlayground,
   getPublishedPersonas,
-  getPersonaConfig
+  getPersonaConfig,
+  PersonaAvatarCard,
+  DialSlider
 } from '../../../persona_engine';
 
 import { container } from '../../../../core/container';
@@ -168,9 +170,21 @@ export default function BotYonetimiScreen() {
   const [personas, setPersonas] = useState([]);
   const [personasLoading, setPersonasLoading] = useState(true);
 
+  // Faz 2: Karakter Ayarları kadranları — web'in aynı initial değerleriyle
+  // (50/50/50, bkz. flowweb page.tsx) başlar, sadece gerçek bir karakter
+  // seçiliyken (Standart değilken) gösterilir.
+  const [personaIntensity, setPersonaIntensity] = useState(50);
+  const [humorLevel, setHumorLevel] = useState(50);
+  const [modernAdaptation, setModernAdaptation] = useState(50);
+
   // Simulated Test Chat states (Powered by usePlayground Hook) — artık
   // gerçek persona-test fonksiyonunu çağırıyor, bkz. usePlayground.ts
-  const { messages, chatInput, setChatInput, sendMessage, isTyping } = usePlayground(promptConfig, appointmentModuleEnabled);
+  const { messages, chatInput, setChatInput, sendMessage, isTyping } = usePlayground(promptConfig, {
+    appointmentModuleEnabled,
+    personaIntensity,
+    humorLevel,
+    modernAdaptation,
+  });
   const chatListRef = useRef(null);
 
   const fetchInitialData = async () => {
@@ -224,6 +238,10 @@ export default function BotYonetimiScreen() {
           }
           if (restoredConfig.tone) setMood(restoredConfig.tone);
           if (restoredConfig.personaSlug) setPersona(restoredConfig.personaSlug);
+          // Faz 2: kayıtlı kadran değerlerini geri yükle.
+          if (restoredConfig.personaIntensity !== undefined) setPersonaIntensity(restoredConfig.personaIntensity);
+          if (restoredConfig.humorLevel !== undefined) setHumorLevel(restoredConfig.humorLevel);
+          if (restoredConfig.modernAdaptation !== undefined) setModernAdaptation(restoredConfig.modernAdaptation);
         }
 
         // Karakter (Persona) listesi: artık web ile aynı kaynaktan, canlı
@@ -286,7 +304,7 @@ export default function BotYonetimiScreen() {
   const handleSave = async () => {
     try {
       // 1. Supabase ve Infrastructure Katmanı (Yeni Sistem)
-      await saveConfig({ ...promptConfig, appointmentModuleEnabled, timezone }, botInstruction, isV2Ready, botActive, whatsappBotActive, socialBotActive);
+      await saveConfig({ ...promptConfig, appointmentModuleEnabled, timezone, personaIntensity, humorLevel, modernAdaptation }, botInstruction, isV2Ready, botActive, whatsappBotActive, socialBotActive);
 
       // 2. Yan Etkiler (Background sync ve lokal önbellek)
       if (connectedFolderId) {
@@ -572,36 +590,36 @@ export default function BotYonetimiScreen() {
                   <View style={{ backgroundColor: '#2A2631', borderRadius: 16 }} className="p-4">
                     <Text className="text-white text-sm font-bold mb-3">AI Kişiliği</Text>
                   
-                  {/* 1. 👔 Roller (Sektör) */}
-                  <View className="mb-3">
+                  {/* 1. 👔 Roller (Sektör) — Faz 2: web'deki gibi portre kart
+                      carousel'i (PersonaAvatarCard), eski pill/chip yerine. */}
+                  <View className="mb-4">
                     <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">👔 İşletme Rolü</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                       {ROLES.map(role => (
-                        <TouchableOpacity 
+                        <PersonaAvatarCard
                           key={role.id}
+                          label={role.title}
+                          icon={role.icon}
+                          avatarUrl={role.avatarUrl}
+                          accentColor="#FF7A59"
+                          selected={promptConfig.roleId === role.id}
                           onPress={() => { setRole(role.id); setIsSaveBtnActive(true); }}
-                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.roleId === role.id ? 'bg-[#FF7A59]/30 border-2 border-[#FF7A59]' : 'bg-white/5 border-2 border-white/10'}`}
-                        >
-                          <Text className={`text-[11px] font-semibold ${promptConfig.roleId === role.id ? 'text-[#FF7A59]' : 'text-gray-300'}`}>
-                            {role.icon} {role.title}
-                          </Text>
-                        </TouchableOpacity>
+                        />
                       ))}
-                      {/* Diğer (Custom Role) Chip */}
-                      <TouchableOpacity 
+                      {/* Diğer (Custom Role) kartı — görseli yok, sadece emoji */}
+                      <PersonaAvatarCard
+                        label="Diğer"
+                        icon="✨"
+                        accentColor="#FF7A59"
+                        selected={promptConfig.roleId === 'custom'}
                         onPress={() => { setRole('custom'); setIsSaveBtnActive(true); }}
-                        className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.roleId === 'custom' ? 'bg-[#FF7A59]/30 border-2 border-[#FF7A59]' : 'bg-white/5 border-2 border-white/10'}`}
-                      >
-                        <Text className={`text-[11px] font-semibold ${promptConfig.roleId === 'custom' ? 'text-[#FF7A59]' : 'text-gray-300'}`}>
-                          ✨ Diğer
-                        </Text>
-                      </TouchableOpacity>
+                      />
                     </ScrollView>
                   </View>
 
                   {/* Custom Role Input (Conditionally Rendered) */}
                   {promptConfig.roleId === 'custom' && (
-                    <View className="bg-black/40 border border-white/5 rounded-xl p-2 mb-3">
+                    <View className="bg-black/40 border border-white/5 rounded-xl p-2 mb-4">
                       <TextInput
                         value={promptConfig.customRoleText}
                         onChangeText={(text) => { setCustomRole(text); setIsSaveBtnActive(true); }}
@@ -617,17 +635,16 @@ export default function BotYonetimiScreen() {
                       gibi DB'ye bağlı olmayan, sabit/senkron bir kart:
                       promptConfig.personaId boşsa (kayıtlı persona yoksa)
                       seçili görünür. */}
-                  <View className="mb-3">
+                  <View className="mb-4">
                     <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">🧠 Karakter</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-                      <TouchableOpacity
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                      <PersonaAvatarCard
+                        label="Standart"
+                        icon="🤖"
+                        accentColor="#C2478D"
+                        selected={!promptConfig.personaId}
                         onPress={() => { setPersona(''); setIsSaveBtnActive(true); }}
-                        className={`px-3 py-1.5 rounded-full mr-2 ${!promptConfig.personaId ? 'bg-[#C2478D]/30 border-2 border-[#C2478D]' : 'bg-[#C2478D]/5 border-2 border-[#C2478D]/20'}`}
-                      >
-                        <Text className={`text-[11px] font-semibold ${!promptConfig.personaId ? 'text-[#E8A8CD]' : 'text-[#E8A8CD]/60'}`}>
-                          🤖 Standart
-                        </Text>
-                      </TouchableOpacity>
+                      />
 
                       {personasLoading && (
                         <Text className="text-[11px] text-gray-400 self-center px-2">Karakterler yükleniyor...</Text>
@@ -638,36 +655,64 @@ export default function BotYonetimiScreen() {
                       )}
 
                       {personas.map(persona => (
-                        <TouchableOpacity
+                        <PersonaAvatarCard
                           key={persona.slug}
+                          label={persona.name}
+                          icon={persona.icon}
+                          avatarUrl={persona.avatarUrl}
+                          accentColor="#C2478D"
+                          selected={promptConfig.personaId === persona.slug}
                           onPress={() => { setPersona(persona.slug); setIsSaveBtnActive(true); }}
-                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.personaId === persona.slug ? 'bg-[#C2478D]/30 border-2 border-[#C2478D]' : 'bg-[#C2478D]/5 border-2 border-[#C2478D]/20'}`}
-                        >
-                          <Text className={`text-[11px] font-semibold ${promptConfig.personaId === persona.slug ? 'text-[#E8A8CD]' : 'text-[#E8A8CD]/60'}`}>
-                            {persona.icon || '🎭'} {persona.name}
-                          </Text>
-                        </TouchableOpacity>
+                        />
                       ))}
                     </ScrollView>
                   </View>
 
                   {/* 3. 🎭 Mood / Üslup */}
-                  <View>
+                  <View style={{ marginBottom: promptConfig.personaId ? 16 : 0 }}>
                     <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">🎭 Üslup</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                       {MOODS.map(mood => (
-                        <TouchableOpacity 
+                        <PersonaAvatarCard
                           key={mood.id}
+                          label={mood.title}
+                          icon={mood.icon}
+                          avatarUrl={mood.avatarUrl}
+                          accentColor="#F59E0B"
+                          selected={promptConfig.moodId === mood.id}
                           onPress={() => { setMood(mood.id); setIsSaveBtnActive(true); }}
-                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.moodId === mood.id ? 'bg-[#F59E0B]/30 border-2 border-[#F59E0B]' : 'bg-[#F59E0B]/5 border-2 border-[#F59E0B]/20'}`}
-                        >
-                          <Text className={`text-[11px] font-semibold ${promptConfig.moodId === mood.id ? 'text-[#F59E0B]' : 'text-[#F59E0B]/60'}`}>
-                            {mood.icon} {mood.title}
-                          </Text>
-                        </TouchableOpacity>
+                        />
                       ))}
                     </ScrollView>
                   </View>
+
+                  {/* 4. 🎚️ Karakter Ayarları (kadranlar) — web'deki showDials
+                      mantığıyla birebir aynı: sadece gerçek bir karakter
+                      seçiliyken (Standart değilken) görünür. Faz 2'de eklendi;
+                      daha önce mobilde bu üç kadran hiç yoktu. */}
+                  {!!promptConfig.personaId && (
+                    <View style={{ paddingTop: 14, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)' }}>
+                      <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-3">🎚️ Karakter Ayarları</Text>
+                      <DialSlider
+                        label="Karakter Yoğunluğu"
+                        value={personaIntensity}
+                        onChange={(v) => { setPersonaIntensity(v); setIsSaveBtnActive(true); }}
+                        accentColor="#C2478D"
+                      />
+                      <DialSlider
+                        label="Mizah Seviyesi"
+                        value={humorLevel}
+                        onChange={(v) => { setHumorLevel(v); setIsSaveBtnActive(true); }}
+                        accentColor="#F59E0B"
+                      />
+                      <DialSlider
+                        label="Modern Uyarlama"
+                        value={modernAdaptation}
+                        onChange={(v) => { setModernAdaptation(v); setIsSaveBtnActive(true); }}
+                        accentColor="#22B573"
+                      />
+                    </View>
+                  )}
                 </View>
                 </View>
 

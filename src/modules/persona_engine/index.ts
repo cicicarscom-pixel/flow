@@ -7,3 +7,5 @@ export * from './presentation/hooks/useSavePersona';
 export * from './presentation/hooks/usePlayground';
 export { getPublishedPersonas, getPersonaConfig } from './infrastructure/repositories/SupabasePersonaRepository';
 export type { PublishedPersona, RestoredPersonaConfig } from './infrastructure/repositories/SupabasePersonaRepository';
+export { default as PersonaAvatarCard } from './presentation/components/PersonaAvatarCard';
+export { default as DialSlider } from './presentation/components/DialSlider';
