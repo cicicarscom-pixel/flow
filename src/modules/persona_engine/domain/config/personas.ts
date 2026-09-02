@@ -1,5 +1,24 @@
 import { StructuralPersona } from '../types/EngineTypes';
 
+// ==============================================================================
+// PERSONA ENGINE — Karakter: hardcoded liste kaldırıldı (Faz 1)
+// ==============================================================================
+// Kullanıcının açık talimatı üzerine (Einstein/Shakespeare/Gordon Ramsay/
+// Sherlock Holmes web'de hiç yoktu — sadece mobilde kalmış eski bir
+// listeydi), bu dosyadaki hardcoded PERSONAS dizisi tamamen boşaltıldı.
+// KARAKTER seçimi artık web ile aynı kaynaktan, canlı olarak Supabase
+// ai_personas tablosundan çekiliyor — bkz.
+// infrastructure/repositories/SupabasePersonaRepository.ts → getPublishedPersonas()
+// (flowweb'in src/actions/personas.ts → getPublishedPersonas() ile birebir
+// aynı sorgu: status='published', is_active=true, sort_order'a göre sıralı).
+//
+// PERSONAS burada boş bir dizi olarak bırakıldı (silinmedi) çünkü
+// application/factories/PromptFactory.ts hâlâ `PERSONAS.find(...)` çağırıyor
+// — bu çağrı boş dizide sadece undefined döner ve ilgili `if (persona) {...}`
+// bloğu no-op olur (bkz. PromptFactory.ts), hiçbir crash riski yok. Bu,
+// zaten sunucu tarafında (ledger reposu, PersonaService.ts) DB'den canlı
+// okunan GERÇEK müşteri botu davranışını hiç etkilemez; sadece bu ekrandaki
+// salt-okunur/legacy "finalPrompt" önizlemesinde karakter bölümü boş kalır.
 export interface PersonaConfig {
   id: string;
   name: string;
@@ -7,39 +26,13 @@ export interface PersonaConfig {
   basePrompt: string;
 }
 
-export const PERSONAS: PersonaConfig[] = [
-  {
-    id: 'einstein',
-    name: 'Albert Einstein',
-    icon: '🤓',
-    basePrompt: `Sen Albert Einstein'sın. Olayları her zaman bilimsel kıyaslamalar, fizik, görelilik teorisi ve evrensel kanunlar üzerinden açıklarsın. Konuşmaların zekice ve öğretici olmalı, ama aynı zamanda esprili bir dille yaklaşmalısın. Eğer sana verilen bir sektör rolün varsa, kendi bilimsel kişiliğini bu sektöre (örneğin etin termodinamiği veya acının göreliliği) trajikomik bir şekilde uyarla.`
-  },
-  {
-    id: 'shakespeare',
-    name: 'William Shakespeare',
-    icon: '📜',
-    basePrompt: `Sen William Shakespeare'sin. Son derece poetik, edebi, kafiyeli ve dramatik bir dille konuşuyorsun. 16. yüzyıl İngiltere'sinden geliyorsun. Araya mutlaka ünlü oyunlarından (Hamlet, Romeo Juliet) duruma uyarlanmış replikler sıkıştır (Örn: "Acılı olmak ya da olmamak, işte bütün mesele bu!"). Cevapların her zaman şiirsel bir hava taşımalı.`
-  },
-  {
-    id: 'ramsay',
-    name: 'Gordon Ramsay',
-    icon: '👨‍🍳',
-    basePrompt: `Sen Gordon Ramsay'sin. Aşırı talepkar, mükemmeliyetçi ve hafif sinirli bir yapıya sahipsin ama aslında işinin en iyisisin. Müşterilere karşı hafif küstah ama bir o kadar da profesyonel ve dürüst ol.`
-  },
-  {
-    id: 'holmes',
-    name: 'Sherlock Holmes',
-    icon: '🕵️',
-    basePrompt: `Sen Sherlock Holmes'sün. Son derece gözlemci, analitik, zeki ve soğukkanlısın. Olaylara tümdengelim yöntemiyle yaklaşır, ufak detaylardan büyük sonuçlar çıkarırsın.`
-  },
-  {
-    id: 'standart',
-    name: 'Standart Asistan',
-    icon: '🤖',
-    basePrompt: `Sen kibar, yardımsever ve çözüm odaklı profesyonel bir yapay zeka asistanısın. Müşterilerin sorularını en net ve doğru şekilde yanıtlamak birincil görevindir.`
-  }
-];
+export const PERSONAS: PersonaConfig[] = [];
 
+// PERSONAS_V2 (BLUEPRINT_RENDERED / yapısal mod) bilinçli olarak DOKUNULMADI.
+// Gerçek DB personaları (slug'ları) burada asla eşleşmeyecek — bu da
+// usePersonaEngine.ts'in v2Supported kontrolünü her zaman false yapıp
+// LEGACY_PROMPT moduna düşürecek, ki bu zaten yukarıdaki no-op ile aynı
+// derecede zararsız (yine sadece yerel/legacy önizleme metnini etkiler).
 export const PERSONAS_V2: StructuralPersona[] = [
   {
     id: 'einstein',

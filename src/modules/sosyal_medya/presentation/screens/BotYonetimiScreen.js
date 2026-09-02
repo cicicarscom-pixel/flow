@@ -28,14 +28,15 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlobalAppBar, supabase, CustomButton, CustomInput } from '../../../../shared';
 
-import { 
-  ROLES, 
-  PERSONAS, 
-  MOODS, 
-  RULES, 
-  usePersonaEngine, 
-  useSavePersona, 
-  usePlayground 
+import {
+  ROLES,
+  MOODS,
+  RULES,
+  usePersonaEngine,
+  useSavePersona,
+  usePlayground,
+  getPublishedPersonas,
+  getPersonaConfig
 } from '../../../persona_engine';
 
 import { container } from '../../../../core/container';
@@ -151,10 +152,6 @@ export default function BotYonetimiScreen() {
   const [whatsappModalVisible, setWhatsappModalVisible] = useState(false);
   const [driveModalVisible, setDriveModalVisible] = useState(false);
 
-  // Simulated Test Chat states (Powered by usePlayground Hook)
-  const { messages, chatInput, setChatInput, sendMessage, isTyping } = usePlayground(botInstruction, promptConfig);
-  const chatListRef = useRef(null);
-
   // Feature checkboxes state
   const [features, setFeatures] = useState({
     appointment: true,
@@ -164,6 +161,17 @@ export default function BotYonetimiScreen() {
 
   const [timezone, setTimezone] = useState("Europe/Istanbul");
   const [appointmentModuleEnabled, setAppointmentModuleEnabled] = useState(true);
+
+  // Karakter (Persona): artık web ile aynı kaynaktan, canlı olarak
+  // ai_personas'tan çekiliyor (bkz. fetchInitialData) — eski hardcoded
+  // Einstein/Shakespeare/Ramsay/Holmes listesi tamamen kaldırıldı.
+  const [personas, setPersonas] = useState([]);
+  const [personasLoading, setPersonasLoading] = useState(true);
+
+  // Simulated Test Chat states (Powered by usePlayground Hook) — artık
+  // gerçek persona-test fonksiyonunu çağırıyor, bkz. usePlayground.ts
+  const { messages, chatInput, setChatInput, sendMessage, isTyping } = usePlayground(promptConfig, appointmentModuleEnabled);
+  const chatListRef = useRef(null);
 
   const fetchInitialData = async () => {
     try {
@@ -186,17 +194,43 @@ export default function BotYonetimiScreen() {
         }
 
         // Fetch WAHA settings (Prompt)
-        // Fetch org settings for timezone and appointment toggle
+        // Fetch org settings for timezone
         const { data: orgAiSettings } = await supabase
           .from('organization_ai_settings')
-          .select('timezone, appointment_module_enabled')
+          .select('timezone')
           .eq('merchant_id', session.user.id)
           .maybeSingle();
 
-        if (orgAiSettings) {
-          if (orgAiSettings.timezone) setTimezone(orgAiSettings.timezone);
-          if (orgAiSettings.appointment_module_enabled !== undefined) setAppointmentModuleEnabled(orgAiSettings.appointment_module_enabled);
+        if (orgAiSettings?.timezone) setTimezone(orgAiSettings.timezone);
+
+        // Faz 1 (mobil-web paritesi): daha önce bu ekran kayıtlı AI Kişiliği
+        // seçimini (rol/karakter/üslup/randevu modülü) HİÇBİR ZAMAN geri
+        // yüklemiyordu — ekran her açılışta sıfırdan başlıyordu ve merchant
+        // "Kaydet"e basmadığı sürece önceki seçimler görünmüyordu. Web'in
+        // getAiPersonaSettings() ile aynı mantık burada uygulanıyor.
+        const restoredConfig = await getPersonaConfig(session.user.id);
+        if (restoredConfig) {
+          if (restoredConfig.appointmentModuleEnabled !== undefined) {
+            setAppointmentModuleEnabled(restoredConfig.appointmentModuleEnabled);
+          }
+          if (restoredConfig.businessRole) {
+            if (ROLES.some(r => r.id === restoredConfig.businessRole)) {
+              setRole(restoredConfig.businessRole);
+            } else {
+              // Web'deki 15 sabit rolden biri değil: merchant mobildeki
+              // "Diğer" (custom) seçeneğiyle serbest metin girmiş demektir.
+              setCustomRole(restoredConfig.businessRole);
+            }
+          }
+          if (restoredConfig.tone) setMood(restoredConfig.tone);
+          if (restoredConfig.personaSlug) setPersona(restoredConfig.personaSlug);
         }
+
+        // Karakter (Persona) listesi: artık web ile aynı kaynaktan, canlı
+        // olarak ai_personas'tan çekiliyor (eski hardcoded liste kaldırıldı).
+        const publishedPersonas = await getPublishedPersonas();
+        setPersonas(publishedPersonas);
+        setPersonasLoading(false);
 
         const { data: botSettingsData, error: botSettingsError } = await botUseCase.getSettings(session.user.id);
         if (!botSettingsError && botSettingsData) {
@@ -225,6 +259,7 @@ export default function BotYonetimiScreen() {
       console.error('Fetch profile data exception:', err);
     } finally {
       setLoading(false);
+      setPersonasLoading(false);
     }
   };
 
@@ -577,18 +612,39 @@ export default function BotYonetimiScreen() {
                     </View>
                   )}
 
-                  {/* 2. 🧠 Personalar (Karakter) */}
+                  {/* 2. 🧠 Personalar (Karakter) — artık web ile aynı kaynaktan
+                      (ai_personas) canlı çekiliyor. "Standart" kartı web'deki
+                      gibi DB'ye bağlı olmayan, sabit/senkron bir kart:
+                      promptConfig.personaId boşsa (kayıtlı persona yoksa)
+                      seçili görünür. */}
                   <View className="mb-3">
                     <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">🧠 Karakter</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-                      {PERSONAS.map(persona => (
-                        <TouchableOpacity 
-                          key={persona.id}
-                          onPress={() => { setPersona(persona.id); setIsSaveBtnActive(true); }}
-                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.personaId === persona.id ? 'bg-[#C2478D]/30 border-2 border-[#C2478D]' : 'bg-[#C2478D]/5 border border-[#C2478D]/20'}`}
+                      <TouchableOpacity
+                        onPress={() => { setPersona(''); setIsSaveBtnActive(true); }}
+                        className={`px-3 py-1.5 rounded-full mr-2 ${!promptConfig.personaId ? 'bg-[#C2478D]/30 border-2 border-[#C2478D]' : 'bg-[#C2478D]/5 border border-[#C2478D]/20'}`}
+                      >
+                        <Text className={`text-[11px] font-semibold ${!promptConfig.personaId ? 'text-[#E8A8CD]' : 'text-[#E8A8CD]/60'}`}>
+                          🤖 Standart
+                        </Text>
+                      </TouchableOpacity>
+
+                      {personasLoading && (
+                        <Text className="text-[11px] text-gray-400 self-center px-2">Karakterler yükleniyor...</Text>
+                      )}
+
+                      {!personasLoading && personas.length === 0 && (
+                        <Text className="text-[11px] text-gray-400 self-center px-2">Şu an yayınlanmış bir karakter yok.</Text>
+                      )}
+
+                      {personas.map(persona => (
+                        <TouchableOpacity
+                          key={persona.slug}
+                          onPress={() => { setPersona(persona.slug); setIsSaveBtnActive(true); }}
+                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.personaId === persona.slug ? 'bg-[#C2478D]/30 border-2 border-[#C2478D]' : 'bg-[#C2478D]/5 border border-[#C2478D]/20'}`}
                         >
-                          <Text className={`text-[11px] font-semibold ${promptConfig.personaId === persona.id ? 'text-[#E8A8CD]' : 'text-[#E8A8CD]/60'}`}>
-                            {persona.icon} {persona.name}
+                          <Text className={`text-[11px] font-semibold ${promptConfig.personaId === persona.slug ? 'text-[#E8A8CD]' : 'text-[#E8A8CD]/60'}`}>
+                            {persona.icon || '🎭'} {persona.name}
                           </Text>
                         </TouchableOpacity>
                       ))}

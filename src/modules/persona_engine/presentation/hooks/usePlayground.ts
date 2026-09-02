@@ -7,7 +7,36 @@ export interface ChatMessage {
   text: string;
 }
 
-export function usePlayground(botInstruction: string, promptConfig: any) {
+export interface PlaygroundPromptConfig {
+  roleId?: string;
+  customRoleText?: string;
+  personaId?: string;
+  moodId?: string;
+}
+
+// ==============================================================================
+// PERSONA ENGINE — Faz 1: Canlı Test artık gerçek persona-test fonksiyonunu
+// kullanıyor (eski bare 'gemini-chat' çağrısı kaldırıldı)
+// ==============================================================================
+// Önceki davranış: usePlayground sadece elle birleştirilmiş bir
+// `customInstruction` (finalPrompt) string'ini 'gemini-chat'e gönderiyordu —
+// bu, o an ekranda seçili olan Rol/Karakter/Üslup'u TAMAMEN görmezden
+// geliyordu (persona/role/tone parametreleri hiç iletilmiyordu). Bu yüzden
+// mobildeki "Canlı Test" hiçbir zaman gerçek bot davranışını yansıtmıyordu.
+//
+// Yeni davranış: flowweb'in src/app/(dashboard)/ai-asistan/page.tsx
+// (handleSendMessage) ile birebir aynı şekilde, 'persona-test' edge
+// fonksiyonu çağrılıyor — bu fonksiyon gerçek production pipeline'ını
+// (PromptBuilder/AIOrchestrator/ToolRegistry, ledger reposu) executionMode
+// "simulation" ile çalıştırır, hiçbir gerçek müşteri yan etkisi üretmez
+// (bkz. supabase/functions/persona-test/index.ts, ledger reposu).
+//
+// personaIntensity/humorLevel/modernAdaptation kasıtlı olarak GÖNDERİLMİYOR:
+// mobilde henüz bu üç kadran (slider) UI'da yok (Faz 2'ye bırakıldı) —
+// persona-test bu alanlar eksikse otomatik olarak seçili personanın kendi
+// varsayılan (default_persona_intensity vb.) değerlerini kullanıyor, bu
+// yüzden eksik göndermek hiçbir hataya yol açmaz.
+export function usePlayground(promptConfig: PlaygroundPromptConfig, appointmentModuleEnabled: boolean = true) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -26,46 +55,48 @@ export function usePlayground(botInstruction: string, promptConfig: any) {
     setIsTyping(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('gemini-chat', {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setMessages((prev) => [...prev, {
+          id: (Date.now() + 1).toString(),
+          sender: 'bot',
+          text: 'Oturum bulunamadı, lütfen tekrar giriş yapın.',
+        }]);
+        return;
+      }
+
+      const isCustomRole = promptConfig?.roleId === 'custom';
+      const businessRole = isCustomRole ? (promptConfig?.customRoleText || null) : (promptConfig?.roleId || null);
+
+      const { data, error } = await supabase.functions.invoke('persona-test', {
         body: {
-          prompt: text.trim(),
-          mode: 'playground',
-          customInstruction: botInstruction
+          merchantId: session.user.id,
+          testMessage: text.trim(),
+          personaSlug: promptConfig?.personaId || null,
+          businessRole,
+          tone: promptConfig?.moodId || null,
+          customInstruction: isCustomRole ? (promptConfig?.customRoleText || null) : null,
+          appointmentModuleEnabled,
         }
       });
 
-      if (error) {
-        throw error;
-      }
-
-      let responseText = "Üzgünüm, şu an yanıt veremiyorum.";
-      if (data && data.text) {
-        responseText = data.text;
-      } else if (data && data.adCopy) {
-        responseText = data.adCopy;
-      } else if (data && typeof data === 'string') {
-        try {
-          const parsed = JSON.parse(data);
-          if (parsed.text) responseText = parsed.text;
-          else if (parsed.adCopy) responseText = parsed.adCopy;
-        } catch (e) {
-          responseText = data;
-        }
+      if (error || data?.error) {
+        throw error || new Error(data?.error || 'Bilinmeyen hata');
       }
 
       const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: 'bot',
-        text: responseText,
+        text: (data && data.text) ? data.text : 'Cevap alınamadı.',
       };
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
-      console.error("Playground Gemini API Error:", err);
+      console.error('Playground persona-test API Error:', err);
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: 'bot',
-        text: "Simülasyon bağlantı hatası oluştu. Lütfen daha sonra tekrar deneyin.",
+        text: 'Simülasyon bağlantı hatası oluştu. Lütfen daha sonra tekrar deneyin.',
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {

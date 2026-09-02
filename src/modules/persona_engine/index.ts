@@ -5,3 +5,5 @@ export * from './domain/config/rules';
 export * from './presentation/hooks/usePersonaEngine';
 export * from './presentation/hooks/useSavePersona';
 export * from './presentation/hooks/usePlayground';
+export { getPublishedPersonas, getPersonaConfig } from './infrastructure/repositories/SupabasePersonaRepository';
+export type { PublishedPersona, RestoredPersonaConfig } from './infrastructure/repositories/SupabasePersonaRepository';
