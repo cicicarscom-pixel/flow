@@ -31,7 +31,6 @@ import { GlobalAppBar, supabase, CustomButton, CustomInput } from '../../../../s
 import {
   ROLES,
   MOODS,
-  RULES,
   usePersonaEngine,
   useSavePersona,
   usePlayground,
@@ -115,19 +114,15 @@ export default function BotYonetimiScreen() {
   const [botActive, setBotActive] = useState(true);
   const [whatsappBotActive, setWhatsappBotActive] = useState(true);
   const [socialBotActive, setSocialBotActive] = useState(true);
-  const [isAdvancedExpanded, setIsAdvancedExpanded] = useState(false);
 
   // Hook Integration
-  const { 
-    config: promptConfig, 
-    finalPrompt: botInstruction, 
-    isV2Ready, 
-    setRole, 
-    setCustomRole, 
-    setPersona, 
-    setMood, 
-    setAdvancedActive,
-    resetConfig 
+  const {
+    config: promptConfig,
+    setRole,
+    setCustomRole,
+    setPersona,
+    setMood,
+    resetConfig
   } = usePersonaEngine();
 
   const { saveConfig, isLoading: isSavingSettings } = useSavePersona();
@@ -304,7 +299,7 @@ export default function BotYonetimiScreen() {
   const handleSave = async () => {
     try {
       // 1. Supabase ve Infrastructure Katmanı (Yeni Sistem)
-      await saveConfig({ ...promptConfig, appointmentModuleEnabled, timezone, personaIntensity, humorLevel, modernAdaptation }, botInstruction, isV2Ready, botActive, whatsappBotActive, socialBotActive);
+      await saveConfig({ ...promptConfig, appointmentModuleEnabled, timezone, personaIntensity, humorLevel, modernAdaptation }, botActive, whatsappBotActive, socialBotActive);
 
       // 2. Yan Etkiler (Background sync ve lokal önbellek)
       if (connectedFolderId) {
@@ -716,107 +711,16 @@ export default function BotYonetimiScreen() {
                 </View>
                 </View>
 
-                {/* SECTION 4: Advanced AI Configuration (Collapsed) - Moved here */}
-                <View style={{
-                  overflow: 'hidden',
-                  padding: 2, 
-                  borderRadius: 20,
-                  marginBottom: 16,
-                  shadowColor: '#FF7A59',
-                  shadowOpacity: 0.35,
-                  shadowRadius: 20,
-                  elevation: 10,
-                }}>
-                  <Animated.View style={{ 
-                    position: 'absolute',
-                    top: '50%', left: '50%',
-                    width: 1500, height: 1500,
-                    marginTop: -750, marginLeft: -750,
-                    transform: [{ rotate: rgbSpin }],
-                  }}>
-                    <LinearGradient
-                      colors={['#22B573', '#FF7A59', '#C2478D', '#FF7A59', '#22B573']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={{ flex: 1 }}
-                    />
-                  </Animated.View>
+                {/* SECTION 4: "İleri Seviye Ayarlar" paneli kaldırıldı ("Tek Yapı"
+                    refactor, Eylül 2026) — burada gösterilen "AI Karakter
+                    Talimatı (Prompt)" client-side hesaplanan bir önizlemeydi ve
+                    gerçek müşteri botuna hiç ulaşmıyordu (bkz. persona_engine/
+                    index.ts üst notu). Kültürel/dil adaptasyonu artık burada
+                    yapılandırılabilir bir ayar değil — sunucu tarafında (ledger
+                    reposu, PromptBuilder.ts → SYSTEM_POLICY madde 1) her
+                    merchant için sabit ve kapatılamaz şekilde gömülü. */}
 
-                  <View style={{ backgroundColor: '#2A2631', borderRadius: 16 }} className="p-4">
-                    <TouchableOpacity 
-                      onPress={() => setIsAdvancedExpanded(!isAdvancedExpanded)}
-                      className="flex-row items-center justify-between"
-                    >
-                      <View className="flex-row items-center gap-2">
-                        <Ionicons name="code-slash-outline" size={18} color="#FF7A59" />
-                        <Text className="text-sm font-bold text-white">İleri Seviye Ayarlar</Text>
-                      </View>
-                      <Ionicons name={isAdvancedExpanded ? "chevron-up" : "chevron-down"} size={20} color="#A79E96" />
-                    </TouchableOpacity>
-
-                    {isAdvancedExpanded && (
-                      <View className="mt-4 pt-4 border-t border-white/10">
-                        {/* Advanced Active Toggle */}
-                        <View className="flex-row items-center justify-between bg-black/40 p-3 rounded-xl mb-4 border border-[#FF7A59]/30">
-                          <Text className="text-[#FF7A59] text-[11px] font-bold uppercase tracking-widest">
-                            ÖZEL KURALLARI AKTİFLEŞTİR
-                          </Text>
-                          <Switch
-                            value={promptConfig.advancedActive}
-                            onValueChange={(val) => { setAdvancedActive(val); setIsSaveBtnActive(true); }}
-                            trackColor={{ false: '#34303C', true: '#FF7A59' }}
-                            thumbColor={'#ffffff'}
-                            style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-                          />
-                        </View>
-
-
-
-                        {/* AI Instruction / System Prompt */}
-                        <View className="mb-2">
-                          <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">🤪 AI Karakter Talimatı (Prompt)</Text>
-                          <View style={{
-                            overflow: 'hidden',
-                            padding: 2, 
-                            borderRadius: 16,
-                          }}>
-                            <Animated.View style={{ 
-                              position: 'absolute',
-                              top: '50%', left: '50%',
-                              width: 1500, height: 1500,
-                              marginTop: -750, marginLeft: -750,
-                              transform: [{ rotate: rgbSpin }],
-                            }}>
-                              <LinearGradient
-                                colors={['#22B573', '#FF7A59', '#C2478D', '#FF7A59', '#22B573']}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={{ flex: 1 }}
-                              />
-                            </Animated.View>
-
-                            <View className="bg-black/90 rounded-[12px] p-3 relative">
-                              <TextInput
-                                value={botInstruction}
-                                editable={false}
-                                placeholder="Asistanın müşteriye nasıl davranması gerektiğiyle ilgili ek talimatları buraya yazın..."
-                                placeholderTextColor="#A79E96"
-                                multiline
-                                textAlignVertical="top"
-                                style={{ height: 280, color: '#F6F1EC', fontSize: 13, lineHeight: 18 }}
-                                className="font-body-md"
-                                showsVerticalScrollIndicator={true}
-                              />
-                              <Text style={{ position: 'absolute', bottom: 6, right: 10, fontSize: 9, color: 'rgba(255,255,255,0.2)' }}>{"OrchestrationEngine"}</Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                    )}
-                  </View>
-                </View>
-
-                                {/* SECTION 4.5: Timezone and Appointment (Moved outside) */}
+                {/* SECTION 4.5: Timezone and Appointment (Moved outside) */}
                 <View style={styles.glassCard} className="p-4 mb-4">
                   <View className="flex-row justify-between items-center mb-4">
                     <View className="flex-1 pr-2">

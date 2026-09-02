@@ -110,11 +110,24 @@ export async function getPersonaConfig(userId: string): Promise<RestoredPersonaC
 
 export class SupabasePersonaRepository {
   /**
-   * Kullanıcının prompt konfigürasyonunu ve nihai metnini veritabanına kaydeder/günceller.
-   * PHASE 5b: Artık ham seçimleri organization_ai_settings tablosuna kaydediyor.
-   * Geriye dönük uyumluluk ve webhook tetiklemeleri için bot_settings tablosuna da kaydetmeye devam eder.
+   * Kullanıcının AI Kişiliği seçimlerini veritabanına kaydeder/günceller.
+   *
+   * "Tek Yapı" refactor (Eylül 2026): daha önce burada ikinci bir adım olarak
+   * finalPrompt/prompt_config/engine_mode de bot_settings tablosuna yazılıyordu
+   * ("Geriye Dönük Uyumluluk" — client'ta OrchestrationEngine ile hesaplanan bir
+   * metindi). Bu artık YAPILMIYOR: web'in aynı akışı (saveAiPersonaSettings,
+   * Phase 5 guardrail #2) zaten bir süredir bu üç alanı yazmıyordu — mobil de
+   * artık aynı hizaya getirildi. Sebep: bu alanlar gerçek müşteri botu için hiç
+   * okunmuyordu (bkz. ledger reposu PromptBuilder.buildBotPersonality — bir
+   * merchant bu ekranı bir kez bile kaydettiyse organization_ai_settings satırı
+   * oluşur ve PersonaService her zaman non-null bir config döner, yani
+   * bot_settings.system_prompt fallback'ine ASLA düşülmez). Tek gerçek kaynak
+   * artık organization_ai_settings — sunucu tarafında (PersonaService +
+   * PersonaPromptBuilder) oradan okunuyor. bot_settings tablosuna sadece kanal
+   * aç/kapa anahtarları (is_active/whatsapp_bot_active/social_bot_active) —
+   * ki bunlar gerçekten kullanılıyor — yazılmaya devam ediyor.
    */
-  async savePersonaConfig(userId: string, config: any, finalPrompt: string, engineMode: string, isActive: boolean, whatsappBotActive: boolean = true, socialBotActive: boolean = true): Promise<any> {
+  async savePersonaConfig(userId: string, config: any, isActive: boolean, whatsappBotActive: boolean = true, socialBotActive: boolean = true): Promise<any> {
     if (!userId) throw new Error("User ID is required");
 
     try {
@@ -156,19 +169,22 @@ export class SupabasePersonaRepository {
         // Continue anyway to preserve legacy save
       }
 
-      // 2. bot_settings kayıt işlemi (Geriye Dönük Uyumluluk)
+      // 2. bot_settings kayıt işlemi — SADECE kanal aç/kapa anahtarları.
+      //    system_prompt/prompt_config/engine_mode artık YAZILMIYOR (yukarıdaki
+      //    not). Bu üç kolon nullable/varsayılan değerli olduğu için (bkz.
+      //    canlı şema doğrulaması) burada hiç göndermemek insert/update'i
+      //    bozmaz — sadece DB'nin kendi varsayılanları veya (update'te)
+      //    olduğu gibi kalan eski değer geçerli olur, hangisi olursa olsun
+      //    gerçek bot davranışını etkilemez.
       const { data: existingData, error: fetchError } = await supabase
         .from('bot_settings')
         .select('id')
         .eq('merchant_id', userId)
         .limit(1);
-        
+
       if (fetchError) throw fetchError;
 
       const payload = {
-        system_prompt: finalPrompt,
-        prompt_config: config,
-        engine_mode: engineMode,
         is_active: isActive,
         whatsapp_bot_active: whatsappBotActive,
         social_bot_active: socialBotActive,
