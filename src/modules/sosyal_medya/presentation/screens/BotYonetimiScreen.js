@@ -580,7 +580,7 @@ export default function BotYonetimiScreen() {
                         <TouchableOpacity 
                           key={role.id}
                           onPress={() => { setRole(role.id); setIsSaveBtnActive(true); }}
-                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.roleId === role.id ? 'bg-[#FF7A59]/30 border-2 border-[#FF7A59]' : 'bg-white/5 border border-white/10'}`}
+                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.roleId === role.id ? 'bg-[#FF7A59]/30 border-2 border-[#FF7A59]' : 'bg-white/5 border-2 border-white/10'}`}
                         >
                           <Text className={`text-[11px] font-semibold ${promptConfig.roleId === role.id ? 'text-[#FF7A59]' : 'text-gray-300'}`}>
                             {role.icon} {role.title}
@@ -590,7 +590,7 @@ export default function BotYonetimiScreen() {
                       {/* Diğer (Custom Role) Chip */}
                       <TouchableOpacity 
                         onPress={() => { setRole('custom'); setIsSaveBtnActive(true); }}
-                        className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.roleId === 'custom' ? 'bg-[#FF7A59]/30 border-2 border-[#FF7A59]' : 'bg-white/5 border border-white/10'}`}
+                        className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.roleId === 'custom' ? 'bg-[#FF7A59]/30 border-2 border-[#FF7A59]' : 'bg-white/5 border-2 border-white/10'}`}
                       >
                         <Text className={`text-[11px] font-semibold ${promptConfig.roleId === 'custom' ? 'text-[#FF7A59]' : 'text-gray-300'}`}>
                           ✨ Diğer
@@ -622,7 +622,7 @@ export default function BotYonetimiScreen() {
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
                       <TouchableOpacity
                         onPress={() => { setPersona(''); setIsSaveBtnActive(true); }}
-                        className={`px-3 py-1.5 rounded-full mr-2 ${!promptConfig.personaId ? 'bg-[#C2478D]/30 border-2 border-[#C2478D]' : 'bg-[#C2478D]/5 border border-[#C2478D]/20'}`}
+                        className={`px-3 py-1.5 rounded-full mr-2 ${!promptConfig.personaId ? 'bg-[#C2478D]/30 border-2 border-[#C2478D]' : 'bg-[#C2478D]/5 border-2 border-[#C2478D]/20'}`}
                       >
                         <Text className={`text-[11px] font-semibold ${!promptConfig.personaId ? 'text-[#E8A8CD]' : 'text-[#E8A8CD]/60'}`}>
                           🤖 Standart
@@ -641,7 +641,7 @@ export default function BotYonetimiScreen() {
                         <TouchableOpacity
                           key={persona.slug}
                           onPress={() => { setPersona(persona.slug); setIsSaveBtnActive(true); }}
-                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.personaId === persona.slug ? 'bg-[#C2478D]/30 border-2 border-[#C2478D]' : 'bg-[#C2478D]/5 border border-[#C2478D]/20'}`}
+                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.personaId === persona.slug ? 'bg-[#C2478D]/30 border-2 border-[#C2478D]' : 'bg-[#C2478D]/5 border-2 border-[#C2478D]/20'}`}
                         >
                           <Text className={`text-[11px] font-semibold ${promptConfig.personaId === persona.slug ? 'text-[#E8A8CD]' : 'text-[#E8A8CD]/60'}`}>
                             {persona.icon || '🎭'} {persona.name}
@@ -659,7 +659,7 @@ export default function BotYonetimiScreen() {
                         <TouchableOpacity 
                           key={mood.id}
                           onPress={() => { setMood(mood.id); setIsSaveBtnActive(true); }}
-                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.moodId === mood.id ? 'bg-[#F59E0B]/30 border-2 border-[#F59E0B]' : 'bg-[#F59E0B]/5 border border-[#F59E0B]/20'}`}
+                          className={`px-3 py-1.5 rounded-full mr-2 ${promptConfig.moodId === mood.id ? 'bg-[#F59E0B]/30 border-2 border-[#F59E0B]' : 'bg-[#F59E0B]/5 border-2 border-[#F59E0B]/20'}`}
                         >
                           <Text className={`text-[11px] font-semibold ${promptConfig.moodId === mood.id ? 'text-[#F59E0B]' : 'text-[#F59E0B]/60'}`}>
                             {mood.icon} {mood.title}
