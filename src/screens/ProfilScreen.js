@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, ImageBackground, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,8 +10,64 @@ import { GlobalAppBar , supabase } from '../shared';
 import { CustomButton } from '../shared';
 import { CustomInput } from '../shared';
 import AddressSelector from '../shared/ui/AddressSelector';
+import { setAppLanguage, getSavedLanguageOverride } from '../core/i18n';
+
+const LANGUAGE_OPTIONS = [
+  { code: 'tr', labelKey: 'common.language.turkish' },
+  { code: 'en', labelKey: 'common.language.english' },
+  { code: 'de', labelKey: 'common.language.german' },
+];
+
+function LanguageSwitcher() {
+  const { t, i18n } = useTranslation();
+  const [savedOverride, setSavedOverride] = useState(null);
+
+  useEffect(() => {
+    getSavedLanguageOverride().then(setSavedOverride);
+  }, [i18n.language]);
+
+  const handleSelect = async (code) => {
+    if (code === i18n.language) return;
+    await setAppLanguage(code);
+    setSavedOverride(code);
+  };
+
+  return (
+    <View style={{ marginBottom: 32 }}>
+      <Text className="text-gray-400 text-xs font-semibold mb-1">{t('common.language.title')}</Text>
+      <Text className="text-gray-500 text-[11px] mb-3">{t('common.language.subtitle')}</Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        {LANGUAGE_OPTIONS.map((opt) => {
+          const isActive = i18n.language === opt.code;
+          return (
+            <TouchableOpacity
+              key={opt.code}
+              onPress={() => handleSelect(opt.code)}
+              style={{
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+                borderRadius: 999,
+                borderWidth: 1,
+                borderColor: isActive ? '#4edea3' : 'rgba(255,255,255,0.1)',
+                backgroundColor: isActive ? 'rgba(78,222,163,0.12)' : 'rgba(255,255,255,0.03)',
+              }}
+            >
+              <Text style={{ color: isActive ? '#4edea3' : '#e5e1e4', fontSize: 13, fontWeight: isActive ? '700' : '500' }}>
+                {t(opt.labelKey)}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      {!savedOverride && (
+        <Text className="text-gray-600 text-[10px] mt-2">{t('common.language.systemDefault')}</Text>
+      )}
+    </View>
+  );
+}
 
 export default function ProfilScreen() {
+  const { t } = useTranslation();
   const [businessName, setBusinessName] = useState('');
   const [authorizedPerson, setAuthorizedPerson] = useState('');
   const [addressData, setAddressData] = useState(null);
@@ -169,13 +226,13 @@ const handleSave = async () => {
           }
         }
         
-        Alert.alert('Başarılı', 'Profil bilgileriniz güncellendi.');
+        Alert.alert(t('profil.saveSuccessTitle'), t('profil.saveSuccessMessage'));
       } else {
-        Alert.alert('Hata', 'Oturum bulunamadı.');
+        Alert.alert(t('profil.noSessionTitle'), t('profil.noSessionMessage'));
       }
     } catch (err) {
       console.error('Error saving profile:', err);
-      Alert.alert('Hata', 'Profil kaydedilemedi: ' + err.message);
+      Alert.alert(t('profil.saveErrorTitle'), t('profil.saveErrorMessage', { error: err.message }));
     } finally {
       setSaving(false);
     }
@@ -190,7 +247,7 @@ const handleSave = async () => {
       >
         <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(10, 10, 11, 0.8)' }]} />
       </ImageBackground>
-      <GlobalAppBar level={2} module="genel" title="Profil Ayarları" showProfile={true} />
+      <GlobalAppBar level={2} module="genel" title={t('profil.title')} showProfile={true} />
       <ScrollView className="flex-1 px-4 pt-4" contentContainerStyle={{ paddingBottom: 40 }}>
         
         {/* Main Card */}
@@ -216,74 +273,76 @@ const handleSave = async () => {
           {loading ? (
             <View className="py-20 items-center justify-center">
               <ActivityIndicator size="large" color="#22B573" />
-              <Text className="text-gray-400 mt-4 text-sm">Profil yükleniyor...</Text>
+              <Text className="text-gray-400 mt-4 text-sm">{t('profil.loading')}</Text>
             </View>
           ) : (
             <>
+              <LanguageSwitcher />
+
               <CustomInput
-                label="Yetkili Kişi Adı Soyadı"
+                label={t('profil.authorizedPerson')}
                 value={authorizedPerson}
                 onChangeText={setAuthorizedPerson}
-                placeholder="Örn: Mehmet Yılmaz"
+                placeholder={t('profil.authorizedPersonPlaceholder')}
                 containerClassName="mb-4"
               />
               <CustomInput
-                label="İşletme Adı"
+                label={t('profil.businessName')}
                 value={businessName}
                 onChangeText={setBusinessName}
-                placeholder="İşletmenizin adını girin"
+                placeholder={t('profil.businessNamePlaceholder')}
                 containerClassName="mb-4"
               />
 
               <CustomInput
-                label="E-posta"
+                label={t('profil.email')}
                 value={email}
                 editable={false}
                 containerClassName="mb-4"
               />
 
               <CustomInput
-                label="Telefon"
+                label={t('profil.phone')}
                 value={phone}
                 onChangeText={setPhone}
                 keyboardType="phone-pad"
-                placeholder="Telefon numarasn girin"
+                placeholder={t('profil.phonePlaceholder')}
                 containerClassName="mb-4"
               />
-              
+
               <CustomInput
-                label="Vergi Numaras (VKN)"
+                label={t('profil.taxId')}
                 value={vkn}
                 onChangeText={setVkn}
                 keyboardType="numeric"
-                placeholder="VKN girin"
+                placeholder={t('profil.taxIdPlaceholder')}
                 containerClassName="mb-4"
               />
 
               <CustomInput
-                label="Vergi Dairesi"
+                label={t('profil.taxOffice')}
                 value={taxOffice}
                 onChangeText={setTaxOffice}
-                placeholder="Vergi dairesini girin"
+                placeholder={t('profil.taxOfficePlaceholder')}
                 containerClassName="mb-4"
               />
 
               <CustomInput
-                label="Mağaza Kategorisi"
+                label={t('profil.category')}
                 value={category}
                 onChangeText={setCategory}
-                placeholder="Örn: Cafe & Restoran, Kuaför..."
+                placeholder={t('profil.categoryPlaceholder')}
                 containerClassName="mb-6"
               />
 
               <View style={{ marginBottom: 32 }}>
-                <Text className="text-gray-400 text-xs font-semibold mb-2">Adres Bilgileri</Text>
+                <Text className="text-gray-400 text-xs font-semibold mb-2">{t('profil.addressInfo')}</Text>
                 <AddressSelector initialData={addressData} onAddressChange={setAddressData} />
               </View>
 
               {/* Gradient Button */}
               <CustomButton
-                title="Profili Kaydet"
+                title={t('profil.save')}
                 onPress={handleSave}
                 isLoading={saving}
                 className="mb-4"
@@ -291,7 +350,7 @@ const handleSave = async () => {
 
               {/* Sign Out Button */}
               <CustomButton
-                title="Çıkış Yap"
+                title={t('profil.signOut')}
                 onPress={async () => {
                   await supabase.auth.signOut();
                 }}

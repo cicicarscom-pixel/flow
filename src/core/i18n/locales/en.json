@@ -78,7 +78,7 @@
     },
     "bot": {
       "title": "Bot Management",
-      "status": "Bot Status",
+      "status": "Status:",
       "statusActive": "Autonomous operations active",
       "statusInactive": "Bot is currently disabled.",
       "instructionsTitle": "Bot Instructions",
@@ -105,7 +105,25 @@
       "connectAndSync": "Connect and Sync Folder",
       "processedData": "Processed Data",
       "errorRate": "Error Rate",
-      "aiAccount": "AI Account"
+      "systemInstruction": "System Instruction",
+      "promptInstructionInfo": "You can shape your WhatsApp Assistant's spirit, character, and level of sass 😎 or even more 🚀 with these instructions! 😉",
+      "liveTest": "Live Test",
+      "simulation": "Simulation",
+      "history": "History",
+      "aiKnowledge": "AI Knowledge Source",
+      "change": "Change",
+      "upToDate": "Up to date",
+      "lastSync": "Last Sync: 2 minutes ago",
+      "whatsappConnection": "WhatsApp Connection",
+      "connect": "Connect",
+      "todayChats": "Today's Chats",
+      "responseSpeed": "Response Speed",
+      "successRate": "Success Rate",
+      "activeModules": "Bot Features",
+      "appointmentManagement": "Appointment Management",
+      "catalogMenu": "Catalog / Menu",
+      "autoFaq": "Auto FAQ",
+      "sendTestMessage": "Send a test message..."
     },
     "generate": {
       "title": "AI Sharing",
@@ -256,5 +274,41 @@
     "lastVisit": "Last Visit",
     "history": "Appointment History",
     "noHistory": "No past appointments."
+  },
+  "common": {
+    "language": {
+      "title": "Language",
+      "subtitle": "Choose the app language",
+      "turkish": "Türkçe",
+      "english": "English",
+      "german": "Deutsch",
+      "systemDefault": "Automatic (Device Language)"
+    }
+  },
+  "profil": {
+    "title": "Profile Settings",
+    "loading": "Loading profile...",
+    "authorizedPerson": "Authorized Person Full Name",
+    "authorizedPersonPlaceholder": "e.g. John Smith",
+    "businessName": "Business Name",
+    "businessNamePlaceholder": "Enter your business name",
+    "email": "Email",
+    "phone": "Phone",
+    "phonePlaceholder": "Enter your phone number",
+    "taxId": "Tax ID (VKN)",
+    "taxIdPlaceholder": "Enter Tax ID",
+    "taxOffice": "Tax Office",
+    "taxOfficePlaceholder": "Enter tax office",
+    "category": "Business Category",
+    "categoryPlaceholder": "e.g. Cafe & Restaurant, Hair Salon...",
+    "addressInfo": "Address Information",
+    "save": "Save Profile",
+    "signOut": "Sign Out",
+    "saveSuccessTitle": "Success",
+    "saveSuccessMessage": "Your profile has been updated.",
+    "noSessionTitle": "Error",
+    "noSessionMessage": "Session not found.",
+    "saveErrorTitle": "Error",
+    "saveErrorMessage": "Could not save profile: {{error}}"
   }
 }

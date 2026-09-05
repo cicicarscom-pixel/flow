@@ -274,5 +274,41 @@
     "lastVisit": "Son",
     "history": "Geçmiş Randevular",
     "noHistory": "Geçmiş randevu yok."
+  },
+  "common": {
+    "language": {
+      "title": "Dil",
+      "subtitle": "Uygulama dilini seçin",
+      "turkish": "Türkçe",
+      "english": "English",
+      "german": "Deutsch",
+      "systemDefault": "Cihaz Diline Göre Otomatik"
+    }
+  },
+  "profil": {
+    "title": "Profil Ayarları",
+    "loading": "Profil yükleniyor...",
+    "authorizedPerson": "Yetkili Kişi Adı Soyadı",
+    "authorizedPersonPlaceholder": "Örn: Mehmet Yılmaz",
+    "businessName": "İşletme Adı",
+    "businessNamePlaceholder": "İşletmenizin adını girin",
+    "email": "E-posta",
+    "phone": "Telefon",
+    "phonePlaceholder": "Telefon numaranızı girin",
+    "taxId": "Vergi Numarası (VKN)",
+    "taxIdPlaceholder": "VKN girin",
+    "taxOffice": "Vergi Dairesi",
+    "taxOfficePlaceholder": "Vergi dairesini girin",
+    "category": "Mağaza Kategorisi",
+    "categoryPlaceholder": "Örn: Cafe & Restoran, Kuaför...",
+    "addressInfo": "Adres Bilgileri",
+    "save": "Profili Kaydet",
+    "signOut": "Çıkış Yap",
+    "saveSuccessTitle": "Başarılı",
+    "saveSuccessMessage": "Profil bilgileriniz güncellendi.",
+    "noSessionTitle": "Hata",
+    "noSessionMessage": "Oturum bulunamadı.",
+    "saveErrorTitle": "Hata",
+    "saveErrorMessage": "Profil kaydedilemedi: {{error}}"
   }
 }
