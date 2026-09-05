@@ -1038,6 +1038,20 @@ Web platformu ile tam eşlenik görsel deneyim için Sosyal Medya ekranı başta
 
 Tüm bu geliştirmeler sırasıyla commitlenip origin/main sunucusuna başarıyla pushlandı.
 
+### [05.09.2026] Web/Mobil Parite Denetimi: Zernio Hesap Bağlama Zinciri Mobilde Hiç Çalışmıyordu — Düzeltildi
+
+**Tetikleyici:** Kullanıcının açık talebi üzerine ("bu yaptığımız tüm değişikliklerin hem web hem mobilde uygulanmış olduğuna emin olalım"), AGENTS.md'deki "Ortak Veritabanı Etkileşimi" kuralı gereği web ve mobil kod tabanları satır satır karşılaştırmalı olarak denetlendi.
+
+**⚠️ Önceki [03.09.2026] kaydındaki mobil varsayımı hatalıydı:** O kayıtta "mobil tarafta ekranın kendisinde kod değişikliği gerekmedi, çünkü Canlı Fetch mimarisi hesap listesini doğrudan Zernio API'sinden çekiyor" denilmişti. Bu denetimde bunun **doğru olmadığı** ortaya çıktı: mobil ekranlar hesap listesini Zernio API'sinden değil, doğrudan `social_accounts` tablosundan (DB) okuyor — ve bu sorgular hâlâ haftalar önce web'de (bkz. flowweb/README.md, bug #4) düzeltilmiş olan **eski/kırık şemayı** (`public.social_accounts`, `profile_id`, `status`) kullanıyordu. Sonuç: mobilde sosyal medya hesabı bağlama özelliği muhtemelen hiçbir zaman doğru çalışmamıştı (hesaplar sessizce okunamıyor/yazılamıyordu — tıpkı web'in düzeltme öncesi haliyle aynı belirti).
+
+**Düzeltilen 3 dosya (`src/modules/sosyal_medya/presentation/screens/`):**
+
+1. **SosyalMedyaScreen.js** — `fetchAccountsFromZernio` (yanlış `.from('social_accounts').eq('profile_id',...).eq('status','active')` → `.schema('integration').from('social_accounts').eq('organization_id',...).eq('is_active', true)`, ayrıca `acc.account_name`/`acc.status` yerine gerçek kolonlar `acc.username`/`acc.is_active`); `saveZernioAccount` (eksik/yanlış kolonlarla client-side manuel `upsert` tamamen kaldırıldı, yerine web ile birebir aynı mimari: `zernio-client` edge function'ına `sync-accounts` çağrısı yapıp ardından listeyi yeniden okuma); `handleDisconnect` (client-side güvenlik-ağı silme işlemine `.schema('integration')` eklendi).
+2. **AiUretimScreen.js** — Bağlı hesapları kontrol eden `fetchAccounts` aynı şema/kolon hatasını taşıyordu, aynı şekilde düzeltildi.
+3. **AnalyticsScreen.js** — Aynı hatanın yanında **daha ciddi, ayrı bir bug** tespit edildi: bu ekranın `fetchInternalStats` fonksiyonunda hiçbir organizasyon/tenant filtresi yoktu — `posts`, `comments`, `reviews`, `messages` sayıları ve `social_accounts` listesi **TÜM organizasyonlar için global olarak** çekiliyordu (çapraz-kiracı veri sızıntısı: bir işletmenin Analiz ekranı başka işletmelerin toplam gönderi/yorum/mesaj sayılarını gösteriyordu). Bu dosyaya `SosyalMedyaScreen.js` ile aynı desende organizasyon çözümleme mantığı eklendi ve tüm sorgular (`social_accounts` şema+kolon düzeltmesiyle birlikte) `organization_id`/`profile_id` bazında filtrelendi.
+
+**İncelenip dokunulmayanlar:** `profile_id` içeren diğer tüm dosyalar (`BildirimlerScreen.js`, `DashboardScreen.js`, `AiChatScreen.js`, `AiAssistantScreen.js`, `IsletmemScreen.js`, `AiMuhasebeScreen.js`, `ChatScreen.js`) tek tek incelendi; hiçbiri `social_accounts` şema hatasıyla ilgili değil — ya farklı bir tabloya (`notifications`, `transactions`) ait meşru bir `profile_id` kolonu kullanıyor, ya Ledger'a ait ayrı bir edge function'a (`ledger-isleyici-api`) giden payload alanı, ya da zaten yorum satırına alınmış ölü kod. Bu yüzden değiştirilmediler.
+
 ### [03.09.2026] Zernio Sosyal Medya Hesap Bağlama Zinciri — Uçtan Uca Onarım (Ortak Veritabanı Etkiler)
 
 Web tarafında ("Hesap bağlama linki alınırken hata" ve "Facebook bağladım ama liste güncellenmedi" şikayetleri üzerine) yapılan kapsamlı kök neden araştırması, **paylaşılan Supabase veritabanını ve `zernio-client`/`HandleIncomingMessageUseCase.ts` edge fonksiyonlarını** (ledger reposu, her iki platform tarafından da kullanılıyor) etkileyen 4 hata ortaya çıkardı — detaylar flowweb/README.md'de. Mobil (flow) açısından önemli olan kısım:

@@ -249,10 +249,11 @@ export default function AiUretimScreen({ route, navigation }) {
       if (organizationId) {
         try {
           const { data } = await supabase
+            .schema('integration')
             .from('social_accounts')
             .select('*')
-            .eq('profile_id', organizationId)
-            .eq('status', 'active');
+            .eq('organization_id', organizationId)
+            .eq('is_active', true);
             
           const accounts = data || [];
           setZernioAccounts(accounts);

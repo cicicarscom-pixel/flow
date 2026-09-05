@@ -169,13 +169,27 @@ export default function AnalyticsScreen({ navigation }) {
 
   const fetchInternalStats = async () => {
     try {
+      // Bu ekranda daha once organizasyon (tenant) cozumleme mantigi yoktu; asagidaki
+      // sorgular hicbir filtre olmadan TUM organizasyonlarin verilerini donduruyordu
+      // (cross-tenant veri sizintisi). SosyalMedyaScreen.js'deki ile ayni deseni
+      // kullanarak organizationId cozumlemesi eklendi ve tum sorgular buna gore
+      // filtrelendi.
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id || session?.user?.id;
+      if (!userId) return;
+
+      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', userId).maybeSingle();
+      const organizationId = orgMember?.organization_id || userId;
+
+      if (!organizationId) return;
+
       const [{ count: postsCount }, { count: commentsCount }, { count: reviewsCount }, { count: msgsInCount }, { count: msgsOutCount }, { data: accountsData }] = await Promise.all([
-        supabase.from('posts').select('*', { count: 'exact', head: true }),
-        supabase.from('comments').select('*', { count: 'exact', head: true }),
-        supabase.from('reviews').select('*', { count: 'exact', head: true }),
-        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('direction', 'incoming'),
-        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('direction', 'outgoing'),
-        supabase.from('social_accounts').select('zernio_account_id, platform')
+        supabase.from('posts').select('*', { count: 'exact', head: true }).eq('profile_id', organizationId),
+        supabase.from('comments').select('*', { count: 'exact', head: true }).eq('profile_id', organizationId),
+        supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('profile_id', organizationId),
+        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('direction', 'incoming').eq('profile_id', organizationId),
+        supabase.from('messages').select('*', { count: 'exact', head: true }).eq('direction', 'outgoing').eq('profile_id', organizationId),
+        supabase.schema('integration').from('social_accounts').select('zernio_account_id, platform').eq('organization_id', organizationId).eq('is_active', true)
       ]);
 
       setStats({
@@ -185,7 +199,7 @@ export default function AnalyticsScreen({ navigation }) {
         messagesReceived: msgsInCount || 0,
         messagesSent: msgsOutCount || 0
       });
-      
+
       if (accountsData) {
         setSocialAccounts(accountsData);
       }

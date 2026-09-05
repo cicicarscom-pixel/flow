@@ -157,11 +157,12 @@ export default function SosyalMedyaScreen({ navigation }) {
       }
 
       const { data: dbAccounts, error: dbError } = await supabase
+        .schema('integration')
         .from('social_accounts')
         .select('*')
-        .eq('profile_id', orgId)
-        .eq('status', 'active');
-        
+        .eq('organization_id', orgId)
+        .eq('is_active', true);
+
       if (dbError) {
         throw dbError;
       }
@@ -169,8 +170,8 @@ export default function SosyalMedyaScreen({ navigation }) {
       const formattedAccounts = (dbAccounts || []).map(acc => ({
         id: acc.zernio_account_id || acc.id,
         platform: acc.platform || 'unknown',
-        account_name: acc.account_name || acc.platform,
-        status: acc.status
+        account_name: acc.username || acc.platform,
+        status: acc.is_active ? 'active' : 'inactive'
       }));
 
       setSocialAccounts(formattedAccounts);
@@ -192,17 +193,15 @@ export default function SosyalMedyaScreen({ navigation }) {
 
   const saveZernioAccount = useCallback(async (params) => {
     try {
-      const accountId = params.accountId;
       const platform = params.platform || params.connected;
-      const username = params.username;
-      
+
       const { data: { user } } = await supabase.auth.getUser();
       const userId = user?.id;
       if (!userId) {
         Alert.alert(t('sosyalMedya.alerts.error'), t('sosyalMedya.alerts.noSession'));
         return;
       }
-      
+
       let orgId = organizationId;
       if (!orgId) {
          orgId = await fetchOrganizationId(userId);
@@ -211,16 +210,15 @@ export default function SosyalMedyaScreen({ navigation }) {
 
       if (!orgId) return;
 
-      const { error: upsertError } = await supabase.from('social_accounts').upsert({
-        profile_id: orgId,
-        zernio_account_id: accountId,
-        platform: platform || 'unknown',
-        account_name: username || 'User',
-        status: 'active'
-      }, { onConflict: 'zernio_account_id' });
-      
-      let error = upsertError;
-      
+      // Hesabı kendi tarafımızda doğrudan yazmıyoruz — integration.social_accounts'un
+      // gerçek şeması (organization_id, zernio_profile_id, zernio_profile_mapping_id vb.)
+      // sadece zernio-client edge fonksiyonunun sync-accounts case'inde biliniyor.
+      // (Bkz. README: eskiden burada public.social_accounts'a yanlış şema/sütunlarla
+      // sessizce yazılıyordu — hesaplar hiçbir zaman gerçek tabloya düşmüyordu.)
+      const { error } = await supabase.functions.invoke('zernio-client', {
+        body: { action: 'sync-accounts', payload: { organizationId: orgId } }
+      });
+
       if (error) {
         Alert.alert(t('sosyalMedya.alerts.dbError'), error.message || JSON.stringify(error));
       } else {
@@ -309,8 +307,11 @@ export default function SosyalMedyaScreen({ navigation }) {
                await supabase.functions.invoke('zernio-client', {
                   body: { action: 'disconnect-account', payload: { accountId } }
                });
-               await supabase.from('social_accounts').delete().eq('zernio_account_id', accountId);
-               
+               // Edge fonksiyonu (disconnect-account) integration.social_accounts satırını
+               // zaten sunucu tarafında siliyor; bu ek çağrı sadece güvenlik amaçlı ve
+               // artık doğru şemayı hedefliyor (eskiden yanlış şemaya, hep no-op olarak gidiyordu).
+               await supabase.schema('integration').from('social_accounts').delete().eq('zernio_account_id', accountId);
+
                // Zernio ile eşitle
                await fetchAccountsFromZernio();
                
