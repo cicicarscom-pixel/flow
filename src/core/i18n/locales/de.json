@@ -275,6 +275,51 @@
     "history": "Terminhistorie",
     "noHistory": "Keine vergangenen Termine."
   },
+  "personas": {
+    "title": "KI-Persönlichkeit",
+    "businessRole": "👔 Geschäftsrolle",
+    "otherRole": "Sonstiges",
+    "customRolePlaceholder": "Geben Sie Ihren Beruf ein (z.B. Automechaniker)...",
+    "character": "🧠 Charakter",
+    "tone": "🎭 Tonfall",
+    "characterSettings": "🎚️ Charaktereinstellungen",
+    "standardLabel": "Standard",
+    "loading": "Charaktere werden geladen...",
+    "empty": "Derzeit ist kein veröffentlichter Charakter verfügbar.",
+    "sliders": {
+      "characterIntensity": "Charakterintensität",
+      "humorLevel": "Humorlevel",
+      "modernAdaptation": "Moderne Anpassung"
+    },
+    "roles": {
+      "kebapci": "Kebap-Imbiss",
+      "berber": "Friseur",
+      "otoTamir": "Autowerkstatt",
+      "market": "Lebensmittelgeschäft",
+      "bayanGiyim": "Damenbekleidung",
+      "cicekci": "Blumenladen",
+      "disKlinigi": "Zahnklinik",
+      "giyimMagazasi": "Bekleidungsgeschäft",
+      "kurumsalSirket": "Firmenunternehmen",
+      "muayenehane": "Arztpraxis",
+      "petShop": "Tierhandlung",
+      "restoran": "Restaurant",
+      "telefonTamiri": "Handyreparatur",
+      "unluMamuller": "Bäckerei",
+      "veteriner": "Tierarzt"
+    },
+    "tones": {
+      "standart": "Standard",
+      "komik": "Lustig",
+      "resmi": "Förmlich",
+      "samimi": "Herzlich",
+      "neseli": "Fröhlich",
+      "sakin": "Ruhig",
+      "dedikoducu": "Tratschsüchtig",
+      "huysuz": "Mürrisch",
+      "sinirli": "Reizbar"
+    }
+  },
   "common": {
     "language": {
       "title": "Sprache",

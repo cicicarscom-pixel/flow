@@ -275,6 +275,51 @@
     "history": "Geçmiş Randevular",
     "noHistory": "Geçmiş randevu yok."
   },
+  "personas": {
+    "title": "AI Kişiliği",
+    "businessRole": "👔 İşletme Rolü",
+    "otherRole": "Diğer",
+    "customRolePlaceholder": "Mesleğinizi yazın (Örn: Otomobil Tamircisi)...",
+    "character": "🧠 Karakter",
+    "tone": "🎭 Üslup",
+    "characterSettings": "🎚️ Karakter Ayarları",
+    "standardLabel": "Standart",
+    "loading": "Karakterler yükleniyor...",
+    "empty": "Şu an yayınlanmış bir karakter yok.",
+    "sliders": {
+      "characterIntensity": "Karakter Yoğunluğu",
+      "humorLevel": "Mizah Seviyesi",
+      "modernAdaptation": "Modern Uyarlama"
+    },
+    "roles": {
+      "kebapci": "Kebapçı",
+      "berber": "Berber",
+      "otoTamir": "Oto Tamir",
+      "market": "Market",
+      "bayanGiyim": "Bayan Giyim",
+      "cicekci": "Çiçekçi",
+      "disKlinigi": "Diş Kliniği",
+      "giyimMagazasi": "Giyim Mağazası",
+      "kurumsalSirket": "Kurumsal Şirket",
+      "muayenehane": "Muayenehane",
+      "petShop": "Pet Shop",
+      "restoran": "Restoran",
+      "telefonTamiri": "Telefon Tamiri",
+      "unluMamuller": "Unlu Mamüller",
+      "veteriner": "Veteriner"
+    },
+    "tones": {
+      "standart": "Standart",
+      "komik": "Komik",
+      "resmi": "Resmi",
+      "samimi": "Samimi",
+      "neseli": "Neşeli",
+      "sakin": "Sakin",
+      "dedikoducu": "Dedikoducu",
+      "huysuz": "Huysuz",
+      "sinirli": "Sinirli"
+    }
+  },
   "common": {
     "language": {
       "title": "Dil",

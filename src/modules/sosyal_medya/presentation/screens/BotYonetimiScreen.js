@@ -31,6 +31,8 @@ import { GlobalAppBar, supabase, CustomButton, CustomInput } from '../../../../s
 import {
   ROLES,
   MOODS,
+  ROLE_I18N_KEY_BY_ID,
+  MOOD_I18N_KEY_BY_ID,
   usePersonaEngine,
   useSavePersona,
   usePlayground,
@@ -583,17 +585,20 @@ export default function BotYonetimiScreen() {
                   </Animated.View>
 
                   <View style={{ backgroundColor: '#2A2631', borderRadius: 16 }} className="p-4">
-                    <Text className="text-white text-sm font-bold mb-3">AI Kişiliği</Text>
-                  
+                    <Text className="text-white text-sm font-bold mb-3">{t('personas.title')}</Text>
+
                   {/* 1. 👔 Roller (Sektör) — Faz 2: web'deki gibi portre kart
-                      carousel'i (PersonaAvatarCard), eski pill/chip yerine. */}
+                      carousel'i (PersonaAvatarCard), eski pill/chip yerine.
+                      i18n Faz 2: `label` artık role.title (Türkçe sabit) değil,
+                      ROLE_I18N_KEY_BY_ID ile personas.roles.* çevirisinden
+                      üretiliyor — role.id hiç değişmiyor (bkz. roles.ts notu). */}
                   <View className="mb-4">
-                    <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">👔 İşletme Rolü</Text>
+                    <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">{t('personas.businessRole')}</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                       {ROLES.map(role => (
                         <PersonaAvatarCard
                           key={role.id}
-                          label={role.title}
+                          label={t(`personas.roles.${ROLE_I18N_KEY_BY_ID[role.id]}`)}
                           icon={role.icon}
                           avatarUrl={role.avatarUrl}
                           accentColor="#FF7A59"
@@ -603,7 +608,7 @@ export default function BotYonetimiScreen() {
                       ))}
                       {/* Diğer (Custom Role) kartı — görseli yok, sadece emoji */}
                       <PersonaAvatarCard
-                        label="Diğer"
+                        label={t('personas.otherRole')}
                         icon="✨"
                         accentColor="#FF7A59"
                         selected={promptConfig.roleId === 'custom'}
@@ -618,7 +623,7 @@ export default function BotYonetimiScreen() {
                       <TextInput
                         value={promptConfig.customRoleText}
                         onChangeText={(text) => { setCustomRole(text); setIsSaveBtnActive(true); }}
-                        placeholder="Mesleğinizi yazın (Örn: Otomobil Tamircisi)..."
+                        placeholder={t('personas.customRolePlaceholder')}
                         placeholderTextColor="#A79E96"
                         style={{ color: '#F6F1EC', fontSize: 12, paddingVertical: 4, paddingHorizontal: 8 }}
                       />
@@ -631,10 +636,10 @@ export default function BotYonetimiScreen() {
                       promptConfig.personaId boşsa (kayıtlı persona yoksa)
                       seçili görünür. */}
                   <View className="mb-4">
-                    <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">🧠 Karakter</Text>
+                    <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">{t('personas.character')}</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                       <PersonaAvatarCard
-                        label="Standart"
+                        label={t('personas.standardLabel')}
                         icon="🤖"
                         accentColor="#C2478D"
                         selected={!promptConfig.personaId}
@@ -642,11 +647,11 @@ export default function BotYonetimiScreen() {
                       />
 
                       {personasLoading && (
-                        <Text className="text-[11px] text-gray-400 self-center px-2">Karakterler yükleniyor...</Text>
+                        <Text className="text-[11px] text-gray-400 self-center px-2">{t('personas.loading')}</Text>
                       )}
 
                       {!personasLoading && personas.length === 0 && (
-                        <Text className="text-[11px] text-gray-400 self-center px-2">Şu an yayınlanmış bir karakter yok.</Text>
+                        <Text className="text-[11px] text-gray-400 self-center px-2">{t('personas.empty')}</Text>
                       )}
 
                       {personas.map(persona => (
@@ -663,14 +668,16 @@ export default function BotYonetimiScreen() {
                     </ScrollView>
                   </View>
 
-                  {/* 3. 🎭 Mood / Üslup */}
+                  {/* 3. 🎭 Mood / Üslup — i18n Faz 2: `label` artık mood.title
+                      değil, MOOD_I18N_KEY_BY_ID ile personas.tones.*
+                      çevirisinden üretiliyor — mood.id hiç değişmiyor. */}
                   <View style={{ marginBottom: promptConfig.personaId ? 16 : 0 }}>
-                    <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">🎭 Üslup</Text>
+                    <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">{t('personas.tone')}</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                       {MOODS.map(mood => (
                         <PersonaAvatarCard
                           key={mood.id}
-                          label={mood.title}
+                          label={t(`personas.tones.${MOOD_I18N_KEY_BY_ID[mood.id]}`)}
                           icon={mood.icon}
                           avatarUrl={mood.avatarUrl}
                           accentColor="#F59E0B"
@@ -687,21 +694,21 @@ export default function BotYonetimiScreen() {
                       daha önce mobilde bu üç kadran hiç yoktu. */}
                   {!!promptConfig.personaId && (
                     <View style={{ paddingTop: 14, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)' }}>
-                      <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-3">🎚️ Karakter Ayarları</Text>
+                      <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-3">{t('personas.characterSettings')}</Text>
                       <DialSlider
-                        label="Karakter Yoğunluğu"
+                        label={t('personas.sliders.characterIntensity')}
                         value={personaIntensity}
                         onChange={(v) => { setPersonaIntensity(v); setIsSaveBtnActive(true); }}
                         accentColor="#C2478D"
                       />
                       <DialSlider
-                        label="Mizah Seviyesi"
+                        label={t('personas.sliders.humorLevel')}
                         value={humorLevel}
                         onChange={(v) => { setHumorLevel(v); setIsSaveBtnActive(true); }}
                         accentColor="#F59E0B"
                       />
                       <DialSlider
-                        label="Modern Uyarlama"
+                        label={t('personas.sliders.modernAdaptation')}
                         value={modernAdaptation}
                         onChange={(v) => { setModernAdaptation(v); setIsSaveBtnActive(true); }}
                         accentColor="#22B573"

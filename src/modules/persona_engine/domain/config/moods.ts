@@ -29,6 +29,23 @@ export interface MoodConfig {
   avatarUrl?: string;
 }
 
+// i18n Faz 2 (Eylül 2026): `id`/`title` DEĞİŞTİRİLEMEZ (bkz. dosya başındaki
+// not — organization_ai_settings.tone'a ham string yazılır, web'in
+// TONE_KEY_BY_ID'siyle birebir aynı `id` kümesi). Ekranda gösterilen etiket
+// artık `title` değil, bu eşlemeyle `personas.tones.*` çeviri anahtarından
+// üretilir (bkz. BotYonetimiScreen.js).
+export const MOOD_I18N_KEY_BY_ID: Record<string, string> = {
+  'Standart': 'standart',
+  'Komik': 'komik',
+  'Resmi': 'resmi',
+  'Samimi': 'samimi',
+  'Neşeli': 'neseli',
+  'Sakin': 'sakin',
+  'Dedikoducu': 'dedikoducu',
+  'Huysuz': 'huysuz',
+  'Sinirli': 'sinirli',
+};
+
 export const MOODS: MoodConfig[] = [
   {
     id: 'Standart',

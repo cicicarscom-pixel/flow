@@ -27,6 +27,32 @@ export interface RoleConfig {
   avatarUrl: string;
 }
 
+// i18n Faz 2 (Eylül 2026): `id`/`title` alanları yukarıdaki notlar gereği
+// DEĞİŞTİRİLEMEZ (organization_ai_settings.business_role'e ham string olarak
+// yazılır, web'deki AICharacterPanel.tsx'in ROLE_KEY_BY_ID'siyle birebir
+// aynı `id` kümesini kullanır). Ekranda gösterilen etiket artık `title` değil,
+// bu eşlemeyle `personas.roles.*` çeviri anahtarından üretilir (bkz.
+// BotYonetimiScreen.js). Yeni bir rol eklerken: id'yi ROLES'e ekle, buraya bir
+// anahtar ekle, hem flow hem flowweb'in messages/locales dosyalarına
+// personas.roles altına çeviriyi ekle (iki platform aynı id kümesini paylaşır).
+export const ROLE_I18N_KEY_BY_ID: Record<string, string> = {
+  'Kebapçı': 'kebapci',
+  'Berber': 'berber',
+  'Oto Tamir': 'otoTamir',
+  'Market': 'market',
+  'Bayan Giyim': 'bayanGiyim',
+  'Çiçekçi': 'cicekci',
+  'Diş Kliniği': 'disKlinigi',
+  'Giyim Mağazası': 'giyimMagazasi',
+  'Kurumsal Şirket': 'kurumsalSirket',
+  'Muayenehane': 'muayenehane',
+  'Pet Shop': 'petShop',
+  'Restoran': 'restoran',
+  'Telefon Tamiri': 'telefonTamiri',
+  'Unlu Mamüller': 'unluMamuller',
+  'Veteriner': 'veteriner',
+};
+
 export const ROLES: RoleConfig[] = [
   {
     id: 'Kebapçı',

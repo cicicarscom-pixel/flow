@@ -275,6 +275,51 @@
     "history": "Appointment History",
     "noHistory": "No past appointments."
   },
+  "personas": {
+    "title": "AI Personality",
+    "businessRole": "👔 Business Role",
+    "otherRole": "Other",
+    "customRolePlaceholder": "Enter your profession (e.g. Auto Mechanic)...",
+    "character": "🧠 Character",
+    "tone": "🎭 Tone",
+    "characterSettings": "🎚️ Character Settings",
+    "standardLabel": "Standard",
+    "loading": "Loading characters...",
+    "empty": "No published character available right now.",
+    "sliders": {
+      "characterIntensity": "Character Intensity",
+      "humorLevel": "Humor Level",
+      "modernAdaptation": "Modern Adaptation"
+    },
+    "roles": {
+      "kebapci": "Turkish Kebab",
+      "berber": "Barber",
+      "otoTamir": "Auto Repair",
+      "market": "Grocery Store",
+      "bayanGiyim": "Women's Clothing",
+      "cicekci": "Florist",
+      "disKlinigi": "Dental Clinic",
+      "giyimMagazasi": "Clothing Store",
+      "kurumsalSirket": "Corporate Company",
+      "muayenehane": "Medical Practice",
+      "petShop": "Pet Shop",
+      "restoran": "Restaurant",
+      "telefonTamiri": "Phone Repair",
+      "unluMamuller": "Bakery",
+      "veteriner": "Veterinarian"
+    },
+    "tones": {
+      "standart": "Standard",
+      "komik": "Funny",
+      "resmi": "Formal",
+      "samimi": "Friendly",
+      "neseli": "Cheerful",
+      "sakin": "Calm",
+      "dedikoducu": "Gossipy",
+      "huysuz": "Grumpy",
+      "sinirli": "Irritable"
+    }
+  },
   "common": {
     "language": {
       "title": "Language",

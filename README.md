@@ -1038,6 +1038,20 @@ Web platformu ile tam eşlenik görsel deneyim için Sosyal Medya ekranı başta
 
 Tüm bu geliştirmeler sırasıyla commitlenip origin/main sunucusuna başarıyla pushlandı.
 
+### [06.09.2026] Uluslararasılaştırma (i18n) — Faz 2: AI Kişiliği Rol/Üslup Etiketlerinin id/label Ayrımı
+
+**Tetikleyici:** Web tarafındaki (`flowweb`) Faz 1 raporunda işaretlenen mimari engel — `AICharacterPanel.tsx`'teki rol/üslup listelerinde `id === label` (Türkçe) olması — çözülürken, kullanıcı iki somut örnekle talimat verdi: İngilizce'de "Standart" → **"Standard"**, "Kebapçı" → **"Turkish Kebab"**. AGENTS.md'nin "Ortak Veritabanı Etkileşimi" kuralı gereği (web ve mobil `organization_ai_settings.business_role`/`.tone` kolonlarını paylaşır), bu düzeltme web'de yapılırken mobildeki birebir aynı listenin de kontrol edilmesi zorunluydu.
+
+**Bulgu:** `src/modules/persona_engine/domain/config/roles.ts` ve `moods.ts`'teki `RoleConfig.title` / `MoodConfig.title` alanları, `BotYonetimiScreen.js` içinde (`role.title`, `mood.title`) doğrudan ekrana basılıyordu — web ile aynı id/label kaynaşması sorunu mobilde de vardı.
+
+**Mimari çözüm — id sabit, title hâlâ var ama artık ekranda kullanılmıyor:** `roles.ts`'e `ROLE_I18N_KEY_BY_ID`, `moods.ts`'e `MOOD_I18N_KEY_BY_ID` adında id→i18n-anahtarı eşlemeleri eklendi (web'deki `ROLE_KEY_BY_ID`/`TONE_KEY_BY_ID` ile birebir aynı anahtar kümesi — ör. `"Kebapçı" → "kebapci"`). `ROLES`/`MOODS` sabitlerindeki `id` ve `title` alanları **hiç değiştirilmedi** (id kayıtlı verilerle, `title` ise AI'a hiç gitmeyen ama gelecekte referans olarak kalması için korunan bir alan). `BotYonetimiScreen.js`'de rol/üslup kartlarının `label` prop'u artık `role.title`/`mood.title` değil, `t(\`personas.roles.${ROLE_I18N_KEY_BY_ID[role.id]}\`)` / `t(\`personas.tones.${MOOD_I18N_KEY_BY_ID[mood.id]}\`)` ile üretiliyor.
+
+**Eklenen çeviriler (`src/core/i18n/locales/{tr,en,de}.json` → yeni `personas` namespace'i):** Bölüm başlıkları ("AI Kişiliği", "👔 İşletme Rolü", "🧠 Karakter", "🎭 Üslup", "🎚️ Karakter Ayarları"), "Diğer" (özel rol) kartı, özel rol metin kutusu placeholder'ı, "Standart" karakter kartı, yükleniyor/boş liste metinleri, 3 kadran etiketi, ve web ile birebir aynı 15 rol + 9 üslup çevirisi (Kebapçı → Turkish Kebab, Berber → Barber, Restoran → Restaurant, Huysuz → Grumpy, vb. — Almanca dahil).
+
+**Değiştirilen dosyalar:** `src/modules/persona_engine/domain/config/roles.ts`, `.../config/moods.ts`, `src/modules/sosyal_medya/presentation/screens/BotYonetimiScreen.js`, `src/core/i18n/locales/tr.json`, `en.json`, `de.json`. `persona_engine/index.ts` barrel'ı (`export * from './domain/config/roles'` / `'./domain/config/moods'`) zaten mevcut olduğu için yeni export'ları otomatik yayıyor, dokunulmadı.
+
+**Bilinen kapsam dışı:** Bu tur sadece AI Kişiliği ekranındaki (BotYonetimiScreen) rol/üslup etiketlerini kapsıyor. Faz 1'de listelenen diğer 8 sıfır-i18n ekran ve `AuthScreen` hâlâ bekliyor.
+
 ### [05.09.2026] Uluslararasılaştırma (i18n) Denetimi — Faz 1: Dil Seçimi Altyapısı ve Otomatik Algılama
 
 **Tetikleyici:** Platform uluslararası kullanıcılara açılacağı için, kullanıcının açık talebi üzerine ("otomatik dil algılaması olmalı ve tüm arayüz İngilizceye/başka dillere kolay çevrilebilmeli") üç repo da (`flow`, `flowweb`, `ledger`) i18n hazırlığı açısından denetlendi.
