@@ -1038,6 +1038,20 @@ Web platformu ile tam eşlenik görsel deneyim için Sosyal Medya ekranı başta
 
 Tüm bu geliştirmeler sırasıyla commitlenip origin/main sunucusuna başarıyla pushlandı.
 
+### [06.09.2026] Uluslararasılaştırma (i18n) — Faz 3: Kalan 8 Sıfır-i18n Ekranın Tam Çevirisi
+
+**Tetikleyici:** Faz 1 denetiminde tespit edilen, Faz 2'de kapsam dışı bırakılan 8 ekran (`AuthScreen` dahil — hiçbiri `useTranslation` kullanmıyordu) için kullanıcı doğrudan talimat verdi: **"Tek seferde tam kapsamlı devam et"** — web tarafındaki eşdeğer talimatla aynı, ayrı dalgalar yerine tek seferde bitirme kararı.
+
+**Kapsam ve yöntem:** 8 ekran, 5 paralel ajan tarafından çakışmayan namespace'lere önceden atanarak çevrildi. Merge sırasında **iki agent'ın ürettiği çeviri JSON'ı orkestrasyon sürecinde kaybolduğu** fark edildi (özetleme/sıkıştırma sırasında ham JSON çıktısı korunamamıştı) — kayıp veri, kod içinde asıl Türkçe metinlerin `git diff` (HEAD'e karşı) üzerinden hâlâ geri getirilebilir olmasından faydalanılarak, değiştirilen dosyaların git diff'i yeniden okunup her `t('...')` çağrısının yerini aldığı orijinal Türkçe literal ile eşleştirilerek kayıpsız şekilde yeniden inşa edildi; hiçbir çeviri içeriği elle uydurulmadı, hepsi orijinal kaynağa (silinen satırlara) dayanıyor.
+
+**Yeni eklenen namespace'ler (`src/core/i18n/locales/{tr,en,de}.json`):** `isletmemScreen`, `muhasebecimScreen` (modül içi, `muhasebe/presentation/screens`), `authScreen`, `aiAssistantScreen`, `aiChatScreen`, `postCommentsScreen`, `bildirimlerScreen`, `postsScreen`, `dashboardScreen`.
+
+**Değiştirilen dosyalar:** `src/modules/muhasebe/presentation/screens/{MuhasebecimScreen.js,IsletmemScreen.js}` (modül-seviyesi `getBadge(status)` → `getBadge(status, t)` imza değişikliği, çağrı yerleri güncellendi), `src/screens/{AuthScreen.js,AiAssistantScreen.js,AiChatScreen.js,PostCommentsScreen.js,BildirimlerScreen.js,PostsScreen.js,DashboardScreen.js}`. `PostsScreen.js`'teki filtre sabiti `label` yerine `labelKey` kullanacak şekilde değiştirildi, render sırasında `t(item.labelKey)` ile çözülüyor. `BildirimlerScreen.js` ve `DashboardScreen.js`'teki modül-seviyesi `formatRelativeTime(dateStr)` fonksiyonları `formatRelativeTime(dateStr, t)` imzasına geçirildi; `DashboardScreen.js`'teki `formatDayMonth` ay kısaltmaları da (`OCA, ŞUB, ...`) artık `t('dashboardScreen.months.*')` üzerinden geliyor.
+
+**Doğrulama:** Merge sonrası yazılan bir Python script'i, 9 değiştirilen dosyanın tamamını tarayıp içindeki her statik `t('namespace.key')` çağrısını çıkardı (222 farklı anahtar) ve üç `locales/*.json` dosyasının da bu anahtarların tümünü içerdiğini teyit etti (sıfır eksik). `PostsScreen.js`'teki dinamik `t(item.labelKey)` deseni de elle doğrulandı.
+
+**Bilinen kapsam dışı (bilinçli olarak bırakıldı):** `PostCommentsScreen.js`'teki tek bir `.toLocaleDateString('tr-TR', ...)` çağrısı (satır ~420) — Faz 1 raporunda not edildiği gibi, ayrı bir locale-genelinde geçiş gerektirdiği için bu turda dokunulmadı. Aynı dosyadaki `alert(\`Private message sent to @${...}\`)` satırı (zaten İngilizce, yanına "TODO: Zernio POST" notu düşülmüş, backend'i henüz yazılmamış bir dev-placeholder) de Türkçe olmadığı ve bu sweep'in kapsamı (hardcoded Türkçe metin) dışında kaldığı için değiştirilmedi.
+
 ### [06.09.2026] Uluslararasılaştırma (i18n) — Faz 2: AI Kişiliği Rol/Üslup Etiketlerinin id/label Ayrımı
 
 **Tetikleyici:** Web tarafındaki (`flowweb`) Faz 1 raporunda işaretlenen mimari engel — `AICharacterPanel.tsx`'teki rol/üslup listelerinde `id === label` (Türkçe) olması — çözülürken, kullanıcı iki somut örnekle talimat verdi: İngilizce'de "Standart" → **"Standard"**, "Kebapçı" → **"Turkish Kebab"**. AGENTS.md'nin "Ortak Veritabanı Etkileşimi" kuralı gereği (web ve mobil `organization_ai_settings.business_role`/`.tone` kolonlarını paylaşır), bu düzeltme web'de yapılırken mobildeki birebir aynı listenin de kontrol edilmesi zorunluydu.

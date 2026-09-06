@@ -1,6 +1,8 @@
+/* eslint-disable i18next/no-literal-string */
 import React, { useState, useRef, useCallback } from 'react';
-import { 
-  View, 
+import { useTranslation } from 'react-i18next';
+import {
+  View,
   Text, 
   TouchableOpacity, 
   StyleSheet, 
@@ -75,13 +77,14 @@ const AnimatedBorderCard = ({ children, style, colors, padding = 16, borderRadiu
 // Removed MOCK_POSTS
 
 const FILTERS = [
-  { id: 'all', label: 'Tümü' },
-  { id: 'scheduled', label: 'Planlanan' },
-  { id: 'published', label: 'Yayınlanan' },
-  { id: 'failed', label: 'Hatalı' }
+  { id: 'all', labelKey: 'postsScreen.filters.all' },
+  { id: 'scheduled', labelKey: 'postsScreen.filters.scheduled' },
+  { id: 'published', labelKey: 'postsScreen.filters.published' },
+  { id: 'failed', labelKey: 'postsScreen.filters.failed' }
 ];
 
 export default function PostsScreen({ navigation }) {
+  const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState('all');
   const [posts, setPosts] = useState([]);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, postId: null });
@@ -131,10 +134,10 @@ export default function PostsScreen({ navigation }) {
 
   const getStatusLabel = (status) => {
     switch(status) {
-      case 'scheduled': return 'Planlandı';
-      case 'published': return 'Yayınlandı';
-      case 'failed': return 'Hatalı';
-      default: return 'Bilinmiyor';
+      case 'scheduled': return t('postsScreen.status.scheduled');
+      case 'published': return t('postsScreen.status.published');
+      case 'failed': return t('postsScreen.status.failed');
+      default: return t('postsScreen.status.unknown');
     }
   };
 
@@ -177,13 +180,13 @@ export default function PostsScreen({ navigation }) {
         .eq('id', deleteModal.postId);
         
       if (error) {
-        Alert.alert("Hata", "Gönderi silinirken hata oluştu: " + error.message);
+        Alert.alert(t('postsScreen.alerts.errorTitle'), t('postsScreen.alerts.deleteError', { message: error.message }));
       } else {
         setPosts(prev => prev.map(p => p.id === deleteModal.postId ? { ...p, status: 'deleted' } : p));
       }
     } catch (err) {
       console.error("Delete exception:", err);
-      Alert.alert("Hata", "İşlem sırasında hata oluştu.");
+      Alert.alert(t('postsScreen.alerts.errorTitle'), t('postsScreen.alerts.deleteException'));
     } finally {
       setIsDeleting(false);
       setDeleteModal({ isOpen: false, postId: null });
@@ -234,7 +237,7 @@ export default function PostsScreen({ navigation }) {
 
         {/* Date */}
         <View style={{ width: 150 }} className="items-center justify-center">
-           <Text className="text-[#A79E96] text-[12px]">{item.scheduled_for ? formatDate(item.scheduled_for) : 'Belirtilmedi'}</Text>
+           <Text className="text-[#A79E96] text-[12px]">{item.scheduled_for ? formatDate(item.scheduled_for) : t('postsScreen.table.notSpecified')}</Text>
         </View>
 
         {/* Status */}
@@ -251,7 +254,7 @@ export default function PostsScreen({ navigation }) {
         {/* Profile */}
         <View style={{ width: 150 }} className="flex-row items-center">
            <View style={{ width: 6, height: 6, borderRadius: 4, backgroundColor: '#F59E0B', marginRight: 8 }} />
-           <Text className="text-[#F6F1EC] text-[12px]" numberOfLines={1}>Al Esnaf Profil</Text>
+           <Text className="text-[#F6F1EC] text-[12px]" numberOfLines={1}>{t('postsScreen.table.profileLabel', { name: 'Al Esnaf' })}</Text>
         </View>
 
         {/* Metrics (Dynamic Data) */}
@@ -334,7 +337,7 @@ export default function PostsScreen({ navigation }) {
       <GlobalAppBar 
         level={2} 
         module="sosyal" 
-        title="Tüm Gönderiler" 
+        title={t('postsScreen.title')}
         showProfile={true} 
         actions={[{ icon: 'add', onPress: () => navigation.navigate('DigitalAssistant') }]} 
       />
@@ -351,7 +354,7 @@ export default function PostsScreen({ navigation }) {
               onPress={() => setActiveFilter(item.id)}
               className={`px-4 py-2 rounded-full mr-2 border ${activeFilter === item.id ? 'bg-[#22B573]/20 border-[#22B573]' : 'bg-white/5 border-white/10'}`}
               textClassName={`text-[12px] font-bold ${activeFilter === item.id ? 'text-[#22B573]' : 'text-[#A79E96]'}`}
-              title={item.label}
+              title={t(item.labelKey)}
             />
           )}
         />
@@ -372,7 +375,7 @@ export default function PostsScreen({ navigation }) {
             ListEmptyComponent={() => (
               <View className="items-center justify-center mt-20" style={{ width: '100%' }}>
                 <Feather name="file-text" size={48} color="#A79E96" style={{ opacity: 0.5, marginBottom: 16 }} />
-                <Text className="text-[#A79E96] text-[14px] mt-4">Bu duruma ait gönderi bulunamadı.</Text>
+                <Text className="text-[#A79E96] text-[14px] mt-4">{t('postsScreen.emptyState.noPostsForFilter')}</Text>
               </View>
             )}
           />
@@ -386,7 +389,7 @@ export default function PostsScreen({ navigation }) {
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderBottomWidth: 1, borderBottomColor: '#F6F1EC' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Feather name="trash-2" size={18} color="#EF4444" />
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#111827', marginLeft: 8 }}>Gönderiyi sil</Text>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#111827', marginLeft: 8 }}>{t('postsScreen.deleteModal.title')}</Text>
               </View>
               <TouchableOpacity onPress={() => !isDeleting && setDeleteModal({ isOpen: false, postId: null })} disabled={isDeleting} style={{ padding: 4 }}>
                 <Feather name="x" size={20} color="#A79E96" />
@@ -394,7 +397,7 @@ export default function PostsScreen({ navigation }) {
             </View>
             
             <View style={{ padding: 20 }}>
-              <Text style={{ fontSize: 14, color: '#4b5563', marginBottom: 20 }}>Bu gönderiyi nasıl silmek istediğinizi seçin.</Text>
+              <Text style={{ fontSize: 14, color: '#4b5563', marginBottom: 20 }}>{t('postsScreen.deleteModal.subtitle')}</Text>
               
               <TouchableOpacity 
                 disabled={isDeleting}
@@ -405,8 +408,8 @@ export default function PostsScreen({ navigation }) {
                   <Feather name="trash-2" size={18} color="#EF4444" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#111827', marginBottom: 4 }}>Sadece Workigom Flow'dan sil</Text>
-                  <Text style={{ fontSize: 12, color: '#756D66', lineHeight: 18 }}>Workigom Flow panelinizden kaldırılır. Gönderi Facebook ve Instagram'da yayınlanmaya devam eder.</Text>
+                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#111827', marginBottom: 4 }}>{t('postsScreen.deleteModal.panelOnly.title')}</Text>
+                  <Text style={{ fontSize: 12, color: '#756D66', lineHeight: 18 }}>{t('postsScreen.deleteModal.panelOnly.description')}</Text>
                 </View>
               </TouchableOpacity>
 
@@ -419,11 +422,11 @@ export default function PostsScreen({ navigation }) {
                   <Feather name="globe" size={18} color="#ec4899" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#111827', marginBottom: 4 }}>Platformlardan ve Workigom Flow'dan sil</Text>
-                  <Text style={{ fontSize: 12, color: '#756D66', lineHeight: 18, marginBottom: 8 }}>Facebook'tan kalıcı olarak silinir ve Workigom Flow'dan kaldırılır.</Text>
+                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#111827', marginBottom: 4 }}>{t('postsScreen.deleteModal.platformsToo.title')}</Text>
+                  <Text style={{ fontSize: 12, color: '#756D66', lineHeight: 18, marginBottom: 8 }}>{t('postsScreen.deleteModal.platformsToo.description')}</Text>
                   <View style={{ flexDirection: 'row', backgroundColor: '#fefce8', padding: 10, borderRadius: 8, borderWidth: 1, borderColor: '#fef08a' }}>
                     <Feather name="alert-triangle" size={14} color="#ca8a04" style={{ marginTop: 2, marginRight: 8 }} />
-                    <Text style={{ flex: 1, fontSize: 11, color: '#a16207', lineHeight: 16 }}>Instagram API üzerinden silmeyi desteklemediğinden, Instagram'dan manuel olarak silinmesi gerekebilir.</Text>
+                    <Text style={{ flex: 1, fontSize: 11, color: '#a16207', lineHeight: 16 }}>{t('postsScreen.deleteModal.platformsToo.warning')}</Text>
                   </View>
                 </View>
               </TouchableOpacity>

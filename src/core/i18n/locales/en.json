@@ -355,5 +355,335 @@
     "noSessionMessage": "Session not found.",
     "saveErrorTitle": "Error",
     "saveErrorMessage": "Could not save profile: {{error}}"
+  },
+  "postsScreen": {
+    "title": "All Posts",
+    "filters": {
+      "all": "All",
+      "scheduled": "Scheduled",
+      "published": "Published",
+      "failed": "Failed"
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "published": "Published",
+      "failed": "Failed",
+      "unknown": "Unknown"
+    },
+    "table": {
+      "notSpecified": "Not specified",
+      "profileLabel": "{{name}} Profile"
+    },
+    "emptyState": {
+      "noPostsForFilter": "No posts found for this status."
+    },
+    "deleteModal": {
+      "title": "Delete post",
+      "subtitle": "Choose how you want to delete this post.",
+      "panelOnly": {
+        "title": "Delete from Workigom Flow only",
+        "description": "It will be removed from your Workigom Flow panel. The post will keep being published on Facebook and Instagram."
+      },
+      "platformsToo": {
+        "title": "Delete from platforms and Workigom Flow",
+        "description": "It will be permanently deleted from Facebook and removed from Workigom Flow.",
+        "warning": "Since Instagram does not support deletion via its API, you may need to delete it manually from Instagram."
+      }
+    },
+    "alerts": {
+      "errorTitle": "Error",
+      "deleteError": "An error occurred while deleting the post: {{message}}",
+      "deleteException": "An error occurred during the operation."
+    }
+  },
+  "isletmemScreen": {
+    "badges": {
+      "paid": "Paid",
+      "partial": "Pending",
+      "unpaid": "Overdue",
+      "unknown": "Unknown"
+    },
+    "insights": {
+      "unavailable": "Analysis unavailable.",
+      "error": "Analysis is not available right now.",
+      "title": "Smart Analysis"
+    },
+    "tabs": {
+      "income": "Income",
+      "expense": "Expenses",
+      "invoices": "Invoices"
+    },
+    "headerTitle": "My Business",
+    "defaultMonthTab": "This Month",
+    "summary": {
+      "totalBalance": "Total Balance",
+      "trendUp": "Up {{percent}}% from last month",
+      "trendDown": "Down {{percent}}% from last month",
+      "income": "Income",
+      "expense": "Expenses"
+    },
+    "emptyState": "No records found for this category.",
+    "defaultIncomeTitle": "Sales Revenue",
+    "defaultExpenseTitle": "Expense",
+    "viewAll": "View All"
+  },
+  "muhasebecimScreen": {
+    "alerts": {
+      "invalidCodeTitle": "Error",
+      "invalidCodeMessage": "Please enter a valid accountant code.",
+      "copiedTitle": "Copied",
+      "copiedMessage": "Your ID code has been copied to the clipboard."
+    },
+    "unconnected": {
+      "title": "Connect With Your Accountant",
+      "subtitle": "Speed up your financial processes by securely sharing your data.",
+      "enterCode": {
+        "cardTitle": "Enter Accountant Code",
+        "cardDesc": "Connect your account by entering the invitation code your accountant gave you.",
+        "placeholder": "e.g. ABC-12345",
+        "verifying": "Please wait...",
+        "verify": "Verify"
+      },
+      "preview": {
+        "verifiedBadge": "Code verified",
+        "taxpayersSuffix": "{{value}} active taxpayers",
+        "featuresTitle": "If you connect with this accountant;",
+        "feature1": "Invoices are shared",
+        "feature2": "Income and expenses are transferred",
+        "feature3": "Document requests are received",
+        "feature4": "AI Accounting works together",
+        "connecting": "Connecting...",
+        "connect": "Connect",
+        "legalText": "By connecting, you agree to securely share your invoices, receipts, and financial documents with your chosen accountant. You can remove the connection at any time."
+      },
+      "shareCode": {
+        "cardTitle": "Share Your Own Code",
+        "cardDesc": "If your accountant wants to invite you to the platform, share the code below with them. Have my accountant add me."
+      }
+    },
+    "connected": {
+      "profileName": "Akbulut Accounting Firm",
+      "profileSubName": "Volkan Akbulut",
+      "statusText": "Connected • Last Sync: Today 14:32",
+      "messageText": "\"I checked the March invoices, could you upload the missing ones to the documents section?\"",
+      "messageAuthor": "- Ahmet Yılmaz, Accountant",
+      "missingDocsTitle": "Missing Documents",
+      "missingDocsValue": "{{count}} items",
+      "upcomingTaxTitle": "Upcoming Tax",
+      "upcomingTaxDate": "July 18",
+      "quickActionsTitle": "Quick Actions",
+      "sendMessage": "Send Message",
+      "viewDocuments": "View Documents",
+      "disconnect": "Disconnect"
+    },
+    "screenTitle": "My Accountant"
+  },
+  "authScreen": {
+    "errors": {
+      "oauthUrlFailed": "Could not generate OAuth URL.",
+      "googleLoginTitle": "Google Sign-In Error",
+      "loginTitle": "Login Error",
+      "genericTitle": "Error",
+      "nameRequired": "Please enter your first and last name.",
+      "phoneRequired": "Please enter your phone number.",
+      "signupTitle": "Sign-Up Error"
+    },
+    "success": {
+      "title": "Success",
+      "signupMessage": "Sign-up successful! Please confirm your account by clicking the link sent to your email address."
+    },
+    "title": {
+      "login": "Welcome",
+      "signup": "Create Account"
+    },
+    "googleButton": "Continue with Google",
+    "dividerText": "or with email",
+    "emailLabel": "Email",
+    "emailPlaceholder": "email@youraddress.com",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "E.g.: John Smith",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "+90 555 555 5555",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "******",
+    "loginButton": "Log In",
+    "signupButton": "Sign Up",
+    "noAccountText": "Don't have an account? ",
+    "hasAccountText": "Already have an account? "
+  },
+  "aiAssistantScreen": {
+    "initialMessages": {
+      "loginRequired": "Please log in first.",
+      "greetingReady": "Hello! Your Processor AI assistant is ready. How can I help you?"
+    },
+    "messages": {
+      "pdfReady": "Your PDF report has been prepared and is ready to share.",
+      "excelReady": "Your Excel report has been prepared and is ready to share.",
+      "manualEntrySaved": "✅ Transaction saved successfully.",
+      "connectionError": "A connection error occurred, please try again."
+    },
+    "pdfReport": {
+      "title": "Financial Transaction Report",
+      "dateColumn": "Date",
+      "titleColumn": "Title",
+      "amountColumn": "Amount"
+    },
+    "excelReport": {
+      "dateColumn": "Date",
+      "titleColumn": "Title",
+      "amountColumn": "Amount",
+      "typeColumn": "Type",
+      "incomeLabel": "Income",
+      "expenseLabel": "Expense",
+      "descriptionColumn": "Description",
+      "sheetName": "Transactions"
+    },
+    "headerTitle": {
+      "reconciliation": "AI Reconciliation",
+      "default": "Smart Financial Assistant"
+    },
+    "inputPlaceholder": {
+      "reconciliation": "Type your message...",
+      "default": "Request a report (e.g., Excel report)"
+    }
+  },
+  "aiChatScreen": {
+    "welcomeMessage": "Hello! You can save the transaction by uploading or typing a {{type}} document.",
+    "incomeWord": "income",
+    "expenseWord": "expense",
+    "textEntryTitle": "Text entry: {{prompt}}...",
+    "aiAnalysisPending": "AI Analysis Pending",
+    "documentAnalyzed": "Document analyzed successfully.",
+    "processError": "An error occurred while saving the transaction: {{error}}",
+    "unknownError": "Unknown error",
+    "transactionSaved": "Your transaction has been saved.",
+    "chatError": "An error occurred during the chat.",
+    "pdfUploaded": "PDF Uploaded: {{name}}",
+    "headerTitle": "AI Data Entry",
+    "inputPlaceholder": "Type the transaction..."
+  },
+  "postCommentsScreen": {
+    "defaultUsername": "User",
+    "alerts": {
+      "deleteCommentTitle": "Delete Comment",
+      "deleteCommentMessage": "This comment will be permanently deleted from your local database. Are you sure?",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleteCommentError": "Failed to delete comment.",
+      "deleteSelectedTitle": "Delete Comments",
+      "deleteSelectedMessage": "The selected {{count}} comments will be permanently deleted from your local database. Are you sure?",
+      "deleteSelectedPartialError": "An error occurred while deleting some comments, but they were hidden from the screen.",
+      "replySendError": "Failed to send reply. Please try again."
+    },
+    "storeMe": "Store (Me)",
+    "hiddenComment": "This comment has been hidden.",
+    "unhide": "Show (Unhide)",
+    "reply": "Reply",
+    "sendDm": "Send DM",
+    "title": "Comments",
+    "selectedCount": "{{count}} Selected",
+    "delete": "Delete",
+    "noContent": "No content",
+    "replyingToUser": "Replying to @{{username}}",
+    "replyPlaceholder": "Write your reply...",
+    "commentPlaceholder": "Add a comment to the post...",
+    "quickReplyDmTitle": "Quick Reply (DM)",
+    "sendSecretMessageTo": "Send a private message to @{{username}}",
+    "commentLabel": "COMMENT:",
+    "privateMessagePlaceholder": "Write your private message here...",
+    "send": "Send"
+  },
+  "bildirimlerScreen": {
+    "relativeTime": {
+      "minutesAgo": "{{count}}m ago",
+      "hoursAgo": "{{count}}h ago",
+      "daysAgo": "{{count}}d ago"
+    },
+    "alerts": {
+      "deleteTitle": "Delete",
+      "deleteMessage": "Are you sure you want to delete this notification?",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "title": "Notifications",
+    "emptyText": "You don't have any notifications yet."
+  },
+  "dashboardScreen": {
+    "time": {
+      "minutesAgo": "{{count}}m ago",
+      "hoursAgo": "{{count}}h ago",
+      "daysAgo": "{{count}}d ago"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "appointments": {
+      "consultingWith": "{{name}} - Consulting",
+      "brandMeeting": "Brand Meeting",
+      "demoWith": "{{name}} - Demo Presentation",
+      "weeklyAnalyticsReview": "Weekly Analytics Review"
+    },
+    "greeting": {
+      "defaultName": "User",
+      "hello": "Good day"
+    },
+    "upcomingPayments": {
+      "defaultTitle": "Payment",
+      "invoiceDefaultTitle": "Invoice Payment",
+      "title": "Upcoming payments",
+      "empty": "There are no upcoming payments."
+    },
+    "recentActivity": {
+      "types": {
+        "message": "MESSAGE",
+        "comment": "COMMENT"
+      },
+      "customerFallback": "Customer",
+      "userFallback": "User",
+      "title": "Recent activity",
+      "seeAll": "SEE ALL",
+      "empty": "There is no activity yet."
+    },
+    "ai": {
+      "activeTitle": "Your assistant is active",
+      "inactiveTitle": "Your assistant is off",
+      "activeSubtitle": "24/7 smart automation is on",
+      "inactiveSubtitle": "WhatsApp, social media, etc. are off"
+    },
+    "finance": {
+      "income": "Income",
+      "expense": "Expense"
+    },
+    "today": {
+      "title": "Today"
+    },
+    "social": {
+      "allAccounts": "All Accounts",
+      "live": "LIVE",
+      "totalFollowers": "Total followers",
+      "engagement": "Engagement"
+    },
+    "invoiceScanner": {
+      "header": "INVOICE SCANNER · LATEST INVOICE",
+      "supplier": "Supplier",
+      "date": "Date",
+      "vat": "VAT",
+      "total": "Total",
+      "scanButton": "+ Scan New Invoice"
+    },
+    "communicationReports": {
+      "title": "Communication reports"
+    }
   }
 }

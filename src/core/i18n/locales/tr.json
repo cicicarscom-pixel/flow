@@ -355,5 +355,335 @@
     "noSessionMessage": "Oturum bulunamadı.",
     "saveErrorTitle": "Hata",
     "saveErrorMessage": "Profil kaydedilemedi: {{error}}"
+  },
+  "postsScreen": {
+    "title": "Tüm Gönderiler",
+    "filters": {
+      "all": "Tümü",
+      "scheduled": "Planlanan",
+      "published": "Yayınlanan",
+      "failed": "Hatalı"
+    },
+    "status": {
+      "scheduled": "Planlandı",
+      "published": "Yayınlandı",
+      "failed": "Hatalı",
+      "unknown": "Bilinmiyor"
+    },
+    "table": {
+      "notSpecified": "Belirtilmedi",
+      "profileLabel": "{{name}} Profil"
+    },
+    "emptyState": {
+      "noPostsForFilter": "Bu duruma ait gönderi bulunamadı."
+    },
+    "deleteModal": {
+      "title": "Gönderiyi sil",
+      "subtitle": "Bu gönderiyi nasıl silmek istediğinizi seçin.",
+      "panelOnly": {
+        "title": "Sadece Workigom Flow'dan sil",
+        "description": "Workigom Flow panelinizden kaldırılır. Gönderi Facebook ve Instagram'da yayınlanmaya devam eder."
+      },
+      "platformsToo": {
+        "title": "Platformlardan ve Workigom Flow'dan sil",
+        "description": "Facebook'tan kalıcı olarak silinir ve Workigom Flow'dan kaldırılır.",
+        "warning": "Instagram API üzerinden silmeyi desteklemediğinden, Instagram'dan manuel olarak silinmesi gerekebilir."
+      }
+    },
+    "alerts": {
+      "errorTitle": "Hata",
+      "deleteError": "Gönderi silinirken hata oluştu: {{message}}",
+      "deleteException": "İşlem sırasında hata oluştu."
+    }
+  },
+  "isletmemScreen": {
+    "badges": {
+      "paid": "Ödendi",
+      "partial": "Bekliyor",
+      "unpaid": "Devretti",
+      "unknown": "Bilinmiyor"
+    },
+    "insights": {
+      "unavailable": "Analiz alınamadı.",
+      "error": "Şu an analiz yapılamıyor.",
+      "title": "Akıllı Analiz"
+    },
+    "tabs": {
+      "income": "Gelirler",
+      "expense": "Giderler",
+      "invoices": "Faturalar"
+    },
+    "headerTitle": "İşletmem",
+    "defaultMonthTab": "Bu Ay",
+    "summary": {
+      "totalBalance": "Toplam Bakiye",
+      "trendUp": "Geçen aya göre %{{percent}} artış",
+      "trendDown": "Geçen aya göre %{{percent}} düşüş",
+      "income": "Gelirler",
+      "expense": "Giderler"
+    },
+    "emptyState": "Bu kategori için kayıt bulunamadı.",
+    "defaultIncomeTitle": "Satış Geliri",
+    "defaultExpenseTitle": "Gider",
+    "viewAll": "Tümünü Gör"
+  },
+  "muhasebecimScreen": {
+    "alerts": {
+      "invalidCodeTitle": "Hata",
+      "invalidCodeMessage": "Lütfen geçerli bir muhasebeci kodu girin.",
+      "copiedTitle": "Kopyalandı",
+      "copiedMessage": "Kimlik kodunuz panoya kopyalandı."
+    },
+    "unconnected": {
+      "title": "Müşavirinize Bağlanın",
+      "subtitle": "Verilerinizi güvenli bir şekilde paylaşarak finansal süreçlerinizi hızlandırın.",
+      "enterCode": {
+        "cardTitle": "Muhasebeci Kodunu Gir",
+        "cardDesc": "Muhasebecinizin size verdiği davet kodunu girerek hesabınızı bağlayın.",
+        "placeholder": "Örn: ABC-12345",
+        "verifying": "Bekleyin...",
+        "verify": "Doğrula"
+      },
+      "preview": {
+        "verifiedBadge": "Kod doğrulandı",
+        "taxpayersSuffix": "{{value}} aktif mükellef",
+        "featuresTitle": "Bu muhasebeciye bağlanırsanız;",
+        "feature1": "Faturalar paylaşılır",
+        "feature2": "Gelir gider aktarılır",
+        "feature3": "Evrak talepleri alınır",
+        "feature4": "AI Muhasebe birlikte çalışır",
+        "connecting": "Bağlanıyor...",
+        "connect": "Bağlan",
+        "legalText": "Bağlanarak faturalarınızı, fişlerinizi ve finansal belgelerinizi seçtiğiniz mali müşavir ile güvenli şekilde paylaşmayı kabul etmiş olursunuz. Bağlantıyı istediğiniz zaman kaldırabilirsiniz."
+      },
+      "shareCode": {
+        "cardTitle": "Kendi Kodunu Paylaş",
+        "cardDesc": "Muhasebeciniz sizi platforma davet etmek isterse aşağıdaki kodu onunla paylaşın. Muhasebecim beni eklesin."
+      }
+    },
+    "connected": {
+      "profileName": "Akbulut Mali Müşavirlik",
+      "profileSubName": "Volkan Akbulut",
+      "statusText": "Bağlı • Son Senk: Bugün 14:32",
+      "messageText": "\"Mart ayı faturalarını kontrol ettim, eksik olanları belgeler kısmına yükleyebilir misin?\"",
+      "messageAuthor": "- Ahmet Yılmaz, Müşavir",
+      "missingDocsTitle": "Eksik Evrak",
+      "missingDocsValue": "{{count}} Adet",
+      "upcomingTaxTitle": "Yaklaşan Vergi",
+      "upcomingTaxDate": "18 Temmuz",
+      "quickActionsTitle": "Hızlı Eylemler",
+      "sendMessage": "Mesaj Gönder",
+      "viewDocuments": "Belgeleri Gör",
+      "disconnect": "Bağlantıyı Kes"
+    },
+    "screenTitle": "Muhasebecim"
+  },
+  "authScreen": {
+    "errors": {
+      "oauthUrlFailed": "OAuth URL oluşturulamadı.",
+      "googleLoginTitle": "Google Giriş Hatası",
+      "loginTitle": "Giriş Hatası",
+      "genericTitle": "Hata",
+      "nameRequired": "Lütfen adınızı ve soyadınızı girin.",
+      "phoneRequired": "Lütfen telefon numaranızı girin.",
+      "signupTitle": "Kayıt Hatası"
+    },
+    "success": {
+      "title": "Başarılı",
+      "signupMessage": "Kayıt başarılı! Lütfen e-posta adresinize gönderilen bağlantıya tıklayarak hesabınızı onaylayın."
+    },
+    "title": {
+      "login": "Hoş Geldiniz",
+      "signup": "Hesap Oluştur"
+    },
+    "googleButton": "Google ile Devam Et",
+    "dividerText": "veya e-posta ile",
+    "emailLabel": "E-Posta",
+    "emailPlaceholder": "email@adresiniz.com",
+    "nameLabel": "Ad Soyad",
+    "namePlaceholder": "Örn: Volkan Akbulut",
+    "phoneLabel": "Telefon Numarası",
+    "phonePlaceholder": "+90 555 555 5555",
+    "passwordLabel": "Şifre",
+    "passwordPlaceholder": "******",
+    "loginButton": "Giriş Yap",
+    "signupButton": "Kayıt Ol",
+    "noAccountText": "Hesabınız yok mu? ",
+    "hasAccountText": "Zaten hesabınız var mı? "
+  },
+  "aiAssistantScreen": {
+    "initialMessages": {
+      "loginRequired": "Lütfen önce giriş yapın.",
+      "greetingReady": "Merhaba! İşleyici AI asistanınız hazır. Size nasıl yardımcı olabilirim?"
+    },
+    "messages": {
+      "pdfReady": "PDF raporunuz hazırlandı ve paylaşıma açıldı.",
+      "excelReady": "Excel raporunuz hazırlandı ve paylaşıma açıldı.",
+      "manualEntrySaved": "✅ İşlem başarıyla kaydedildi.",
+      "connectionError": "Bağlantı hatası oluştu, lütfen tekrar deneyin."
+    },
+    "pdfReport": {
+      "title": "Finansal İşlem Raporu",
+      "dateColumn": "Tarih",
+      "titleColumn": "Başlık",
+      "amountColumn": "Tutar"
+    },
+    "excelReport": {
+      "dateColumn": "Tarih",
+      "titleColumn": "Başlık",
+      "amountColumn": "Tutar",
+      "typeColumn": "Tür",
+      "incomeLabel": "Gelir",
+      "expenseLabel": "Gider",
+      "descriptionColumn": "Açıklama",
+      "sheetName": "Islemler"
+    },
+    "headerTitle": {
+      "reconciliation": "AI Mutabakat",
+      "default": "Smart Financial Assistant"
+    },
+    "inputPlaceholder": {
+      "reconciliation": "Mesajınızı yazın...",
+      "default": "Rapor isteyin (Örn: Excel raporu)"
+    }
+  },
+  "aiChatScreen": {
+    "welcomeMessage": "Merhaba! Bir {{type}} belgesi yükleyerek veya yazarak işlemi kaydedebilirsiniz.",
+    "incomeWord": "gelir",
+    "expenseWord": "gider",
+    "textEntryTitle": "Metin girişi: {{prompt}}...",
+    "aiAnalysisPending": "AI Analizi Bekleniyor",
+    "documentAnalyzed": "Belge başarıyla analiz edildi.",
+    "processError": "İşlem kaydedilirken bir hata oluştu: {{error}}",
+    "unknownError": "Bilinmeyen hata",
+    "transactionSaved": "İşleminiz kaydedildi.",
+    "chatError": "Sohbet sırasında bir hata oluştu.",
+    "pdfUploaded": "PDF Yüklendi: {{name}}",
+    "headerTitle": "AI Veri Girişi",
+    "inputPlaceholder": "İşlemi yazın..."
+  },
+  "postCommentsScreen": {
+    "defaultUsername": "Kullanıcı",
+    "alerts": {
+      "deleteCommentTitle": "Yorumu Sil",
+      "deleteCommentMessage": "Bu yorum yerel veritabanınızdan tamamen silinecektir. Emin misiniz?",
+      "cancel": "İptal",
+      "delete": "Sil",
+      "deleteCommentError": "Yorum silinemedi.",
+      "deleteSelectedTitle": "Yorumları Sil",
+      "deleteSelectedMessage": "Seçilen {{count}} yorum yerel veritabanınızdan tamamen silinecektir. Emin misiniz?",
+      "deleteSelectedPartialError": "Bazı yorumlar silinirken hata oluştu, ancak ekrandan gizlendi.",
+      "replySendError": "Yanıt gönderilemedi. Lütfen tekrar deneyin."
+    },
+    "storeMe": "Mağaza (Ben)",
+    "hiddenComment": "Bu yorum gizlendi.",
+    "unhide": "Göster (Unhide)",
+    "reply": "Yanıtla",
+    "sendDm": "DM Gönder",
+    "title": "Yorumlar",
+    "selectedCount": "{{count}} Seçildi",
+    "delete": "Sil",
+    "noContent": "İçerik yok",
+    "replyingToUser": "@{{username}} kişisine yanıt veriliyor",
+    "replyPlaceholder": "Yanıtınızı yazın...",
+    "commentPlaceholder": "Gönderiye yorum ekle...",
+    "quickReplyDmTitle": "Hızlı Yanıt (DM)",
+    "sendSecretMessageTo": "@{{username}} kullanıcısına gizli mesaj gönder",
+    "commentLabel": "YORUMU:",
+    "privateMessagePlaceholder": "Özel mesajınızı buraya yazın...",
+    "send": "Gönder"
+  },
+  "bildirimlerScreen": {
+    "relativeTime": {
+      "minutesAgo": "{{count}}dk önce",
+      "hoursAgo": "{{count}}sa önce",
+      "daysAgo": "{{count}}g önce"
+    },
+    "alerts": {
+      "deleteTitle": "Sil",
+      "deleteMessage": "Bu bildirimi silmek istediğinize emin misiniz?",
+      "cancel": "İptal",
+      "delete": "Sil"
+    },
+    "title": "Bildirimler",
+    "emptyText": "Henüz bir bildiriminiz yok."
+  },
+  "dashboardScreen": {
+    "time": {
+      "minutesAgo": "{{count}}dk önce",
+      "hoursAgo": "{{count}}sa önce",
+      "daysAgo": "{{count}}g önce"
+    },
+    "months": {
+      "jan": "OCA",
+      "feb": "ŞUB",
+      "mar": "MAR",
+      "apr": "NİS",
+      "may": "MAY",
+      "jun": "HAZ",
+      "jul": "TEM",
+      "aug": "AĞU",
+      "sep": "EYL",
+      "oct": "EKİ",
+      "nov": "KAS",
+      "dec": "ARA"
+    },
+    "appointments": {
+      "consultingWith": "{{name}} - Danışmanlık",
+      "brandMeeting": "Marka Toplantısı",
+      "demoWith": "{{name}} - Demo Sunumu",
+      "weeklyAnalyticsReview": "Haftalık Analitik İncelemesi"
+    },
+    "greeting": {
+      "defaultName": "Kullanıcı",
+      "hello": "İyi günler"
+    },
+    "upcomingPayments": {
+      "defaultTitle": "Ödeme",
+      "invoiceDefaultTitle": "Fatura Ödemesi",
+      "title": "Yaklaşan ödemeler",
+      "empty": "Yaklaşan bir ödeme bulunmuyor."
+    },
+    "recentActivity": {
+      "types": {
+        "message": "MESAJ",
+        "comment": "YORUM"
+      },
+      "customerFallback": "Müşteri",
+      "userFallback": "Kullanıcı",
+      "title": "Son hareketler",
+      "seeAll": "TÜMÜNÜ GÖR",
+      "empty": "Henüz bir aktivite bulunmuyor."
+    },
+    "ai": {
+      "activeTitle": "Asistanın çalışıyor",
+      "inactiveTitle": "Asistanın kapalı",
+      "activeSubtitle": "7/24 akıllı otomasyon devrede",
+      "inactiveSubtitle": "WhatsApp, sosyal medya vb. kapalı"
+    },
+    "finance": {
+      "income": "Gelir",
+      "expense": "Gider"
+    },
+    "today": {
+      "title": "Bugün"
+    },
+    "social": {
+      "allAccounts": "Tüm Hesaplar",
+      "live": "CANLI",
+      "totalFollowers": "Toplam takipçi",
+      "engagement": "Etkileşim"
+    },
+    "invoiceScanner": {
+      "header": "FATURA TARAYICI · SON FATURA",
+      "supplier": "Tedarikçi",
+      "date": "Tarih",
+      "vat": "KDV",
+      "total": "Toplam",
+      "scanButton": "+ Yeni Fatura Tara"
+    },
+    "communicationReports": {
+      "title": "İletişim raporları"
+    }
   }
 }

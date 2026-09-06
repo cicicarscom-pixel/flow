@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, TouchableOpacity, Alert, Image, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../shared/lib/supabase';
@@ -14,6 +15,7 @@ WebBrowser.maybeCompleteAuthSession();
 const { width, height } = Dimensions.get('window');
 
 export default function AuthScreen() {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -50,7 +52,7 @@ export default function AuthScreen() {
       });
 
       if (error) throw error;
-      if (!data?.url) throw new Error('OAuth URL oluşturulamadı.');
+      if (!data?.url) throw new Error(t('authScreen.errors.oauthUrlFailed'));
       
       console.log('Supabase OAuth URL:', data.url);
 
@@ -72,7 +74,7 @@ export default function AuthScreen() {
         }
       }
     } catch (error) {
-      Alert.alert('Google Giriş Hatası', error.message);
+      Alert.alert(t('authScreen.errors.googleLoginTitle'), error.message);
     } finally {
       setLoading(false);
     }
@@ -84,17 +86,17 @@ export default function AuthScreen() {
       email: email,
       password: password,
     });
-    if (error) Alert.alert('Giriş Hatası', error.message);
+    if (error) Alert.alert(t('authScreen.errors.loginTitle'), error.message);
     setLoading(false);
   }
 
   async function signUpWithEmail() {
     if (!name) {
-      Alert.alert('Hata', 'Lütfen adınızı ve soyadınızı girin.');
+      Alert.alert(t('authScreen.errors.genericTitle'), t('authScreen.errors.nameRequired'));
       return;
     }
     if (!phone) {
-      Alert.alert('Hata', 'Lütfen telefon numaranızı girin.');
+      Alert.alert(t('authScreen.errors.genericTitle'), t('authScreen.errors.phoneRequired'));
       return;
     }
     setLoading(true);
@@ -110,9 +112,9 @@ export default function AuthScreen() {
       },
     });
     if (error) {
-      Alert.alert('Kayıt Hatası', error.message);
+      Alert.alert(t('authScreen.errors.signupTitle'), error.message);
     } else {
-      Alert.alert('Başarılı', 'Kayıt başarılı! Lütfen e-posta adresinize gönderilen bağlantıya tıklayarak hesabınızı onaylayın.');
+      Alert.alert(t('authScreen.success.title'), t('authScreen.success.signupMessage'));
       setIsLogin(true);
     }
     setLoading(false);
@@ -166,7 +168,7 @@ export default function AuthScreen() {
         <View style={styles.glassCard} className="rounded-3xl p-6 shadow-2xl">
           
           <Text className="text-white text-2xl font-bold mb-6 text-center">
-            {isLogin ? 'Hoş Geldiniz' : 'Hesap Oluştur'}
+            {isLogin ? t('authScreen.title.login') : t('authScreen.title.signup')}
           </Text>
 
           {/* GOOGLE LOGIN BUTTON */}
@@ -177,22 +179,22 @@ export default function AuthScreen() {
             className="flex-row items-center justify-center py-3.5 rounded-xl mb-6"
           >
             <FontAwesome5 name="google" size={18} color="#fff" style={{ marginRight: 12 }} />
-            <Text className="text-white font-bold text-base">Google ile Devam Et</Text>
+            <Text className="text-white font-bold text-base">{t('authScreen.googleButton')}</Text>
           </TouchableOpacity>
 
           {/* DIVIDER */}
           <View className="flex-row items-center mb-6">
             <View className="flex-1 h-[1px] bg-white/10" />
-            <Text className="text-[#A79E96] text-xs px-4">veya e-posta ile</Text>
+            <Text className="text-[#A79E96] text-xs px-4">{t('authScreen.dividerText')}</Text>
             <View className="flex-1 h-[1px] bg-white/10" />
           </View>
 
           {/* EMAIL & PASSWORD INPUTS */}
           <CustomInput
-            label="E-Posta"
+            label={t('authScreen.emailLabel')}
             onChangeText={(text) => setEmail(text)}
             value={email}
-            placeholder="email@adresiniz.com"
+            placeholder={t('authScreen.emailPlaceholder')}
             autoCapitalize="none"
             keyboardType="email-address"
             containerClassName="mb-4"
@@ -201,18 +203,18 @@ export default function AuthScreen() {
           {!isLogin && (
             <>
               <CustomInput
-                label="Ad Soyad"
+                label={t('authScreen.nameLabel')}
                 onChangeText={(text) => setName(text)}
                 value={name}
-                placeholder="Örn: Volkan Akbulut"
+                placeholder={t('authScreen.namePlaceholder')}
                 autoCapitalize="words"
                 containerClassName="mb-4"
               />
               <CustomInput
-                label="Telefon Numarası"
+                label={t('authScreen.phoneLabel')}
                 onChangeText={(text) => setPhone(text)}
                 value={phone}
-                placeholder="+90 555 555 5555"
+                placeholder={t('authScreen.phonePlaceholder')}
                 keyboardType="phone-pad"
                 containerClassName="mb-4"
               />
@@ -220,17 +222,17 @@ export default function AuthScreen() {
           )}
 
           <CustomInput
-            label="Şifre"
+            label={t('authScreen.passwordLabel')}
             onChangeText={(text) => setPassword(text)}
             value={password}
             secureTextEntry={true}
-            placeholder="******"
+            placeholder={t('authScreen.passwordPlaceholder')}
             autoCapitalize="none"
             containerClassName="mb-8"
           />
 
           <CustomButton
-            title={isLogin ? 'Giriş Yap' : 'Kayıt Ol'}
+            title={isLogin ? t('authScreen.loginButton') : t('authScreen.signupButton')}
             onPress={() => isLogin ? signInWithEmail() : signUpWithEmail()}
             isLoading={loading}
             className="w-full shadow-[0_0_15px_rgba(0,218,243,0.3)] mb-4"
@@ -240,9 +242,9 @@ export default function AuthScreen() {
 
           <TouchableOpacity onPress={() => setIsLogin(!isLogin)} className="items-center mt-2">
             <Text className="text-[#A79E96] text-sm">
-              {isLogin ? 'Hesabınız yok mu? ' : 'Zaten hesabınız var mı? '}
+              {isLogin ? t('authScreen.noAccountText') : t('authScreen.hasAccountText')}
               <Text className="text-[#22B573] font-bold">
-                {isLogin ? 'Kayıt Ol' : 'Giriş Yap'}
+                {isLogin ? t('authScreen.signupButton') : t('authScreen.loginButton')}
               </Text>
             </Text>
           </TouchableOpacity>

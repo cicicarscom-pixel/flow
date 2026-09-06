@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert, ImageBackground, StyleSheet , KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -8,10 +9,11 @@ import * as FileSystem from 'expo-file-system';
 import { supabase , ChatInputBar , GlobalAppBar } from '../shared';
 
 export default function AiChatScreen({ route, navigation }) {
+  const { t } = useTranslation();
   const { transactionType } = route.params || { transactionType: 'income' };
-  
+
   const [messages, setMessages] = useState([
-    { id: 1, text: `Merhaba! Bir ${transactionType === 'income' ? 'gelir' : 'gider'} belgesi yükleyerek veya yazarak işlemi kaydedebilirsiniz.`, sender: 'ai' }
+    { id: 1, text: t('aiChatScreen.welcomeMessage', { type: transactionType === 'income' ? t('aiChatScreen.incomeWord') : t('aiChatScreen.expenseWord') }), sender: 'ai' }
   ]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -51,7 +53,7 @@ export default function AiChatScreen({ route, navigation }) {
           image_url: null,
           ledger_official_status: 'taslak',
           flow_payment_status: 'unpaid', // temporary until edge function updates it
-          title: textPrompt ? `Metin girişi: ${textPrompt.substring(0, 20)}...` : 'AI Analizi Bekleniyor',
+          title: textPrompt ? t('aiChatScreen.textEntryTitle', { prompt: textPrompt.substring(0, 20) }) : t('aiChatScreen.aiAnalysisPending'),
           amount_minor: 0
         }
       ]).select().maybeSingle();
@@ -79,11 +81,11 @@ export default function AiChatScreen({ route, navigation }) {
       if (result && result.error) throw new Error(result.error);
 
       // Edge function'dan gelen dinamik mesaji ekrana bas
-      addMessage(result.message || `Belge başarıyla analiz edildi.`, 'ai');
+      addMessage(result.message || t('aiChatScreen.documentAnalyzed'), 'ai');
 
     } catch (error) {
       console.error("Belge isleme hatasi:", error);
-      addMessage(`İşlem kaydedilirken bir hata oluştu: ${error.message || "Bilinmeyen hata"}`, 'ai');
+      addMessage(t('aiChatScreen.processError', { error: error.message || t('aiChatScreen.unknownError') }), 'ai');
     } finally {
       setLoading(false);
     }
@@ -104,11 +106,11 @@ export default function AiChatScreen({ route, navigation }) {
       if (invokeError) throw invokeError;
       if (result && result.error) throw new Error(result.error);
 
-      addMessage(result.message || "İşleminiz kaydedildi.", 'ai');
+      addMessage(result.message || t('aiChatScreen.transactionSaved'), 'ai');
 
     } catch (error) {
       console.error("Sohbet hatasi:", error);
-      addMessage("Sohbet sırasında bir hata oluştu.", 'ai');
+      addMessage(t('aiChatScreen.chatError'), 'ai');
     } finally {
       setLoading(false);
     }
@@ -134,7 +136,7 @@ export default function AiChatScreen({ route, navigation }) {
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf' });
     if (!result.canceled && result.assets[0].uri) {
-      addMessage(`PDF Yüklendi: ${result.assets[0].name}`, 'user');
+      addMessage(t('aiChatScreen.pdfUploaded', { name: result.assets[0].name }), 'user');
       const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, { encoding: FileSystem.EncodingType.Base64 });
       processWithAI(result.assets[0].uri, base64, 'application/pdf', null);
     }
@@ -161,7 +163,7 @@ export default function AiChatScreen({ route, navigation }) {
           <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(10, 10, 11, 0.8)' }]} />
         </ImageBackground>
         {/* Header */}
-        <GlobalAppBar level={3} module="finans" title="AI Veri Girişi" showProfile={false} />
+        <GlobalAppBar level={3} module="finans" title={t('aiChatScreen.headerTitle')} showProfile={false} />
 
         {/* Chat Area */}
         <ScrollView className="flex-1 px-4 pt-4">
@@ -186,7 +188,7 @@ export default function AiChatScreen({ route, navigation }) {
           inputText={inputText}
           setInputText={setInputText}
           handleSend={handleSendText}
-          placeholder="İşlemi yazın..."
+          placeholder={t('aiChatScreen.inputPlaceholder')}
           onAttachImage={() => pickImage(true)}
           onAttachGallery={() => pickImage(false)}
           onAttachDocument={pickDocument}

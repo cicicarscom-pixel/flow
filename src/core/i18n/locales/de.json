@@ -355,5 +355,335 @@
     "noSessionMessage": "Sitzung nicht gefunden.",
     "saveErrorTitle": "Fehler",
     "saveErrorMessage": "Profil konnte nicht gespeichert werden: {{error}}"
+  },
+  "postsScreen": {
+    "title": "Alle Beiträge",
+    "filters": {
+      "all": "Alle",
+      "scheduled": "Geplant",
+      "published": "Veröffentlicht",
+      "failed": "Fehlgeschlagen"
+    },
+    "status": {
+      "scheduled": "Geplant",
+      "published": "Veröffentlicht",
+      "failed": "Fehlgeschlagen",
+      "unknown": "Unbekannt"
+    },
+    "table": {
+      "notSpecified": "Nicht angegeben",
+      "profileLabel": "{{name}} Profil"
+    },
+    "emptyState": {
+      "noPostsForFilter": "Für diesen Status wurden keine Beiträge gefunden."
+    },
+    "deleteModal": {
+      "title": "Beitrag löschen",
+      "subtitle": "Wählen Sie, wie Sie diesen Beitrag löschen möchten.",
+      "panelOnly": {
+        "title": "Nur aus Workigom Flow löschen",
+        "description": "Der Beitrag wird aus Ihrem Workigom Flow-Panel entfernt. Er bleibt weiterhin auf Facebook und Instagram veröffentlicht."
+      },
+      "platformsToo": {
+        "title": "Von den Plattformen und aus Workigom Flow löschen",
+        "description": "Der Beitrag wird dauerhaft von Facebook gelöscht und aus Workigom Flow entfernt.",
+        "warning": "Da Instagram das Löschen über die API nicht unterstützt, müssen Sie den Beitrag möglicherweise manuell von Instagram löschen."
+      }
+    },
+    "alerts": {
+      "errorTitle": "Fehler",
+      "deleteError": "Beim Löschen des Beitrags ist ein Fehler aufgetreten: {{message}}",
+      "deleteException": "Bei der Verarbeitung ist ein Fehler aufgetreten."
+    }
+  },
+  "isletmemScreen": {
+    "badges": {
+      "paid": "Bezahlt",
+      "partial": "Ausstehend",
+      "unpaid": "Überfällig",
+      "unknown": "Unbekannt"
+    },
+    "insights": {
+      "unavailable": "Analyse nicht verfügbar.",
+      "error": "Die Analyse ist derzeit nicht möglich.",
+      "title": "Intelligente Analyse"
+    },
+    "tabs": {
+      "income": "Einnahmen",
+      "expense": "Ausgaben",
+      "invoices": "Rechnungen"
+    },
+    "headerTitle": "Mein Unternehmen",
+    "defaultMonthTab": "Dieser Monat",
+    "summary": {
+      "totalBalance": "Gesamtsaldo",
+      "trendUp": "{{percent}}% Anstieg gegenüber dem Vormonat",
+      "trendDown": "{{percent}}% Rückgang gegenüber dem Vormonat",
+      "income": "Einnahmen",
+      "expense": "Ausgaben"
+    },
+    "emptyState": "Für diese Kategorie wurden keine Einträge gefunden.",
+    "defaultIncomeTitle": "Verkaufserlös",
+    "defaultExpenseTitle": "Ausgabe",
+    "viewAll": "Alle anzeigen"
+  },
+  "muhasebecimScreen": {
+    "alerts": {
+      "invalidCodeTitle": "Fehler",
+      "invalidCodeMessage": "Bitte geben Sie einen gültigen Steuerberater-Code ein.",
+      "copiedTitle": "Kopiert",
+      "copiedMessage": "Ihr Identifikationscode wurde in die Zwischenablage kopiert."
+    },
+    "unconnected": {
+      "title": "Mit Ihrem Steuerberater verbinden",
+      "subtitle": "Beschleunigen Sie Ihre Finanzprozesse, indem Sie Ihre Daten sicher teilen.",
+      "enterCode": {
+        "cardTitle": "Steuerberater-Code eingeben",
+        "cardDesc": "Verbinden Sie Ihr Konto, indem Sie den Einladungscode Ihres Steuerberaters eingeben.",
+        "placeholder": "z. B. ABC-12345",
+        "verifying": "Bitte warten...",
+        "verify": "Bestätigen"
+      },
+      "preview": {
+        "verifiedBadge": "Code bestätigt",
+        "taxpayersSuffix": "{{value}} aktive Mandanten",
+        "featuresTitle": "Wenn Sie sich mit diesem Steuerberater verbinden;",
+        "feature1": "Rechnungen werden geteilt",
+        "feature2": "Einnahmen und Ausgaben werden übertragen",
+        "feature3": "Dokumentenanfragen werden empfangen",
+        "feature4": "KI-Buchhaltung arbeitet zusammen",
+        "connecting": "Wird verbunden...",
+        "connect": "Verbinden",
+        "legalText": "Durch die Verbindung stimmen Sie zu, Ihre Rechnungen, Belege und Finanzdokumente sicher mit Ihrem gewählten Steuerberater zu teilen. Sie können die Verbindung jederzeit aufheben."
+      },
+      "shareCode": {
+        "cardTitle": "Ihren eigenen Code teilen",
+        "cardDesc": "Falls Ihr Steuerberater Sie zur Plattform einladen möchte, teilen Sie ihm den folgenden Code mit. Lassen Sie sich von Ihrem Steuerberater hinzufügen."
+      }
+    },
+    "connected": {
+      "profileName": "Akbulut Steuerberatungskanzlei",
+      "profileSubName": "Volkan Akbulut",
+      "statusText": "Verbunden • Letzte Synchr.: Heute 14:32",
+      "messageText": "\"Ich habe die Rechnungen für März geprüft, könntest du die fehlenden im Dokumentenbereich hochladen?\"",
+      "messageAuthor": "- Ahmet Yılmaz, Steuerberater",
+      "missingDocsTitle": "Fehlende Dokumente",
+      "missingDocsValue": "{{count}} Stück",
+      "upcomingTaxTitle": "Anstehende Steuer",
+      "upcomingTaxDate": "18. Juli",
+      "quickActionsTitle": "Schnellaktionen",
+      "sendMessage": "Nachricht senden",
+      "viewDocuments": "Dokumente ansehen",
+      "disconnect": "Verbindung trennen"
+    },
+    "screenTitle": "Mein Steuerberater"
+  },
+  "authScreen": {
+    "errors": {
+      "oauthUrlFailed": "OAuth-URL konnte nicht erstellt werden.",
+      "googleLoginTitle": "Google-Anmeldefehler",
+      "loginTitle": "Anmeldefehler",
+      "genericTitle": "Fehler",
+      "nameRequired": "Bitte geben Sie Ihren Vor- und Nachnamen ein.",
+      "phoneRequired": "Bitte geben Sie Ihre Telefonnummer ein.",
+      "signupTitle": "Registrierungsfehler"
+    },
+    "success": {
+      "title": "Erfolgreich",
+      "signupMessage": "Registrierung erfolgreich! Bitte bestätigen Sie Ihr Konto, indem Sie auf den an Ihre E-Mail-Adresse gesendeten Link klicken."
+    },
+    "title": {
+      "login": "Willkommen",
+      "signup": "Konto erstellen"
+    },
+    "googleButton": "Mit Google fortfahren",
+    "dividerText": "oder mit E-Mail",
+    "emailLabel": "E-Mail",
+    "emailPlaceholder": "email@ihreadresse.com",
+    "nameLabel": "Vor- und Nachname",
+    "namePlaceholder": "Z. B.: Max Mustermann",
+    "phoneLabel": "Telefonnummer",
+    "phonePlaceholder": "+90 555 555 5555",
+    "passwordLabel": "Passwort",
+    "passwordPlaceholder": "******",
+    "loginButton": "Anmelden",
+    "signupButton": "Registrieren",
+    "noAccountText": "Sie haben noch kein Konto? ",
+    "hasAccountText": "Sie haben bereits ein Konto? "
+  },
+  "aiAssistantScreen": {
+    "initialMessages": {
+      "loginRequired": "Bitte melden Sie sich zuerst an.",
+      "greetingReady": "Hallo! Ihr Processor-KI-Assistent ist bereit. Wie kann ich Ihnen helfen?"
+    },
+    "messages": {
+      "pdfReady": "Ihr PDF-Bericht wurde erstellt und zum Teilen freigegeben.",
+      "excelReady": "Ihr Excel-Bericht wurde erstellt und zum Teilen freigegeben.",
+      "manualEntrySaved": "✅ Transaktion erfolgreich gespeichert.",
+      "connectionError": "Es ist ein Verbindungsfehler aufgetreten, bitte versuchen Sie es erneut."
+    },
+    "pdfReport": {
+      "title": "Finanztransaktionsbericht",
+      "dateColumn": "Datum",
+      "titleColumn": "Titel",
+      "amountColumn": "Betrag"
+    },
+    "excelReport": {
+      "dateColumn": "Datum",
+      "titleColumn": "Titel",
+      "amountColumn": "Betrag",
+      "typeColumn": "Typ",
+      "incomeLabel": "Einnahme",
+      "expenseLabel": "Ausgabe",
+      "descriptionColumn": "Beschreibung",
+      "sheetName": "Transaktionen"
+    },
+    "headerTitle": {
+      "reconciliation": "KI-Abgleich",
+      "default": "Intelligenter Finanzassistent"
+    },
+    "inputPlaceholder": {
+      "reconciliation": "Schreiben Sie Ihre Nachricht...",
+      "default": "Fordern Sie einen Bericht an (z. B. Excel-Bericht)"
+    }
+  },
+  "aiChatScreen": {
+    "welcomeMessage": "Hallo! Sie können die Transaktion speichern, indem Sie ein {{type}}-Dokument hochladen oder eingeben.",
+    "incomeWord": "Einnahmen",
+    "expenseWord": "Ausgaben",
+    "textEntryTitle": "Texteingabe: {{prompt}}...",
+    "aiAnalysisPending": "KI-Analyse ausstehend",
+    "documentAnalyzed": "Dokument erfolgreich analysiert.",
+    "processError": "Beim Speichern der Transaktion ist ein Fehler aufgetreten: {{error}}",
+    "unknownError": "Unbekannter Fehler",
+    "transactionSaved": "Ihre Transaktion wurde gespeichert.",
+    "chatError": "Beim Chat ist ein Fehler aufgetreten.",
+    "pdfUploaded": "PDF hochgeladen: {{name}}",
+    "headerTitle": "KI-Dateneingabe",
+    "inputPlaceholder": "Transaktion eingeben..."
+  },
+  "postCommentsScreen": {
+    "defaultUsername": "Benutzer",
+    "alerts": {
+      "deleteCommentTitle": "Kommentar löschen",
+      "deleteCommentMessage": "Dieser Kommentar wird endgültig aus Ihrer lokalen Datenbank gelöscht. Sind Sie sicher?",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "deleteCommentError": "Kommentar konnte nicht gelöscht werden.",
+      "deleteSelectedTitle": "Kommentare löschen",
+      "deleteSelectedMessage": "Die ausgewählten {{count}} Kommentare werden endgültig aus Ihrer lokalen Datenbank gelöscht. Sind Sie sicher?",
+      "deleteSelectedPartialError": "Beim Löschen einiger Kommentare ist ein Fehler aufgetreten, sie wurden jedoch vom Bildschirm ausgeblendet.",
+      "replySendError": "Antwort konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+    },
+    "storeMe": "Geschäft (Ich)",
+    "hiddenComment": "Dieser Kommentar wurde ausgeblendet.",
+    "unhide": "Anzeigen (Einblenden)",
+    "reply": "Antworten",
+    "sendDm": "DM senden",
+    "title": "Kommentare",
+    "selectedCount": "{{count}} ausgewählt",
+    "delete": "Löschen",
+    "noContent": "Kein Inhalt",
+    "replyingToUser": "Antwort an @{{username}}",
+    "replyPlaceholder": "Schreiben Sie Ihre Antwort...",
+    "commentPlaceholder": "Kommentar zum Beitrag hinzufügen...",
+    "quickReplyDmTitle": "Schnellantwort (DM)",
+    "sendSecretMessageTo": "Private Nachricht an @{{username}} senden",
+    "commentLabel": "KOMMENTAR:",
+    "privateMessagePlaceholder": "Schreiben Sie hier Ihre private Nachricht...",
+    "send": "Senden"
+  },
+  "bildirimlerScreen": {
+    "relativeTime": {
+      "minutesAgo": "vor {{count}} Min.",
+      "hoursAgo": "vor {{count}} Std.",
+      "daysAgo": "vor {{count}} T."
+    },
+    "alerts": {
+      "deleteTitle": "Löschen",
+      "deleteMessage": "Sind Sie sicher, dass Sie diese Benachrichtigung löschen möchten?",
+      "cancel": "Abbrechen",
+      "delete": "Löschen"
+    },
+    "title": "Benachrichtigungen",
+    "emptyText": "Sie haben noch keine Benachrichtigungen."
+  },
+  "dashboardScreen": {
+    "time": {
+      "minutesAgo": "vor {{count}} Min.",
+      "hoursAgo": "vor {{count}} Std.",
+      "daysAgo": "vor {{count}} Tg."
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mär",
+      "apr": "Apr",
+      "may": "Mai",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Okt",
+      "nov": "Nov",
+      "dec": "Dez"
+    },
+    "appointments": {
+      "consultingWith": "{{name}} - Beratung",
+      "brandMeeting": "Marken-Meeting",
+      "demoWith": "{{name}} - Demo-Präsentation",
+      "weeklyAnalyticsReview": "Wöchentliche Analytics-Überprüfung"
+    },
+    "greeting": {
+      "defaultName": "Benutzer",
+      "hello": "Guten Tag"
+    },
+    "upcomingPayments": {
+      "defaultTitle": "Zahlung",
+      "invoiceDefaultTitle": "Rechnungszahlung",
+      "title": "Anstehende Zahlungen",
+      "empty": "Es gibt keine anstehenden Zahlungen."
+    },
+    "recentActivity": {
+      "types": {
+        "message": "NACHRICHT",
+        "comment": "KOMMENTAR"
+      },
+      "customerFallback": "Kunde",
+      "userFallback": "Benutzer",
+      "title": "Letzte Aktivitäten",
+      "seeAll": "ALLE ANZEIGEN",
+      "empty": "Es gibt noch keine Aktivität."
+    },
+    "ai": {
+      "activeTitle": "Dein Assistent ist aktiv",
+      "inactiveTitle": "Dein Assistent ist ausgeschaltet",
+      "activeSubtitle": "24/7 intelligente Automatisierung ist aktiv",
+      "inactiveSubtitle": "WhatsApp, soziale Medien usw. sind ausgeschaltet"
+    },
+    "finance": {
+      "income": "Einnahmen",
+      "expense": "Ausgaben"
+    },
+    "today": {
+      "title": "Heute"
+    },
+    "social": {
+      "allAccounts": "Alle Konten",
+      "live": "LIVE",
+      "totalFollowers": "Follower insgesamt",
+      "engagement": "Interaktion"
+    },
+    "invoiceScanner": {
+      "header": "RECHNUNGSSCANNER · LETZTE RECHNUNG",
+      "supplier": "Lieferant",
+      "date": "Datum",
+      "vat": "MwSt.",
+      "total": "Gesamt",
+      "scanButton": "+ Neue Rechnung scannen"
+    },
+    "communicationReports": {
+      "title": "Kommunikationsberichte"
+    }
   }
 }

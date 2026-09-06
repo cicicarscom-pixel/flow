@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import { useTranslation } from 'react-i18next';
+import {
   View, 
   Text, 
   StyleSheet, 
@@ -23,17 +24,18 @@ const COLORS = {
   warning: '#F59E0B'
 };
 
-const formatRelativeTime = (dateStr) => {
+const formatRelativeTime = (dateStr, t) => {
   if (!dateStr) return '';
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${Math.max(1, mins)}dk önce`;
+  if (mins < 60) return t('bildirimlerScreen.relativeTime.minutesAgo', { count: Math.max(1, mins) });
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}sa önce`;
-  return `${Math.floor(hrs / 24)}g önce`;
+  if (hrs < 24) return t('bildirimlerScreen.relativeTime.hoursAgo', { count: hrs });
+  return t('bildirimlerScreen.relativeTime.daysAgo', { count: Math.floor(hrs / 24) });
 };
 
 export default function BildirimlerScreen({ navigation, isTab = false }) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -102,10 +104,10 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
   };
 
   const deleteNotification = async (id) => {
-    Alert.alert('Sil', 'Bu bildirimi silmek istediğinize emin misiniz?', [
-      { text: 'İptal', style: 'cancel' },
-      { 
-        text: 'Sil', 
+    Alert.alert(t('bildirimlerScreen.alerts.deleteTitle'), t('bildirimlerScreen.alerts.deleteMessage'), [
+      { text: t('bildirimlerScreen.alerts.cancel'), style: 'cancel' },
+      {
+        text: t('bildirimlerScreen.alerts.delete'),
         style: 'destructive',
         onPress: async () => {
           setNotifications(prev => prev.filter(n => n.id !== id));
@@ -148,7 +150,7 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
             <Text style={[styles.title, !item.is_read && { fontWeight: '700', color: '#fff' }]} numberOfLines={1}>
               {item.title}
             </Text>
-            <Text style={styles.time}>{formatRelativeTime(item.created_at)}</Text>
+            <Text style={styles.time}>{formatRelativeTime(item.created_at, t)}</Text>
           </View>
           <Text style={[styles.message, !item.is_read && { color: COLORS.onSurface }]} numberOfLines={2}>
             {item.message}
@@ -164,9 +166,9 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
   return (
     <View style={styles.container}>
       {!isTab && (
-        <GlobalAppBar 
-          title="Bildirimler" 
-          onBack={() => navigation.goBack()} 
+        <GlobalAppBar
+          title={t('bildirimlerScreen.title')}
+          onBack={() => navigation.goBack()}
           rightIcon={notifications.some(n => !n.is_read) ? "checkmark-done" : undefined}
           onRightPress={markAllAsRead}
         />
@@ -179,7 +181,7 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
       ) : notifications.length === 0 ? (
         <View style={styles.center}>
           <MaterialIcons name="notifications-off" size={64} color="rgba(255,255,255,0.1)" />
-          <Text style={styles.emptyText}>Henüz bir bildiriminiz yok.</Text>
+          <Text style={styles.emptyText}>{t('bildirimlerScreen.emptyText')}</Text>
         </View>
       ) : (
         <FlatList

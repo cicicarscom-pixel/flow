@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
+import { useTranslation } from 'react-i18next';
+import {
   View, 
   Text, 
   ScrollView, 
@@ -47,20 +48,25 @@ const hexToRgb = (hex) => {
   return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '0,218,243';
 };
 
-const formatRelativeTime = (dateStr) => {
+const formatRelativeTime = (dateStr, t) => {
   if (!dateStr) return '';
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${Math.max(1, mins)}dk önce`;
+  if (mins < 60) return t('dashboardScreen.time.minutesAgo', { count: Math.max(1, mins) });
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}sa önce`;
-  return `${Math.floor(hrs / 24)}g önce`;
+  if (hrs < 24) return t('dashboardScreen.time.hoursAgo', { count: hrs });
+  return t('dashboardScreen.time.daysAgo', { count: Math.floor(hrs / 24) });
 };
 
-const formatDayMonth = (dateStr) => {
+const formatDayMonth = (dateStr, t) => {
   if (!dateStr) return '';
   const d = new Date(dateStr);
-  const months = ['OCA', 'ŞUB', 'MAR', 'NİS', 'MAY', 'HAZ', 'TEM', 'AĞU', 'EYL', 'EKİ', 'KAS', 'ARA'];
+  const months = [
+    t('dashboardScreen.months.jan'), t('dashboardScreen.months.feb'), t('dashboardScreen.months.mar'),
+    t('dashboardScreen.months.apr'), t('dashboardScreen.months.may'), t('dashboardScreen.months.jun'),
+    t('dashboardScreen.months.jul'), t('dashboardScreen.months.aug'), t('dashboardScreen.months.sep'),
+    t('dashboardScreen.months.oct'), t('dashboardScreen.months.nov'), t('dashboardScreen.months.dec')
+  ];
   return `${d.getDate()} ${months[d.getMonth()]}`;
 };
 
@@ -156,9 +162,10 @@ const BAR_IMAGES = [
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function DashboardScreen({ navigation }) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [aiActive, setAiActive] = useState(true);
   const [userProfile, setUserProfile] = useState({ fullName: '', avatarUrl: null });
@@ -180,10 +187,10 @@ export default function DashboardScreen({ navigation }) {
   }, [fadeAnim, slideAnim]);
 
   const appointments = [
-    { time: "10:00", title: "Ayşe Kaya - Danışmanlık", type: "consulting", color: COLORS.primary },
-    { time: "12:30", title: "Marka Toplantısı", type: "meeting", color: COLORS.secondary },
-    { time: "15:00", title: "Seda Koç - Demo Sunumu", type: "demo", color: COLORS.tertiaryFixed },
-    { time: "17:30", title: "Haftalık Analitik İncelemesi", type: "review", color: COLORS.error },
+    { time: "10:00", title: t('dashboardScreen.appointments.consultingWith', { name: 'Ayşe Kaya' }), type: "consulting", color: COLORS.primary },
+    { time: "12:30", title: t('dashboardScreen.appointments.brandMeeting'), type: "meeting", color: COLORS.secondary },
+    { time: "15:00", title: t('dashboardScreen.appointments.demoWith', { name: 'Seda Koç' }), type: "demo", color: COLORS.tertiaryFixed },
+    { time: "17:30", title: t('dashboardScreen.appointments.weeklyAnalyticsReview'), type: "review", color: COLORS.error },
   ];
 
   const fetchUnreadNotifications = async (merchantId) => {
@@ -232,7 +239,7 @@ export default function DashboardScreen({ navigation }) {
             .eq('id', merchantId)
             .maybeSingle();
 
-          const nameToUse = profileData?.authorized_person || profileData?.business_name || meta.full_name || 'Kullanıcı';
+          const nameToUse = profileData?.authorized_person || profileData?.business_name || meta.full_name || t('dashboardScreen.greeting.defaultName');
           setUserProfile({
             fullName: nameToUse,
             avatarUrl: profileData?.avatar_url || meta.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nameToUse)}&background=00daf3&color=fff`
@@ -256,14 +263,15 @@ export default function DashboardScreen({ navigation }) {
         const today = new Date().toISOString().split('T')[0];
 
         // Fetch transactions
+        const defaultPaymentTitle = t('dashboardScreen.upcomingPayments.defaultTitle');
         const { data: transactions } = await supabase.from('transactions').select('*');
         if (transactions) {
-          transactions.forEach(t => {
-            if (t.type === 'income') inc += Number(t.amount);
-            if (t.type === 'expense') {
-              exp += Number(t.amount);
-              if (t.date && t.date >= today) {
-                upcoming.push({ ...t, description: t.title || 'Ödeme' });
+          transactions.forEach(tx => {
+            if (tx.type === 'income') inc += Number(tx.amount);
+            if (tx.type === 'expense') {
+              exp += Number(tx.amount);
+              if (tx.date && tx.date >= today) {
+                upcoming.push({ ...tx, description: tx.title || defaultPaymentTitle });
               }
             }
           });
@@ -289,7 +297,7 @@ export default function DashboardScreen({ navigation }) {
                 } else {
                   const docDate = d.created_at ? new Date(d.created_at).toISOString().split('T')[0] : null;
                   if (docDate && docDate >= today) {
-                    upcoming.push({ id: d.id, date: docDate, amount: amt, description: d.title || 'Fatura Ödemesi', type: 'expense' });
+                    upcoming.push({ id: d.id, date: docDate, amount: amt, description: d.title || t('dashboardScreen.upcomingPayments.invoiceDefaultTitle'), type: 'expense' });
                   }
                 }
               }
@@ -338,9 +346,9 @@ export default function DashboardScreen({ navigation }) {
         if (msgs) {
           merged = [...merged, ...msgs.map(m => ({
             id: 'msg_'+m.id,
-            type: 'MESAJ',
+            type: t('dashboardScreen.recentActivity.types.message'),
             platform: 'WHATSAPP',
-            name: m.sender_name || 'Müşteri',
+            name: m.sender_name || t('dashboardScreen.recentActivity.customerFallback'),
             message: m.message_body || m.content || '',
             date: m.created_at,
             avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(m.sender_name || 'M')}&background=00daf3&color=fff`,
@@ -350,9 +358,9 @@ export default function DashboardScreen({ navigation }) {
         if (comments) {
           merged = [...merged, ...comments.map(c => ({
             id: 'cmt_'+c.id,
-            type: 'YORUM',
+            type: t('dashboardScreen.recentActivity.types.comment'),
             platform: (c.platform || 'INSTAGRAM').toUpperCase(),
-            name: c.username || 'Kullanıcı',
+            name: c.username || t('dashboardScreen.recentActivity.userFallback'),
             message: c.text || c.content || '',
             date: c.created_at,
             avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(c.username || 'K')}&background=ecb2ff&color=fff`,
@@ -471,7 +479,7 @@ export default function DashboardScreen({ navigation }) {
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.heroGreeting}>İyi günler</Text>
+            <Text style={styles.heroGreeting}>{t('dashboardScreen.greeting.hello')}</Text>
             {isLoading ? (
               <Skeleton width={140} height={26} style={{ marginTop: 6, marginBottom: 18 }} />
             ) : (
@@ -499,8 +507,8 @@ export default function DashboardScreen({ navigation }) {
                   </>
                 ) : (
                   <>
-                    <Text style={styles.heroAiTitle}>{aiActive ? 'Asistanın çalışıyor' : 'Asistanın kapalı'}</Text>
-                    <Text style={styles.heroAiSubtitle}>{aiActive ? '7/24 akıllı otomasyon devrede' : 'WhatsApp, sosyal medya vb. kapalı'}</Text>
+                    <Text style={styles.heroAiTitle}>{aiActive ? t('dashboardScreen.ai.activeTitle') : t('dashboardScreen.ai.inactiveTitle')}</Text>
+                    <Text style={styles.heroAiSubtitle}>{aiActive ? t('dashboardScreen.ai.activeSubtitle') : t('dashboardScreen.ai.inactiveSubtitle')}</Text>
                   </>
                 )}
               </View>
@@ -524,7 +532,7 @@ export default function DashboardScreen({ navigation }) {
               <CustomGlassCard style={styles.financeCard}>
                 <View style={styles.financeHeaderRow}>
                   <View style={[styles.financeBadge, { backgroundColor: 'rgba(34, 181, 115, 0.12)', borderColor: 'rgba(34, 181, 115, 0.25)' }]}>
-                    <Text style={[styles.financeBadgeText, { color: COLORS.tertiaryFixed }]}>Gelir</Text>
+                    <Text style={[styles.financeBadgeText, { color: COLORS.tertiaryFixed }]}>{t('dashboardScreen.finance.income')}</Text>
                   </View>
                   <MaterialIcons name="trending-up" size={18} color={COLORS.tertiary} />
                 </View>
@@ -547,7 +555,7 @@ export default function DashboardScreen({ navigation }) {
               <CustomGlassCard style={styles.financeCard}>
                 <View style={styles.financeHeaderRow}>
                   <View style={[styles.financeBadge, { backgroundColor: 'rgba(255, 180, 171, 0.1)', borderColor: 'rgba(255, 180, 171, 0.2)' }]}>
-                    <Text style={[styles.financeBadgeText, { color: COLORS.error }]}>Gider</Text>
+                    <Text style={[styles.financeBadgeText, { color: COLORS.error }]}>{t('dashboardScreen.finance.expense')}</Text>
                   </View>
                   <MaterialIcons name="trending-down" size={18} color={COLORS.error} />
                 </View>
@@ -570,7 +578,7 @@ export default function DashboardScreen({ navigation }) {
 
             {/* Bugünkü Randevular — yatay kaydırmalı çipler */}
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>Bugün</Text>
+              <Text style={styles.sectionTitle}>{t('dashboardScreen.today.title')}</Text>
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.apptScroll}>
               {appointments.map(a => (
@@ -589,15 +597,15 @@ export default function DashboardScreen({ navigation }) {
                   <View style={styles.socialAvatar}>
                     <MaterialIcons name="groups" size={18} color={COLORS.primaryFixedDim} />
                   </View>
-                  <Text style={styles.socialUsername}>Tüm Hesaplar</Text>
+                  <Text style={styles.socialUsername}>{t('dashboardScreen.social.allAccounts')}</Text>
                 </View>
                 <View style={styles.liveBadge}>
-                  <Text style={styles.liveBadgeText}>CANLI</Text>
+                  <Text style={styles.liveBadgeText}>{t('dashboardScreen.social.live')}</Text>
                 </View>
               </View>
               <View style={styles.socialStatsRow}>
                 <View>
-                  <Text style={styles.statsLabelText}>Toplam takipçi</Text>
+                  <Text style={styles.statsLabelText}>{t('dashboardScreen.social.totalFollowers')}</Text>
                   <View style={styles.followerRow}>
                     {isLoading ? (
                       <Skeleton width={70} height={26} />
@@ -613,7 +621,7 @@ export default function DashboardScreen({ navigation }) {
                   </View>
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={styles.statsLabelText}>Etkileşim</Text>
+                  <Text style={styles.statsLabelText}>{t('dashboardScreen.social.engagement')}</Text>
                   <View style={styles.trendBarBg}>
                     <LinearGradient
                       colors={[COLORS.primary, COLORS.primaryContainer, COLORS.secondary]}
@@ -627,7 +635,7 @@ export default function DashboardScreen({ navigation }) {
 
             {/* Fatura Tarayıcı */}
             <CustomGlassCard style={styles.invoiceCard} glowColor="#F59E0B">
-              <Text style={styles.invoiceCardHeader}>FATURA TARAYICI · SON FATURA</Text>
+              <Text style={styles.invoiceCardHeader}>{t('dashboardScreen.invoiceScanner.header')}</Text>
               <View style={styles.invoiceContentRow}>
                 <View style={styles.invoiceImageWrapper}>
                   <Image
@@ -637,32 +645,32 @@ export default function DashboardScreen({ navigation }) {
                 </View>
                 <View style={styles.invoiceDetails}>
                   <View style={styles.invoiceDetailRow}>
-                    <Text style={styles.invoiceDetailLabel}>Tedarikçi</Text>
+                    <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.supplier')}</Text>
                     <Text style={styles.invoiceDetailValue}>Ofis Dünyası A.Ş.</Text>
                   </View>
                   <View style={styles.invoiceDetailRow}>
-                    <Text style={styles.invoiceDetailLabel}>Tarih</Text>
+                    <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.date')}</Text>
                     <Text style={styles.invoiceDetailValue}>03.02.2026</Text>
                   </View>
                   <View style={styles.invoiceDetailRow}>
-                    <Text style={styles.invoiceDetailLabel}>KDV</Text>
+                    <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.vat')}</Text>
                     <Text style={styles.invoiceDetailValue}>%20</Text>
                   </View>
                   <View style={styles.invoiceDetailRow}>
-                    <Text style={styles.invoiceDetailLabel}>Toplam</Text>
+                    <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.total')}</Text>
                     <Text style={styles.invoiceDetailValue}>₺4,820.00</Text>
                   </View>
                 </View>
               </View>
               <TouchableOpacity style={styles.invoiceBtn}>
-                <Text style={styles.invoiceBtnText}>+ Yeni Fatura Tara</Text>
+                <Text style={styles.invoiceBtnText}>{t('dashboardScreen.invoiceScanner.scanButton')}</Text>
               </TouchableOpacity>
             </CustomGlassCard>
 
             {/* Son Aktiviteler */}
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>Son hareketler</Text>
-              <TouchableOpacity><Text style={styles.seeAllBtn}>TÜMÜNÜ GÖR</Text></TouchableOpacity>
+              <Text style={styles.sectionTitle}>{t('dashboardScreen.recentActivity.title')}</Text>
+              <TouchableOpacity><Text style={styles.seeAllBtn}>{t('dashboardScreen.recentActivity.seeAll')}</Text></TouchableOpacity>
             </View>
             <View style={styles.activitiesContainer}>
               {isLoading ? (
@@ -677,7 +685,7 @@ export default function DashboardScreen({ navigation }) {
                     <View style={styles.activityBody}>
                       <View style={styles.activityTopRow}>
                         <Text style={styles.activityName} numberOfLines={1}>{act.name}</Text>
-                        <Text style={styles.activityTime}>{formatRelativeTime(act.date)}</Text>
+                        <Text style={styles.activityTime}>{formatRelativeTime(act.date, t)}</Text>
                       </View>
                       <Text style={styles.activityMessage} numberOfLines={1}>{act.message}</Text>
                       <View style={styles.activityTagsRow}>
@@ -693,13 +701,13 @@ export default function DashboardScreen({ navigation }) {
                   </TouchableOpacity>
                 ))
               ) : (
-                <Text style={styles.emptyText}>Henüz bir aktivite bulunmuyor.</Text>
+                <Text style={styles.emptyText}>{t('dashboardScreen.recentActivity.empty')}</Text>
               )}
             </View>
 
             {/* Yaklaşan Ödemeler */}
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>Yaklaşan ödemeler</Text>
+              <Text style={styles.sectionTitle}>{t('dashboardScreen.upcomingPayments.title')}</Text>
             </View>
             {isLoading ? (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.paymentsScroll} scrollEnabled={false}>
@@ -715,9 +723,9 @@ export default function DashboardScreen({ navigation }) {
                     <CustomGlassCard key={payment.id || index} style={styles.paymentCard}>
                       <View style={styles.paymentDateRow}>
                         <MaterialIcons name="event" size={16} color={pColor} />
-                        <Text style={[styles.paymentDateText, { color: pColor }]}>{formatDayMonth(payment.date).toUpperCase()}</Text>
+                        <Text style={[styles.paymentDateText, { color: pColor }]}>{formatDayMonth(payment.date, t).toUpperCase()}</Text>
                       </View>
-                      <Text style={styles.paymentTitle} numberOfLines={1}>{payment.description || 'Ödeme'}</Text>
+                      <Text style={styles.paymentTitle} numberOfLines={1}>{payment.description || t('dashboardScreen.upcomingPayments.defaultTitle')}</Text>
                       <View style={styles.paymentBottomRow}>
                         <Text style={styles.paymentAmount}>{formatCurrency(payment.amount)} <Text style={styles.paymentCurrency}>TL</Text></Text>
                         <TouchableOpacity style={styles.paymentMoreBtn}>
@@ -729,12 +737,12 @@ export default function DashboardScreen({ navigation }) {
                 })}
               </ScrollView>
             ) : (
-              <Text style={styles.emptyText}>Yaklaşan bir ödeme bulunmuyor.</Text>
+              <Text style={styles.emptyText}>{t('dashboardScreen.upcomingPayments.empty')}</Text>
             )}
 
             {/* İletişim Raporları */}
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>İletişim raporları</Text>
+              <Text style={styles.sectionTitle}>{t('dashboardScreen.communicationReports.title')}</Text>
             </View>
             <CommunicationLogsTable />
             <View style={{ height: 40 }} />

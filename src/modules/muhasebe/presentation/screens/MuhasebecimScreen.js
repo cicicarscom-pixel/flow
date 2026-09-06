@@ -12,6 +12,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { GlobalAppBar } from '../../../../shared';
+import { useTranslation } from 'react-i18next';
 
 // -- DEĞİŞKENLER VE RENKLER --
 const COLORS = {
@@ -30,6 +31,7 @@ const COLORS = {
 const BORDER_WIDTH = 0.5;
 
 export default function MuhasebecimScreen({ navigation }) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   // State for toggling between steps
   const [step, setStep] = useState('initial'); // 'initial' | 'verified' | 'connected'
@@ -104,7 +106,7 @@ export default function MuhasebecimScreen({ navigation }) {
         setStep('verified');
       }, 800);
     } else {
-      Alert.alert('Hata', 'Lütfen geçerli bir muhasebeci kodu girin.');
+      Alert.alert(t('muhasebecimScreen.alerts.invalidCodeTitle'), t('muhasebecimScreen.alerts.invalidCodeMessage'));
     }
   };
 
@@ -118,29 +120,29 @@ export default function MuhasebecimScreen({ navigation }) {
   };
 
   const handleCopy = () => {
-    Alert.alert('Kopyalandı', 'Kimlik kodunuz panoya kopyalandı.');
+    Alert.alert(t('muhasebecimScreen.alerts.copiedTitle'), t('muhasebecimScreen.alerts.copiedMessage'));
   };
 
   const renderUnconnectedState = () => (
     <View style={styles.stateContainer}>
-      <Text style={styles.headerTitle}>Müşavirinize Bağlanın</Text>
+      <Text style={styles.headerTitle}>{t('muhasebecimScreen.unconnected.title')}</Text>
       <Text style={styles.headerSubtitle}>
-        Verilerinizi güvenli bir şekilde paylaşarak finansal süreçlerinizi hızlandırın.
+        {t('muhasebecimScreen.unconnected.subtitle')}
       </Text>
 
       {/* Option 1: Enter Code */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <MaterialIcons name="vpn-key" size={20} color={COLORS.accent} />
-          <Text style={styles.cardTitle}>Muhasebeci Kodunu Gir</Text>
+          <Text style={styles.cardTitle}>{t('muhasebecimScreen.unconnected.enterCode.cardTitle')}</Text>
         </View>
         <Text style={styles.cardDesc}>
-          Muhasebecinizin size verdiği davet kodunu girerek hesabınızı bağlayın.
+          {t('muhasebecimScreen.unconnected.enterCode.cardDesc')}
         </Text>
         <View style={styles.inputRow}>
           <TextInput
             style={[styles.input, step === 'verified' && { opacity: 0.5 }]}
-            placeholder="Örn: ABC-12345"
+            placeholder={t('muhasebecimScreen.unconnected.enterCode.placeholder')}
             placeholderTextColor={COLORS.textSecondary}
             value={accountantCode}
             onChangeText={setAccountantCode}
@@ -149,7 +151,7 @@ export default function MuhasebecimScreen({ navigation }) {
           />
           {step === 'initial' && (
             <TouchableOpacity style={styles.primaryButton} onPress={handleVerify} disabled={isLoading}>
-              <Text style={styles.primaryButtonText}>{isLoading ? 'Bekleyin...' : 'Doğrula'}</Text>
+              <Text style={styles.primaryButtonText}>{isLoading ? t('muhasebecimScreen.unconnected.enterCode.verifying') : t('muhasebecimScreen.unconnected.enterCode.verify')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -159,47 +161,47 @@ export default function MuhasebecimScreen({ navigation }) {
             <View style={styles.firmCard}>
               <View style={styles.firmHeader}>
                 <MaterialIcons name="check-circle" size={20} color={COLORS.success} />
-                <Text style={styles.firmVerifiedText}>Kod doğrulandı</Text>
+                <Text style={styles.firmVerifiedText}>{t('muhasebecimScreen.unconnected.preview.verifiedBadge')}</Text>
               </View>
-              
+
               <Text style={styles.firmName}>{firm.name}</Text>
               <Text style={styles.firmLocation}>{firm.location}</Text>
-              
+
               <View style={styles.firmStats}>
                 <View style={styles.ratingBadge}>
                   <Text style={styles.ratingStars}>★★★★☆</Text>
                   <Text style={styles.ratingValue}>{firm.rating}</Text>
                 </View>
-                <Text style={styles.taxpayersText}>{firm.activeTaxpayers} aktif mükellef</Text>
+                <Text style={styles.taxpayersText}>{t('muhasebecimScreen.unconnected.preview.taxpayersSuffix', { value: firm.activeTaxpayers })}</Text>
               </View>
-              
+
               <View style={styles.divider} />
-              
-              <Text style={styles.featuresTitle}>Bu muhasebeciye bağlanırsanız;</Text>
+
+              <Text style={styles.featuresTitle}>{t('muhasebecimScreen.unconnected.preview.featuresTitle')}</Text>
               <View style={styles.featureItem}>
                 <MaterialIcons name="check" size={16} color={COLORS.success} />
-                <Text style={styles.featureText}>Faturalar paylaşılır</Text>
+                <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature1')}</Text>
               </View>
               <View style={styles.featureItem}>
                 <MaterialIcons name="check" size={16} color={COLORS.success} />
-                <Text style={styles.featureText}>Gelir gider aktarılır</Text>
+                <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature2')}</Text>
               </View>
               <View style={styles.featureItem}>
                 <MaterialIcons name="check" size={16} color={COLORS.success} />
-                <Text style={styles.featureText}>Evrak talepleri alınır</Text>
+                <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature3')}</Text>
               </View>
               <View style={styles.featureItem}>
                 <MaterialIcons name="check" size={16} color={COLORS.success} />
-                <Text style={styles.featureText}>AI Muhasebe birlikte çalışır</Text>
+                <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature4')}</Text>
               </View>
-              
+
               <TouchableOpacity style={styles.connectFinalBtn} onPress={handleConnectFinal} disabled={isLoading}>
-                <Text style={styles.connectFinalBtnText}>{isLoading ? 'Bağlanıyor...' : 'Bağlan'}</Text>
+                <Text style={styles.connectFinalBtnText}>{isLoading ? t('muhasebecimScreen.unconnected.preview.connecting') : t('muhasebecimScreen.unconnected.preview.connect')}</Text>
               </TouchableOpacity>
             </View>
-            
+
             <Text style={styles.legalText}>
-              Bağlanarak faturalarınızı, fişlerinizi ve finansal belgelerinizi seçtiğiniz mali müşavir ile güvenli şekilde paylaşmayı kabul etmiş olursunuz. Bağlantıyı istediğiniz zaman kaldırabilirsiniz.
+              {t('muhasebecimScreen.unconnected.preview.legalText')}
             </Text>
           </View>
         )}
@@ -209,10 +211,10 @@ export default function MuhasebecimScreen({ navigation }) {
       <View style={[styles.card, { marginTop: 24 }]}>
         <View style={styles.cardHeader}>
           <MaterialIcons name="share" size={20} color={COLORS.accent} />
-          <Text style={styles.cardTitle}>Kendi Kodunu Paylaş</Text>
+          <Text style={styles.cardTitle}>{t('muhasebecimScreen.unconnected.shareCode.cardTitle')}</Text>
         </View>
         <Text style={styles.cardDesc}>
-          Muhasebeciniz sizi platforma davet etmek isterse aşağıdaki kodu onunla paylaşın. Muhasebecim beni eklesin.
+          {t('muhasebecimScreen.unconnected.shareCode.cardDesc')}
         </Text>
         
         <TouchableOpacity style={styles.copyCodeContainer} onPress={handleCopy} activeOpacity={0.7}>
@@ -233,11 +235,11 @@ export default function MuhasebecimScreen({ navigation }) {
             <MaterialIcons name="account-balance" size={24} color={COLORS.accent} />
           </View>
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>Akbulut Mali Müşavirlik</Text>
-            <Text style={styles.profileSubName}>Volkan Akbulut</Text>
+            <Text style={styles.profileName}>{t('muhasebecimScreen.connected.profileName')}</Text>
+            <Text style={styles.profileSubName}>{t('muhasebecimScreen.connected.profileSubName')}</Text>
             <View style={[styles.statusRow, { marginTop: 4 }]}>
               <View style={styles.statusDot} />
-              <Text style={styles.statusText}>Bağlı • Son Senk: Bugün 14:32</Text>
+              <Text style={styles.statusText}>{t('muhasebecimScreen.connected.statusText')}</Text>
             </View>
           </View>
         </View>
@@ -246,8 +248,8 @@ export default function MuhasebecimScreen({ navigation }) {
       {/* 2. Last Message */}
       <View style={styles.messageCard}>
         <MaterialIcons name="format-quote" size={24} color={COLORS.textSecondary} style={styles.quoteIcon} />
-        <Text style={styles.messageText}>"Mart ayı faturalarını kontrol ettim, eksik olanları belgeler kısmına yükleyebilir misin?"</Text>
-        <Text style={styles.messageAuthor}>- Ahmet Yılmaz, Müşavir</Text>
+        <Text style={styles.messageText}>{t('muhasebecimScreen.connected.messageText')}</Text>
+        <Text style={styles.messageAuthor}>{t('muhasebecimScreen.connected.messageAuthor')}</Text>
       </View>
 
       {/* 3. Action Cards (Side by Side) */}
@@ -256,40 +258,40 @@ export default function MuhasebecimScreen({ navigation }) {
           <View style={[styles.iconWrapper, { backgroundColor: 'rgba(255, 180, 171, 0.1)' }]}>
             <MaterialIcons name="error-outline" size={20} color={COLORS.error} />
           </View>
-          <Text style={styles.actionCardTitle}>Eksik Evrak</Text>
-          <Text style={[styles.actionCardValue, { color: COLORS.error }]}>2 Adet</Text>
+          <Text style={styles.actionCardTitle}>{t('muhasebecimScreen.connected.missingDocsTitle')}</Text>
+          <Text style={[styles.actionCardValue, { color: COLORS.error }]}>{t('muhasebecimScreen.connected.missingDocsValue', { count: 2 })}</Text>
         </View>
         <View style={[styles.actionCard, { marginLeft: 8 }]}>
           <View style={[styles.iconWrapper, { backgroundColor: 'rgba(245, 158, 11, 0.1)' }]}>
             <MaterialIcons name="event" size={20} color={COLORS.warning} />
           </View>
-          <Text style={styles.actionCardTitle}>Yaklaşan Vergi</Text>
-          <Text style={[styles.actionCardValue, { color: COLORS.warning }]}>18 Temmuz</Text>
+          <Text style={styles.actionCardTitle}>{t('muhasebecimScreen.connected.upcomingTaxTitle')}</Text>
+          <Text style={[styles.actionCardValue, { color: COLORS.warning }]}>{t('muhasebecimScreen.connected.upcomingTaxDate')}</Text>
         </View>
       </View>
 
       {/* 4. Quick Actions */}
-      <Text style={styles.sectionTitle}>Hızlı Eylemler</Text>
+      <Text style={styles.sectionTitle}>{t('muhasebecimScreen.connected.quickActionsTitle')}</Text>
       <View style={styles.quickActionsGrid}>
         <TouchableOpacity style={styles.quickActionBtn}>
           <View style={styles.quickActionIcon}>
             <MaterialIcons name="chat" size={20} color={COLORS.textPrimary} />
           </View>
-          <Text style={styles.quickActionText}>Mesaj Gönder</Text>
+          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.sendMessage')}</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.quickActionBtn}>
           <View style={styles.quickActionIcon}>
             <MaterialIcons name="folder" size={20} color={COLORS.textPrimary} />
           </View>
-          <Text style={styles.quickActionText}>Belgeleri Gör</Text>
+          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.viewDocuments')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.quickActionBtn} onPress={() => setStep('initial')}>
           <View style={styles.quickActionIcon}>
             <MaterialIcons name="link-off" size={20} color={COLORS.error} />
           </View>
-          <Text style={[styles.quickActionText, { color: COLORS.error }]}>Bağlantıyı Kes</Text>
+          <Text style={[styles.quickActionText, { color: COLORS.error }]}>{t('muhasebecimScreen.connected.disconnect')}</Text>
         </TouchableOpacity>
       </View>
       
@@ -298,7 +300,7 @@ export default function MuhasebecimScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <GlobalAppBar level={2} module="finans" title="Muhasebecim" showProfile={false} />
+      <GlobalAppBar level={2} module="finans" title={t('muhasebecimScreen.screenTitle')} showProfile={false} />
       <ScrollView 
         contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom, 24) }]}
         showsVerticalScrollIndicator={false}

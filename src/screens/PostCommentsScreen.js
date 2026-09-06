@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
+import { useTranslation } from 'react-i18next';
+import {
   View, 
   Text, 
   TouchableOpacity, 
@@ -22,6 +23,7 @@ import { supabase , GlobalAppBar } from '../shared';
 
 
 export default function PostCommentsScreen({ route, navigation }) {
+  const { t } = useTranslation();
   const { post, commentFocus } = route.params || {};
   const insets = useSafeAreaInsets();
   
@@ -74,7 +76,7 @@ export default function PostCommentsScreen({ route, navigation }) {
             const liveComments = rawComments.map(c => ({
               id: c.id || Math.random().toString(),
               content: c.message || '',
-              username: c.from?.username || c.from?.name || 'Kullanıcı',
+              username: c.from?.username || c.from?.name || t('postCommentsScreen.defaultUsername'),
               created_at: c.createdTime || new Date().toISOString(),
               zernio_comment_id: c.id || c._id,
               liked: false, // Default state
@@ -185,12 +187,12 @@ export default function PostCommentsScreen({ route, navigation }) {
 
   const handleDeleteComment = (commentId) => {
     Alert.alert(
-      "Yorumu Sil",
-      "Bu yorum yerel veritabanınızdan tamamen silinecektir. Emin misiniz?",
+      t('postCommentsScreen.alerts.deleteCommentTitle'),
+      t('postCommentsScreen.alerts.deleteCommentMessage'),
       [
-        { text: "İptal", style: "cancel" },
+        { text: t('postCommentsScreen.alerts.cancel'), style: "cancel" },
         {
-          text: "Sil",
+          text: t('postCommentsScreen.alerts.delete'),
           style: "destructive",
           onPress: async () => {
             const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(commentId);
@@ -214,7 +216,7 @@ export default function PostCommentsScreen({ route, navigation }) {
 
             if (dbError && !dbError.message?.includes('invalid input syntax for type uuid')) {
               console.error("Yorum silme hatası:", dbError);
-              alert("Yorum silinemedi.");
+              alert(t('postCommentsScreen.alerts.deleteCommentError'));
             } else {
               setComments(prev => prev.filter(c => c.id !== commentId));
             }
@@ -234,12 +236,12 @@ export default function PostCommentsScreen({ route, navigation }) {
     if (selectedItems.length === 0) return;
     
     Alert.alert(
-      "Yorumları Sil",
-      `Seçilen ${selectedItems.length} yorum yerel veritabanınızdan tamamen silinecektir. Emin misiniz?`,
+      t('postCommentsScreen.alerts.deleteSelectedTitle'),
+      t('postCommentsScreen.alerts.deleteSelectedMessage', { count: selectedItems.length }),
       [
-        { text: "İptal", style: "cancel" },
+        { text: t('postCommentsScreen.alerts.cancel'), style: "cancel" },
         {
-          text: "Sil",
+          text: t('postCommentsScreen.alerts.delete'),
           style: "destructive",
           onPress: async () => {
             const uuids = selectedItems.filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id));
@@ -264,7 +266,7 @@ export default function PostCommentsScreen({ route, navigation }) {
             }
 
             if (hasError) {
-              alert("Bazı yorumlar silinirken hata oluştu, ancak ekrandan gizlendi.");
+              alert(t('postCommentsScreen.alerts.deleteSelectedPartialError'));
             }
             
             setComments(prev => prev.filter(c => !selectedItems.includes(c.id)));
@@ -327,7 +329,7 @@ export default function PostCommentsScreen({ route, navigation }) {
         }
       }
       
-      const localUsername = 'Mağaza (Ben)';
+      const localUsername = t('postCommentsScreen.storeMe');
       const localContent = isReplyToComment ? `↳ @${replyUsername}:\n${tempText}` : tempText;
 
       // Optimistic UI Update (only if API succeeds)
@@ -353,7 +355,7 @@ export default function PostCommentsScreen({ route, navigation }) {
       });
     } catch (e) {
       console.log("Reply send error:", e);
-      alert("Yanıt gönderilemedi. Lütfen tekrar deneyin.");
+      alert(t('postCommentsScreen.alerts.replySendError'));
     }
   };
 
@@ -371,9 +373,9 @@ export default function PostCommentsScreen({ route, navigation }) {
     if (item.hidden) {
       return (
         <View key={item.id} className={`mb-4 bg-white/5 p-4 rounded-xl border border-white/10 flex-row justify-between items-center opacity-50 ${isNested ? 'ml-8' : ''}`}>
-          <Text className="text-[#A79E96] text-[12px] italic">Bu yorum gizlendi.</Text>
+          <Text className="text-[#A79E96] text-[12px] italic">{t('postCommentsScreen.hiddenComment')}</Text>
           <TouchableOpacity onPress={() => toggleHide(item.id)} className="bg-white/10 px-3 py-1 rounded">
-            <Text className="text-white text-[10px]">Göster (Unhide)</Text>
+            <Text className="text-white text-[10px]">{t('postCommentsScreen.unhide')}</Text>
           </TouchableOpacity>
         </View>
       );
@@ -440,15 +442,15 @@ export default function PostCommentsScreen({ route, navigation }) {
                 className="flex-row items-center"
               >
                 <Feather name="message-circle" size={14} color="#C2478D" style={{ marginRight: 4 }} />
-                <Text className="text-[#C2478D] text-[11px] font-bold">Yanıtla</Text>
+                <Text className="text-[#C2478D] text-[11px] font-bold">{t('postCommentsScreen.reply')}</Text>
               </TouchableOpacity>
-              
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 onPress={() => initiatePrivateReply(item)}
                 className="flex-row items-center bg-[#22B573]/10 px-2 py-1 rounded border border-[#22B573]/30"
               >
                 <Ionicons name="mail" size={12} color="#22B573" style={{ marginRight: 4 }} />
-                <Text className="text-[#22B573] text-[10px] font-bold">DM Gönder</Text>
+                <Text className="text-[#22B573] text-[10px] font-bold">{t('postCommentsScreen.sendDm')}</Text>
               </TouchableOpacity>
               </View>
             </View>
@@ -477,9 +479,9 @@ export default function PostCommentsScreen({ route, navigation }) {
       {/* App Bar */}
       <GlobalAppBar 
         level={3} 
-        module="sosyal" 
-        title="Yorumlar" 
-        showProfile={false} 
+        module="sosyal"
+        title={t('postCommentsScreen.title')}
+        showProfile={false}
       />
 
       {isSelectionMode && (
@@ -488,15 +490,15 @@ export default function PostCommentsScreen({ route, navigation }) {
             <TouchableOpacity onPress={() => { setIsSelectionMode(false); setSelectedItems([]); }} className="mr-4">
               <Ionicons name="close" size={24} color="#F6F1EC" />
             </TouchableOpacity>
-            <Text className="text-[#F6F1EC] font-bold text-[16px]">{selectedItems.length} Seçildi</Text>
+            <Text className="text-[#F6F1EC] font-bold text-[16px]">{t('postCommentsScreen.selectedCount', { count: selectedItems.length })}</Text>
           </View>
-          <TouchableOpacity 
-            onPress={handleDeleteSelected} 
+          <TouchableOpacity
+            onPress={handleDeleteSelected}
             disabled={selectedItems.length === 0}
             className={`flex-row items-center px-4 py-2 rounded-lg border ${selectedItems.length > 0 ? 'bg-[#EF4444]/20 border-[#EF4444]/40' : 'bg-white/5 border-white/10'}`}
           >
             <Feather name="trash-2" size={16} color={selectedItems.length > 0 ? "#EF4444" : "#A79E96"} />
-            <Text className={`ml-2 text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#A79E96]'}`}>Sil</Text>
+            <Text className={`ml-2 text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#A79E96]'}`}>{t('postCommentsScreen.delete')}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -512,7 +514,7 @@ export default function PostCommentsScreen({ route, navigation }) {
               <Image source={{ uri: post.media_urls[0] }} className="w-12 h-12 rounded bg-white/10 mr-3" />
             )}
             <View className="flex-1">
-              <Text className="text-[#A79E96] text-[12px]" numberOfLines={2} ellipsizeMode="tail">{post.content || post.title || 'İçerik yok'}</Text>
+              <Text className="text-[#A79E96] text-[12px]" numberOfLines={2} ellipsizeMode="tail">{post.content || post.title || t('postCommentsScreen.noContent')}</Text>
             </View>
           </View>
         )}
@@ -532,7 +534,7 @@ export default function PostCommentsScreen({ route, navigation }) {
         >
           {replyingTo && (
             <View className="flex-row justify-between items-center mb-2 bg-white/5 px-3 py-1.5 rounded-lg border border-[#C2478D]/30">
-              <Text className="text-[#C2478D] text-[11px]">@{replyingTo.username} kişisine yanıt veriliyor</Text>
+              <Text className="text-[#C2478D] text-[11px]">{t('postCommentsScreen.replyingToUser', { username: replyingTo.username })}</Text>
               <TouchableOpacity onPress={() => setReplyingTo(null)}>
                 <Ionicons name="close-circle" size={16} color="#A79E96" />
               </TouchableOpacity>
@@ -543,7 +545,7 @@ export default function PostCommentsScreen({ route, navigation }) {
               <TextInput
                 ref={inputRef}
                 className="flex-1 text-[#F6F1EC] text-[14px]"
-                placeholder={replyingTo ? "Yanıtınızı yazın..." : "Gönderiye yorum ekle..."}
+                placeholder={replyingTo ? t('postCommentsScreen.replyPlaceholder') : t('postCommentsScreen.commentPlaceholder')}
                 placeholderTextColor="#A79E96"
                 value={replyText}
                 onChangeText={setReplyText}
@@ -568,8 +570,8 @@ export default function PostCommentsScreen({ route, navigation }) {
               <View className="bg-[#201D24] rounded-t-3xl border-t border-white/10 p-6 pb-10">
                 <View className="flex-row justify-between items-center mb-4">
                   <View>
-                    <Text className="text-white font-bold text-[18px]">Hızlı Yanıt (DM)</Text>
-                    <Text className="text-[#A79E96] text-[12px] mt-1">@{selectedCommentForDM?.username} kullanıcısına gizli mesaj gönder</Text>
+                    <Text className="text-white font-bold text-[18px]">{t('postCommentsScreen.quickReplyDmTitle')}</Text>
+                    <Text className="text-[#A79E96] text-[12px] mt-1">{t('postCommentsScreen.sendSecretMessageTo', { username: selectedCommentForDM?.username })}</Text>
                   </View>
                   <TouchableOpacity onPress={() => setPrivateReplyModalVisible(false)} className="bg-white/10 p-2 rounded-full">
                     <Ionicons name="close" size={20} color="#F6F1EC" />
@@ -577,14 +579,14 @@ export default function PostCommentsScreen({ route, navigation }) {
                 </View>
 
                 <View className="bg-white/5 rounded-xl border border-white/10 p-4 mb-4">
-                  <Text className="text-[#22B573] text-[11px] font-bold mb-2">YORUMU:</Text>
+                  <Text className="text-[#22B573] text-[11px] font-bold mb-2">{t('postCommentsScreen.commentLabel')}</Text>
                   <Text className="text-[#F6F1EC] text-[13px] italic" numberOfLines={3} ellipsizeMode="tail">&quot;{selectedCommentForDM?.content}&quot;</Text>
                 </View>
 
                 <View className="bg-white/5 rounded-xl border border-[#22B573]/30 p-2 mb-6 min-h-[100px]">
                   <TextInput
                     className="text-white text-[15px] flex-1"
-                    placeholder="Özel mesajınızı buraya yazın..."
+                    placeholder={t('postCommentsScreen.privateMessagePlaceholder')}
                     placeholderTextColor="#A79E96"
                     multiline
                     textAlignVertical="top"
@@ -598,7 +600,7 @@ export default function PostCommentsScreen({ route, navigation }) {
                   disabled={!privateMessageText.trim()}
                   className={`w-full py-4 rounded-xl items-center shadow-[0_0_15px_rgba(34, 181, 115,0.3)] ${privateMessageText.trim() ? 'bg-[#22B573]' : 'bg-[#22B573]/30'}`}
                 >
-                  <Text className={`font-bold text-[16px] ${privateMessageText.trim() ? 'text-[#17151A]' : 'text-[#A79E96]'}`}>Gönder</Text>
+                  <Text className={`font-bold text-[16px] ${privateMessageText.trim() ? 'text-[#17151A]' : 'text-[#A79E96]'}`}>{t('postCommentsScreen.send')}</Text>
                 </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>

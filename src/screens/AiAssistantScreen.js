@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Text, ScrollView, ActivityIndicator, ImageBackground, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -9,8 +10,9 @@ import XLSX from 'xlsx';
 import { supabase, ChatInputBar, GlobalAppBar } from '../shared';
 
 export default function AiAssistantScreen({ navigation, route }) {
+  const { t } = useTranslation();
   const mode = route.params?.mode || 'report';
-  
+
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export default function AiAssistantScreen({ navigation, route }) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        setMessages([{ id: 1, text: "Lütfen önce giriş yapın.", sender: 'ai' }]);
+        setMessages([{ id: 1, text: t('aiAssistantScreen.initialMessages.loginRequired'), sender: 'ai' }]);
         return;
       }
       
@@ -36,11 +38,11 @@ export default function AiAssistantScreen({ navigation, route }) {
       if (data && data.message) {
         setMessages([{ id: 1, text: data.message, sender: 'ai' }]);
       } else {
-        setMessages([{ id: 1, text: "Merhaba! İşleyici AI asistanınız hazır. Size nasıl yardımcı olabilirim?", sender: 'ai' }]);
+        setMessages([{ id: 1, text: t('aiAssistantScreen.initialMessages.greetingReady'), sender: 'ai' }]);
       }
     } catch (e) {
       console.warn("Init Error:", e);
-      setMessages([{ id: 1, text: "Merhaba! İşleyici AI asistanınız hazır. Size nasıl yardımcı olabilirim?", sender: 'ai' }]);
+      setMessages([{ id: 1, text: t('aiAssistantScreen.initialMessages.greetingReady'), sender: 'ai' }]);
     }
   };
 
@@ -66,12 +68,12 @@ export default function AiAssistantScreen({ navigation, route }) {
       // Keep PDF and Excel support locally
       if (lowerText.includes('pdf')) {
         await generatePDFReport();
-        addMessage("PDF raporunuz hazırlandı ve paylaşıma açıldı.", 'ai');
+        addMessage(t('aiAssistantScreen.messages.pdfReady'), 'ai');
         setLoading(false);
         return;
       } else if (lowerText.includes('excel')) {
         await generateExcelReport();
-        addMessage("Excel raporunuz hazırlandı ve paylaşıma açıldı.", 'ai');
+        addMessage(t('aiAssistantScreen.messages.excelReady'), 'ai');
         setLoading(false);
         return;
       }
@@ -95,12 +97,12 @@ export default function AiAssistantScreen({ navigation, route }) {
       // Check if a manual entry was processed
       if (data && data.manual_entry) {
         setTimeout(() => {
-          addMessage("✅ İşlem başarıyla kaydedildi.", 'system');
+          addMessage(t('aiAssistantScreen.messages.manualEntrySaved'), 'system');
         }, 800);
       }
     } catch (error) {
       console.error("Chat Error:", error);
-      addMessage("Bağlantı hatası oluştu, lütfen tekrar deneyin.", 'ai');
+      addMessage(t('aiAssistantScreen.messages.connectionError'), 'ai');
     } finally {
       setLoading(false);
     }
@@ -133,10 +135,10 @@ export default function AiAssistantScreen({ navigation, route }) {
           </style>
         </head>
         <body>
-          <h1>Finansal İşlem Raporu</h1>
+          <h1>${t('aiAssistantScreen.pdfReport.title')}</h1>
           <table>
             <thead>
-              <tr><th>Tarih</th><th>Başlık</th><th>Tutar</th></tr>
+              <tr><th>${t('aiAssistantScreen.pdfReport.dateColumn')}</th><th>${t('aiAssistantScreen.pdfReport.titleColumn')}</th><th>${t('aiAssistantScreen.pdfReport.amountColumn')}</th></tr>
             </thead>
             <tbody>${rows}</tbody>
           </table>
@@ -150,16 +152,16 @@ export default function AiAssistantScreen({ navigation, route }) {
 
   const generateExcelReport = async () => {
     const transactions = await fetchTransactions();
-    const ws = XLSX.utils.json_to_sheet(transactions.map(t => ({
-      Tarih: t.date,
-      Başlık: t.title,
-      Tutar: t.amount,
-      Tür: t.type === 'income' ? 'Gelir' : 'Gider',
-      Açıklama: t.description || ''
+    const ws = XLSX.utils.json_to_sheet(transactions.map(tx => ({
+      [t('aiAssistantScreen.excelReport.dateColumn')]: tx.date,
+      [t('aiAssistantScreen.excelReport.titleColumn')]: tx.title,
+      [t('aiAssistantScreen.excelReport.amountColumn')]: tx.amount,
+      [t('aiAssistantScreen.excelReport.typeColumn')]: tx.type === 'income' ? t('aiAssistantScreen.excelReport.incomeLabel') : t('aiAssistantScreen.excelReport.expenseLabel'),
+      [t('aiAssistantScreen.excelReport.descriptionColumn')]: tx.description || ''
     })));
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Islemler");
+    XLSX.utils.book_append_sheet(wb, ws, t('aiAssistantScreen.excelReport.sheetName'));
 
     const base64 = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
     // eslint-disable-next-line import/namespace
@@ -178,7 +180,7 @@ export default function AiAssistantScreen({ navigation, route }) {
       >
         <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(10, 10, 11, 0.8)' }]} />
       </ImageBackground>
-      <GlobalAppBar level={2} module="finans" title={mode === 'mutabakat' ? "AI Mutabakat" : "Smart Financial Assistant"} showProfile={false} />
+      <GlobalAppBar level={2} module="finans" title={mode === 'mutabakat' ? t('aiAssistantScreen.headerTitle.reconciliation') : t('aiAssistantScreen.headerTitle.default')} showProfile={false} />
 
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
@@ -204,7 +206,7 @@ export default function AiAssistantScreen({ navigation, route }) {
           inputText={inputText}
           setInputText={setInputText}
           handleSend={handleSend}
-          placeholder={mode === 'mutabakat' ? "Mesajınızı yazın..." : "Rapor isteyin (Örn: Excel raporu)"}
+          placeholder={mode === 'mutabakat' ? t('aiAssistantScreen.inputPlaceholder.reconciliation') : t('aiAssistantScreen.inputPlaceholder.default')}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>
