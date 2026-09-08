@@ -571,21 +571,71 @@ export default function AnalyticsScreen({ navigation }) {
         </AnimatedBorderCard>
       )}
       
-      {/* Platform Breakdown Placeholder for "All" */}
-      {selectedPlatform.id === 'all' && (
+      {/* Top Performing Posts */}
+      {zernioData.postAnalytics && zernioData.postAnalytics.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
-          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.platformOverview')}</Text>
-          <View className="mt-4 flex-row justify-around">
-            <View className="items-center">
-              <Ionicons name="logo-instagram" size={24} color="#E8A8CD" />
-              <Text className="text-[#F6F1EC] text-[12px] font-bold mt-2">{t('sosyalMedya.analytics.active')}</Text>
-            </View>
-            <View className="w-[1px] h-full bg-white/10" />
-            <View className="items-center">
-              <Ionicons name="business" size={24} color="#34a853" />
-              <Text className="text-[#F6F1EC] text-[12px] font-bold mt-2">{t('sosyalMedya.analytics.active')}</Text>
-            </View>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Top Performing Posts</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-2">En çok etkileşim alan gönderileriniz</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-1 pb-2">
+            {[...zernioData.postAnalytics]
+              .sort((a, b) => {
+                const aEng = (a.metrics?.likes || 0) + (a.metrics?.comments || 0);
+                const bEng = (b.metrics?.likes || 0) + (b.metrics?.comments || 0);
+                return bEng - aEng;
+              })
+              .slice(0, 5)
+              .map((post, idx) => (
+                <View key={idx} className="bg-[#201D24] rounded-lg p-3 mr-3 w-40 border border-white/10 shadow-sm shadow-black">
+                  <Text className="text-[#F6F1EC] text-[11px] font-bold mb-3" numberOfLines={2}>
+                    {post.text || post.caption || 'Görsel Gönderi'}
+                  </Text>
+                  <View className="flex-row items-center mb-1.5">
+                    <Ionicons name="heart" size={12} color="#C2478D" style={{ marginRight: 6 }} />
+                    <Text className="text-[#A79E96] text-[10px]">{post.metrics?.likes || 0}</Text>
+                  </View>
+                  <View className="flex-row items-center">
+                    <Ionicons name="chatbubble" size={12} color="#22B573" style={{ marginRight: 6 }} />
+                    <Text className="text-[#A79E96] text-[10px]">{post.metrics?.comments || 0}</Text>
+                  </View>
+                </View>
+              ))}
+          </ScrollView>
+        </AnimatedBorderCard>
+      )}
+
+      {/* Platform Breakdown */}
+      {zernioData.platformBreakdown && zernioData.platformBreakdown.length > 0 && selectedPlatform.id === 'all' && (
+        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-4">Platform Kırılımı</Text>
+          
+          <View className="flex-row mb-3 pb-2 border-b border-white/10">
+            <Text className="text-[#A79E96] text-[10px] flex-1">Platform</Text>
+            <Text className="text-[#A79E96] text-[10px] w-12 text-center">Gönderi</Text>
+            <Text className="text-[#A79E96] text-[10px] w-12 text-center">Erişim</Text>
+            <Text className="text-[#A79E96] text-[10px] w-[50px] text-center">ER %</Text>
           </View>
+          
+          {zernioData.platformBreakdown.map((p, idx) => {
+            const platformIcon = PLATFORMS.find(pl => pl.id === p.platform?.toLowerCase())?.icon || 'apps-outline';
+            const platformColor = PLATFORMS.find(pl => pl.id === p.platform?.toLowerCase())?.color || '#A79E96';
+            const er = p.impressions > 0 ? (((p.likes || 0) + (p.comments || 0)) / p.impressions * 100).toFixed(2) : '0.00';
+            
+            return (
+              <View key={idx} className="flex-row items-center mb-3">
+                <View className="flex-1 flex-row items-center">
+                  <Ionicons name={platformIcon} size={16} color={platformColor} style={{ marginRight: 8 }} />
+                  <Text className="text-[#F6F1EC] text-[12px] capitalize">{p.platform}</Text>
+                </View>
+                <Text className="text-[#F6F1EC] text-[12px] w-12 text-center">{p.postCount || 0}</Text>
+                <Text className="text-[#F6F1EC] text-[12px] w-12 text-center">{p.impressions || 0}</Text>
+                <View className="w-[50px] items-center">
+                  <View className="bg-[#22B573]/20 px-1.5 py-0.5 rounded-full border border-[#22B573]/30">
+                    <Text className="text-[#22B573] text-[9px] font-bold">{er}%</Text>
+                  </View>
+                </View>
+              </View>
+            );
+          })}
         </AnimatedBorderCard>
       )}
     </View>
