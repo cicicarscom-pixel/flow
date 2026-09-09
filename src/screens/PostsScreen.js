@@ -193,139 +193,7 @@ export default function PostsScreen({ navigation }) {
     }
   };
 
-  const renderPostItem = ({ item }) => {
-    const statusColor = getStatusColor(item.status);
-    const isScheduled = item.status === 'scheduled';
-    
-    return (
-      <View className="flex-row items-center border-b border-white/5 py-3 px-5" style={{ opacity: isScheduled ? 0.7 : 1 }}>
-        {/* Checkbox Placeholder */}
-        <View style={{ width: 40 }} className="justify-center">
-           <View className="w-4 h-4 rounded border border-[#A79E96]/50 bg-transparent" />
-        </View>
-        
-        {/* Content */}
-        <View style={{ width: 250 }} className="flex-row items-center pr-4">
-           {item.media_urls && item.media_urls.length > 0 ? (
-              <Image 
-                source={{ uri: item.media_urls[0] }} 
-                style={{ width: 40, height: 40, borderRadius: 8, marginRight: 12 }} 
-                resizeMode="cover"
-              />
-           ) : (
-              <View style={{ width: 40, height: 40, borderRadius: 8, marginRight: 12, backgroundColor: 'rgba(255,255,255,0.05)' }} className="items-center justify-center">
-                 <Feather name="image" size={16} color="#A79E96" />
-              </View>
-           )}
-           <Text className="text-[#F6F1EC] text-[13px] font-medium flex-1" numberOfLines={2}>
-              {getPreviewText(item.content || item.title)}
-           </Text>
-        </View>
-        
-        {/* Platforms */}
-        <View style={{ width: 100 }} className="flex-row justify-center items-center">
-           {Array.isArray(item.platforms) && item.platforms.map((platObj, idx) => {
-              const platName = typeof platObj === 'string' ? platObj : platObj.platform;
-              if (!platName) return null;
-              let iconName = `logo-${platName.toLowerCase()}`;
-              if (platName.toLowerCase() === 'twitter') iconName = 'close';
-              return (
-                <Ionicons key={idx} name={iconName} size={14} color="#F6F1EC" style={{ marginHorizontal: 2 }} />
-              );
-            })}
-        </View>
 
-        {/* Date */}
-        <View style={{ width: 150 }} className="items-center justify-center">
-           <Text className="text-[#A79E96] text-[12px]">{item.scheduled_for ? formatDate(item.scheduled_for) : t('postsScreen.table.notSpecified')}</Text>
-        </View>
-
-        {/* Status */}
-        <View style={{ width: 120 }} className="items-center justify-center">
-           <View className="flex-row items-center px-2 py-1 rounded border" style={{ 
-              backgroundColor: isScheduled ? 'rgba(34, 181, 115, 0.15)' : `${statusColor}15`,
-              borderColor: isScheduled ? 'rgba(34, 181, 115, 0.4)' : `${statusColor}30` 
-           }}>
-              <View style={{ width: 6, height: 6, borderRadius: 4, backgroundColor: isScheduled ? '#22B573' : statusColor, marginRight: 6 }} />
-              <Text style={{ color: isScheduled ? '#22B573' : statusColor, fontSize: 10, fontWeight: 'bold' }}>{getStatusLabel(item.status)}</Text>
-           </View>
-           {item.media_storage_source === 'supabase' && (
-             <View className="mt-1 px-1.5 py-0.5 rounded bg-[#F2994A]/20 border border-[#F2994A]/40">
-                <Text className="text-[#F2994A] text-[9px] font-bold">Geçici Depoda</Text>
-             </View>
-           )}
-        </View>
-
-        {/* Profile */}
-        <View style={{ width: 150 }} className="flex-row items-center">
-           <View style={{ width: 6, height: 6, borderRadius: 4, backgroundColor: '#F59E0B', marginRight: 8 }} />
-           <Text className="text-[#F6F1EC] text-[12px]" numberOfLines={1}>{t('postsScreen.table.profileLabel', { name: 'Al Esnaf' })}</Text>
-        </View>
-
-        {/* Metrics (Dynamic Data) */}
-        {[
-          item.metrics?.likes ?? item.likes,
-          item.metrics?.comments ?? item.comments,
-          item.metrics?.shares ?? item.shares,
-          item.metrics?.saves ?? item.saves,
-          item.metrics?.clicks ?? item.clicks,
-          item.metrics?.views ?? item.views,
-          item.metrics?.impressions ?? item.impressions,
-          item.metrics?.reach ?? item.reach
-        ].map((metricValue, idx) => (
-           <View key={idx} style={{ width: 60 }} className="items-center justify-center">
-              <Text className="text-[#A79E96] text-[12px]">{metricValue != null ? metricValue : '-'}</Text>
-           </View>
-        ))}
-
-        {/* Actions (Delete/Retry) placed at the end */}
-        <View style={{ width: 80 }} className="flex-row justify-center items-center">
-          {item.status === 'failed' && (
-            <TouchableOpacity className="p-2 rounded bg-[#EF4444]/20 border border-[#EF4444]/40">
-              <Ionicons name="refresh" size={14} color="#EF4444" />
-            </TouchableOpacity>
-          )}
-          {item.status === 'scheduled' && (
-            <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="p-2 rounded bg-[#22B573]/10 border border-[#22B573]/30">
-              <Ionicons name="trash-outline" size={14} color="#22B573" />
-            </TouchableOpacity>
-          )}
-          {item.status === 'published' && (
-            <>
-              <TouchableOpacity className="p-2 rounded bg-[#C2478D]/10 border border-[#C2478D]/30">
-                <Ionicons name="cloud-offline-outline" size={14} color="#C2478D" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="p-2 rounded bg-[#EF4444]/10 border border-[#EF4444]/30 ml-1">
-                <Ionicons name="trash-outline" size={14} color="#EF4444" />
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-
-      </View>
-    );
-  };
-
-  const TableHeader = () => (
-    <View className="flex-row items-center border-b border-white/10 pb-3 pt-4 mb-2 px-5" style={{ backgroundColor: 'rgba(10, 10, 11, 0.95)' }}>
-      {/* Checkbox placeholder */}
-      <View style={{ width: 40 }} />
-      <Text className="text-[#A79E96] text-[12px] font-semibold" style={{ width: 250 }}>Content</Text>
-      <Text className="text-[#A79E96] text-[12px] font-semibold text-center" style={{ width: 100 }}>Platforms</Text>
-      <Text className="text-[#A79E96] text-[12px] font-semibold text-center" style={{ width: 150 }}>Date</Text>
-      <Text className="text-[#A79E96] text-[12px] font-semibold text-center" style={{ width: 120 }}>Status</Text>
-      <Text className="text-[#A79E96] text-[12px] font-semibold" style={{ width: 150 }}>Profile</Text>
-      <Text className="text-[#A79E96] text-[10px] font-semibold text-center" style={{ width: 60 }}>Likes</Text>
-      <Text className="text-[#A79E96] text-[10px] font-semibold text-center" style={{ width: 60 }}>Cmts</Text>
-      <Text className="text-[#A79E96] text-[10px] font-semibold text-center" style={{ width: 60 }}>Shrs</Text>
-      <Text className="text-[#A79E96] text-[10px] font-semibold text-center" style={{ width: 60 }}>Saves</Text>
-      <Text className="text-[#A79E96] text-[10px] font-semibold text-center" style={{ width: 60 }}>Clicks</Text>
-      <Text className="text-[#A79E96] text-[10px] font-semibold text-center" style={{ width: 60 }}>Views</Text>
-      <Text className="text-[#A79E96] text-[10px] font-semibold text-center" style={{ width: 60 }}>Impr.</Text>
-      <Text className="text-[#A79E96] text-[10px] font-semibold text-center" style={{ width: 60 }}>Reach</Text>
-      <Text className="text-[#A79E96] text-[10px] font-semibold text-center" style={{ width: 80 }}>Actions</Text>
-    </View>
-  );
 
   return (
     <SafeAreaView className="flex-1 bg-[#17151A]" edges={['top', 'left', 'right']}>
@@ -365,27 +233,111 @@ export default function PostsScreen({ navigation }) {
         />
       </View>
 
-      {/* List (Table Layout) */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={true} className="flex-1">
-        {/* Total width of columns */}
-        <View style={{ width: 1410 }}>
-          <FlatList
-            data={filteredPosts}
-            keyExtractor={item => item.id}
-            contentContainerStyle={{ paddingBottom: 100 }}
-            showsVerticalScrollIndicator={true}
-            ListHeaderComponent={TableHeader}
-            stickyHeaderIndices={[0]}
-            renderItem={renderPostItem}
-            ListEmptyComponent={() => (
-              <View className="items-center justify-center mt-20" style={{ width: '100%' }}>
-                <Feather name="file-text" size={48} color="#A79E96" style={{ opacity: 0.5, marginBottom: 16 }} />
-                <Text className="text-[#A79E96] text-[14px] mt-4">{t('postsScreen.emptyState.noPostsForFilter')}</Text>
-              </View>
-            )}
-          />
-        </View>
-      </ScrollView>
+      {/* List (Card Layout) */}
+      <View className="flex-1 px-5 mt-2">
+        <FlatList
+          data={filteredPosts}
+          keyExtractor={item => item.id}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={true}
+          renderItem={({ item }) => {
+            const statusColor = getStatusColor(item.status);
+            const isScheduled = item.status === 'scheduled';
+            const isVideo = item.media_urls && item.media_urls.length > 0 && (item.media_urls[0].match(/\.(mp4|webm|mov)(\?.*)?$/i) || item.media_urls[0].includes('blob'));
+
+            return (
+              <AnimatedBorderCard style={{ marginBottom: 16 }} padding={16} borderRadius={16} colors={[statusColor, '#ffffff']}>
+                {/* Header: Profile & Date */}
+                <View className="flex-row justify-between items-center mb-3">
+                  <View className="flex-row items-center flex-1">
+                    <View style={{ width: 6, height: 6, borderRadius: 4, backgroundColor: '#F59E0B', marginRight: 6 }} />
+                    <Text className="text-[#A79E96] text-[12px]" numberOfLines={1}>{t('postsScreen.table.profileLabel', { name: 'Al Esnaf' })}</Text>
+                  </View>
+                  <Text className="text-[#A79E96] text-[11px] ml-2 shrink-0">
+                    {item.scheduled_for ? formatDate(item.scheduled_for) : formatDate(item.created_at || new Date().toISOString())}
+                  </Text>
+                </View>
+
+                {/* Content: Image/Video & Text */}
+                <View className="flex-row items-start mb-4">
+                  {item.media_urls && item.media_urls.length > 0 ? (
+                    <View style={{ width: 70, height: 70, borderRadius: 10, overflow: 'hidden', marginRight: 12, backgroundColor: '#000' }}>
+                      {isVideo ? (
+                        <View className="w-full h-full items-center justify-center bg-black/80 border border-white/10 rounded-[10px]">
+                          <MaterialIcons name="play-arrow" size={28} color="#fff" />
+                        </View>
+                      ) : (
+                        <Image source={{ uri: item.media_urls[0] }} style={{ width: 70, height: 70 }} resizeMode="cover" />
+                      )}
+                    </View>
+                  ) : (
+                    <View style={{ width: 70, height: 70, borderRadius: 10, marginRight: 12, backgroundColor: 'rgba(255,255,255,0.05)' }} className="items-center justify-center border border-white/5">
+                      <Feather name="image" size={24} color="#A79E96" />
+                    </View>
+                  )}
+                  <View className="flex-1">
+                    <Text className="text-[#F6F1EC] text-[13px] font-medium leading-5" numberOfLines={3}>
+                      {item.content || item.title || t('postsScreen.emptyState.noPostsForFilter')}
+                    </Text>
+                    {/* Platforms */}
+                    <View className="flex-row items-center mt-3 flex-wrap">
+                      {Array.isArray(item.platforms) && item.platforms.map((platObj, idx) => {
+                        const platName = typeof platObj === 'string' ? platObj : platObj.platform;
+                        if (!platName) return null;
+                        let iconName = `logo-${platName.toLowerCase()}`;
+                        if (platName.toLowerCase() === 'twitter') iconName = 'close';
+                        return <Ionicons key={idx} name={iconName} size={16} color="#A79E96" style={{ marginRight: 6, marginBottom: 4 }} />;
+                      })}
+                    </View>
+                  </View>
+                </View>
+
+                {/* Metrics Row */}
+                <View className="flex-row items-center justify-between bg-black/20 rounded-xl p-3 border border-white/5 mb-3">
+                  <View className="items-center"><Feather name="heart" size={14} color="#A79E96" /><Text className="text-[#F6F1EC] text-[11px] mt-1.5 font-semibold">{item.metrics?.likes ?? item.likes ?? '-'}</Text></View>
+                  <View className="items-center"><Feather name="message-circle" size={14} color="#A79E96" /><Text className="text-[#F6F1EC] text-[11px] mt-1.5 font-semibold">{item.metrics?.comments ?? item.comments ?? '-'}</Text></View>
+                  <View className="items-center"><Feather name="share-2" size={14} color="#A79E96" /><Text className="text-[#F6F1EC] text-[11px] mt-1.5 font-semibold">{item.metrics?.shares ?? item.shares ?? '-'}</Text></View>
+                  <View className="items-center"><Feather name="bookmark" size={14} color="#A79E96" /><Text className="text-[#F6F1EC] text-[11px] mt-1.5 font-semibold">{item.metrics?.saves ?? item.saves ?? '-'}</Text></View>
+                  <View className="items-center"><Feather name="mouse-pointer" size={14} color="#A79E96" /><Text className="text-[#F6F1EC] text-[11px] mt-1.5 font-semibold">{item.metrics?.clicks ?? item.clicks ?? '-'}</Text></View>
+                </View>
+
+                {/* Footer: Status & Actions */}
+                <View className="flex-row justify-between items-center border-t border-white/5 pt-3">
+                  <View className="flex-row items-center">
+                    <View className="flex-row items-center px-2 py-1.5 rounded-md border" style={{ backgroundColor: `${statusColor}15`, borderColor: `${statusColor}30` }}>
+                      <View style={{ width: 6, height: 6, borderRadius: 4, backgroundColor: statusColor, marginRight: 6 }} />
+                      <Text style={{ color: statusColor, fontSize: 10, fontWeight: 'bold' }}>{getStatusLabel(item.status)}</Text>
+                    </View>
+                    {item.media_storage_source === 'supabase' && (
+                      <View className="ml-2 px-2 py-1.5 rounded-md bg-[#F2994A]/10 border border-[#F2994A]/30">
+                        <Text className="text-[#F2994A] text-[9px] font-bold">Geçici Depoda</Text>
+                      </View>
+                    )}
+                  </View>
+                  <View className="flex-row justify-end items-center">
+                    {item.status === 'failed' && (
+                      <TouchableOpacity className="flex-row items-center p-2 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/30 mr-2">
+                        <Ionicons name="refresh" size={16} color="#EF4444" />
+                      </TouchableOpacity>
+                    )}
+                    {(item.status === 'scheduled' || item.status === 'published' || item.status === 'failed') && (
+                      <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="flex-row items-center p-2 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/30">
+                        <Ionicons name="trash-outline" size={16} color="#EF4444" />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+              </AnimatedBorderCard>
+            );
+          }}
+          ListEmptyComponent={() => (
+            <View className="items-center justify-center mt-20">
+              <Feather name="file-text" size={48} color="#A79E96" style={{ opacity: 0.5, marginBottom: 16 }} />
+              <Text className="text-[#A79E96] text-[14px] mt-4 text-center">{t('postsScreen.emptyState.noPostsForFilter')}</Text>
+            </View>
+          )}
+        />
+      </View>
 
       {/* Delete Modal */}
       <Modal visible={deleteModal.isOpen} transparent={true} animationType="fade" onRequestClose={() => !isDeleting && setDeleteModal({ isOpen: false, postId: null })}>
