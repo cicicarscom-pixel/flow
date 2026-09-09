@@ -160,13 +160,14 @@ export default function PostCommentsScreen({ route, navigation }) {
     
     replies.forEach(reply => {
        const match = reply.content?.match(/^↳?\s*@([^:]+):/);
-       const targetUsername = match ? match[1].trim() : null;
+       let targetUsername = match ? match[1].trim() : null;
        
        let parent = null;
        if (reply.parent_id) {
           parent = roots.find(r => r.zernio_comment_id === reply.parent_id || r.id === reply.parent_id);
        } else if (targetUsername) {
-          parent = roots.find(r => r.username === targetUsername);
+          const cleanTarget = targetUsername.replace(/^@+/, '');
+          parent = roots.find(r => r.username && r.username.replace(/^@+/, '') === cleanTarget);
        }
        
        if (parent) {
@@ -369,10 +370,10 @@ export default function PostCommentsScreen({ route, navigation }) {
     // TODO: Zernio POST /v1/inbox/comments/{postId}/{commentId}/private-reply
   };
 
-  const renderComment = ({ item, isNested = false }) => {
+  const renderComment = ({ item }) => {
     if (item.hidden) {
       return (
-        <View key={item.id} className={`mb-4 bg-white/5 p-4 rounded-xl border border-white/10 flex-row justify-between items-center opacity-50 ${isNested ? 'ml-8' : ''}`}>
+        <View key={item.id} className="mb-4 bg-white/5 p-4 rounded-xl border border-white/10 flex-row justify-between items-center opacity-50">
           <Text className="text-[#A79E96] text-[12px] italic">{t('postCommentsScreen.hiddenComment')}</Text>
           <TouchableOpacity onPress={() => toggleHide(item.id)} className="bg-white/10 px-3 py-1 rounded">
             <Text className="text-white text-[10px]">{t('postCommentsScreen.unhide')}</Text>
@@ -382,86 +383,127 @@ export default function PostCommentsScreen({ route, navigation }) {
     }
 
     return (
-      <View key={item.id}>
-      <Pressable
-        onLongPress={() => {
-          if (!isSelectionMode) {
-            setIsSelectionMode(true);
-            toggleSelection(item.id);
-          }
-        }}
-        onPress={() => {
-          if (isSelectionMode) {
-            toggleSelection(item.id);
-          }
-        }}
-        delayLongPress={500}
-      >
-        {({ pressed }) => (
-          <View className={`mb-4 p-4 rounded-xl border flex-row items-start ${isNested ? 'ml-8' : ''} ${selectedItems.includes(item.id) ? 'bg-[#C2478D]/20 border-[#C2478D]/40' : 'bg-white/5 border-white/10'} ${pressed && !isSelectionMode ? 'opacity-80' : ''}`}>
-            {isSelectionMode && (
-              <View className="mr-3 mt-1">
-                <Ionicons 
-                  name={selectedItems.includes(item.id) ? "checkmark-circle" : "ellipse-outline"} 
-                  size={20} 
-                  color={selectedItems.includes(item.id) ? "#C2478D" : "#A79E96"} 
-                />
-              </View>
-            )}
-            <View className="flex-1" pointerEvents={isSelectionMode ? "none" : "auto"}>
-            <View className="flex-row justify-between items-start mb-2">
-              <View className="flex-row items-center flex-1 pr-2">
-                <View className="w-8 h-8 rounded-full bg-white/10 items-center justify-center mr-2">
-                  <Ionicons name="person" size={14} color="#22B573" />
+      <View key={item.id} className="mb-4">
+        <Pressable
+          onLongPress={() => {
+            if (!isSelectionMode) {
+              setIsSelectionMode(true);
+              toggleSelection(item.id);
+            }
+          }}
+          onPress={() => {
+            if (isSelectionMode) {
+              toggleSelection(item.id);
+            }
+          }}
+          delayLongPress={500}
+        >
+          {({ pressed }) => (
+            <View className={`p-4 rounded-xl border flex-row items-start ${selectedItems.includes(item.id) ? 'bg-[#C2478D]/20 border-[#C2478D]/40' : 'bg-white/5 border-white/10'} ${pressed && !isSelectionMode ? 'opacity-80' : ''}`}>
+              {isSelectionMode && (
+                <View className="mr-3 mt-1">
+                  <Ionicons 
+                    name={selectedItems.includes(item.id) ? "checkmark-circle" : "ellipse-outline"} 
+                    size={20} 
+                    color={selectedItems.includes(item.id) ? "#C2478D" : "#A79E96"} 
+                  />
                 </View>
-                <View className="flex-1">
-                  <Text className="text-white font-bold text-[13px]" numberOfLines={1} ellipsizeMode="tail">{item.username}</Text>
-                  <Text className="text-[#A79E96] text-[10px]">
-                    {new Date(item.created_at).toLocaleDateString('tr-TR')}
-                  </Text>
+              )}
+              <View className="flex-1" pointerEvents={isSelectionMode ? "none" : "auto"}>
+                <View className="flex-row justify-between items-start mb-2">
+                  <View className="flex-row items-center flex-1 pr-2">
+                    <View className="w-8 h-8 rounded-full bg-white/10 items-center justify-center mr-2">
+                      <Ionicons name="person" size={14} color="#22B573" />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-white font-bold text-[13px]" numberOfLines={1} ellipsizeMode="tail">{item.username}</Text>
+                      <Text className="text-[#A79E96] text-[10px]">
+                        {new Date(item.created_at).toLocaleDateString('tr-TR')}
+                      </Text>
+                    </View>
+                  </View>
+                  <View className="flex-row items-center space-x-3">
+                    <TouchableOpacity onPress={() => toggleLike(item.id)}>
+                      <Ionicons name={item.liked ? "heart" : "heart-outline"} size={16} color={item.liked ? "#EF4444" : "#A79E96"} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => toggleHide(item.id)}>
+                      <Feather name="eye-off" size={16} color="#A79E96" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDeleteComment(item.id)} style={{ marginLeft: 12 }}>
+                      <Feather name="trash-2" size={16} color="#EF4444" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-              <View className="flex-row items-center space-x-3">
-                <TouchableOpacity onPress={() => toggleLike(item.id)}>
-                  <Ionicons name={item.liked ? "heart" : "heart-outline"} size={16} color={item.liked ? "#EF4444" : "#A79E96"} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => toggleHide(item.id)}>
-                  <Feather name="eye-off" size={16} color="#A79E96" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleDeleteComment(item.id)} style={{ marginLeft: 12 }}>
-                  <Feather name="trash-2" size={16} color="#EF4444" />
-                </TouchableOpacity>
-              </View>
-            </View>
-            
-            <Text className="text-[#F6F1EC] text-[13px] leading-5 mb-3">{item.content}</Text>
-            
-            <View className="flex-row items-center justify-between border-t border-white/5 pt-2">
-              <TouchableOpacity 
-                onPress={() => initiatePublicReply(item)}
-                className="flex-row items-center"
-              >
-                <Feather name="message-circle" size={14} color="#C2478D" style={{ marginRight: 4 }} />
-                <Text className="text-[#C2478D] text-[11px] font-bold">{t('postCommentsScreen.reply')}</Text>
-              </TouchableOpacity>
+                
+                <Text className="text-[#F6F1EC] text-[13px] leading-5 mb-3">{item.content}</Text>
+                
+                <View className="flex-row items-center justify-between border-t border-white/5 pt-2">
+                  <TouchableOpacity 
+                    onPress={() => initiatePublicReply(item)}
+                    className="flex-row items-center"
+                  >
+                    <Feather name="message-circle" size={14} color="#C2478D" style={{ marginRight: 4 }} />
+                    <Text className="text-[#C2478D] text-[11px] font-bold">{t('postCommentsScreen.reply')}</Text>
+                  </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => initiatePrivateReply(item)}
-                className="flex-row items-center bg-[#22B573]/10 px-2 py-1 rounded border border-[#22B573]/30"
-              >
-                <Ionicons name="mail" size={12} color="#22B573" style={{ marginRight: 4 }} />
-                <Text className="text-[#22B573] text-[10px] font-bold">{t('postCommentsScreen.sendDm')}</Text>
-              </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => initiatePrivateReply(item)}
+                    className="flex-row items-center bg-[#22B573]/10 px-2 py-1 rounded border border-[#22B573]/30"
+                  >
+                    <Ionicons name="mail" size={12} color="#22B573" style={{ marginRight: 4 }} />
+                    <Text className="text-[#22B573] text-[10px] font-bold">{t('postCommentsScreen.sendDm')}</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
+          )}
+        </Pressable>
+
+        {/* Business Replies styled as accordion */}
+        {item.replies && item.replies.length > 0 && (
+          <View className="mt-2 ml-8 pl-4 border-l-2 border-white/10">
+            {item.replies.map((reply, index) => (
+              <TouchableOpacity 
+                key={reply.id || index}
+                activeOpacity={0.8}
+                className="mb-2"
+                onPress={() => {
+                  if (isSelectionMode) toggleSelection(reply.id);
+                }}
+              >
+                <View className={`p-3 rounded-xl border flex-row items-start ${selectedItems.includes(reply.id) ? 'bg-[#F59E0B]/20 border-[#F59E0B]/40' : 'bg-[#F59E0B]/5 border-[#F59E0B]/20'}`}>
+                  {isSelectionMode && (
+                    <View className="mr-3 mt-1">
+                      <Ionicons 
+                        name={selectedItems.includes(reply.id) ? "checkmark-circle" : "ellipse-outline"} 
+                        size={16} 
+                        color={selectedItems.includes(reply.id) ? "#F59E0B" : "#A79E96"} 
+                      />
+                    </View>
+                  )}
+                  
+                  <View className="flex-1">
+                    <View className="flex-row justify-between items-center mb-1">
+                      <View className="flex-row items-center">
+                        <Text className="font-bold text-[12px] text-[#F59E0B]">
+                          {reply.username === 'Mağaza (Ben)' || reply.username === 'Ben' ? 'İşletme' : reply.username}
+                        </Text>
+                        <View className="ml-2 bg-[#F59E0B] px-1.5 py-0.5 rounded flex-row items-center">
+                          <Ionicons name="business" size={8} color="#000" style={{ marginRight: 2 }} />
+                          <Text className="text-black text-[9px] font-bold">BEN</Text>
+                        </View>
+                      </View>
+                      <Text className="text-[#A79E96] text-[9px]">
+                        {new Date(reply.created_at).toLocaleDateString('tr-TR')}
+                      </Text>
+                    </View>
+                    <Text className="text-[#F6F1EC] text-[11px] leading-4">{reply.content}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         )}
-      </Pressable>
-      {item.replies?.length > 0 && (
-        <View>
-          {item.replies.map(reply => renderComment({ item: reply, isNested: true }))}
-        </View>
-      )}
       </View>
     );
   };
@@ -505,7 +547,8 @@ export default function PostCommentsScreen({ route, navigation }) {
 
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior="padding"
+        keyboardVerticalOffset={90}
       >
         {/* Post Summary Header */}
         {post && (
