@@ -689,11 +689,9 @@ export default function AiUretimScreen({ route, navigation }) {
             padding={0} 
             borderRadius={24}
           >
-            <TouchableOpacity 
+            <View 
               className="flex-1 items-center justify-center bg-[#34303C]/50 overflow-hidden relative" 
               style={{ borderRadius: 24 }}
-              onPress={pickMedia}
-              activeOpacity={0.8}
             >
               {localImage ? (
                 <>
@@ -705,14 +703,19 @@ export default function AiUretimScreen({ route, navigation }) {
                       contentFit="cover"
                     />
                   ) : (
-                    <Image source={{ uri: localImage }} className="w-full h-full" resizeMode="cover" />
+                    <TouchableOpacity activeOpacity={0.8} onPress={pickMedia} className="w-full h-full">
+                      <Image source={{ uri: localImage }} className="w-full h-full" resizeMode="cover" />
+                    </TouchableOpacity>
                   )}
-                  <View className="absolute bottom-3 right-3 bg-black/60 rounded-full p-2" pointerEvents="none">
+                  <TouchableOpacity 
+                    className="absolute bottom-3 right-3 bg-black/60 rounded-full p-2 z-10" 
+                    onPress={pickMedia}
+                  >
                     <MaterialIcons name="edit" size={20} color="#fff" />
-                  </View>
+                  </TouchableOpacity>
                 </>
               ) : (
-                <>
+                <TouchableOpacity onPress={pickMedia} activeOpacity={0.8} className="w-full h-full items-center justify-center">
                   <View className="mb-4 bg-[#22B573]/10 rounded-full p-4 border border-[#22B573]/30 border-dashed">
                     <MaterialIcons name="add-photo-alternate" size={48} color="#22B573" />
                   </View>
@@ -722,9 +725,9 @@ export default function AiUretimScreen({ route, navigation }) {
                   <Text className="text-[#A79E96]/60 text-xs text-center px-8">
                     {t('sosyalMedya.generate.imageHint')}
                   </Text>
-                </>
+                </TouchableOpacity>
               )}
-            </TouchableOpacity>
+            </View>
           </AnimatedBorderCard>
         </View>
 
