@@ -454,29 +454,90 @@ export default function AnalyticsScreen({ navigation }) {
           <Text className="text-[#A79E96] text-[10px] mb-1">{t('sosyalMedya.analytics.totalPosts')}</Text>
           <Text className="text-[#22B573] text-[18px] font-bold">{zernioData.totalPosts || 0}</Text>
         </AnimatedBorderCard>
-        <AnimatedBorderCard style={{ flex: 1, marginLeft: 6 }} colors={['#C2478D', '#201D24']} padding={12}>
-          <Text className="text-[#A79E96] text-[10px] mb-1">{t('sosyalMedya.analytics.totalComments')}</Text>
-          <Text className="text-[#E8A8CD] text-[18px] font-bold">{zernioData.totalComments || 0}</Text>
-        </AnimatedBorderCard>
+        
+        {(() => {
+           let totalEng = 0;
+           let totalImp = 0;
+           if (zernioData.platformBreakdown) {
+             zernioData.platformBreakdown.forEach(p => {
+                totalEng += (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0) + (p.clicks || 0);
+                totalImp += (p.impressions || p.views || 0);
+             });
+           }
+           const overallEr = totalImp > 0 ? ((totalEng / totalImp) * 100).toFixed(2) : '0.00';
+           return (
+             <AnimatedBorderCard style={{ flex: 1, marginLeft: 6 }} colors={['#22B573', '#201D24']} padding={12}>
+               <Text className="text-[#A79E96] text-[10px] mb-1">Avg. Eng. Rate</Text>
+               <Text className="text-[#22B573] text-[18px] font-bold">%{overallEr}</Text>
+             </AnimatedBorderCard>
+           );
+        })()}
       </View>
 
       <View className="flex-row justify-between mb-4">
-        <GlassCard style={{ flex: 1, marginRight: 6, padding: 12, borderRadius: 12 }}>
-          <View className="flex-row items-center mb-1">
-            <Ionicons name="people" size={12} color="#A79E96" style={{ marginRight: 4 }} />
-            <Text className="text-[#A79E96] text-[10px]">{t('sosyalMedya.analytics.totalFollowers')}</Text>
-          </View>
-          <Text className="text-[#F6F1EC] text-[16px] font-bold">
-            {zernioData.totalFollowers > 0 ? zernioData.totalFollowers : '--'}
-          </Text>
-        </GlassCard>
-        <GlassCard style={{ flex: 1, marginLeft: 6, padding: 12, borderRadius: 12 }}>
-          <View className="flex-row items-center mb-1">
-            <MaterialIcons name="post-add" size={12} color="#A79E96" style={{ marginRight: 4 }} />
-            <Text className="text-[#A79E96] text-[10px]">{t('sosyalMedya.analytics.reviews')}</Text>
-          </View>
-          <Text className="text-[#F6F1EC] text-[16px] font-bold">{stats.totalReviews}</Text>
-        </GlassCard>
+        {(() => {
+          let formatVideo = 0;
+          let formatImage = 0;
+          if (zernioData.postAnalytics && zernioData.postAnalytics.length > 0) {
+             zernioData.postAnalytics.forEach(post => {
+                const type = (post.media_type || post.type || '').toLowerCase();
+                if (type.includes('video') || type.includes('reel') || type.includes('tiktok')) formatVideo++;
+                else formatImage++;
+             });
+          }
+          return (
+            <GlassCard style={{ flex: 1, marginRight: 6, padding: 12, borderRadius: 12 }}>
+              <View className="flex-row items-center mb-1">
+                <Ionicons name="pie-chart" size={12} color="#A79E96" style={{ marginRight: 4 }} />
+                <Text className="text-[#A79E96] text-[10px]">Format (Video/Görsel)</Text>
+              </View>
+              <View className="flex-row items-baseline">
+                <Text className="text-[#E8A8CD] text-[16px] font-bold">{formatVideo}</Text>
+                <Text className="text-[#A79E96] text-[12px] mx-1">/</Text>
+                <Text className="text-[#22B573] text-[16px] font-bold">{formatImage}</Text>
+              </View>
+            </GlassCard>
+          );
+        })()}
+        
+        {(() => {
+          const bestPost = zernioData.postAnalytics && zernioData.postAnalytics.length > 0 
+            ? [...zernioData.postAnalytics].sort((a,b) => {
+                const aM = a.analytics || a.metrics || a || {};
+                const bM = b.analytics || b.metrics || b || {};
+                return ((bM.likes||0)+(bM.comments||0)) - ((aM.likes||0)+(aM.comments||0));
+            })[0] 
+            : null;
+          
+          if (bestPost) {
+            const bestM = bestPost.analytics || bestPost.metrics || bestPost || {};
+            const totalE = (bestM.likes || 0) + (bestM.comments || 0);
+            return (
+              <GlassCard style={{ flex: 1, marginLeft: 6, padding: 12, borderRadius: 12 }}>
+                <View className="flex-row items-center mb-1">
+                  <Ionicons name="star" size={12} color="#FFD700" style={{ marginRight: 4 }} />
+                  <Text className="text-[#A79E96] text-[10px]">En İyi Gönderi</Text>
+                </View>
+                <Text className="text-[#F6F1EC] text-[11px] font-bold mb-1" numberOfLines={1}>
+                  {bestPost.content || bestPost.title || 'Görsel Gönderi'}
+                </Text>
+                <Text className="text-[#FFD700] text-[9px] font-bold">
+                  {totalE} Etkileşim
+                </Text>
+              </GlassCard>
+            );
+          }
+          
+          return (
+            <GlassCard style={{ flex: 1, marginLeft: 6, padding: 12, borderRadius: 12 }}>
+              <View className="flex-row items-center mb-1">
+                <Ionicons name="star" size={12} color="#A79E96" style={{ marginRight: 4 }} />
+                <Text className="text-[#A79E96] text-[10px]">En İyi Gönderi</Text>
+              </View>
+              <Text className="text-[#F6F1EC] text-[16px] font-bold">--</Text>
+            </GlassCard>
+          );
+        })()}
       </View>
 
       {/* Chart: Posts / Impressions over time */}
@@ -579,26 +640,30 @@ export default function AnalyticsScreen({ navigation }) {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-1 pb-2">
             {[...zernioData.postAnalytics]
               .sort((a, b) => {
-                const aEng = (a.metrics?.likes || 0) + (a.metrics?.comments || 0);
-                const bEng = (b.metrics?.likes || 0) + (b.metrics?.comments || 0);
+                const aM = a.analytics || a.metrics || a || {};
+                const bM = b.analytics || b.metrics || b || {};
+                const aEng = (aM.likes || 0) + (aM.comments || 0);
+                const bEng = (bM.likes || 0) + (bM.comments || 0);
                 return bEng - aEng;
               })
               .slice(0, 5)
-              .map((post, idx) => (
+              .map((post, idx) => {
+                const metrics = post.analytics || post.metrics || post || {};
+                return (
                 <View key={idx} className="bg-[#201D24] rounded-lg p-3 mr-3 w-40 border border-white/10 shadow-sm shadow-black">
                   <Text className="text-[#F6F1EC] text-[11px] font-bold mb-3" numberOfLines={2}>
-                    {post.text || post.caption || 'Görsel Gönderi'}
+                    {post.content || post.title || 'Görsel Gönderi'}
                   </Text>
                   <View className="flex-row items-center mb-1.5">
                     <Ionicons name="heart" size={12} color="#C2478D" style={{ marginRight: 6 }} />
-                    <Text className="text-[#A79E96] text-[10px]">{post.metrics?.likes || 0}</Text>
+                    <Text className="text-[#A79E96] text-[10px]">{metrics.likes || 0}</Text>
                   </View>
                   <View className="flex-row items-center">
                     <Ionicons name="chatbubble" size={12} color="#22B573" style={{ marginRight: 6 }} />
-                    <Text className="text-[#A79E96] text-[10px]">{post.metrics?.comments || 0}</Text>
+                    <Text className="text-[#A79E96] text-[10px]">{metrics.comments || 0}</Text>
                   </View>
                 </View>
-              ))}
+              )})}
           </ScrollView>
         </AnimatedBorderCard>
       )}
@@ -618,7 +683,8 @@ export default function AnalyticsScreen({ navigation }) {
           {zernioData.platformBreakdown.map((p, idx) => {
             const platformIcon = PLATFORMS.find(pl => pl.id === p.platform?.toLowerCase())?.icon || 'apps-outline';
             const platformColor = PLATFORMS.find(pl => pl.id === p.platform?.toLowerCase())?.color || '#A79E96';
-            const er = p.impressions > 0 ? (((p.likes || 0) + (p.comments || 0)) / p.impressions * 100).toFixed(2) : '0.00';
+            const imp = p.impressions || p.views || 0;
+            const er = imp > 0 ? (((p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0) + (p.clicks || 0)) / imp * 100).toFixed(2) : '0.00';
             
             return (
               <View key={idx} className="flex-row items-center mb-3">
@@ -627,7 +693,7 @@ export default function AnalyticsScreen({ navigation }) {
                   <Text className="text-[#F6F1EC] text-[12px] capitalize">{p.platform}</Text>
                 </View>
                 <Text className="text-[#F6F1EC] text-[12px] w-12 text-center">{p.postCount || 0}</Text>
-                <Text className="text-[#F6F1EC] text-[12px] w-12 text-center">{p.impressions || 0}</Text>
+                <Text className="text-[#F6F1EC] text-[12px] w-12 text-center">{imp}</Text>
                 <View className="w-[50px] items-center">
                   <View className="bg-[#22B573]/20 px-1.5 py-0.5 rounded-full border border-[#22B573]/30">
                     <Text className="text-[#22B573] text-[9px] font-bold">{er}%</Text>
