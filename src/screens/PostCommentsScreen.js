@@ -376,7 +376,7 @@ export default function PostCommentsScreen({ route, navigation }) {
               accountId: post?.accountId,
               message: privateMessageText,
               commentId: selectedCommentForDM.zernio_comment_id || selectedCommentForDM.id,
-              platform: post?.platform
+              platform: post?.platform || post?.platforms?.[0]
            } 
         }
       });
