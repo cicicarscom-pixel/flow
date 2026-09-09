@@ -464,6 +464,15 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (Eylül 2026 - Mobil Analytics Ekranı Zernio Paritesi)
+
+1. **API ve Veri Tüketimi (Faz 1):** Mobil analitik ekranındaki tüm veri çekme işlemleri `zernio-client` edge function'ına taşındı. `Promise.all` ile `get-daily-metrics`, `get-best-times`, `get-content-decay`, `get-posting-frequency` ve `get-post-analytics` eşzamanlı olarak çekilerek Web (FlowWeb) projesiyle tam özellik paritesi sağlandı.
+2. **Top Performing Posts ve Platform Kırılımı (Faz 2 & 3):** Gelen etkileşim oranları formüle (ER%) bağlanarak web'le aynı hassasiyete getirildi (`(likes+comments+shares+saves+clicks)/impressions*100`). Gönderi bazlı analitik kartları "Görsel Gönderi" ve fallback (`metrics = post.analytics || post.metrics || post || {}`) zinciri eklenerek boş değer (empty state) hatasından kurtarıldı.
+3. **Kümülatif Takipçi Evrimi - Random Veri Temizliği (Faz 4):** "Tümü" filtresi seçiliyken Takipçi Büyümesi grafiğinde geçmiş verilerin `Math.random()` ile uydurulması engellendi. Geriye dönük running-total hesaplaması, `get-daily-metrics` üzerinden gelen gerçek `follows` verisine (metrics.followers || metrics.follows || metrics.newFollowers) bağlanarak grafik tamamen gerçek API verisine dayandırıldı.
+4. **Gelişmiş Posting Grafikleri ve Çift-Unwrap Hatası (Faz 5):** Best Times (Isı Haritası uyarlaması), Content Decay (İçerik Ömrü) ve Posting Frequency (Paylaşım Sıklığı Etkisi) kartları eklendi. Array'lere hatalı ikinci kez `.slots` / `.buckets` ile erişim (double-unwrap) temizlendi. `mediaType` kararsızlığı düzeltilip API'nin gerçek çıktı şemasına (`day_of_week`, `hour`, `avg_pct_of_final`, `posts_per_week` vb.) uygun şık, mobil tabanlı bir veri görselleştirme ızgarasına çevrildi. Ekranda veri kaybını önlemek için KPI grid 3x2 formatına genişletildi.
+
+---
+
 ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
 
 1. **Yapay Zeka Sorumluluk Ayrımı:** Sistemdeki yapay zeka ajanlarının sınırları netleştirildi. `ledger-isleyici-api` yalnızca finansal işlemlere ("Finansal Denetçi" rolü) odaklanırken, WhatsApp/Zernio entegrasyonu ("Ön Büro" rolü) diğer modüllerin sorumluluğunda bırakıldı. AiChatScreen üzerinden atılan tüm mesajlar doğrudan işleyici API'ye bağlandı.
