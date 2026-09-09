@@ -891,68 +891,14 @@ const YorumlarTab = ({ navigation }) => {
         </View>
       )}
 
-      {/* Top Post List */}
-      {uniquePosts.length > 0 && (
-        <View style={{ paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}>
-          <FlatList
-            data={uniquePosts}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={item => item.id}
-            contentContainerStyle={{ paddingHorizontal: 20 }}
-            renderItem={({ item }) => {
-              const isSelected = item.id === selectedPostId;
-              
-              // Extract 3 sentences max
-              const textContent = item.content || '';
-              const snippet = textContent.match(/[^.!?]+[.!?]+/g) 
-                ? textContent.match(/[^.!?]+[.!?]+/g).slice(0, 3).join(' ') 
-                : textContent.substring(0, 100) + '...';
-
-              return (
-                <TouchableOpacity 
-                  onPress={() => navigation.navigate('PostCommentsScreen', {
-                    post: item.postsObj || {
-                      zernio_post_id: item.id,
-                      content: item.content,
-                      platform: item.platform,
-                      media_urls: item.picture ? [item.picture] : []
-                    }
-                  })}
-                  activeOpacity={0.8}
-                  className={`mr-4 p-2 rounded-xl border-2 flex-row items-center w-[240px] bg-white/5 ${isSelected ? 'border-[#C2478D] bg-[#C2478D]/10' : 'border-transparent'}`}
-                >
-                  <View className="relative">
-                    {item.picture ? (
-                      <Image source={{ uri: item.picture }} className="w-14 h-14 rounded-lg bg-[#201D24]" />
-                    ) : (
-                      <View className="w-14 h-14 rounded-lg bg-[#201D24] items-center justify-center border border-white/5">
-                        <Ionicons name="image-outline" size={18} color="#A79E96" />
-                      </View>
-                    )}
-                    <View className="absolute -bottom-1 -right-1 bg-[#17151A] rounded-full p-0.5 border border-white/10">
-                      <Ionicons name={`logo-${item.platform}`} size={10} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} />
-                    </View>
-                  </View>
-                  
-                  <View className="ml-3 flex-1 justify-center">
-                    <Text className="text-[#F6F1EC] text-[10px] leading-tight" numberOfLines={3} ellipsizeMode="tail">
-                      {snippet}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        </View>
-      )}
-
-      <FlatList 
-        data={displayedComments}
+      {/* Main Post List */}
+      <FlatList
+        data={uniquePosts}
+        showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id}
         contentContainerStyle={[
           { padding: 20, paddingBottom: 160 },
-          displayedComments.length === 0 && { flex: 1, justifyContent: 'center' }
+          uniquePosts.length === 0 && { flex: 1, justifyContent: 'center' }
         ]}
         refreshControl={
           <RefreshControl
@@ -967,208 +913,55 @@ const YorumlarTab = ({ navigation }) => {
           <View className="flex-1 items-center justify-center p-5">
             <Ionicons name="chatbubble-ellipses-outline" size={48} color="#A79E96" />
             <Text className="text-[#A79E96] mt-4 text-center">
-              {uniquePosts.length === 0 ? t('sosyalMedya.inbox.noComments') : 'Bu gönderide yorum bulunmuyor.'}
+              {t('sosyalMedya.inbox.noComments', 'Henüz yorum bulunmuyor.')}
             </Text>
           </View>
         }
         renderItem={({ item }) => {
+          const textContent = item.content || '';
+          const snippet = textContent.match(/[^.!?]+[.!?]+/g) 
+            ? textContent.match(/[^.!?]+[.!?]+/g).slice(0, 3).join(' ') 
+            : textContent.substring(0, 100) + (textContent.length > 100 ? '...' : '');
+
           return (
-            <View className="mb-4">
-              {/* Parent Comment */}
-              <TouchableOpacity 
-                activeOpacity={0.8}
-                onPress={() => {
-                  if (isSelectionMode) toggleSelection(item.id);
-                }}
-              >
-                <GlassCard style={{ 
-                  padding: 14, 
-                  borderRadius: 16, 
-                  borderWidth: isSelectionMode && selectedItems.includes(item.id) ? 1 : 1, 
-                  borderColor: isSelectionMode && selectedItems.includes(item.id) 
-                    ? '#C2478D' 
-                    : 'rgba(255, 255, 255, 0.08)',
-                  backgroundColor: 'rgba(32,31,34,0.4)'
-                }}>
-                  <View className="flex-row">
-                    {isSelectionMode && (
-                      <View className={`w-6 h-6 rounded-full border mr-3 items-center justify-center self-center ${selectedItems.includes(item.id) ? 'bg-[#C2478D] border-[#C2478D]' : 'border-white/30'}`}>
-                        {selectedItems.includes(item.id) && <Ionicons name="checkmark" size={16} color="#fff" />}
-                      </View>
-                    )}
-
-                    {/* Avatar */}
-                    <View className="w-10 h-10 rounded-full mr-3 bg-white/10 items-center justify-center overflow-hidden border border-white/5">
-                      {item._pictureUrl ? (
-                        <Image source={{ uri: item._pictureUrl }} className="w-full h-full" />
-                      ) : (
-                        <Ionicons name="person" size={18} color="#A79E96" />
-                      )}
-                    </View>
-
-                    <View className="flex-1">
-                      <View className="flex-row justify-between items-center mb-1">
-                        <View className="flex-row items-center flex-1">
-                          <Text className="font-bold text-[13px] text-[#F6F1EC]" numberOfLines={1}>
-                            @{item.username}
-                          </Text>
-                          <Ionicons name={`logo-${item.platform}`} size={12} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} style={{ marginLeft: 6 }} />
-                        </View>
-                        <Text className="text-[#A79E96] text-[10px]">
-                          {new Date(item.created_at).toLocaleDateString('tr-TR')}
-                        </Text>
-                      </View>
-                      
-                      <Text className="text-[#F6F1EC] text-[12px] leading-5 mb-3" numberOfLines={4} ellipsizeMode="tail">{item.content || item.title || ''}</Text>
-                      
-                      {/* Action Bar */}
-                      <View className="flex-row items-center mt-1" pointerEvents={isSelectionMode ? "none" : "auto"}>
-                        <TouchableOpacity 
-                          className="flex-row items-center mr-4"
-                          onPress={() => {
-                            if (replyingTo === item.id) {
-                              setReplyingTo(null);
-                            } else {
-                              setReplyingTo(item.id);
-                              setReplyText('');
-                              if (privateReplyingTo === item.id) setPrivateReplyingTo(null);
-                            }
-                          }}
-                        >
-                          <Ionicons name="return-down-forward" size={14} color="#A79E96" />
-                          <Text className="text-[#A79E96] text-[11px] ml-1 font-medium">{t('sosyalMedya.inbox.reply', 'Yanıtla')}</Text>
-                        </TouchableOpacity>
-                        
-                        <TouchableOpacity onPress={() => handleDMClick(item)} className="flex-row items-center mr-4">
-                          <Feather name="send" size={12} color="#A79E96" />
-                          <Text className="text-[#A79E96] text-[11px] ml-1 font-medium">DM</Text>
-                        </TouchableOpacity>
-
-                        {!isSelectionMode && (
-                          <TouchableOpacity 
-                            onPress={() => handleHideComment(item)} 
-                            className="flex-row items-center"
-                          >
-                            <Feather name="eye-off" size={12} color="#A79E96" />
-                            <Text className="text-[#A79E96] text-[11px] ml-1 font-medium">{t('sosyalMedya.inbox.hide', 'Gizle')}</Text>
-                          </TouchableOpacity>
-                        )}
-                      </View>
-                    </View>
+            <TouchableOpacity 
+              onPress={() => navigation.navigate('PostCommentsScreen', {
+                post: item.postsObj || {
+                  zernio_post_id: item.id,
+                  content: item.content,
+                  platform: item.platform,
+                  media_urls: item.picture ? [item.picture] : []
+                }
+              })}
+              activeOpacity={0.8}
+              className="mb-4 p-4 rounded-xl border border-white/5 flex-row items-center bg-white/5"
+            >
+              <View className="relative">
+                {item.picture ? (
+                  <Image source={{ uri: item.picture }} className="w-16 h-16 rounded-lg bg-[#201D24]" />
+                ) : (
+                  <View className="w-16 h-16 rounded-lg bg-[#201D24] items-center justify-center border border-white/5">
+                    <Ionicons name="image-outline" size={24} color="#A79E96" />
                   </View>
-                </GlassCard>
-              </TouchableOpacity>
-
-              {/* Business Replies */}
-              {item.replies && item.replies.length > 0 && (
-                <View className="mt-2 ml-8 pl-4 border-l-2 border-white/10">
-                  {item.replies.map((reply, index) => (
-                    <TouchableOpacity 
-                      key={reply.id || index}
-                      activeOpacity={0.8}
-                      className="mb-2"
-                      onPress={() => {
-                        if (isSelectionMode) toggleSelection(reply.id);
-                      }}
-                    >
-                      <GlassCard style={{ 
-                        padding: 12, 
-                        borderRadius: 12, 
-                        borderWidth: isSelectionMode && selectedItems.includes(reply.id) ? 1 : 1, 
-                        borderColor: isSelectionMode && selectedItems.includes(reply.id) 
-                          ? '#F59E0B' 
-                          : 'rgba(245, 158, 11, 0.15)',
-                        backgroundColor: 'rgba(245, 158, 11, 0.05)'
-                      }}>
-                        <View className="flex-row">
-                          {isSelectionMode && (
-                            <View className={`w-5 h-5 rounded-full border mr-3 items-center justify-center self-center ${selectedItems.includes(reply.id) ? 'bg-[#F59E0B] border-[#F59E0B]' : 'border-white/30'}`}>
-                              {selectedItems.includes(reply.id) && <Ionicons name="checkmark" size={12} color="#000" />}
-                            </View>
-                          )}
-                          
-                          <View className="flex-1">
-                            <View className="flex-row justify-between items-center mb-1">
-                              <View className="flex-row items-center">
-                                <Text className="font-bold text-[12px] text-[#F59E0B]">
-                                  {reply.username === 'Ben' ? 'İşletme' : reply.username}
-                                </Text>
-                                <View className="ml-2 bg-[#F59E0B] px-1.5 py-0.5 rounded flex-row items-center">
-                                  <Ionicons name="business" size={8} color="#000" style={{ marginRight: 2 }} />
-                                  <Text className="text-black text-[9px] font-bold">BEN</Text>
-                                </View>
-                              </View>
-                              <Text className="text-[#A79E96] text-[9px]">
-                                {new Date(reply.created_at).toLocaleDateString('tr-TR')}
-                              </Text>
-                            </View>
-                            <Text className="text-[#F6F1EC] text-[11px] leading-4">{reply.content}</Text>
-                          </View>
-                        </View>
-                      </GlassCard>
-                    </TouchableOpacity>
-                  ))}
+                )}
+                <View className="absolute -bottom-1 -right-1 bg-[#17151A] rounded-full p-1 border border-white/10">
+                  <Ionicons name={`logo-${item.platform}`} size={12} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} />
                 </View>
-              )}
-
-              {/* Inline Reply Input */}
-              {replyingTo === item.id && (
-                <View className="mt-2 ml-8 flex-row items-center">
-                  <View className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 flex-row items-center">
-                    <TextInput
-                      value={replyText}
-                      onChangeText={setReplyText}
-                      placeholder={`${item.username} kullanıcısına yanıt ver...`}
-                      placeholderTextColor="#A79E96"
-                      style={{ flex: 1, color: '#F6F1EC', fontSize: 12, padding: 0 }}
-                      autoFocus
-                      multiline
-                      maxLength={500}
-                    />
-                  </View>
-                  <TouchableOpacity 
-                    onPress={() => submitReply(item)}
-                    disabled={sendingReply || !replyText.trim()}
-                    className={`ml-2 w-9 h-9 rounded-full items-center justify-center ${sendingReply || !replyText.trim() ? 'bg-white/10' : 'bg-[#C2478D]'}`}
-                  >
-                    {sendingReply ? (
-                      <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                      <Ionicons name="send" size={14} color={sendingReply || !replyText.trim() ? '#A79E96' : '#fff'} style={{ marginLeft: 2 }} />
-                    )}
-                  </TouchableOpacity>
+              </View>
+              
+              <View className="ml-4 flex-1 justify-center">
+                <Text className="text-[#F6F1EC] text-[13px] leading-tight mb-1 font-semibold" numberOfLines={1}>
+                  {item.title || 'Gönderi'}
+                </Text>
+                <Text className="text-[#A79E96] text-[11px] leading-tight" numberOfLines={2} ellipsizeMode="tail">
+                  {snippet}
+                </Text>
+                <View className="flex-row items-center mt-2">
+                  <Text className="text-[#C2478D] text-[10px] font-bold uppercase">{t('sosyalMedya.inbox.viewComments', 'Yorumları Gör')}</Text>
+                  <Ionicons name="chevron-forward" size={10} color="#C2478D" style={{ marginLeft: 2 }} />
                 </View>
-              )}
-
-              {/* Inline Private Reply Input */}
-              {privateReplyingTo === item.id && (
-                <View className="mt-2 ml-8 flex-row items-center">
-                  <View className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 flex-row items-center">
-                    <TextInput
-                      value={privateReplyText}
-                      onChangeText={setPrivateReplyText}
-                      placeholder={`${item.username} kullanıcısına DM gönder...`}
-                      placeholderTextColor="#A79E96"
-                      style={{ flex: 1, color: '#F6F1EC', fontSize: 12, padding: 0 }}
-                      autoFocus
-                      multiline
-                      maxLength={500}
-                    />
-                  </View>
-                  <TouchableOpacity 
-                    onPress={() => submitPrivateReply(item)}
-                    disabled={sendingPrivateReply || !privateReplyText.trim()}
-                    className={`ml-2 w-9 h-9 rounded-full items-center justify-center ${sendingPrivateReply || !privateReplyText.trim() ? 'bg-white/10' : 'bg-[#22B573]'}`}
-                  >
-                    {sendingPrivateReply ? (
-                      <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                      <Ionicons name="send" size={14} color={sendingPrivateReply || !privateReplyText.trim() ? '#A79E96' : '#000'} style={{ marginLeft: 2 }} />
-                    )}
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
+              </View>
+            </TouchableOpacity>
           );
         }}
       />
