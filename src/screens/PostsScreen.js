@@ -246,88 +246,83 @@ export default function PostsScreen({ navigation }) {
             const isVideo = item.media_urls && item.media_urls.length > 0 && (item.media_urls[0].match(/\.(mp4|webm|mov)(\?.*)?$/i) || item.media_urls[0].includes('blob'));
 
             return (
-              <AnimatedBorderCard style={{ marginBottom: 16 }} padding={16} borderRadius={16} colors={[statusColor, '#ffffff']}>
-                {/* Header: Profile & Date */}
-                <View className="flex-row justify-between items-center mb-3">
-                  <View className="flex-row items-center flex-1">
-                    <View style={{ width: 6, height: 6, borderRadius: 4, backgroundColor: '#F59E0B', marginRight: 6 }} />
-                    <Text className="text-[#A79E96] text-[12px]" numberOfLines={1}>{t('postsScreen.table.profileLabel', { name: 'Al Esnaf' })}</Text>
-                  </View>
-                  <Text className="text-[#A79E96] text-[11px] ml-2 shrink-0">
-                    {item.scheduled_for ? formatDate(item.scheduled_for) : formatDate(item.created_at || new Date().toISOString())}
-                  </Text>
-                </View>
-
-                {/* Content: Image/Video & Text */}
-                <View className="flex-row items-start mb-4">
+              <View style={{ marginBottom: 12, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', padding: 12 }}>
+                <View className="flex-row items-start">
+                  {/* Left: Thumbnail (smaller) */}
                   {item.media_urls && item.media_urls.length > 0 ? (
-                    <View style={{ width: 70, height: 70, borderRadius: 10, overflow: 'hidden', marginRight: 12, backgroundColor: '#000' }}>
+                    <View style={{ width: 48, height: 48, borderRadius: 8, overflow: 'hidden', marginRight: 12, backgroundColor: '#000' }}>
                       {isVideo ? (
-                        <View className="w-full h-full items-center justify-center bg-black/80 border border-white/10 rounded-[10px]">
-                          <MaterialIcons name="play-arrow" size={28} color="#fff" />
+                        <View className="w-full h-full items-center justify-center bg-black/80 border border-white/10 rounded-lg">
+                          <MaterialIcons name="play-arrow" size={24} color="#fff" />
                         </View>
                       ) : (
-                        <Image source={{ uri: item.media_urls[0] }} style={{ width: 70, height: 70 }} resizeMode="cover" />
+                        <Image source={{ uri: item.media_urls[0] }} style={{ width: 48, height: 48 }} resizeMode="cover" />
                       )}
                     </View>
                   ) : (
-                    <View style={{ width: 70, height: 70, borderRadius: 10, marginRight: 12, backgroundColor: 'rgba(255,255,255,0.05)' }} className="items-center justify-center border border-white/5">
-                      <Feather name="image" size={24} color="#A79E96" />
+                    <View style={{ width: 48, height: 48, borderRadius: 8, marginRight: 12, backgroundColor: 'rgba(255,255,255,0.05)' }} className="items-center justify-center border border-white/5">
+                      <Feather name="image" size={20} color="#A79E96" />
                     </View>
                   )}
+
+                  {/* Right: Content & Metadata */}
                   <View className="flex-1">
-                    <Text className="text-[#F6F1EC] text-[13px] font-medium leading-5" numberOfLines={3}>
-                      {item.content || item.title || t('postsScreen.emptyState.noPostsForFilter')}
-                    </Text>
-                    {/* Platforms */}
-                    <View className="flex-row items-center mt-3 flex-wrap">
+                    {/* Top line: Text & Date */}
+                    <View className="flex-row justify-between items-start mb-1.5">
+                      <Text className="text-[#F6F1EC] text-[13px] font-medium flex-1 mr-2 leading-5" numberOfLines={2}>
+                        {item.content || item.title || t('postsScreen.emptyState.noPostsForFilter')}
+                      </Text>
+                      <Text className="text-[#A79E96] text-[10px] shrink-0 mt-0.5">
+                        {item.scheduled_for ? formatDate(item.scheduled_for) : formatDate(item.created_at || new Date().toISOString())}
+                      </Text>
+                    </View>
+
+                    {/* Middle line: Platforms & Status */}
+                    <View className="flex-row items-center flex-wrap mb-1">
+                      <View className="flex-row items-center px-1.5 py-0.5 rounded mr-2" style={{ backgroundColor: `${statusColor}15`, borderColor: `${statusColor}30`, borderWidth: 1 }}>
+                        <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: statusColor, marginRight: 4 }} />
+                        <Text style={{ color: statusColor, fontSize: 9, fontWeight: 'bold' }}>{getStatusLabel(item.status)}</Text>
+                      </View>
+                      {item.media_storage_source === 'supabase' && (
+                        <View className="px-1.5 py-0.5 rounded bg-[#F2994A]/10 border border-[#F2994A]/30 mr-2">
+                          <Text className="text-[#F2994A] text-[9px] font-bold">Depo</Text>
+                        </View>
+                      )}
                       {Array.isArray(item.platforms) && item.platforms.map((platObj, idx) => {
                         const platName = typeof platObj === 'string' ? platObj : platObj.platform;
                         if (!platName) return null;
                         let iconName = `logo-${platName.toLowerCase()}`;
                         if (platName.toLowerCase() === 'twitter') iconName = 'close';
-                        return <Ionicons key={idx} name={iconName} size={16} color="#A79E96" style={{ marginRight: 6, marginBottom: 4 }} />;
+                        return <Ionicons key={idx} name={iconName} size={12} color="#A79E96" style={{ marginRight: 4 }} />;
                       })}
                     </View>
                   </View>
                 </View>
 
-                {/* Metrics Row */}
-                <View className="flex-row items-center justify-between bg-black/20 rounded-xl p-3 border border-white/5 mb-3">
-                  <View className="items-center"><Feather name="heart" size={14} color="#A79E96" /><Text className="text-[#F6F1EC] text-[11px] mt-1.5 font-semibold">{item.metrics?.likes ?? item.likes ?? '-'}</Text></View>
-                  <View className="items-center"><Feather name="message-circle" size={14} color="#A79E96" /><Text className="text-[#F6F1EC] text-[11px] mt-1.5 font-semibold">{item.metrics?.comments ?? item.comments ?? '-'}</Text></View>
-                  <View className="items-center"><Feather name="share-2" size={14} color="#A79E96" /><Text className="text-[#F6F1EC] text-[11px] mt-1.5 font-semibold">{item.metrics?.shares ?? item.shares ?? '-'}</Text></View>
-                  <View className="items-center"><Feather name="bookmark" size={14} color="#A79E96" /><Text className="text-[#F6F1EC] text-[11px] mt-1.5 font-semibold">{item.metrics?.saves ?? item.saves ?? '-'}</Text></View>
-                  <View className="items-center"><Feather name="mouse-pointer" size={14} color="#A79E96" /><Text className="text-[#F6F1EC] text-[11px] mt-1.5 font-semibold">{item.metrics?.clicks ?? item.clicks ?? '-'}</Text></View>
-                </View>
-
-                {/* Footer: Status & Actions */}
-                <View className="flex-row justify-between items-center border-t border-white/5 pt-3">
+                {/* Bottom line: Metrics & Actions */}
+                <View className="flex-row items-center justify-between mt-2 pt-2 border-t border-white/5">
                   <View className="flex-row items-center">
-                    <View className="flex-row items-center px-2 py-1.5 rounded-md border" style={{ backgroundColor: `${statusColor}15`, borderColor: `${statusColor}30` }}>
-                      <View style={{ width: 6, height: 6, borderRadius: 4, backgroundColor: statusColor, marginRight: 6 }} />
-                      <Text style={{ color: statusColor, fontSize: 10, fontWeight: 'bold' }}>{getStatusLabel(item.status)}</Text>
-                    </View>
-                    {item.media_storage_source === 'supabase' && (
-                      <View className="ml-2 px-2 py-1.5 rounded-md bg-[#F2994A]/10 border border-[#F2994A]/30">
-                        <Text className="text-[#F2994A] text-[9px] font-bold">Geçici Depoda</Text>
-                      </View>
-                    )}
+                    <View className="flex-row items-center mr-3"><Feather name="heart" size={12} color="#A79E96" /><Text className="text-[#A79E96] text-[10px] ml-1">{item.metrics?.likes ?? item.likes ?? '-'}</Text></View>
+                    <View className="flex-row items-center mr-3"><Feather name="message-circle" size={12} color="#A79E96" /><Text className="text-[#A79E96] text-[10px] ml-1">{item.metrics?.comments ?? item.comments ?? '-'}</Text></View>
+                    <View className="flex-row items-center mr-3"><Feather name="share-2" size={12} color="#A79E96" /><Text className="text-[#A79E96] text-[10px] ml-1">{item.metrics?.shares ?? item.shares ?? '-'}</Text></View>
+                    <View className="flex-row items-center mr-3"><Feather name="bookmark" size={12} color="#A79E96" /><Text className="text-[#A79E96] text-[10px] ml-1">{item.metrics?.saves ?? item.saves ?? '-'}</Text></View>
+                    <View className="flex-row items-center"><Feather name="mouse-pointer" size={12} color="#A79E96" /><Text className="text-[#A79E96] text-[10px] ml-1">{item.metrics?.clicks ?? item.clicks ?? '-'}</Text></View>
                   </View>
-                  <View className="flex-row justify-end items-center">
+                  
+                  <View className="flex-row items-center">
                     {item.status === 'failed' && (
-                      <TouchableOpacity className="flex-row items-center p-2 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/30 mr-2">
-                        <Ionicons name="refresh" size={16} color="#EF4444" />
+                      <TouchableOpacity className="p-1.5 rounded-md bg-[#EF4444]/10 border border-[#EF4444]/30 mr-2">
+                        <Ionicons name="refresh" size={14} color="#EF4444" />
                       </TouchableOpacity>
                     )}
                     {(item.status === 'scheduled' || item.status === 'published' || item.status === 'failed') && (
-                      <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="flex-row items-center p-2 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/30">
-                        <Ionicons name="trash-outline" size={16} color="#EF4444" />
+                      <TouchableOpacity onPress={() => handleDeletePost(item.id)} className="p-1.5 rounded-md bg-[#EF4444]/10 border border-[#EF4444]/30">
+                        <Ionicons name="trash-outline" size={14} color="#EF4444" />
                       </TouchableOpacity>
                     )}
                   </View>
                 </View>
-              </AnimatedBorderCard>
+              </View>
             );
           }}
           ListEmptyComponent={() => (
