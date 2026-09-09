@@ -148,11 +148,7 @@ export default function PostsScreen({ navigation }) {
 
   const getPreviewText = (text) => {
     if (!text) return '';
-    const words = text.trim().split(/\s+/);
-    if (words.length > 5) {
-      return words.slice(0, 5).join(' ') + '...';
-    }
-    return text;
+    return text.length > 60 ? text.substring(0, 60) + '...' : text;
   };
 
   const handleDeletePost = (id) => {
@@ -270,7 +266,7 @@ export default function PostsScreen({ navigation }) {
                     {/* Top line: Text & Date */}
                     <View className="flex-row justify-between items-start mb-1.5">
                       <Text className="text-[#F6F1EC] text-[13px] font-medium flex-1 mr-2 leading-5" numberOfLines={2}>
-                        {item.content || item.title || t('postsScreen.emptyState.noPostsForFilter')}
+                        {getPreviewText(item.content || item.title) || t('postCommentsScreen.hiddenComment', { defaultValue: 'Açıklama yok' })}
                       </Text>
                       <Text className="text-[#A79E96] text-[10px] shrink-0 mt-0.5">
                         {item.scheduled_for ? formatDate(item.scheduled_for) : formatDate(item.created_at || new Date().toISOString())}
