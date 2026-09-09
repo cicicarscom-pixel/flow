@@ -911,7 +911,14 @@ const YorumlarTab = ({ navigation }) => {
 
               return (
                 <TouchableOpacity 
-                  onPress={() => setSelectedPostId(item.id)}
+                  onPress={() => navigation.navigate('PostCommentsScreen', {
+                    post: item.postsObj || {
+                      zernio_post_id: item.id,
+                      content: item.content,
+                      platform: item.platform,
+                      media_urls: item.picture ? [item.picture] : []
+                    }
+                  })}
                   activeOpacity={0.8}
                   className={`mr-4 p-2 rounded-xl border-2 flex-row items-center w-[240px] bg-white/5 ${isSelected ? 'border-[#C2478D] bg-[#C2478D]/10' : 'border-transparent'}`}
                 >
