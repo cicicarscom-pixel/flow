@@ -9,6 +9,7 @@
       "noAccounts": "Auf Zernio wurde kein verbundenes Konto gefunden.",
       "dbError": "Datenbankfehler",
       "accountConnected": "{{platform}} wurde erfolgreich verbunden.",
+      "accountAlreadyLinkedElsewhere": "Diese Seite ist bereits mit einer anderen Organisation verbunden",
       "successExclamation": "Erfolgreich!",
       "saveError": "Speicherfehler",
       "connectionError": "Verbindungsfehler",

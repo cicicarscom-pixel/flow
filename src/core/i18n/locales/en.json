@@ -9,6 +9,7 @@
       "noAccounts": "No connected accounts found on Zernio.",
       "dbError": "Database Error",
       "accountConnected": "{{platform}} connected successfully.",
+      "accountAlreadyLinkedElsewhere": "This page is already connected in another organization",
       "successExclamation": "Success!",
       "saveError": "Save Error",
       "connectionError": "Connection Error",

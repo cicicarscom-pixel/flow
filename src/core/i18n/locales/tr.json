@@ -9,6 +9,7 @@
       "noAccounts": "Zernio üzerinde bağlı bir hesap bulunamadı.",
       "dbError": "Veritabanı Hatası",
       "accountConnected": "{{platform}} başarıyla bağlandı.",
+      "accountAlreadyLinkedElsewhere": "Bu sayfa başka bir organizasyonda zaten bağlı",
       "successExclamation": "Başarılı!",
       "saveError": "Kayıt Hatası",
       "connectionError": "Bağlantı Hatası",

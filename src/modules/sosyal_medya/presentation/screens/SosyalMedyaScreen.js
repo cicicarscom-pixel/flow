@@ -214,14 +214,20 @@ export default function SosyalMedyaScreen({ navigation }) {
       // sadece zernio-client edge fonksiyonunun sync-accounts case'inde biliniyor.
       // (Bkz. README: eskiden burada public.social_accounts'a yanlış şema/sütunlarla
       // sessizce yazılıyordu — hesaplar hiçbir zaman gerçek tabloya düşmüyordu.)
-      const { error } = await supabase.functions.invoke('zernio-client', {
+      const { data: syncResult, error } = await supabase.functions.invoke('zernio-client', {
         body: { action: 'sync-accounts', payload: { organizationId: orgId } }
       });
 
       if (error) {
         Alert.alert(t('sosyalMedya.alerts.dbError'), error.message || JSON.stringify(error));
       } else {
-        Alert.alert(t('sosyalMedya.alerts.successExclamation'), t('sosyalMedya.alerts.accountConnected', { platform: platform || 'Hesap' }));
+        const conflicts = syncResult?.data?.conflicts || syncResult?.conflicts;
+        if (conflicts && conflicts.length > 0) {
+          const list = conflicts.map(c => `${c.platform}: ${c.username}`).join('\n');
+          Alert.alert(t('sosyalMedya.alerts.accountAlreadyLinkedElsewhere'), list);
+        } else {
+          Alert.alert(t('sosyalMedya.alerts.successExclamation'), t('sosyalMedya.alerts.accountConnected', { platform: platform || 'Hesap' }));
+        }
         fetchAccountsFromZernio();
       }
     } catch (err) {
