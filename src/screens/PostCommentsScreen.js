@@ -305,29 +305,30 @@ export default function PostCommentsScreen({ route, navigation }) {
       const { data: { session } } = await supabase.auth.getSession();
       let zernioCommentId = `mock_${Date.now()}`;
       
-      if (session && post?.id && post?.accountId) {
-        // Send to Zernio API first to guarantee delivery!
-        const { data: zernioRes, error: zernioError } = await supabase.functions.invoke('zernio-client', {
-          body: { 
-             action: 'reply-comment', 
-             payload: { 
-                postId: post.zernio_post_id || post.id,
-                accountId: post.accountId,
-                message: tempText,
-                commentId: targetCommentId
-             } 
-          }
-        });
-        
-        if (zernioError || zernioRes?.error) {
-           throw new Error(zernioError?.message || zernioRes?.error || "Zernio API failed");
+      if (!session || !post?.id) throw new Error("Oturum veya gönderi bilgisi eksik.");
+
+      // Send to Zernio API first to guarantee delivery!
+      const { data: zernioRes, error: zernioError } = await supabase.functions.invoke('zernio-client', {
+        body: { 
+           action: 'reply-comment', 
+           payload: { 
+              postId: post.zernio_post_id || post.id,
+              accountId: post.accountId,
+              platform: post.platform || post.platforms?.[0],
+              message: tempText,
+              commentId: targetCommentId
+           } 
         }
-        
-        if (zernioRes?.id) {
-           zernioCommentId = zernioRes.id;
-        } else if (zernioRes?.data?.id) {
-           zernioCommentId = zernioRes.data.id;
-        }
+      });
+      
+      if (zernioError || zernioRes?.error) {
+         throw new Error(zernioError?.message || zernioRes?.error || "Zernio API failed");
+      }
+      
+      if (zernioRes?.data?.id) {
+         zernioCommentId = zernioRes.data.id;
+      } else if (zernioRes?.id) {
+         zernioCommentId = zernioRes.id;
       }
       
       const localUsername = t('postCommentsScreen.storeMe');
@@ -360,14 +361,49 @@ export default function PostCommentsScreen({ route, navigation }) {
     }
   };
 
-  const handleSendPrivateReply = () => {
-    if (!privateMessageText.trim()) return;
+  const handleSendPrivateReply = async () => {
+    if (!privateMessageText.trim() || !selectedCommentForDM) return;
     
-    alert(`Private message sent to @${selectedCommentForDM?.username}`);
-    setPrivateReplyModalVisible(false);
-    setSelectedCommentForDM(null);
-    setPrivateMessageText('');
-    // TODO: Zernio POST /v1/inbox/comments/{postId}/{commentId}/private-reply
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Oturum bulunamadı");
+
+      const { data: zernioRes, error: zernioError } = await supabase.functions.invoke('zernio-client', {
+        body: { 
+           action: 'send-private-reply', 
+           payload: { 
+              postId: post?.zernio_post_id || post?.id,
+              accountId: post?.accountId,
+              message: privateMessageText,
+              commentId: selectedCommentForDM.zernio_comment_id || selectedCommentForDM.id,
+              platform: post?.platform
+           } 
+        }
+      });
+      
+      if (zernioError || zernioRes?.error) {
+         throw new Error(zernioError?.message || zernioRes?.error || "Zernio API failed");
+      }
+      
+      alert(t('postCommentsScreen.alerts.privateReplySuccess') || `Private message sent to @${selectedCommentForDM.username}`);
+      setPrivateReplyModalVisible(false);
+      setSelectedCommentForDM(null);
+      setPrivateMessageText('');
+    } catch (e) {
+      console.log("DM send error:", e);
+      let errorMsg = e.message;
+      try {
+        if (typeof errorMsg === 'string' && (errorMsg.includes('already been sent') || errorMsg.includes('Activity already replied to'))) {
+          errorMsg = t("postCommentsScreen.alerts.alreadyRepliedError") || "Bu yoruma zaten bir DM gönderilmiş.";
+        } else {
+           const parsed = JSON.parse(errorMsg);
+           if (parsed.error && typeof parsed.error === 'string' && (parsed.error.includes('already been sent') || parsed.error.includes('Activity already replied to'))) {
+               errorMsg = t("postCommentsScreen.alerts.alreadyRepliedError") || "Bu yoruma zaten bir DM gönderilmiş.";
+           }
+        }
+      } catch (err) {}
+      alert((t('postCommentsScreen.alerts.errorSendingPrivateReply') || 'DM gönderilirken hata oluştu: ') + errorMsg);
+    }
   };
 
   const renderComment = ({ item }) => {
@@ -446,13 +482,15 @@ export default function PostCommentsScreen({ route, navigation }) {
                     <Text className="text-[#C2478D] text-[11px] font-bold">{t('postCommentsScreen.reply')}</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity
-                    onPress={() => initiatePrivateReply(item)}
-                    className="flex-row items-center bg-[#22B573]/10 px-2 py-1 rounded border border-[#22B573]/30"
-                  >
-                    <Ionicons name="mail" size={12} color="#22B573" style={{ marginRight: 4 }} />
-                    <Text className="text-[#22B573] text-[10px] font-bold">{t('postCommentsScreen.sendDm')}</Text>
-                  </TouchableOpacity>
+                  {['facebook', 'instagram'].includes(String(item.platform || post?.platform).toLowerCase()) && (
+                    <TouchableOpacity
+                      onPress={() => initiatePrivateReply(item)}
+                      className="flex-row items-center bg-[#22B573]/10 px-2 py-1 rounded border border-[#22B573]/30"
+                    >
+                      <Ionicons name="mail" size={12} color="#22B573" style={{ marginRight: 4 }} />
+                      <Text className="text-[#22B573] text-[10px] font-bold">{t('postCommentsScreen.sendDm')}</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               </View>
             </View>

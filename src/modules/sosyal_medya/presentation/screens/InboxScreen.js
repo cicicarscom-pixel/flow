@@ -377,7 +377,7 @@ const YorumlarTab = ({ navigation }) => {
       };
       
       const res = await supabase.functions.invoke('zernio-client', { body: payload });
-      if (res.error) throw res.error;
+      if (res.error || res.data?.error) throw new Error(res.error?.message || res.data?.error);
       
       Alert.alert("Başarılı", "Özel mesaj (DM) başarıyla gönderildi.");
       
@@ -385,7 +385,7 @@ const YorumlarTab = ({ navigation }) => {
       setPrivateReplyingTo(null);
     } catch (e) {
       console.error(e);
-      Alert.alert("Hata", "Özel mesaj gönderilemedi.");
+      Alert.alert("Hata", e.message || "Özel mesaj gönderilemedi.");
     } finally {
       setSendingPrivateReply(false);
     }
@@ -412,7 +412,7 @@ const YorumlarTab = ({ navigation }) => {
       };
       
       const res = await supabase.functions.invoke('zernio-client', { body: payload });
-      if (res.error) throw res.error;
+      if (res.error || res.data?.error) throw new Error(res.error?.message || res.data?.error);
       
       const newReply = {
         id: 'temp_' + Date.now(),
@@ -432,7 +432,7 @@ const YorumlarTab = ({ navigation }) => {
       setReplyingTo(null);
     } catch (e) {
       console.error(e);
-      Alert.alert("Hata", "Yanıt gönderilemedi.");
+      Alert.alert("Hata", e.message || "Yanıt gönderilemedi.");
     } finally {
       setSendingReply(false);
     }

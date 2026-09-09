@@ -574,7 +574,10 @@
       "deleteSelectedTitle": "Yorumları Sil",
       "deleteSelectedMessage": "Seçilen {{count}} yorum yerel veritabanınızdan tamamen silinecektir. Emin misiniz?",
       "deleteSelectedPartialError": "Bazı yorumlar silinirken hata oluştu, ancak ekrandan gizlendi.",
-      "replySendError": "Yanıt gönderilemedi. Lütfen tekrar deneyin."
+      "replySendError": "Yanıt gönderilemedi. Lütfen tekrar deneyin.",
+      "alreadyRepliedError": "Bu yoruma zaten bir DM gönderilmiş. Sosyal medya platformları bir yoruma sadece 1 kez DM atılmasına izin verir.",
+      "errorSendingPrivateReply": "DM gönderilirken hata oluştu: ",
+      "privateReplySuccess": "Özel mesaj (DM) başarıyla gönderildi."
     },
     "storeMe": "Mağaza (Ben)",
     "hiddenComment": "Bu yorum gizlendi.",

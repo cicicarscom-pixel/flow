@@ -574,7 +574,10 @@
       "deleteSelectedTitle": "Kommentare löschen",
       "deleteSelectedMessage": "Die ausgewählten {{count}} Kommentare werden endgültig aus Ihrer lokalen Datenbank gelöscht. Sind Sie sicher?",
       "deleteSelectedPartialError": "Beim Löschen einiger Kommentare ist ein Fehler aufgetreten, sie wurden jedoch vom Bildschirm ausgeblendet.",
-      "replySendError": "Antwort konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+      "replySendError": "Antwort konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+      "alreadyRepliedError": "An diesen Kommentar wurde bereits eine DM gesendet. Social-Media-Plattformen erlauben nur eine DM pro Kommentar.",
+      "errorSendingPrivateReply": "Fehler beim Senden der DM: ",
+      "privateReplySuccess": "Private Nachricht (DM) erfolgreich gesendet."
     },
     "storeMe": "Geschäft (Ich)",
     "hiddenComment": "Dieser Kommentar wurde ausgeblendet.",

@@ -574,7 +574,10 @@
       "deleteSelectedTitle": "Delete Comments",
       "deleteSelectedMessage": "The selected {{count}} comments will be permanently deleted from your local database. Are you sure?",
       "deleteSelectedPartialError": "An error occurred while deleting some comments, but they were hidden from the screen.",
-      "replySendError": "Failed to send reply. Please try again."
+      "replySendError": "Failed to send reply. Please try again.",
+      "alreadyRepliedError": "A DM has already been sent to this comment. Social media platforms only allow sending 1 DM per comment.",
+      "errorSendingPrivateReply": "Error sending DM: ",
+      "privateReplySuccess": "Private message (DM) sent successfully."
     },
     "storeMe": "Store (Me)",
     "hiddenComment": "This comment has been hidden.",
