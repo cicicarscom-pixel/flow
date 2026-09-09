@@ -21,6 +21,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { decode } from 'base64-arraybuffer';
 import * as Sharing from 'expo-sharing';
 import { useFocusEffect } from '@react-navigation/native';
@@ -137,6 +138,17 @@ export default function AiUretimScreen({ route, navigation }) {
   const [aiPrompt, setAiPrompt] = useState('');
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [isEditingCaption, setIsEditingCaption] = useState(false);
+
+  const videoPlayer = useVideoPlayer(null, (player) => {
+    player.loop = true;
+    player.muted = true;
+  });
+
+  React.useEffect(() => {
+    if (mediaType === 'video' && localImage) {
+      videoPlayer.replaceAsync(localImage).then(() => videoPlayer.play());
+    }
+  }, [localImage, mediaType]);
 
   // New state variables for the redesign
   const [zernioAccounts, setZernioAccounts] = useState([]);
@@ -686,11 +698,12 @@ export default function AiUretimScreen({ route, navigation }) {
               {localImage ? (
                 <>
                   {mediaType === 'video' ? (
-                    <View className="w-full h-full items-center justify-center bg-black">
-                      <View className="bg-black/50 rounded-full p-4">
-                        <MaterialIcons name="play-arrow" size={48} color="#fff" />
-                      </View>
-                    </View>
+                    <VideoView
+                      player={videoPlayer}
+                      style={{ width: '100%', height: '100%' }}
+                      nativeControls
+                      contentFit="cover"
+                    />
                   ) : (
                     <Image source={{ uri: localImage }} className="w-full h-full" resizeMode="cover" />
                   )}
