@@ -747,6 +747,82 @@ export default function AnalyticsScreen({ navigation }) {
           })}
         </AnimatedBorderCard>
       )}
+
+      {/* Phase 5: Best Times to Post */}
+      {zernioData.bestTimes?.slots && zernioData.bestTimes.slots.length > 0 && (
+        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Paylaşım İçin En İyi Zamanlar</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-4">Etkileşimin en yüksek olduğu gün ve saatler</Text>
+          <View className="flex-row flex-wrap justify-between">
+            {zernioData.bestTimes.slots.slice(0, 6).map((slot, idx) => {
+               // Bazı API'lerde score da gelebilir, ona göre yeşilin tonu ayarlanabilir, şimdilik standart
+               return (
+                 <View key={idx} className="w-[31%] bg-white/5 rounded-lg p-2 mb-2 items-center border border-white/10">
+                   <Text className="text-[#22B573] text-[12px] font-bold capitalize">{slot.day?.substring(0,3) || slot.day}</Text>
+                   <Text className="text-[#F6F1EC] text-[14px] font-bold mt-1">{slot.time}</Text>
+                 </View>
+               );
+            })}
+          </View>
+        </AnimatedBorderCard>
+      )}
+
+      {/* Phase 5: Content Decay */}
+      {zernioData.contentDecay?.buckets && zernioData.contentDecay.buckets.length > 0 && (
+        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">İçerik Ömrü (Content Decay)</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-4">Gönderi sonrası etkileşimlerin saatlik dağılımı</Text>
+          <View style={{marginLeft: -10}}>
+            <BarChart
+              data={zernioData.contentDecay.buckets.map(b => ({
+                value: b.value || b.percentage || 0,
+                label: b.label || '',
+                frontColor: '#22B573'
+              }))}
+              barWidth={26}
+              spacing={width * 0.08}
+              roundedTop
+              roundedBottom
+              hideRules
+              xAxisThickness={0}
+              yAxisThickness={0}
+              yAxisTextStyle={{color: '#A79E96', fontSize: 10}}
+              xAxisLabelTextStyle={{color: '#A79E96', fontSize: 8}}
+              noOfSections={4}
+              height={120}
+              isAnimated
+            />
+          </View>
+        </AnimatedBorderCard>
+      )}
+
+      {/* Phase 5: Posting Frequency */}
+      {zernioData.postingFrequency?.frequency && zernioData.postingFrequency.frequency.length > 0 && (
+        <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Paylaşım Sıklığı</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-4">Haftanın günlerine göre toplam gönderi sayıları</Text>
+          <View style={{marginLeft: -10}}>
+            <BarChart
+              data={zernioData.postingFrequency.frequency.map(f => ({
+                value: f.count || f.value || 0,
+                label: (f.day || f.label || '').substring(0,3),
+                frontColor: '#C2478D'
+              }))}
+              barWidth={20}
+              spacing={width * 0.05}
+              roundedTop
+              hideRules
+              xAxisThickness={0}
+              yAxisThickness={0}
+              yAxisTextStyle={{color: '#A79E96', fontSize: 10}}
+              xAxisLabelTextStyle={{color: '#A79E96', fontSize: 8}}
+              noOfSections={3}
+              height={120}
+              isAnimated
+            />
+          </View>
+        </AnimatedBorderCard>
+      )}
     </View>
   );
 
