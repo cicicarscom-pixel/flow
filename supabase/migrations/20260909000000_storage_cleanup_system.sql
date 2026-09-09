@@ -9,7 +9,12 @@ ALTER TABLE posts
 create extension if not exists pg_cron;
 
 -- Remove old job if exists to avoid conflicts
-SELECT cron.unschedule('flow-cleanup-post-media-job');
+DO $$ 
+BEGIN 
+  IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'flow-cleanup-post-media-job') THEN 
+    PERFORM cron.unschedule('flow-cleanup-post-media-job'); 
+  END IF; 
+END $$;
 
 -- Schedule the cleanup job to run every 30 minutes
 SELECT cron.schedule(

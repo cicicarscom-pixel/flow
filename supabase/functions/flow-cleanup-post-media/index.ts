@@ -61,11 +61,17 @@ serve(async (req) => {
 
         if (hasZernioLink) {
           // Zernio'dan link gelmiş, geçici storage silinmeli
-          await supabase.storage.from(post.storage_bucket).remove([post.storage_path]);
-          await supabase.from('posts').update({
-            media_storage_source: 'zernio',
-            storage_deleted_at: new Date().toISOString()
-          }).eq('id', post.id);
+          const { error: removeError } = await supabase.storage.from(post.storage_bucket).remove([post.storage_path]);
+          
+          if (removeError) {
+             console.error(`Failed to remove file from storage: ${post.storage_path}`, removeError);
+             pendingCountForProfile++; // Hata varsa silinemedi say, bir dahaki turda dener
+          } else {
+            await supabase.from('posts').update({
+              media_storage_source: 'zernio',
+              storage_deleted_at: new Date().toISOString()
+            }).eq('id', post.id);
+          }
         } else {
           // Link yok, zaman aşımı kontrolü
           const now = new Date();
@@ -73,19 +79,25 @@ serve(async (req) => {
 
           if (now >= forceDeleteAt) {
              // 4. Şart: Zorla Silme (Force-Delete) Yolu
-             await supabase.storage.from(post.storage_bucket).remove([post.storage_path]);
-             await supabase.from('posts').update({
-                media_storage_source: 'deleted',
-                storage_deleted_at: now.toISOString()
-             }).eq('id', post.id);
+             const { error: removeError } = await supabase.storage.from(post.storage_bucket).remove([post.storage_path]);
+             
+             if (removeError) {
+                console.error(`Failed to force-delete file from storage: ${post.storage_path}`, removeError);
+                pendingCountForProfile++;
+             } else {
+               await supabase.from('posts').update({
+                  media_storage_source: 'deleted',
+                  storage_deleted_at: now.toISOString()
+               }).eq('id', post.id);
 
-             // Bildirim at
-             await supabase.from('notifications').insert({
-               profile_id: profileId,
-               title: 'Depolama Temizliği',
-               message: `Gönderi için Zernio kalıcı bağlantı sağlamadı, medya otomatik silindi.`,
-               type: 'storage_auto_delete'
-             });
+               // Bildirim at
+               await supabase.from('notifications').insert({
+                 profile_id: profileId,
+                 title: 'Depolama Temizliği',
+                 message: `Gönderi için Zernio kalıcı bağlantı sağlamadı, medya otomatik silindi.`,
+                 type: 'storage_auto_delete'
+               });
+             }
           } else {
              pendingCountForProfile++;
           }
