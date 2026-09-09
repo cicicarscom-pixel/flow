@@ -685,7 +685,7 @@ export default function AiUretimScreen({ route, navigation }) {
             >
               {localImage ? (
                 <>
-                  {contentType === 'video' ? (
+                  {mediaType === 'video' ? (
                     <View className="w-full h-full items-center justify-center bg-black">
                       <View className="bg-black/50 rounded-full p-4">
                         <MaterialIcons name="play-arrow" size={48} color="#fff" />
