@@ -685,13 +685,14 @@ export default function AiUretimScreen({ route, navigation }) {
             >
               {localImage ? (
                 <>
-                  <Image source={{ uri: localImage }} className="w-full h-full" resizeMode="cover" />
-                  {contentType === 'video' && (
-                    <View className="absolute inset-0 items-center justify-center bg-black/30">
+                  {contentType === 'video' ? (
+                    <View className="w-full h-full items-center justify-center bg-black">
                       <View className="bg-black/50 rounded-full p-4">
                         <MaterialIcons name="play-arrow" size={48} color="#fff" />
                       </View>
                     </View>
+                  ) : (
+                    <Image source={{ uri: localImage }} className="w-full h-full" resizeMode="cover" />
                   )}
                   <View className="absolute bottom-3 right-3 bg-black/60 rounded-full p-2" pointerEvents="none">
                     <MaterialIcons name="edit" size={20} color="#fff" />
