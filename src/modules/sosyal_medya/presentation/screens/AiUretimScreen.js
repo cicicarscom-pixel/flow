@@ -23,6 +23,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { decode } from 'base64-arraybuffer';
 import * as Sharing from 'expo-sharing';
+import { Video, ResizeMode } from 'expo-av';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -685,8 +686,18 @@ export default function AiUretimScreen({ route, navigation }) {
             >
               {localImage ? (
                 <>
-                  <Image source={{ uri: localImage }} className="w-full h-full" resizeMode="cover" />
-                  <View className="absolute bottom-3 right-3 bg-black/60 rounded-full p-2">
+                  {contentType === 'video' ? (
+                    <Video
+                      source={{ uri: localImage }}
+                      className="w-full h-full"
+                      resizeMode={ResizeMode.COVER}
+                      useNativeControls
+                      isLooping
+                    />
+                  ) : (
+                    <Image source={{ uri: localImage }} className="w-full h-full" resizeMode="cover" />
+                  )}
+                  <View className="absolute bottom-3 right-3 bg-black/60 rounded-full p-2" pointerEvents="none">
                     <MaterialIcons name="edit" size={20} color="#fff" />
                   </View>
                 </>
