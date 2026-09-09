@@ -408,6 +408,52 @@ export default function AiUretimScreen({ route, navigation }) {
     });
 
     try {
+      let finalMediaItems = undefined;
+      
+      // Eğer seçili medya varsa ve cihaz yerel diziniyse (file://), Zernio'nun erişebilmesi için önce Storage'a yükle
+      if (localImage) {
+        if (localImage.startsWith('file://')) {
+          const ext = contentType === 'video' ? 'mp4' : 'jpg';
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+          
+          const formData = new FormData();
+          formData.append('file', {
+            uri: localImage,
+            name: fileName,
+            type: contentType === 'video' ? 'video/mp4' : 'image/jpeg'
+          });
+
+          const { data: sessionData } = await supabase.auth.getSession();
+          const token = sessionData?.session?.access_token || sessionData?.access_token;
+          
+          let uploadRes = await fetch(`${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/posts/${fileName}`, {
+             method: 'POST',
+             headers: { 'Authorization': `Bearer ${token}` },
+             body: formData
+          });
+
+          // Fallback: posts bucket yoksa avatars'ı dene
+          if (!uploadRes.ok && (uploadRes.status === 400 || uploadRes.status === 404)) {
+             uploadRes = await fetch(`${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/avatars/${fileName}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData
+             });
+             if (!uploadRes.ok) throw new Error(await uploadRes.text());
+             const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+             finalMediaItems = [{ type: contentType, url: publicUrlData.publicUrl }];
+          } else if (uploadRes.ok) {
+             const { data: publicUrlData } = supabase.storage.from('posts').getPublicUrl(fileName);
+             finalMediaItems = [{ type: contentType, url: publicUrlData.publicUrl }];
+          } else {
+             throw new Error(await uploadRes.text());
+          }
+        } else {
+          // data:image... veya zaten public url ise direkt yolla
+          finalMediaItems = [{ type: contentType, url: localImage }];
+        }
+      }
+
       const { data: postData, error: postError } = await supabase.functions.invoke('zernio-client', {
         body: { 
           action: 'create-post', 
@@ -417,7 +463,7 @@ export default function AiUretimScreen({ route, navigation }) {
             publishNow: publishMode === 'now',
             scheduledFor: finalScheduledFor,
             timezone: finalTimezone,
-            mediaItems: localImage ? [{ type: contentType, url: localImage }] : undefined
+            mediaItems: finalMediaItems
           } 
         }
       });
@@ -433,12 +479,12 @@ export default function AiUretimScreen({ route, navigation }) {
 
     // Başarılı olan gönderimleri veritabanına kaydet
     try {
-       const finalMediaUrls = localImage ? [localImage] : [];
+       const savedMediaUrls = finalMediaItems && finalMediaItems.length > 0 ? [finalMediaItems[0].url] : [];
        await supabase.from('posts').insert({
           profile_id: organizationId,
-          zernio_post_id: 'mock-post-id',
+          zernio_post_id: postData?.postId || 'mock-post-id',
           content: contentToShare,
-          media_urls: finalMediaUrls,
+          media_urls: savedMediaUrls,
           status: 'published',
           platforms: allowedPlatforms.map(p => p.platform)
        });
