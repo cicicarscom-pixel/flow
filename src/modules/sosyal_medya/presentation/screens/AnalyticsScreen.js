@@ -312,7 +312,8 @@ export default function AnalyticsScreen({ navigation }) {
       if (actualData.dailyData) {
          let mappedTimeline = actualData.dailyData.map(d => ({
            value: d.metrics?.impressions || 0,
-           label: d.date ? d.date.substring(5,10) : ''
+           label: d.date ? d.date.substring(5,10) : '',
+           follows: d.metrics?.followers || d.metrics?.follows || d.metrics?.newFollowers || 0
          }));
          
          let mappedTimelineLikes = actualData.dailyData.map(d => ({
@@ -321,7 +322,7 @@ export default function AnalyticsScreen({ navigation }) {
          }));
 
          if (mappedTimeline.length === 1) {
-           mappedTimeline.unshift({ value: 0, label: '' });
+           mappedTimeline.unshift({ value: 0, label: '', follows: 0 });
            mappedTimelineLikes.unshift({ value: 0, label: '' });
          }
          
@@ -615,7 +616,7 @@ export default function AnalyticsScreen({ navigation }) {
                  value: currentFollowers,
                  label: zernioData.timelineData[i].label
               });
-              currentFollowers = Math.max(0, currentFollowers - Math.floor(Math.random() * 5));
+              currentFollowers = Math.max(0, currentFollowers - (zernioData.timelineData[i].follows || 0));
            }
            chartData = reverseData;
         }
