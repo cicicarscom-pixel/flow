@@ -21,6 +21,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+import { decode } from 'base64-arraybuffer';
 import * as Sharing from 'expo-sharing';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -420,17 +421,12 @@ export default function AiUretimScreen({ route, navigation }) {
           const ext = contentType === 'video' ? 'mp4' : 'jpg';
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
           
-          const formData = new FormData();
-          formData.append('file', {
-            uri: localImage,
-            name: fileName,
-            type: contentType === 'video' ? 'video/mp4' : 'image/jpeg'
-          });
+          const base64 = await FileSystem.readAsStringAsync(localImage, { encoding: FileSystem.EncodingType.Base64 });
 
           // A1 Düzeltmesi: Ham fetch yerine SDK kullanımı (apikey ve auth header'ları otomatik yönetilir)
           const { data: uploadData, error: uploadError } = await supabase.storage
             .from('avatars')
-            .upload(fileName, formData, {
+            .upload(fileName, decode(base64), {
                contentType: contentType === 'video' ? 'video/mp4' : 'image/jpeg'
             });
 
