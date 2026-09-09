@@ -749,17 +749,18 @@ export default function AnalyticsScreen({ navigation }) {
       )}
 
       {/* Phase 5: Best Times to Post */}
-      {zernioData.bestTimes?.slots && zernioData.bestTimes.slots.length > 0 && (
+      {zernioData.bestTimes && zernioData.bestTimes.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
           <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Paylaşım İçin En İyi Zamanlar</Text>
           <Text className="text-[#A79E96] text-[10px] mb-4">Etkileşimin en yüksek olduğu gün ve saatler</Text>
           <View className="flex-row flex-wrap justify-between">
-            {zernioData.bestTimes.slots.slice(0, 6).map((slot, idx) => {
-               // Bazı API'lerde score da gelebilir, ona göre yeşilin tonu ayarlanabilir, şimdilik standart
+            {zernioData.bestTimes.slice(0, 6).map((slot, idx) => {
+               const dayNames = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
+               const dayName = dayNames[slot.day_of_week] || "GÜN";
                return (
-                 <View key={idx} className="w-[31%] bg-white/5 rounded-lg p-2 mb-2 items-center border border-white/10">
-                   <Text className="text-[#22B573] text-[12px] font-bold capitalize">{slot.day?.substring(0,3) || slot.day}</Text>
-                   <Text className="text-[#F6F1EC] text-[14px] font-bold mt-1">{slot.time}</Text>
+                 <View key={idx} className="w-[31%] bg-[#201D24] rounded-lg p-2 mb-2 items-center border border-white/10 shadow-sm shadow-black">
+                   <Text className="text-[#22B573] text-[12px] font-bold capitalize">{dayName}</Text>
+                   <Text className="text-[#F6F1EC] text-[14px] font-bold mt-1">{slot.hour}:00</Text>
                  </View>
                );
             })}
@@ -768,15 +769,15 @@ export default function AnalyticsScreen({ navigation }) {
       )}
 
       {/* Phase 5: Content Decay */}
-      {zernioData.contentDecay?.buckets && zernioData.contentDecay.buckets.length > 0 && (
+      {zernioData.contentDecay && zernioData.contentDecay.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
           <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">İçerik Ömrü (Content Decay)</Text>
-          <Text className="text-[#A79E96] text-[10px] mb-4">Gönderi sonrası etkileşimlerin saatlik dağılımı</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-4">Gönderi sonrası etkileşimlerin dağılımı</Text>
           <View style={{marginLeft: -10}}>
             <BarChart
-              data={zernioData.contentDecay.buckets.map(b => ({
-                value: b.value || b.percentage || 0,
-                label: b.label || '',
+              data={[...zernioData.contentDecay].sort((a,b) => a.bucket_order - b.bucket_order).map(b => ({
+                value: b.avg_pct_of_final || 0,
+                label: b.bucket_label || '',
                 frontColor: '#22B573'
               }))}
               barWidth={26}
@@ -797,30 +798,38 @@ export default function AnalyticsScreen({ navigation }) {
       )}
 
       {/* Phase 5: Posting Frequency */}
-      {zernioData.postingFrequency?.frequency && zernioData.postingFrequency.frequency.length > 0 && (
+      {zernioData.postingFrequency && zernioData.postingFrequency.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
-          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Paylaşım Sıklığı</Text>
-          <Text className="text-[#A79E96] text-[10px] mb-4">Haftanın günlerine göre toplam gönderi sayıları</Text>
-          <View style={{marginLeft: -10}}>
-            <BarChart
-              data={zernioData.postingFrequency.frequency.map(f => ({
-                value: f.count || f.value || 0,
-                label: (f.day || f.label || '').substring(0,3),
-                frontColor: '#C2478D'
-              }))}
-              barWidth={20}
-              spacing={width * 0.05}
-              roundedTop
-              hideRules
-              xAxisThickness={0}
-              yAxisThickness={0}
-              yAxisTextStyle={{color: '#A79E96', fontSize: 10}}
-              xAxisLabelTextStyle={{color: '#A79E96', fontSize: 8}}
-              noOfSections={3}
-              height={120}
-              isAnimated
-            />
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Paylaşım Sıklığı Etkisi</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-4">Haftalık paylaşım sıklığı ve etkileşim oranına etkisi</Text>
+          
+          <View className="flex-row mb-2 pb-2 border-b border-white/10">
+            <Text className="text-[#A79E96] text-[10px] flex-1">Platform</Text>
+            <Text className="text-[#A79E96] text-[10px] w-16 text-center">Gönderi/Hafta</Text>
+            <Text className="text-[#A79E96] text-[10px] w-12 text-center">Hafta (Sayı)</Text>
+            <Text className="text-[#A79E96] text-[10px] w-[50px] text-center">ER %</Text>
           </View>
+          
+          {zernioData.postingFrequency.map((f, idx) => {
+            const platformIcon = PLATFORMS.find(pl => pl.id === f.platform?.toLowerCase())?.icon || 'apps-outline';
+            const platformColor = PLATFORMS.find(pl => pl.id === f.platform?.toLowerCase())?.color || '#A79E96';
+            
+            return (
+              <View key={idx} className="flex-row items-center mb-3">
+                <View className="flex-1 flex-row items-center">
+                  <Ionicons name={platformIcon} size={16} color={platformColor} style={{ marginRight: 8 }} />
+                  <Text className="text-[#F6F1EC] text-[12px] capitalize">{f.platform || 'Genel'}</Text>
+                </View>
+                <Text className="text-[#F6F1EC] text-[12px] w-16 text-center">{f.posts_per_week}</Text>
+                <Text className="text-[#F6F1EC] text-[12px] w-12 text-center">{f.weeks_count}</Text>
+                <View className="w-[50px] items-center">
+                  <View className="bg-[#22B573]/20 px-1.5 py-0.5 rounded-full border border-[#22B573]/30">
+                    <Text className="text-[#22B573] text-[9px] font-bold">{(f.avg_engagement_rate || 0).toFixed(2)}%</Text>
+                  </View>
+                </View>
+              </View>
+            );
+          })}
         </AnimatedBorderCard>
       )}
     </View>
