@@ -409,6 +409,8 @@ export default function AiUretimScreen({ route, navigation }) {
 
     try {
       let finalMediaItems = undefined;
+      let storageBucket = undefined;
+      let storagePath = undefined;
       
       // Eğer seçili medya varsa ve cihaz yerel diziniyse (file://), Zernio'nun erişebilmesi için önce Storage'a yükle
       if (localImage) {
@@ -423,31 +425,21 @@ export default function AiUretimScreen({ route, navigation }) {
             type: contentType === 'video' ? 'video/mp4' : 'image/jpeg'
           });
 
-          const { data: sessionData } = await supabase.auth.getSession();
-          const token = sessionData?.session?.access_token || sessionData?.access_token;
-          
-          let uploadRes = await fetch(`${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/posts/${fileName}`, {
-             method: 'POST',
-             headers: { 'Authorization': `Bearer ${token}` },
-             body: formData
-          });
+          // A1 Düzeltmesi: Ham fetch yerine SDK kullanımı (apikey ve auth header'ları otomatik yönetilir)
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(fileName, formData, {
+               contentType: contentType === 'video' ? 'video/mp4' : 'image/jpeg'
+            });
 
-          // Fallback: posts bucket yoksa avatars'ı dene
-          if (!uploadRes.ok && (uploadRes.status === 400 || uploadRes.status === 404)) {
-             uploadRes = await fetch(`${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/avatars/${fileName}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: formData
-             });
-             if (!uploadRes.ok) throw new Error(await uploadRes.text());
-             const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
-             finalMediaItems = [{ type: contentType, url: publicUrlData.publicUrl }];
-          } else if (uploadRes.ok) {
-             const { data: publicUrlData } = supabase.storage.from('posts').getPublicUrl(fileName);
-             finalMediaItems = [{ type: contentType, url: publicUrlData.publicUrl }];
-          } else {
-             throw new Error(await uploadRes.text());
+          if (uploadError) {
+             throw new Error(uploadError.message || "Medya yüklenirken bir sorun oluştu.");
           }
+
+          const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+          finalMediaItems = [{ type: contentType, url: publicUrlData.publicUrl }];
+          storageBucket = 'avatars';
+          storagePath = fileName;
         } else {
           // data:image... veya zaten public url ise direkt yolla
           finalMediaItems = [{ type: contentType, url: localImage }];
@@ -472,24 +464,32 @@ export default function AiUretimScreen({ route, navigation }) {
         const actualError = postError?.message || (typeof postData?.error === 'string' ? postData.error : postData?.error?.message) || "Zernio API hatası";
         throw new Error(actualError);
       }
+      
+      // Başarılı olan gönderimleri veritabanına kaydet
+      try {
+         const savedMediaUrls = finalMediaItems && finalMediaItems.length > 0 ? [finalMediaItems[0].url] : [];
+         
+         const forceDeleteAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+         await supabase.from('posts').insert({
+            profile_id: organizationId,
+            zernio_post_id: postData?.postId || 'mock-post-id',
+            content: contentToShare,
+            media_urls: savedMediaUrls,
+            status: 'published',
+            platforms: allowedPlatforms.map(p => p.platform),
+            // B Düzeltmesi: Geçici storage takip kolonları
+            media_storage_source: storageBucket ? 'supabase' : 'zernio',
+            storage_bucket: storageBucket,
+            storage_path: storagePath,
+            force_delete_at: storageBucket ? forceDeleteAt : null
+         });
+      } catch (dbError) {
+         console.error("DB Kayıt Hatası:", dbError);
+      }
     } catch (err) {
       console.warn(`[Zernio API Hatası]:`, err);
       throw err;
-    }
-
-    // Başarılı olan gönderimleri veritabanına kaydet
-    try {
-       const savedMediaUrls = finalMediaItems && finalMediaItems.length > 0 ? [finalMediaItems[0].url] : [];
-       await supabase.from('posts').insert({
-          profile_id: organizationId,
-          zernio_post_id: postData?.postId || 'mock-post-id',
-          content: contentToShare,
-          media_urls: savedMediaUrls,
-          status: 'published',
-          platforms: allowedPlatforms.map(p => p.platform)
-       });
-    } catch (dbError) {
-       console.error("DB Kayıt Hatası:", dbError);
     }
 
     // Kullanıcı Deneyimi (Toast/Alert): Zero UI prensibi

@@ -249,6 +249,11 @@ export default function PostsScreen({ navigation }) {
               <View style={{ width: 6, height: 6, borderRadius: 4, backgroundColor: isScheduled ? '#22B573' : statusColor, marginRight: 6 }} />
               <Text style={{ color: isScheduled ? '#22B573' : statusColor, fontSize: 10, fontWeight: 'bold' }}>{getStatusLabel(item.status)}</Text>
            </View>
+           {item.media_storage_source === 'supabase' && (
+             <View className="mt-1 px-1.5 py-0.5 rounded bg-[#F2994A]/20 border border-[#F2994A]/40">
+                <Text className="text-[#F2994A] text-[9px] font-bold">Geçici Depoda</Text>
+             </View>
+           )}
         </View>
 
         {/* Profile */}

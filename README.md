@@ -464,6 +464,17 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (Eylül 2026 - Gönderi Medyası Yükleme Düzeltmesi + Otomatik Storage Temizlik Sistemi)
+
+Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 401 (Unauthorized) ham fetch() hataları (AiUretimScreen.js) çözülmüş ve uygulamanın depolama (Storage) altyapısı kalıcı/geçici ayrımı yapacak şekilde "Garbage Collector" konseptine dönüştürülmüştür. 
+
+**Teknik Detaylar:**
+1. **SDK Entegrasyonu:** Ham fetch çağrısı kaldırılarak `@supabase/supabase-js`'in `.upload()` metoduna geçildi; yetkilendirme (apikey) sorunları çözüldü. Dosyalar, varlığı doğrulanan `avatars` (veya yeni `posts`) bucket'ına `FormData` üzerinden yüklenir hale geldi.
+2. **Geçici Veri İzleme Sistemi:** `posts` tablosuna `media_storage_source`, `storage_bucket`, `storage_path`, `force_delete_at`, `storage_deleted_at` gibi takip sütunları bir SQL migration yardımıyla eklendi.
+3. **Storage Temizliği (Edge Function):** Yeni `flow-cleanup-post-media` Edge fonksiyonu yazıldı. Düzenli olarak tetiklenen bu fonksiyon, Zernio'dan public bir CDN linki gelmiş mi diye (`sync-posts` tetikleyerek) kontrol eder. Eğer link geldiyse, dosyayı Supabase depolama alanından otomatik temizler ve tablodaki `media_storage_source` durumunu `zernio` yapar.
+4. **Zorunlu Temizlik (Force-Delete) & No-Spam:** Eğer kalıcı link ulaşmazsa (`force_delete_at` olan 7 gün süresi aşılırsa), dosya zorla temizlenir (`deleted`) ve kullanıcı uyarılır. Storage limiti uyarısı için 15 adet "geçici depoda kalan dosya" limiti bulunup, uyarılar 24 saat spam korumasıyla (early warning) çalışır.
+5. **UI & Cron:** Mobil (`PostsScreen.js`) ve Web'de (`sosyal-medya/posts/page.tsx`) dosyaların "Geçici Depoda" olduğunu gösteren rozet tasarımı eklendi. Vault destekli (service role key içeren) `pg_cron` schedule tanımlaması migration dosyasına eklendi.
+
 ## 🆕 Son Güncellemeler (Eylül 2026 - Mobil Analytics Ekranı Zernio Paritesi)
 
 1. **API ve Veri Tüketimi (Faz 1):** Mobil analitik ekranındaki tüm veri çekme işlemleri `zernio-client` edge function'ına taşındı. `Promise.all` ile `get-daily-metrics`, `get-best-times`, `get-content-decay`, `get-posting-frequency` ve `get-post-analytics` eşzamanlı olarak çekilerek Web (FlowWeb) projesiyle tam özellik paritesi sağlandı.
