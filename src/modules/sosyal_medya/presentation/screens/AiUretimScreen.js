@@ -412,9 +412,11 @@ export default function AiUretimScreen({ route, navigation }) {
       let storageBucket = undefined;
       let storagePath = undefined;
       
-      // Eğer seçili medya varsa ve cihaz yerel diziniyse (file://), Zernio'nun erişebilmesi için önce Storage'a yükle
+      // Eğer seçili medya varsa ve uzak URL değilse, Zernio'nun erişebilmesi için önce Storage'a yükle
       if (localImage) {
-        if (localImage.startsWith('file://')) {
+        const isRemoteOrDataUrl = /^(https?:|data:)/i.test(localImage);
+        
+        if (!isRemoteOrDataUrl) {
           const ext = contentType === 'video' ? 'mp4' : 'jpg';
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
           
