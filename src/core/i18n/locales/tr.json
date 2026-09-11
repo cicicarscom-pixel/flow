@@ -394,7 +394,9 @@
     "alerts": {
       "errorTitle": "Hata",
       "deleteError": "Gönderi silinirken hata oluştu: {{message}}",
-      "deleteException": "İşlem sırasında hata oluştu."
+      "deleteException": "İşlem sırasında hata oluştu.",
+      "manualPlatformRemoval": "Şu platformlar API üzerinden silmeyi desteklemiyor, içeriği ilgili hesabınız üzerinden manuel olarak silmeniz gerekmektedir: {{platforms}}",
+      "platformRemovalFailed": "Şu platformlardan kaldırma işlemi başarısız oldu: {{platforms}}"
     }
   },
   "isletmemScreen": {

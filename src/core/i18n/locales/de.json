@@ -394,7 +394,9 @@
     "alerts": {
       "errorTitle": "Fehler",
       "deleteError": "Beim Löschen des Beitrags ist ein Fehler aufgetreten: {{message}}",
-      "deleteException": "Bei der Verarbeitung ist ein Fehler aufgetreten."
+      "deleteException": "Bei der Verarbeitung ist ein Fehler aufgetreten.",
+      "manualPlatformRemoval": "Diese Plattformen unterstützen die Entfernung über die API nicht. Sie müssen den Inhalt direkt in Ihrem Konto löschen: {{platforms}}",
+      "platformRemovalFailed": "Die Entfernung ist auf folgenden Plattformen fehlgeschlagen: {{platforms}}"
     }
   },
   "isletmemScreen": {

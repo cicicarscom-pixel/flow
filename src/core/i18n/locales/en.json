@@ -394,7 +394,9 @@
     "alerts": {
       "errorTitle": "Error",
       "deleteError": "An error occurred while deleting the post: {{message}}",
-      "deleteException": "An error occurred during the operation."
+      "deleteException": "An error occurred during the operation.",
+      "manualPlatformRemoval": "These platforms do not support removal via API. You will need to delete the content directly from your account: {{platforms}}",
+      "platformRemovalFailed": "Removal failed on these platforms: {{platforms}}"
     }
   },
   "isletmemScreen": {
