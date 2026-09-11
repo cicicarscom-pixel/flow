@@ -83,6 +83,11 @@ const FILTERS = [
   { id: 'failed', labelKey: 'postsScreen.filters.failed' }
 ];
 
+const UNPUBLISH_SUPPORTED_PLATFORMS = new Set([
+  'threads', 'facebook', 'twitter', 'linkedin', 'youtube',
+  'pinterest', 'reddit', 'bluesky', 'googlebusiness', 'telegram'
+]);
+
 export default function PostsScreen({ navigation }) {
   const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState('all');
@@ -119,8 +124,10 @@ export default function PostsScreen({ navigation }) {
   }, []);
 
   const filteredPosts = posts.filter(post => {
+    const s = (post.status || '').toLowerCase();
+    if (s === 'deleted') return false;
     if (activeFilter === 'all') return true;
-    return post.status === activeFilter;
+    return s === activeFilter.toLowerCase();
   });
 
   const getStatusColor = (status) => {
@@ -155,18 +162,60 @@ export default function PostsScreen({ navigation }) {
     setDeleteModal({ isOpen: true, postId: id });
   };
 
+  const attemptZernioRemoval = async (post) => {
+    if (!post.zernio_post_id) {
+      return { removed: true };
+    }
+
+    if (post.status !== 'published') {
+      const { data, error: invokeError } = await supabase.functions.invoke('zernio-client', {
+        body: { action: 'delete-post', payload: { postId: post.zernio_post_id } }
+      });
+      if (invokeError || data?.success === false) {
+        return { removed: false, warning: data?.error || invokeError?.message || 'Unknown error' };
+      }
+      return { removed: true };
+    }
+
+    const platforms = Array.isArray(post.platforms) ? post.platforms : [];
+    const manual = [];
+    const failed = [];
+
+    for (const platform of platforms) {
+      if (!UNPUBLISH_SUPPORTED_PLATFORMS.has(platform)) {
+        manual.push(platform);
+        continue;
+      }
+      const { data, error: invokeError } = await supabase.functions.invoke('zernio-client', {
+        body: { action: 'unpublish-post', payload: { postId: post.zernio_post_id, platform } }
+      });
+      if (invokeError || data?.success === false) {
+        failed.push(platform);
+      }
+    }
+
+    const warnings = [];
+    // using generic messages, mobile i18n can be added if needed, but will just use basic strings for now
+    if (manual.length > 0) warnings.push(`Lütfen şu platformlardan gönderiyi elle silin: ${manual.join(', ')}`);
+    if (failed.length > 0) warnings.push(`Şu platformlardan silinirken hata oluştu: ${failed.join(', ')}`);
+
+    return { removed: true, warning: warnings.length > 0 ? warnings.join(' ') : undefined };
+  };
+
   const executeDelete = async (deleteFromPlatforms) => {
     if (isDeleting || !deleteModal.postId) return;
     setIsDeleting(true);
     
     try {
       const post = posts.find(p => p.id === deleteModal.postId);
-      if (post?.zernio_post_id) {
-        const { error: invokeError } = await supabase.functions.invoke('zernio-client', {
-          body: { action: 'delete-post', postId: post.zernio_post_id, deleteFromPlatforms }
-        });
-        if (invokeError) {
-          console.error("Zernio delete error:", invokeError);
+      let zernioResult = { removed: true };
+
+      if (deleteFromPlatforms && post) {
+        zernioResult = await attemptZernioRemoval(post);
+        if (!zernioResult.removed) {
+          console.error("Zernio delete error:", zernioResult.warning);
+          Alert.alert(t('postsScreen.alerts.errorTitle'), zernioResult.warning || 'Unknown error');
+          return;
         }
       }
 
@@ -179,6 +228,9 @@ export default function PostsScreen({ navigation }) {
         Alert.alert(t('postsScreen.alerts.errorTitle'), t('postsScreen.alerts.deleteError', { message: error.message }));
       } else {
         setPosts(prev => prev.map(p => p.id === deleteModal.postId ? { ...p, status: 'deleted' } : p));
+        if (zernioResult.warning) {
+          Alert.alert('Bilgi', zernioResult.warning);
+        }
       }
     } catch (err) {
       console.error("Delete exception:", err);
