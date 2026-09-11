@@ -464,6 +464,11 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (Eylül 2026 - Zombi Post ve Zernio Unpublish Düzeltmeleri)
+
+1. **Filtreleme (Zombi Post) Düzeltmesi:** Gönderiler sayfasında silinen (`deleted` durumundaki) gönderilerin "Tümü" (all) filtresi altında hatalı şekilde listelenmesi engellendi.
+2. **Tam Kapsamlı Zernio Kaldırma (Unpublish) Akışı:** Web (FlowWeb) ile aynı zenginleştirilmiş Zernio silme akışı mobile uyarlandı. `deleteFromPlatforms` seçeneğinde artık Zernio SDK gereksinimlerine uygun olarak `payload.postId` ve `payload.platform` hiyerarşisi kullanılıyor. Taslak gönderiler için `delete-post`, yayınlanmış gönderiler için ise `unpublish-post` edge fonksiyonu (platform kontrolü yapılarak) çağrılıyor. Sessiz hatalar (silent failures) engellendi ve kullanıcıya yerelleştirilmiş hata/uyarı dönüşü yapılıyor.
+
 ## 🆕 Son Güncellemeler (Eylül 2026 - Gönderi Medyası Yükleme Düzeltmesi + Otomatik Storage Temizlik Sistemi)
 
 Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 401 (Unauthorized) ham fetch() hataları (AiUretimScreen.js) çözülmüş ve uygulamanın depolama (Storage) altyapısı kalıcı/geçici ayrımı yapacak şekilde "Garbage Collector" konseptine dönüştürülmüştür. 

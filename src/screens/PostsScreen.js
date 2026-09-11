@@ -195,9 +195,8 @@ export default function PostsScreen({ navigation }) {
     }
 
     const warnings = [];
-    // using generic messages, mobile i18n can be added if needed, but will just use basic strings for now
-    if (manual.length > 0) warnings.push(`Lütfen şu platformlardan gönderiyi elle silin: ${manual.join(', ')}`);
-    if (failed.length > 0) warnings.push(`Şu platformlardan silinirken hata oluştu: ${failed.join(', ')}`);
+    if (manual.length > 0) warnings.push(t('postsScreen.alerts.manualPlatformRemoval', { platforms: manual.join(', '), defaultValue: `Lütfen şu platformlardan gönderiyi elle silin: ${manual.join(', ')}` }));
+    if (failed.length > 0) warnings.push(t('postsScreen.alerts.platformRemovalFailed', { platforms: failed.join(', '), defaultValue: `Şu platformlardan silinirken hata oluştu: ${failed.join(', ')}` }));
 
     return { removed: true, warning: warnings.length > 0 ? warnings.join(' ') : undefined };
   };
