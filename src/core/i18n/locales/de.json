@@ -638,7 +638,10 @@
       "consultingWith": "{{name}} - Beratung",
       "brandMeeting": "Marken-Meeting",
       "demoWith": "{{name}} - Demo-Präsentation",
-      "weeklyAnalyticsReview": "Wöchentliche Analytics-Überprüfung"
+      "weeklyAnalyticsReview": "Wöchentliche Analytics-Überprüfung",
+      "reservationWith": "{{name}} - Reservierung",
+      "appointmentWith": "{{name}} - Termin",
+      "weeklyTeamReview": "W�chentliche Team-Bewertung"
     },
     "greeting": {
       "defaultName": "Benutzer",
@@ -672,7 +675,7 @@
       "expense": "Ausgaben"
     },
     "today": {
-      "title": "Heute"
+      "title": "Termine / Reservierungen"
     },
     "social": {
       "allAccounts": "Alle Konten",

@@ -638,7 +638,10 @@
       "consultingWith": "{{name}} - Consulting",
       "brandMeeting": "Brand Meeting",
       "demoWith": "{{name}} - Demo Presentation",
-      "weeklyAnalyticsReview": "Weekly Analytics Review"
+      "weeklyAnalyticsReview": "Weekly Analytics Review",
+      "reservationWith": "{{name}} - Reservation",
+      "appointmentWith": "{{name}} - Appointment",
+      "weeklyTeamReview": "Weekly Team Review"
     },
     "greeting": {
       "defaultName": "User",
@@ -672,7 +675,7 @@
       "expense": "Expense"
     },
     "today": {
-      "title": "Today"
+      "title": "Appointments / Reservations"
     },
     "social": {
       "allAccounts": "All Accounts",

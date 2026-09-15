@@ -638,7 +638,10 @@
       "consultingWith": "{{name}} - Danışmanlık",
       "brandMeeting": "Marka Toplantısı",
       "demoWith": "{{name}} - Demo Sunumu",
-      "weeklyAnalyticsReview": "Haftalık Analitik İncelemesi"
+      "weeklyAnalyticsReview": "Haftalık Analitik İncelemesi",
+      "reservationWith": "{{name}} - Rezervasyon",
+      "appointmentWith": "{{name}} - Randevu",
+      "weeklyTeamReview": "Haftal�k Ekip De�erlendirmesi"
     },
     "greeting": {
       "defaultName": "Kullanıcı",
@@ -672,7 +675,7 @@
       "expense": "Gider"
     },
     "today": {
-      "title": "Bugün"
+      "title": "Randevu / Rezervasyon"
     },
     "social": {
       "allAccounts": "Tüm Hesaplar",

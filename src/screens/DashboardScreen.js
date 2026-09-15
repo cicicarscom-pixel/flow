@@ -187,10 +187,13 @@ export default function DashboardScreen({ navigation }) {
   }, [fadeAnim, slideAnim]);
 
   const appointments = [
-    { time: "10:00", title: t('dashboardScreen.appointments.consultingWith', { name: 'Ayşe Kaya' }), type: "consulting", color: COLORS.primary },
+    { time: "09:00", title: t('dashboardScreen.appointments.reservationWith', { name: 'Mehmet Demir' }), type: "reservation", color: COLORS.tertiary },
+    { time: "10:00", title: t('dashboardScreen.appointments.consultingWith', { name: 'Ay�e Kaya' }), type: "consulting", color: COLORS.primary },
     { time: "12:30", title: t('dashboardScreen.appointments.brandMeeting'), type: "meeting", color: COLORS.secondary },
-    { time: "15:00", title: t('dashboardScreen.appointments.demoWith', { name: 'Seda Koç' }), type: "demo", color: COLORS.tertiaryFixed },
+    { time: "13:45", title: t('dashboardScreen.appointments.appointmentWith', { name: 'Elif Y�ld�z' }), type: "appointment", color: COLORS.primaryContainer },
+    { time: "15:00", title: t('dashboardScreen.appointments.demoWith', { name: 'Seda Ko�' }), type: "demo", color: COLORS.tertiaryFixed },
     { time: "17:30", title: t('dashboardScreen.appointments.weeklyAnalyticsReview'), type: "review", color: COLORS.error },
+    { time: "18:30", title: t('dashboardScreen.appointments.weeklyTeamReview'), type: "review", color: COLORS.secondaryFixed },
   ];
 
   const fetchUnreadNotifications = async (merchantId) => {
@@ -576,18 +579,19 @@ export default function DashboardScreen({ navigation }) {
               </CustomGlassCard>
             </View>
 
-            {/* Bugünkü Randevular — yatay kaydırmalı çipler */}
+            {/* Bug�nk� Randevu/Rezervasyonlar � dikey liste */}
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>{t('dashboardScreen.today.title')}</Text>
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.apptScroll}>
+            <View style={styles.apptList}>
               {appointments.map(a => (
-                <View key={a.time} style={styles.apptChip}>
-                  <View style={[styles.apptChipDot, { backgroundColor: a.color }]} />
-                  <Text style={styles.apptChipTime}>{a.time}</Text>
-                  <Text style={styles.apptChipTitle} numberOfLines={1}>{a.title}</Text>
+                <View key={a.time} style={styles.apptListRow}>
+                  <View style={[styles.apptListDot, { backgroundColor: a.color }]} />
+                  <Text style={styles.apptListTime}>{a.time}</Text>
+                  <Text style={styles.apptListTitle} numberOfLines={1}>{a.title}</Text>
                 </View>
               ))}
+            </View>
             </ScrollView>
 
             {/* Tüm Hesaplar — sosyal özet */}
@@ -977,34 +981,36 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-  apptScroll: {
+  apptList: {
     gap: 10,
-    paddingBottom: 20,
-    paddingRight: 4,
+    marginBottom: 20,
   },
-  apptChip: {
-    width: 132,
+  apptListRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: COLORS.surfaceContainer,
-    borderRadius: 16,
-    padding: 12,
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
   },
-  apptChipDot: {
+  apptListDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    marginBottom: 8,
+    marginRight: 12,
   },
-  apptChipTime: {
+  apptListTime: {
     color: COLORS.onSurfaceVariant,
-    fontSize: 11,
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  apptChipTitle: {
-    color: COLORS.onSurface,
     fontSize: 12,
+    fontWeight: '700',
+    width: 44,
+  },
+  apptListTitle: {
+    flex: 1,
+    color: COLORS.onSurface,
+    fontSize: 13,
     fontWeight: '600',
   },
 
