@@ -592,7 +592,6 @@ export default function DashboardScreen({ navigation }) {
                 </View>
               ))}
             </View>
-            </ScrollView>
 
             {/* Tüm Hesaplar — sosyal özet */}
             <CustomGlassCard style={styles.socialCard}>
