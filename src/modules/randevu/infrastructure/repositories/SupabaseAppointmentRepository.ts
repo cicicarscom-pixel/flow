@@ -104,8 +104,8 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     return this.enrichWithServices(appointments || []);
   }
 
-  /** YEN�: Dashboard'daki "Randevu / Rezervasyon" widget'� i�in � bug�nden itibaren
-   * kronolojik s�rayla en yak�n N adet Pending/Approved randevu/rezervasyon. */
+  /** YENİ: Dashboard'daki "Randevu / Rezervasyon" widget'ı için — bugünden itibaren
+   * kronolojik sırayla en yakın N adet Pending/Approved randevu/rezervasyon. */
   async getUpcomingAppointments(limit: number = 7): Promise<Appointment[]> {
     const todayStr = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
     const { data: appointments, error } = await supabase
@@ -117,14 +117,14 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
       .limit(limit);
 
     if (error) {
-      throw new NetworkError(`Yakla�an randevular �ekilemedi: ${error.message}`);
+      throw new NetworkError(`Yaklaşan randevular çekilemedi: ${error.message}`);
     }
 
     return this.enrichWithServices(appointments || []);
   }
 
-  /** appointment_services + business_services join'i ile services[] alan�n� doldurur.
-   * Daha �nce getAppointmentsByDate i�inde inline duran kod � de�i�medi, sadece ta��nd�. */
+  /** appointment_services + business_services join'i ile services[] alanını doldurur.
+   * Daha önce getAppointmentsByDate içinde inline duran kod — değişmedi, sadece taşındı. */
   private async enrichWithServices(appointments: any[]): Promise<Appointment[]> {
     if (!appointments || appointments.length === 0) return [];
 
