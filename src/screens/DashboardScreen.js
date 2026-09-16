@@ -19,6 +19,19 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import { CommunicationLogsTable } from '../modules/sosyal_medya/presentation/components/CommunicationLogsTable';
 import { supabase } from '../shared/lib/supabase';
+import { container } from '../core/container';
+import { AppointmentStatus } from '../modules/randevu/domain/enums/AppointmentStatus';
+import { extractTime } from '../modules/randevu/presentation/hooks/useAppointments';
+import { Ionicons } from '@expo/vector-icons';
+
+const PLATFORM_ICONS = {
+  WHATSAPP: { name: 'logo-whatsapp', color: '#25D366' },
+  INSTAGRAM: { name: 'logo-instagram', color: '#E8A8CD' },
+  FACEBOOK: { name: 'logo-facebook', color: '#FF7A59' },
+  YOUTUBE: { name: 'logo-youtube', color: '#ff0000' },
+  LINKEDIN: { name: 'logo-linkedin', color: '#0077b5' },
+  TIKTOK: { name: 'logo-tiktok', color: '#69C9D0' },
+};
 
 // Not: Bu değerler artık src/core/theme/designSystem.js içindeki merkezi
 // palet ile uyumludur (aynı marka renkleri, daha profesyonel/dengeli tonlar).
@@ -173,6 +186,7 @@ export default function DashboardScreen({ navigation }) {
   const [upcomingPayments, setUpcomingPayments] = useState([]);
   const [socialStats, setSocialStats] = useState({ followers: 0, trend: 0 });
   const [recentActivities, setRecentActivities] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
   // --- Sadece görsel: ekran girişinde içerik yumuşakça belirir ---
@@ -185,16 +199,6 @@ export default function DashboardScreen({ navigation }) {
       Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
     ]).start();
   }, [fadeAnim, slideAnim]);
-
-  const appointments = [
-    { time: "09:00", title: t('dashboardScreen.appointments.reservationWith', { name: 'Mehmet Demir' }), type: "reservation", color: COLORS.tertiary },
-    { time: "10:00", title: t('dashboardScreen.appointments.consultingWith', { name: 'Ay�e Kaya' }), type: "consulting", color: COLORS.primary },
-    { time: "12:30", title: t('dashboardScreen.appointments.brandMeeting'), type: "meeting", color: COLORS.secondary },
-    { time: "13:45", title: t('dashboardScreen.appointments.appointmentWith', { name: 'Elif Y�ld�z' }), type: "appointment", color: COLORS.primaryContainer },
-    { time: "15:00", title: t('dashboardScreen.appointments.demoWith', { name: 'Seda Ko�' }), type: "demo", color: COLORS.tertiaryFixed },
-    { time: "17:30", title: t('dashboardScreen.appointments.weeklyAnalyticsReview'), type: "review", color: COLORS.error },
-    { time: "18:30", title: t('dashboardScreen.appointments.weeklyTeamReview'), type: "review", color: COLORS.secondaryFixed },
-  ];
 
   const fetchUnreadNotifications = async (merchantId) => {
     try {
@@ -341,22 +345,26 @@ export default function DashboardScreen({ navigation }) {
 
         // 4. Recent Activities (Messages & Comments)
         const [{ data: msgs }, { data: comments }] = await Promise.all([
-          supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(5),
+          supabase.from('messages').select('*, conversations(participant_name, participant_picture, platform)').order('created_at', { ascending: false }).limit(5),
           supabase.from('comments').select('*').order('created_at', { ascending: false }).limit(5)
         ]);
         
         let merged = [];
         if (msgs) {
-          merged = [...merged, ...msgs.map(m => ({
-            id: 'msg_'+m.id,
-            type: t('dashboardScreen.recentActivity.types.message'),
-            platform: 'WHATSAPP',
-            name: m.sender_name || t('dashboardScreen.recentActivity.customerFallback'),
-            message: m.message_body || m.content || '',
-            date: m.created_at,
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(m.sender_name || 'M')}&background=00daf3&color=fff`,
-            color: COLORS.primaryFixedDim
-          }))];
+          merged = [...merged, ...msgs.map(m => {
+            const conv = m.conversations || {};
+            const displayName = conv.participant_name || t('dashboardScreen.recentActivity.customerFallback');
+            return {
+              id: 'msg_'+m.id,
+              type: t('dashboardScreen.recentActivity.types.message'),
+              platform: (conv.platform || 'whatsapp').toUpperCase(),
+              name: displayName,
+              message: m.content || '',
+              date: m.created_at,
+              avatar: conv.participant_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=00daf3&color=fff`,
+              color: COLORS.primaryFixedDim
+            };
+          })];
         }
         if (comments) {
           merged = [...merged, ...comments.map(c => ({
@@ -374,6 +382,28 @@ export default function DashboardScreen({ navigation }) {
         merged.sort((a, b) => new Date(b.date) - new Date(a.date));
         setRecentActivities(merged.slice(0, 3));
 
+        // 5. Yaklaşan Randevu / Rezervasyonlar (gerçek veri — Randevu modülü repository'si üzerinden)
+        try {
+          const appointmentRepo = container.resolve('AppointmentRepository');
+          const upcoming = await appointmentRepo.getUpcomingAppointments(7);
+          const statusColor = {
+            [AppointmentStatus.Approved]: COLORS.tertiary,
+            [AppointmentStatus.Pending]: COLORS.secondary,
+          };
+          setAppointments(upcoming.map(appt => {
+            const serviceName = appt.services && appt.services.length > 0 ? appt.services[0] : '';
+            const customerName = appt.customerName || t('dashboardScreen.appointments.unnamedCustomer');
+            return {
+              id: appt.id,
+              time: extractTime(appt.date),
+              title: serviceName ? `${customerName} · ${serviceName}` : customerName,
+              color: statusColor[appt.status] || COLORS.tertiary,
+            };
+          }));
+        } catch (apptError) {
+          console.warn('Upcoming appointments fetch error:', apptError);
+          setAppointments([]);
+        }
       } catch (error) {
         console.warn('Dashboard fetch error:', error);
       } finally {
@@ -579,19 +609,28 @@ export default function DashboardScreen({ navigation }) {
               </CustomGlassCard>
             </View>
 
-            {/* Bug�nk� Randevu/Rezervasyonlar � dikey liste */}
+            {/* Bugünkü Randevu/Rezervasyonlar — dikey liste */}
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>{t('dashboardScreen.today.title')}</Text>
             </View>
-            <View style={styles.apptList}>
-              {appointments.map(a => (
-                <View key={a.time} style={styles.apptListRow}>
-                  <View style={[styles.apptListDot, { backgroundColor: a.color }]} />
-                  <Text style={styles.apptListTime}>{a.time}</Text>
-                  <Text style={styles.apptListTitle} numberOfLines={1}>{a.title}</Text>
-                </View>
-              ))}
-            </View>
+            {isLoading ? (
+              <View style={styles.apptList}>
+                <Skeleton width="100%" height={44} borderRadius={14} />
+                <Skeleton width="100%" height={44} borderRadius={14} />
+              </View>
+            ) : appointments.length > 0 ? (
+              <View style={styles.apptList}>
+                {appointments.map(a => (
+                  <View key={a.id} style={styles.apptListRow}>
+                    <View style={[styles.apptListDot, { backgroundColor: a.color }]} />
+                    <Text style={styles.apptListTime}>{a.time}</Text>
+                    <Text style={styles.apptListTitle} numberOfLines={1}>{a.title}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <Text style={styles.emptyText}>{t('dashboardScreen.appointments.empty')}</Text>
+            )}
 
             {/* Tüm Hesaplar — sosyal özet */}
             <CustomGlassCard style={styles.socialCard}>
@@ -684,7 +723,14 @@ export default function DashboardScreen({ navigation }) {
               ) : recentActivities.length > 0 ? (
                 recentActivities.map((act) => (
                   <TouchableOpacity key={act.id} style={styles.activityCard} activeOpacity={0.7}>
-                    <Image source={{ uri: act.avatar }} style={styles.activityAvatar} />
+                    <View style={styles.activityAvatarWrap}>
+                      <Image source={{ uri: act.avatar }} style={styles.activityAvatar} />
+                      {PLATFORM_ICONS[act.platform] && (
+                        <View style={[styles.platformBadge, { backgroundColor: PLATFORM_ICONS[act.platform].color }]}>
+                          <Ionicons name={PLATFORM_ICONS[act.platform].name} size={10} color="#fff" />
+                        </View>
+                      )}
+                    </View>
                     <View style={styles.activityBody}>
                       <View style={styles.activityTopRow}>
                         <Text style={styles.activityName} numberOfLines={1}>{act.name}</Text>
@@ -1173,6 +1219,21 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 14,
+  },
+  activityAvatarWrap: {
+    position: 'relative',
+  },
+  platformBadge: {
+    position: 'absolute',
+    bottom: -3,
+    right: -3,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: COLORS.surface,
   },
   activityBody: {
     flex: 1,

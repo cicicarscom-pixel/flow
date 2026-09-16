@@ -7,5 +7,6 @@ export interface IAppointmentRepository {
   findByToken(token: string): Promise<Appointment | null>;
   findAvailableHours(date: string, serviceId: string): Promise<string[]>;
   getAppointmentsByDate(date: string): Promise<Appointment[]>;
+  getUpcomingAppointments(limit: number): Promise<Appointment[]>;
   subscribeToAppointments(date: string, callback: (appointments: Appointment[]) => void): () => void;
 }

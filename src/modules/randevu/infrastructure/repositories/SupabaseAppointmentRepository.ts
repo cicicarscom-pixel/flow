@@ -100,19 +100,44 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     if (error) {
       throw new NetworkError(`Randevular cekilemedi: ${error.message}`);
     }
-    
+
+    return this.enrichWithServices(appointments || []);
+  }
+
+  /** YEN�: Dashboard'daki "Randevu / Rezervasyon" widget'� i�in � bug�nden itibaren
+   * kronolojik s�rayla en yak�n N adet Pending/Approved randevu/rezervasyon. */
+  async getUpcomingAppointments(limit: number = 7): Promise<Appointment[]> {
+    const todayStr = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+    const { data: appointments, error } = await supabase
+      .from('appointments')
+      .select('*')
+      .gte('date', todayStr)
+      .in('status', [AppointmentStatus.Pending, AppointmentStatus.Approved])
+      .order('date', { ascending: true })
+      .limit(limit);
+
+    if (error) {
+      throw new NetworkError(`Yakla�an randevular �ekilemedi: ${error.message}`);
+    }
+
+    return this.enrichWithServices(appointments || []);
+  }
+
+  /** appointment_services + business_services join'i ile services[] alan�n� doldurur.
+   * Daha �nce getAppointmentsByDate i�inde inline duran kod � de�i�medi, sadece ta��nd�. */
+  private async enrichWithServices(appointments: any[]): Promise<Appointment[]> {
     if (!appointments || appointments.length === 0) return [];
-    
+
     const appointmentIds = appointments.map((a: any) => a.id);
     const { data: links } = await supabase
       .from('appointment_services')
       .select('appointment_id, service_id')
       .in('appointment_id', appointmentIds);
-      
+
     const { data: services } = await supabase
       .from('business_services')
       .select('id, name');
-      
+
     const serviceNameById = new Map((services || []).map((s: any) => [s.id, s.name]));
     const servicesByAppointment = new Map<string, string[]>();
     for (const link of links || []) {
@@ -122,7 +147,7 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
       list.push(name);
       servicesByAppointment.set(link.appointment_id, list);
     }
-    
+
     return appointments.map((raw: any) => {
       const mapped = AppointmentMapper.toDomain(raw);
       const apptServices = servicesByAppointment.get(raw.id) || (raw.service_id && serviceNameById.get(raw.service_id) ? [serviceNameById.get(raw.service_id) as string] : []);

@@ -635,13 +635,8 @@
       "dec": "Dez"
     },
     "appointments": {
-      "consultingWith": "{{name}} - Beratung",
-      "brandMeeting": "Marken-Meeting",
-      "demoWith": "{{name}} - Demo-Präsentation",
-      "weeklyAnalyticsReview": "Wöchentliche Analytics-Überprüfung",
-      "reservationWith": "{{name}} - Reservierung",
-      "appointmentWith": "{{name}} - Termin",
-      "weeklyTeamReview": "W�chentliche Team-Bewertung"
+      "unnamedCustomer": "Termin",
+      "empty": "Keine bevorstehenden Termine oder Reservierungen."
     },
     "greeting": {
       "defaultName": "Benutzer",

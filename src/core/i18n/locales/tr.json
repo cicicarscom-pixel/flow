@@ -635,13 +635,8 @@
       "dec": "ARA"
     },
     "appointments": {
-      "consultingWith": "{{name}} - Danışmanlık",
-      "brandMeeting": "Marka Toplantısı",
-      "demoWith": "{{name}} - Demo Sunumu",
-      "weeklyAnalyticsReview": "Haftalık Analitik İncelemesi",
-      "reservationWith": "{{name}} - Rezervasyon",
-      "appointmentWith": "{{name}} - Randevu",
-      "weeklyTeamReview": "Haftal�k Ekip De�erlendirmesi"
+      "unnamedCustomer": "Randevu",
+      "empty": "Yaklaşan randevu veya rezervasyon bulunmuyor."
     },
     "greeting": {
       "defaultName": "Kullanıcı",
