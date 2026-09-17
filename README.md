@@ -525,6 +525,14 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
 
 **Bilinen açık nokta:** Kullanıcının ekran görüntüsündeki spesifik gönderilerde `item.content` ve `item.title` alanlarının neden boş/falsy döndüğü ayrıca incelenmedi — bu yalnızca yanlış fallback metnini düzeltir, olası boş içerik senkronizasyon sorununu (Zernio sync veya veri girişi kaynaklı olabilir) kapsamaz.
 
+### [17.09.2026] "Tüm Gönderiler" Ekranında Video Thumbnail'i Görünmüyordu (Web-Mobil Parite)
+
+**Sorun:** Kullanıcı ekran görüntüleriyle bildirdi: Web'deki (`flowweb`, `posts/page.tsx`) gönderi listesinde video gönderilerin küçük resmi (thumbnail) gerçek video karesini gösteriyor, ancak mobildeki (`PostsScreen.js`) aynı liste video gönderiler için sadece düz siyah bir kutu + play ikonu gösteriyordu — gerçek video karesi hiç render edilmiyordu.
+
+**Kök neden:** Web tarafı `<video src={...} muted playsInline>` etiketini doğrudan kullanıyor; tarayıcı otomatik olarak ilk kareyi (frame 0) decode edip gösteriyor. React Native'de `<Image>` bileşeni video dosyalarını render edemez ve önceki mobil kodu bunun yerine `isVideo` durumunda hiçbir video decode etmeden düz bir placeholder (siyah kutu + ikon) gösteriyordu.
+
+**Çözüm:** `AiUretimScreen.js`'de (post oluşturma ekranı) zaten kullanılan `expo-video` paketi (`useVideoPlayer` + `VideoView`) — yeni bir bağımlılık eklemeden — burada da kullanılarak yeni bir `PostVideoThumbnail` bileşeni eklendi. Player hiç `.play()` edilmiyor (sessiz/duraklatılmış kalıyor); native video view yine de 0. saniyedeki kareyi decode edip gösteriyor — web'deki `<video>` davranışının birebir mobil eşdeğeri. Üzerine yarı saydam bir play ikonu overlay'i eklendi (web'deki `fa-play` overlay'iyle aynı görsel dil). `isVideo` regex'i de web'deki (`posts/page.tsx`) ile tutarlı olacak şekilde `ogg` uzantısını da kapsayacak şekilde genişletildi.
+
 ---
 
 ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)

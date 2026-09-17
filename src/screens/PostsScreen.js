@@ -19,6 +19,7 @@ import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { supabase , GlobalAppBar } from '../shared';
 import { CustomButton } from '../shared';
 import { CustomInput } from '../shared';
@@ -29,6 +30,38 @@ const GlassCard = ({ children, style }) => (
     {children}
   </View>
 );
+
+// 17.09.2026: Web tarafında (posts/page.tsx) video gönderilerin küçük resmi
+// (thumbnail) doğrudan bir <video muted playsInline> etiketiyle gösteriliyor —
+// tarayıcı otomatik olarak ilk kareyi render ediyor. Mobilde bunun karşılığı
+// yoktu; önceki kod sadece düz siyah bir kutu + play ikonu gösteriyordu, gerçek
+// video karesi hiç render edilmiyordu. `AiUretimScreen.js`'de zaten kullanılan
+// `expo-video`'nun `useVideoPlayer`/`VideoView` çiftiyle (yeni bir bağımlılık
+// eklemeden) aynı "ilk kareyi göster" davranışı elde ediliyor: player hiç
+// `.play()` edilmiyor (sessiz/duraklatılmış kalıyor), native video view yine de
+// 0. saniyedeki kareyi decode edip gösteriyor — web'deki <video> davranışının
+// mobil eşdeğeri.
+const PostVideoThumbnail = ({ uri }) => {
+  const player = useVideoPlayer(uri, (p) => {
+    p.muted = true;
+    p.loop = false;
+  });
+
+  return (
+    <View className="w-full h-full items-center justify-center bg-black border border-white/10 rounded-lg" style={{ overflow: 'hidden' }}>
+      <VideoView
+        player={player}
+        style={{ width: '100%', height: '100%' }}
+        contentFit="cover"
+        nativeControls={false}
+        pointerEvents="none"
+      />
+      <View style={StyleSheet.absoluteFillObject} className="items-center justify-center bg-black/20">
+        <MaterialIcons name="play-arrow" size={24} color="#fff" />
+      </View>
+    </View>
+  );
+};
 
 // Animated Border Card
 const AnimatedBorderCard = ({ children, style, colors, padding = 16, borderRadius = 12, marginBottom = 0 }) => {
@@ -290,7 +323,7 @@ export default function PostsScreen({ navigation }) {
           renderItem={({ item }) => {
             const statusColor = getStatusColor(item.status);
             const isScheduled = item.status === 'scheduled';
-            const isVideo = item.media_urls && item.media_urls.length > 0 && (item.media_urls[0].match(/\.(mp4|webm|mov)(\?.*)?$/i) || item.media_urls[0].includes('blob'));
+            const isVideo = item.media_urls && item.media_urls.length > 0 && (item.media_urls[0].match(/\.(mp4|webm|ogg|mov)(\?.*)?$/i) || item.media_urls[0].includes('blob'));
 
             return (
               <View style={{ marginBottom: 12, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', padding: 12 }}>
@@ -299,9 +332,7 @@ export default function PostsScreen({ navigation }) {
                   {item.media_urls && item.media_urls.length > 0 ? (
                     <View style={{ width: 48, height: 48, borderRadius: 8, overflow: 'hidden', marginRight: 12, backgroundColor: '#000' }}>
                       {isVideo ? (
-                        <View className="w-full h-full items-center justify-center bg-black/80 border border-white/10 rounded-lg">
-                          <MaterialIcons name="play-arrow" size={24} color="#fff" />
-                        </View>
+                        <PostVideoThumbnail uri={item.media_urls[0]} />
                       ) : (
                         <Image source={{ uri: item.media_urls[0] }} style={{ width: 48, height: 48 }} resizeMode="cover" />
                       )}
