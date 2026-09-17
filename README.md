@@ -502,6 +502,19 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
 
 **Geçici önlem:** Kullanıcı, sorun çözülene kadar kafa karıştırıcı bir "sessiz hata" ile karşılaşmasın diye, `SosyalMedyaScreen.js`'deki `PLATFORMS_DATA` dizisinden Threads kartı geçici olarak yorum satırına alındı (silinmedi). Zernio taraf sorunu düzelttiğini onayladığında bu satırın yorumdan çıkarılması yeterli.
 
+### [17.09.2026] Gönderi Ekranı (AiUretimScreen): Bluesky İçin Platforma Özel Seçenekler Eklendi
+
+**Sorun:** Web tarafında (flowweb, `sosyal-medya/share/page.tsx`) tespit edilen aynı eksiklik mobilde de vardı: Zernio'nun kendi "Create Post" panelinde Bluesky için "thread" ve "custom caption" (300 karakter) alanları bulunmasına rağmen, `AiUretimScreen.js`'de Bluesky'nin hiçbir işlemi yoktu — ne bir state, ne bir platforma özel ayar bloğu, ne de `publishPost()` içindeki `platformsPayload` eşlemesinde bir dal. Ayrıca bağlı hesap ızgarasındaki renk mantığı da (satır ~875) Bluesky'yi tanımıyor, varsayılan gri renge (`#A79E96`) düşüyordu.
+
+**Not:** Bu değişiklikten hemen önce ayrı bir düzeltmeyle (`fix(sosyal-medya): resolve invalid Ionicons names for newly added platforms`) hesap ızgarasındaki Bluesky ikonu zaten `cloud` (geçerli bir Ionicons adı) olarak düzeltilmişti; bu değişiklik yalnızca rengi (`#0085ff`) ekliyor, ikon mantığına dokunmuyor.
+
+**Çözüm:**
+1. Twitter/X ile aynı desende (`isThread` + `caption`) `bskyIsThread`/`bskyCustomCaption` state'i ve `publishPost()` içinde karşılık gelen `platformOptions` dalı eklendi.
+2. Hesap ızgarasındaki renk mantığına `bluesky` için `#0085ff` eklendi.
+3. Twitter bloğuyla birebir aynı görsel dilde (thread anahtarı + 300 karakter sayaçlı özel açıklama) bir Bluesky ayar kartı eklendi.
+
+**⚠️ Doğrulanmamış varsayım:** Web tarafındaki notla aynı — Bluesky için Zernio API'nin beklediği `platformSpecificData` alan adları (`isThread`, `caption`) resmi olarak teyit edilmedi, Zernio panelindeki UI ile bu codebase'in Twitter entegrasyonu birebir örtüştüğü için aynı adlandırma varsayıldı.
+
 ---
 
 ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
