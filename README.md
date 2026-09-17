@@ -494,6 +494,14 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
 3. **Yazılı Onay Modalı:** Web'deki `SIFIRLA` kelimesini yazarak onaylama akışı (`ConfirmModal`) React Native `Modal` + `TextInput` ile birebir uyarlandı; onay kelimesi eşleşmeden "Onayla ve Sil" butonu pasif kalıyor. `RESET_CONFIRM_WORD` sabiti web'deki gibi kasıtlı olarak çevrilmiyor.
 4. **Tasarım Uyumu:** Kırmızı (`#EF4444`) tehlike bölgesi renk paleti korunarak mevcut mobil glassmorphism/koyu tema (`#2A2631` kart zemini) kurallarına uyarlandı; ayrı bir i18n anahtar seti eklenmedi, `BotYonetimiScreen.js` dosyasının geri kalanıyla tutarlı olarak literal Türkçe metin kullanıldı (dosyanın başındaki `i18next/no-literal-string` eslint kuralı zaten devre dışı).
 
+### [17.09.2026] Threads Hesap Bağlama — Geçici Olarak Devre Dışı (Zernio Meta App Sorunu)
+
+**Sorun:** Kullanıcı "Sosyal Medya" ekranından Threads'e bağlanmaya çalıştığında, Instagram/Meta girişini tamamladıktan sonra hiçbir hata mesajı görmeden threads.net'in kendi ana sayfasında kalıyor, uygulamaya geri dönmüyordu.
+
+**Kök neden (bizim kodumuzda değil):** `zernio-client`'ın `get-connect-url` çağrısı doğru çalışıyor ve geçerli bir `authUrl` üretiyor (`https://threads.net/oauth/authorize?client_id=1410550293434390&redirect_uri=https://zernio.com/api/v1/connect/threads/callback&scope=...`). Ancak bu URL'e gidildiğinde Meta, bir uygulama yetkilendirme (consent) ekranı göstermek yerine kullanıcıyı threads.net'in genel "hesap oluştur" (login/signup) akışına yönlendiriyor — yani `client_id=1410550293434390`'ye ait Meta App'te Threads API/"Login with Threads" ürünü düzgün yapılandırılmamış görünüyor. Bu, Zernio'nun App Dashboard'unda düzeltmesi gereken bir konfigürasyon sorunu; konu Zernio destek/mühendislik ekibine (captured `authUrl` + zaman damgaları ile) iletildi, yanıt bekleniyor.
+
+**Geçici önlem:** Kullanıcı, sorun çözülene kadar kafa karıştırıcı bir "sessiz hata" ile karşılaşmasın diye, `SosyalMedyaScreen.js`'deki `PLATFORMS_DATA` dizisinden Threads kartı geçici olarak yorum satırına alındı (silinmedi). Zernio taraf sorunu düzelttiğini onayladığında bu satırın yorumdan çıkarılması yeterli.
+
 ---
 
 ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)

@@ -69,7 +69,12 @@ const PLATFORMS_DATA = [
   { id: "reddit", name: "Reddit", color: "#FF4500", glow: "rgba(255,69,0,0.3)", icon: "🤖" },
   { id: "telegram", name: "Telegram", color: "#2AABEE", glow: "rgba(42,171,238,0.3)", icon: "✈️" },
   { id: "bluesky", name: "Bluesky", color: "#0085ff", glow: "rgba(0,133,255,0.3)", icon: "☁️" },
-  { id: "threads", name: "Threads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "🧵" },
+  // Threads geçici olarak listeden kaldırıldı (17.09.2026): Zernio'nun Threads için kullandığı
+  // Meta App (client_id 1410550293434390) OAuth authorize adımında kullanıcıyı consent ekranı
+  // yerine threads.net'in genel hesap oluşturma/login akışına düşürüyor — bağlantı hiçbir zaman
+  // tamamlanmıyor. Kök neden Zernio'nun Meta App yapılandırmasında (Threads API ürünü/App Review
+  // durumu), bizim kodumuzda değil. Zernio bunu doğruladığında bu satırı geri ekle.
+  // { id: "threads", name: "Threads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "🧵" },
   { id: "whatsapp", name: "WhatsApp", color: "#25D366", glow: "rgba(37,211,102,0.3)", icon: "💬" },
   { id: "discord", name: "Discord", color: "#5865F2", glow: "rgba(88,101,242,0.3)", icon: "👾" },
 ];
