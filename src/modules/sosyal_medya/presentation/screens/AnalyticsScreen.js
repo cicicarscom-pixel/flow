@@ -839,23 +839,88 @@ export default function AnalyticsScreen({ navigation }) {
         </AnimatedBorderCard>
       )}
 
-      {/* Phase 5: Best Times to Post */}
+      {/* 17.09.2026: Best Times Heatmap — web'deki (analiz/page.tsx) tam 7x24
+          (gün x saat) yoğunluk haritasıyla birebir eşleşecek şekilde
+          genişletildi (eskiden sadece en iyi 6 slotu gösteren sade bir
+          gridti). Web'de bu bileşen bir chart kütüphanesi değil, elle
+          (hand-built) bir CSS grid'dir — bu yüzden mobilde de
+          react-native-gifted-charts yerine, tablo bölümlerinde (Top
+          Performing Posts / Platform Kırılımı) kullanılan aynı "ScrollView
+          horizontal + sabit genişlikli View" deseniyle elle inşa edildi.
+          Renk yoğunluğu formülü (rgba(255,122,89,intensity), intensity =
+          avg_engagement/maxEngagement, taban 0.1) web ile birebir aynıdır. */}
       {zernioData.bestTimes && zernioData.bestTimes.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
           <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Paylaşım İçin En İyi Zamanlar</Text>
-          <Text className="text-[#A79E96] text-[10px] mb-4">Etkileşimin en yüksek olduğu gün ve saatler</Text>
-          <View className="flex-row flex-wrap justify-between">
-            {zernioData.bestTimes.slice(0, 6).map((slot, idx) => {
-               const dayNames = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
-               const dayName = dayNames[slot.day_of_week] || "GÜN";
-               return (
-                 <View key={idx} className="w-[31%] bg-[#201D24] rounded-lg p-2 mb-2 items-center border border-white/10 shadow-sm shadow-black">
-                   <Text className="text-[#22B573] text-[12px] font-bold capitalize">{dayName}</Text>
-                   <Text className="text-[#F6F1EC] text-[14px] font-bold mt-1">{slot.hour}:00</Text>
-                 </View>
-               );
-            })}
-          </View>
+          <Text className="text-[#A79E96] text-[10px] mb-4">Haftanın günleri ve saatlere göre ortalama etkileşim yoğunluğu</Text>
+          {(() => {
+            const dayNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+            const cellSize = 22;
+            const cellGap = 2;
+            const maxEngagement = Math.max(...zernioData.bestTimes.map(s => s.avg_engagement || 0), 1);
+            return (
+              <View className="flex-row">
+                {/* Sol sütun: gün etiketleri (web'deki dikey gün sütununun karşılığı) */}
+                <View style={{ paddingTop: 20, marginRight: 4 }}>
+                  {dayNames.map((day) => (
+                    <View key={day} style={{ height: cellSize + cellGap, justifyContent: 'center' }}>
+                      <Text className="text-[#A79E96] text-[10px]">{day}</Text>
+                    </View>
+                  ))}
+                </View>
+                {/* Sağ taraf: yatay kaydırılabilir 24 saatlik grid (web'in overflowX:auto'suna karşılık gelir) */}
+                <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+                  <View style={{ width: 24 * (cellSize + cellGap) }}>
+                    {/* Saat başlıkları (0-23) */}
+                    <View className="flex-row" style={{ marginBottom: 4 }}>
+                      {Array.from({ length: 24 }).map((_, hourIdx) => (
+                        <View key={hourIdx} style={{ width: cellSize, marginRight: cellGap, alignItems: 'center' }}>
+                          <Text className="text-[#A79E96] text-[9px]">{hourIdx}</Text>
+                        </View>
+                      ))}
+                    </View>
+                    {/* 7 (gün) x 24 (saat) yoğunluk grid'i */}
+                    {Array.from({ length: 7 }).map((_, dayIdx) => (
+                      <View key={dayIdx} className="flex-row" style={{ marginBottom: cellGap }}>
+                        {Array.from({ length: 24 }).map((_, hourIdx) => {
+                          const slot = zernioData.bestTimes.find(s => s.day_of_week === dayIdx && s.hour === hourIdx);
+                          const intensity = slot ? Math.max(0.1, (slot.avg_engagement || 0) / maxEngagement) : 0;
+                          return (
+                            <View
+                              key={hourIdx}
+                              style={{
+                                width: cellSize,
+                                height: cellSize,
+                                marginRight: cellGap,
+                                borderRadius: 4,
+                                backgroundColor: slot ? `rgba(255, 122, 89, ${intensity})` : 'rgba(255,255,255,0.02)',
+                                borderWidth: 1,
+                                borderColor: 'rgba(255,255,255,0.02)',
+                              }}
+                            />
+                          );
+                        })}
+                      </View>
+                    ))}
+                  </View>
+                </ScrollView>
+              </View>
+            );
+          })()}
+          <Text className="text-[#A79E96] text-[11px] font-bold mt-3">
+            {(() => {
+              // Not: Web tarafındaki (analiz/page.tsx) alt özet satırı, üstteki
+              // grid'de Türkçe gün kısaltmaları kullanmasına rağmen İngilizce
+              // (Mon/Tue/...) kısaltmalarla yazılmış — bu, web'in kendi
+              // içindeki bir tutarsızlık/muhtemel gözden kaçmış detay. "Birebir
+              // eşitleme" talebi doğrultusunda bu davranış kasıtlı olarak
+              // aynen (İngilizce olarak) korunmuştur.
+              const sorted = [...zernioData.bestTimes].sort((a, b) => (b.avg_engagement || 0) - (a.avg_engagement || 0)).slice(0, 2);
+              const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+              const texts = sorted.map(s => `${days[s.day_of_week]} ${s.hour}${s.hour < 12 ? 'am' : 'pm'} · ${s.avg_engagement}`);
+              return texts.length > 0 ? `Best times: ${texts.join(' · ')}` : '';
+            })()}
+          </Text>
         </AnimatedBorderCard>
       )}
 
@@ -888,39 +953,107 @@ export default function AnalyticsScreen({ navigation }) {
         </AnimatedBorderCard>
       )}
 
-      {/* Phase 5: Posting Frequency */}
+      {/* 17.09.2026: Posting Frequency — web'deki (analiz/page.tsx) recharts
+          ScatterChart'ıyla (X: Haftalık Gönderi, Y: Etkileşim Oranı, kabarcık
+          büyüklüğü: Hafta Sayısı, renk: platform) birebir eşleşecek şekilde
+          eski liste/tablo görünümünün yerine geçti. react-native-gifted-charts
+          kütüphanesinde bir BubbleChart bileşeni bulunsa da (bu oturumda npm
+          paketi indirilip incelendi), gerçek RN render motoru bu sandbox'ta
+          çalıştırılıp doğrulanamadığından — Top Performing Posts / Platform
+          Kırılımı / Best Times bölümlerinde zaten kurulu ve kanıtlanmış olan
+          "elle (custom View tabanlı) inşa" desenine sadık kalınarak, web'in
+          X/Y/boyut/renk mantığı birebir View'lerle (mutlak konumlandırma)
+          yeniden üretildi. */}
       {zernioData.postingFrequency && zernioData.postingFrequency.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
-          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Paylaşım Sıklığı Etkisi</Text>
-          <Text className="text-[#A79E96] text-[10px] mb-4">Haftalık paylaşım sıklığı ve etkileşim oranına etkisi</Text>
-          
-          <View className="flex-row mb-2 pb-2 border-b border-white/10">
-            <Text className="text-[#A79E96] text-[10px] flex-1">Platform</Text>
-            <Text className="text-[#A79E96] text-[10px] w-16 text-center">Gönderi/Hafta</Text>
-            <Text className="text-[#A79E96] text-[10px] w-12 text-center">Hafta (Sayı)</Text>
-            <Text className="text-[#A79E96] text-[10px] w-[50px] text-center">ER %</Text>
-          </View>
-          
-          {zernioData.postingFrequency.map((f, idx) => {
-            const platformIcon = PLATFORMS.find(pl => pl.id === f.platform?.toLowerCase())?.icon || 'apps-outline';
-            const platformColor = PLATFORMS.find(pl => pl.id === f.platform?.toLowerCase())?.color || '#A79E96';
-            
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Paylaşım Sıklığı vs Etkileşim Oranı</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-4">Haftalık gönderi sayısının ortalama etkileşim oranına etkisi</Text>
+          {(() => {
+            const chartHeight = 220;
+            const chartWidth = Math.max(width - 40 - 32 - 36, 160); // ekran px-5 (40) + kart padding (32) + Y ekseni etiket alanı (36)
+            const xs = zernioData.postingFrequency.map(f => f.posts_per_week || 0);
+            const ys = zernioData.postingFrequency.map(f => f.avg_engagement_rate || 0);
+            const weeks = zernioData.postingFrequency.map(f => f.weeks_count || 0);
+            const xMin = Math.min(...xs, 0);
+            const xMax = Math.max(...xs, 1);
+            const yMin = Math.min(...ys, 0);
+            const yMax = Math.max(...ys, 1);
+            const wMin = Math.min(...weeks, 0);
+            const wMax = Math.max(...weeks, 1);
+            const xSpan = (xMax - xMin) || 1;
+            const ySpan = (yMax - yMin) || 1;
+            const wSpan = (wMax - wMin) || 1;
+            const rMin = 8, rMax = 26;
+            const yTicks = [yMax, yMin + ySpan * 0.5, yMin];
+            const xTicks = [xMin, xMin + xSpan * 0.5, xMax];
+
             return (
-              <View key={idx} className="flex-row items-center mb-3">
-                <View className="flex-1 flex-row items-center">
-                  <Ionicons name={platformIcon} size={16} color={platformColor} style={{ marginRight: 8 }} />
-                  <Text className="text-[#F6F1EC] text-[12px] capitalize">{f.platform || 'Genel'}</Text>
-                </View>
-                <Text className="text-[#F6F1EC] text-[12px] w-16 text-center">{f.posts_per_week}</Text>
-                <Text className="text-[#F6F1EC] text-[12px] w-12 text-center">{f.weeks_count}</Text>
-                <View className="w-[50px] items-center">
-                  <View className="bg-[#22B573]/20 px-1.5 py-0.5 rounded-full border border-[#22B573]/30">
-                    <Text className="text-[#22B573] text-[9px] font-bold">{(f.avg_engagement_rate || 0).toFixed(2)}%</Text>
+              <View>
+                <View className="flex-row">
+                  {/* Y ekseni etiketleri (Etkileşim Oranı %) */}
+                  <View style={{ width: 36, height: chartHeight, justifyContent: 'space-between', paddingRight: 4, paddingBottom: 14 }}>
+                    {yTicks.map((v, i) => (
+                      <Text key={i} className="text-[#A79E96] text-[9px] text-right">{v.toFixed(1)}</Text>
+                    ))}
                   </View>
+                  {/* Çizim alanı */}
+                  <View style={{ width: chartWidth, height: chartHeight }}>
+                    {/* Izgara (CartesianGrid karşılığı) */}
+                    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: chartHeight - 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.04)' }} />
+                    {[0.25, 0.5, 0.75].map((p) => (
+                      <View key={p} style={{ position: 'absolute', top: (chartHeight - 14) * p, left: 0, right: 0, height: 1, backgroundColor: 'rgba(255,255,255,0.04)' }} />
+                    ))}
+                    {/* Kabarcıklar (her nokta = bir platformun bir zaman dilimindeki paylaşım sıklığı/etkileşim oranı) */}
+                    {zernioData.postingFrequency.map((f, idx) => {
+                      const platId = f.platform ? (f.platform.toLowerCase() === 'google' ? 'googlebusiness' : f.platform.toLowerCase()) : '';
+                      const platDef = PLATFORMS.find(pl => pl.id === platId);
+                      const color = platDef ? platDef.color : '#FF7A59';
+                      const r = rMin + (((f.weeks_count || 0) - wMin) / wSpan) * (rMax - rMin);
+                      const cx = ((f.posts_per_week - xMin) / xSpan) * chartWidth;
+                      const cy = (chartHeight - 14) - (((f.avg_engagement_rate || 0) - yMin) / ySpan) * (chartHeight - 14);
+                      return (
+                        <View
+                          key={idx}
+                          style={{
+                            position: 'absolute',
+                            left: Math.min(Math.max(cx - r, 0), chartWidth - r * 2),
+                            top: Math.min(Math.max(cy - r, 0), chartHeight - 14 - r * 2),
+                            width: r * 2,
+                            height: r * 2,
+                            borderRadius: r,
+                            backgroundColor: color,
+                            opacity: 0.65,
+                            borderWidth: 1.5,
+                            borderColor: color,
+                          }}
+                        />
+                      );
+                    })}
+                    {/* X ekseni etiketleri (Haftalık Gönderi) */}
+                    <View className="flex-row justify-between" style={{ position: 'absolute', bottom: -14, left: 0, right: 0 }}>
+                      {xTicks.map((v, i) => (
+                        <Text key={i} className="text-[#A79E96] text-[9px]">{Number(v).toFixed(1)}</Text>
+                      ))}
+                    </View>
+                  </View>
+                </View>
+                {/* Legend (web'deki <Legend iconType="circle" />'ın karşılığı) */}
+                <View className="flex-row flex-wrap mt-4" style={{ marginLeft: 36 }}>
+                  {Array.from(new Set(zernioData.postingFrequency.map(f => f.platform))).map((platform, idx) => {
+                    const platId = platform ? (platform.toLowerCase() === 'google' ? 'googlebusiness' : platform.toLowerCase()) : '';
+                    const platDef = PLATFORMS.find(pl => pl.id === platId);
+                    const color = platDef ? platDef.color : '#FF7A59';
+                    return (
+                      <View key={idx} className="flex-row items-center mr-3 mb-1">
+                        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: color, marginRight: 4 }} />
+                        <Text className="text-[#A79E96] text-[10px]">{platDef ? platDef.name : platform}</Text>
+                      </View>
+                    );
+                  })}
                 </View>
               </View>
             );
-          })}
+          })()}
         </AnimatedBorderCard>
       )}
     </View>

@@ -548,6 +548,21 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
 
 ---
 
+### [17.09.2026] Analiz Ekranı: "Best Times" Isı Haritası ve "Posting Frequency" Web ile Birebir Parite (bir önceki maddenin kapsam dışı bıraktığı kısım)
+
+**İstek:** Bir önceki maddede ("Top Performing Posts"/"Platform Kırılımı") bilinçli olarak kapsam dışı bırakılan, mobildeki son iki Analiz grafiğinin de web (`analiz/page.tsx`) ile birebir eşitlenmesi: Best Times ısı haritası (web'in tam 24×7 grid'i) ve Posting Frequency (web'in recharts `ScatterChart`/kabarcık grafiği).
+
+**Kök sorun / araştırma:** React Native'de recharts'ın karşılığı bir kütüphane bileşeni yok. Mobilin mevcut chart kütüphanesi olan `react-native-gifted-charts`'ın (bu oturumda npm paketi indirilip `dist/index.d.ts` ve `gifted-charts-core` tip tanımları incelenerek doğrulandı) aslında bir `BubbleChart` bileşeni bulunuyor (x/y/r/bubbleColor destekleyen `bubbleDataItem` tipiyle) — ancak bu sandbox'ta gerçek bir Expo/React Native render motoru çalıştırılamadığından, bu bileşenin gerçek cihazda beklenen şekilde render olacağı doğrulanamadı. Bu yüzden, bir önceki maddede "Top Performing Posts"/"Platform Kırılımı" tabloları için zaten kurulup kanıtlanmış olan desene (kütüphaneye bağlı olmayan, elle `View` tabanlı inşa) sadık kalınarak iki bölüm de bu şekilde inşa edildi — tıpkı web'in kendisinin de Best Times ısı haritasını bir chart kütüphanesiyle değil, elle (`<div>` grid) inşa etmesi gibi.
+
+**Çözüm:**
+1. **Best Times Isı Haritası:** Eski basitleştirilmiş 6 slotlu grid kaldırılıp, web ile birebir aynı 7 (gün) × 24 (saat) yoğunluk grid'i eklendi. Sol sütunda sabit gün etiketleri (Pzt-Paz), sağ tarafta yatay kaydırılabilir (`ScrollView horizontal`) 24 saatlik grid; hücre rengi web ile aynı formülle hesaplanıyor: `rgba(255, 122, 89, intensity)`, `intensity = max(0.1, avg_engagement / maxEngagement)`. Alt kısımdaki "en iyi 2 zaman" özet satırı da dahil olmak üzere web'in davranışı birebir korundu — web'in kendi içindeki küçük bir tutarsızlık olan (grid Türkçe gün kısaltmaları kullanırken, alt özet satırının İngilizce Mon/Tue/... kullanması) bile kasıtlı olarak aynen taşındı, çünkü talep "birebir eşitleme" idi.
+2. **Posting Frequency:** Eski liste/tablo render'ı kaldırılıp, web'in `ScatterChart`'ıyla aynı mantıkta (X ekseni: Haftalık Gönderi, Y ekseni: Etkileşim Oranı %, kabarcık büyüklüğü: Hafta Sayısı, renk: platform) elle inşa edilmiş bir kabarcık grafiği eklendi. Her nokta, `posts_per_week`/`avg_engagement_rate` değerlerine göre mutlak konumlandırılmış, `weeks_count`'a göre 8-26px aralığında ölçeklenen dairesel bir `View`; renk web'deki `PLATFORMS` dizisinden platforma göre atanıyor (`google` → `googlebusiness` normalizasyonu dahil, web'deki `platform.toLowerCase() === 'google' ? 'googlebusiness' : ...` satırıyla birebir aynı). Altta web'in `<Legend iconType="circle" />` bileşeninin karşılığı olan renkli-nokta + platform-adı legend satırı eklendi.
+3. Her iki bölüm de `esbuild --loader:.js=jsx --bundle=false` ile sözdizimi doğrulamasından geçirildi (bu sandbox'ta gerçek bir RN render/cihaz testi mümkün olmadığından, görsel doğrulama kullanıcı/Antigravity tarafında canlı cihazda yapılmalı).
+
+**Bilinen sınırlama:** Bu iki bölüm de (web'in `ResponsiveContainer` + recharts'ının aksine) piksel-bazında "responsive" değil; genişlik hesaplaması `Dimensions.get('window')`'dan alınan sabit ekran genişliği üzerinden yapılıyor (dosyanın başındaki `width` değişkeni, dosyada zaten `BarChart` bölümünde de aynı şekilde kullanılıyor). Ekran döndürme (rotation) veya çok küçük/büyük cihazlarda ince ayar gerekebilir.
+
+---
+
 ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
 
 1. **Yapay Zeka Sorumluluk Ayrımı:** Sistemdeki yapay zeka ajanlarının sınırları netleştirildi. `ledger-isleyici-api` yalnızca finansal işlemlere ("Finansal Denetçi" rolü) odaklanırken, WhatsApp/Zernio entegrasyonu ("Ön Büro" rolü) diğer modüllerin sorumluluğunda bırakıldı. AiChatScreen üzerinden atılan tüm mesajlar doğrudan işleyici API'ye bağlandı.
