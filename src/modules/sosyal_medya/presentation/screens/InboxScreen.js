@@ -580,7 +580,7 @@ const YorumlarTab = ({ navigation }) => {
     try {
       const { data: localData } = await supabase
         .from('comments')
-        .select('*')
+        .select('*, posts(*)')
         .order('created_at', { ascending: false });
 
       let localComments = (localData || []).map(c => ({
