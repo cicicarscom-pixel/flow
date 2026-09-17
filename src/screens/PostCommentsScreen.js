@@ -20,7 +20,15 @@ import { Ionicons, MaterialIcons, Feather, AntDesign } from '@expo/vector-icons'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase , GlobalAppBar } from '../shared';
-
+const getPlatformIcon = (platform) => {
+  switch (platform?.toLowerCase()) {
+    case 'instagram': return <Ionicons name="logo-instagram" size={12} color="#E8A8CD" />;
+    case 'facebook': return <Ionicons name="logo-facebook" size={12} color="#FF7A59" />;
+    case 'tiktok': return <Ionicons name="logo-tiktok" size={12} color="#69C9D0" />;
+    case 'youtube': return <Ionicons name="logo-youtube" size={12} color="#ff0000" />;
+    default: return <Ionicons name="chatbubble" size={12} color="#A79E96" />;
+  }
+};
 
 export default function PostCommentsScreen({ route, navigation }) {
   const { t } = useTranslation();
@@ -153,7 +161,7 @@ export default function PostCommentsScreen({ route, navigation }) {
     
     comments.forEach(c => {
        const copy = { ...c, replies: [] };
-       const isReply = copy.content?.startsWith('↳ @') || copy.content?.startsWith('@') || copy.parent_id;
+       const isReply = copy.content?.startsWith('↳ @') || copy.content?.startsWith('@') || copy.parent_comment_id;
        if (isReply) replies.push(copy);
        else roots.push(copy);
     });
@@ -163,8 +171,8 @@ export default function PostCommentsScreen({ route, navigation }) {
        let targetUsername = match ? match[1].trim() : null;
        
        let parent = null;
-       if (reply.parent_id) {
-          parent = roots.find(r => r.zernio_comment_id === reply.parent_id || r.id === reply.parent_id);
+       if (reply.parent_comment_id) {
+          parent = roots.find(r => r.zernio_comment_id === reply.parent_comment_id || r.id === reply.parent_comment_id);
        } else if (targetUsername) {
           const cleanTarget = targetUsername.replace(/^@+/, '');
           parent = roots.find(r => r.username && r.username.replace(/^@+/, '') === cleanTarget);
@@ -340,6 +348,7 @@ export default function PostCommentsScreen({ route, navigation }) {
         post_id: post?.id,
         content: localContent,
         username: localUsername, 
+        parent_comment_id: isReplyToComment ? targetCommentId : null,
         created_at: new Date().toISOString(),
         liked: false,
         hidden: false,
@@ -351,6 +360,7 @@ export default function PostCommentsScreen({ route, navigation }) {
         post_id: post?.id,
         zernio_comment_id: zernioCommentId,
         zernio_post_id: post?.zernio_post_id || post?.id,
+        parent_comment_id: isReplyToComment ? targetCommentId : null,
         content: localContent,
         username: localUsername,
         platform: post?.platform || 'unknown'
@@ -452,7 +462,10 @@ export default function PostCommentsScreen({ route, navigation }) {
                       <Ionicons name="person" size={14} color="#22B573" />
                     </View>
                     <View className="flex-1">
-                      <Text className="text-white font-bold text-[13px]" numberOfLines={1} ellipsizeMode="tail">{item.username}</Text>
+                      <View className="flex-row items-center">
+                        <Text className="text-white font-bold text-[13px]" numberOfLines={1} ellipsizeMode="tail">{item.username}</Text>
+                        <View style={{ marginLeft: 6 }}>{getPlatformIcon(item.platform || post?.platform)}</View>
+                      </View>
                       <Text className="text-[#A79E96] text-[10px]">
                         {new Date(item.created_at).toLocaleDateString('tr-TR')}
                       </Text>

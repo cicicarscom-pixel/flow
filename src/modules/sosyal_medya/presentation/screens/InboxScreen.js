@@ -795,10 +795,31 @@ const YorumlarTab = ({ navigation }) => {
       listener.remove();
     };
   }, []);
+  const [connectedPlatforms, setConnectedPlatforms] = useState(new Set());
+
+  useEffect(() => {
+     const fetchConnectedPlatforms = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user?.id) return;
+        const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
+        const orgId = orgMember?.organization_id || session.user.id;
+        const { data } = await supabase
+           .schema('integration')
+           .from('social_accounts')
+           .select('platform')
+           .eq('organization_id', orgId)
+           .eq('is_active', true)
+           .eq('needs_reconnection', false);
+        setConnectedPlatforms(new Set((data || []).map(r => r.platform?.toLowerCase())));
+     };
+     fetchConnectedPlatforms();
+  }, []);
 
   const uniquePosts = React.useMemo(() => {
     const postsMap = new Map();
-    comments.forEach(c => {
+    comments
+      .filter(c => connectedPlatforms.size === 0 || connectedPlatforms.has((c.platform || c.posts?.platform)?.toLowerCase()))
+      .forEach(c => {
       const pId = c.zernio_post_id || c.posts?.id;
       if (pId && !postsMap.has(pId)) {
         postsMap.set(pId, {
@@ -812,7 +833,7 @@ const YorumlarTab = ({ navigation }) => {
       }
     });
     return Array.from(postsMap.values());
-  }, [comments]);
+  }, [comments, connectedPlatforms]);
 
   const [selectedPostId, setSelectedPostId] = useState(null);
 
