@@ -18,6 +18,13 @@
 // ile kalıyor (web'de de tam olarak öyle, bkz. AICharacterPanel.tsx). Görsel
 // URL'leri flowweb'in kendi barındırdığı statik dosyalara işaret ediyor
 // (kullanıcının "web'den URL ile çek" kararı — mobil bundle'a gömme yok).
+//
+// Faz 3 (17.09.2026): Kullanıcı Komik/Resmi/Samimi için de birer görsel
+// sağladı (flowweb'in public/ai-asistan/tones/{komik,resmi,samimi}.png
+// altına, diğer 5 mizaçla aynı isimlendirme konvansiyonuyla) — bu üçü de
+// artık avatarUrl'li. Sadece "Standart" emoji ile kalmaya devam ediyor
+// (web tarafındaki aynı gerekçe: kullanıcının özellikle istediği robot
+// teması, bkz. AICharacterPanel.tsx'teki aynı tarihli not).
 // ==============================================================================
 const TONE_AVATAR_BASE = 'https://flow.workigom.com/ai-asistan/tones';
 
@@ -57,19 +64,22 @@ export const MOODS: MoodConfig[] = [
     id: 'Komik',
     title: 'Komik',
     icon: '😆',
-    prompt: 'Müşterilerle konuşurken bolca espri yap, eğlenceli teşbihler kullan ve ortamı hep neşeli tut.'
+    prompt: 'Müşterilerle konuşurken bolca espri yap, eğlenceli teşbihler kullan ve ortamı hep neşeli tut.',
+    avatarUrl: `${TONE_AVATAR_BASE}/komik.png`
   },
   {
     id: 'Resmi',
     title: 'Resmi',
     icon: '👔',
-    prompt: 'Son derece kurumsal, ciddi, mesafeli ve profesyonel bir şirket dilinde (sizli bizli) hitap et.'
+    prompt: 'Son derece kurumsal, ciddi, mesafeli ve profesyonel bir şirket dilinde (sizli bizli) hitap et.',
+    avatarUrl: `${TONE_AVATAR_BASE}/resmi.png`
   },
   {
     id: 'Samimi',
     title: 'Samimi',
     icon: '🤗',
-    prompt: 'Müşteriye 40 yıllık dostunmuş gibi senli benli, sıcak, içten ve samimi bir dille hitap et.'
+    prompt: 'Müşteriye 40 yıllık dostunmuş gibi senli benli, sıcak, içten ve samimi bir dille hitap et.',
+    avatarUrl: `${TONE_AVATAR_BASE}/samimi.png`
   },
   {
     id: 'Neşeli',

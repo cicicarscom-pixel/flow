@@ -571,6 +571,21 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
 
 ---
 
+### [17.09.2026] AI Asistan Üslup Kartları: Komik/Resmi/Samimi İçin Görsel Eklendi
+
+**İstek:** Kullanıcı, hem web (`flowweb`) hem mobil (`flow`) "AI Asistan" bölümündeki üslup seçim kartlarında Resmi/Samimi/Komik için artık emoji yerine kendi sağladığı görselleri kullanmamızı istedi; dosyaları `flowweb`'in `public/ai-asistan/tones/` klasörüne (`resmi`, `samimi`, `komik` isimleriyle) kendisi yerleştirdi.
+
+**Not (bu oturumun kısıtı):** Bu session, kullanıcının bilgisayarına bağlı değildi (device bridge bağlantısı yoktu), bu yüzden klasörü doğrudan göremedim/dosya uzantısını teyit edemedim. Kullanıcıya sorup `.png` olduğunu (diğer 5 mizaç görseliyle — `neseli.png`, `sakin.png`, `dedikoducu.png`, `huysuz.png`, `sinirli.png` — aynı konvansiyon) teyit ettirdim.
+
+**Çözüm:**
+1. **Web (`AICharacterPanel.tsx`):** `TONES` dizisindeki `Komik`/`Resmi`/`Samimi` girdilerine, mevcut 5 mizaçla (Neşeli/Sakin/Dedikoducu/Huysuz/Sinirli) aynı desende `avatarUrl: "/ai-asistan/tones/{komik,resmi,samimi}.png"` eklendi. `PersonaCard` zaten `avatarUrl` varsa görseli, yoksa emojiyi gösteriyor (bkz. `ToneCarousel.tsx`'teki mevcut yorum) — bu yüzden başka bir render değişikliği gerekmedi.
+2. **Mobil (`moods.ts`):** Aynı üç girdiye, dosyanın zaten kullandığı `TONE_AVATAR_BASE` (`https://flow.workigom.com/ai-asistan/tones`) sabitiyle `avatarUrl` eklendi — mobil tarafın mevcut mimarisi zaten web'in barındırdığı statik PNG'lere uzaktan URL ile bağlanıyor (bkz. dosya başındaki Faz 2 notu), bu yüzden mobil tarafta ayrı bir görsel/asset taşıma işlemi gerekmedi.
+3. **"Standart" kasıtlı olarak dokunulmadı:** Kullanıcı sadece Resmi/Samimi/Komik için görsel sağladı; "Standart" hem web hem mobilde zaten var olan gerekçeyle (kullanıcının özellikle istediği robot 🤖 teması) emoji ile bırakıldı.
+
+**Bilinen risk:** Uzantı `.png` olarak varsayıldı (kullanıcı onayıyla). Eğer gerçek dosyalar farklı bir uzantıdaysa (örn. `.jpg`/`.webp`), `avatarUrl` yolları 404 verir ve `PersonaCard`/`PersonaAvatarCard` otomatik olarak emojiye geri döner (görsel bozulmaz, sadece eski emoji görünmeye devam eder) — bu yüzden yanlış uzantı durumunda sessiz bir hata olur, build kırılmaz. Antigravity, `public/ai-asistan/tones/` altındaki 3 yeni PNG dosyasını bu patch'in kod değişikliğiyle birlikte `git add` etmeli (patch sadece kod diff'ini içerir, ikili görsel dosyaları içermez).
+
+---
+
 ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
 
 1. **Yapay Zeka Sorumluluk Ayrımı:** Sistemdeki yapay zeka ajanlarının sınırları netleştirildi. `ledger-isleyici-api` yalnızca finansal işlemlere ("Finansal Denetçi" rolü) odaklanırken, WhatsApp/Zernio entegrasyonu ("Ön Büro" rolü) diğer modüllerin sorumluluğunda bırakıldı. AiChatScreen üzerinden atılan tüm mesajlar doğrudan işleyici API'ye bağlandı.
