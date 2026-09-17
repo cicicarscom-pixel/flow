@@ -563,6 +563,14 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
 
 ---
 
+### [17.09.2026] Best Times Özet Satırındaki Dil Tutarsızlığı Düzeltildi (Mon/Tue → Pzt/Sal)
+
+**İstek:** Bir önceki maddede web'in kendi içindeki bir tutarsızlık olarak tespit edilip "birebir eşitleme" gereği bilinçli olarak aynen korunan detay — Best Times ısı haritasının üst grid'i Türkçe gün kısaltmaları (Pzt/Sal/Çar...) kullanırken, altındaki "en iyi 2 zaman" özet satırının İngilizce (Mon/Tue/Wed...) kısaltmalar kullanması — kullanıcı tarafından düzeltilmesi istendi.
+
+**Çözüm:** Hem `flow-repo` (`AnalyticsScreen.js`) hem de `flowweb-repo` (`analiz/page.tsx`) içindeki özet satırının `days` dizisi, üstteki grid ile aynı Türkçe kısaltmalara (`["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"]`) çevrildi — iki platform da eşzamanlı olarak güncellendi, böylece hem kendi içlerinde hem birbirleriyle tutarlı hale geldiler. "Best times:" öneki ve saat gösterimindeki am/pm ifadesi kapsam dışı bırakıldı (kullanıcının işaret ettiği tutarsızlık yalnızca gün kısaltmalarıyla ilgiliydi); istenirse ayrı bir düzeltmede ele alınabilir.
+
+---
+
 ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
 
 1. **Yapay Zeka Sorumluluk Ayrımı:** Sistemdeki yapay zeka ajanlarının sınırları netleştirildi. `ledger-isleyici-api` yalnızca finansal işlemlere ("Finansal Denetçi" rolü) odaklanırken, WhatsApp/Zernio entegrasyonu ("Ön Büro" rolü) diğer modüllerin sorumluluğunda bırakıldı. AiChatScreen üzerinden atılan tüm mesajlar doğrudan işleyici API'ye bağlandı.
