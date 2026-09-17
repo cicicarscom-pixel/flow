@@ -10,8 +10,8 @@ Workigom projesi monorepo mimarisinden bağımsız ve modüler 4 ayrı projeye (
    - **Görev:** Ana landing page ve pazarlama sitesidir. /flow ve /ledger tanıtım sayfalarını içerir. Kullanıcı kayıt/giriş işlemlerini yürütmez, doğrudan uygulamanın login sayfasına yönlendirir.
    
 2. **Workigom Flow (Ana Uygulama)**
-   - **Repo:** cicicarscom-pixel/flow (Eski adıyla i_muhasebeci)
-   - **Domain:** low.workigom.com
+   - **Repo:** cicicarscom-pixel/flow (Eski adıyla `ai_muhasebeci`)
+   - **Domain:** `flow`.workigom.com
    - **Görev:** Flow'un gerçek yapay zeka ve otomasyon uygulamasıdır. Supabase ve arka plan API'lerine bağlıdır. Çalışması için Vercel üzerinde Environment Variables (Ortam Değişkenleri) yapılandırmasına ihtiyaç duyar.
 
 3. **Workigom Ledger (Ana Uygulama)**
@@ -25,8 +25,8 @@ Workigom projesi monorepo mimarisinden bağımsız ve modüler 4 ayrı projeye (
 
 ## Geliştirme ve Deployment Kuralları
 - **Yönlendirmeler:** Tanıtım sayfalarındaki "Giriş Yap" butonları (örn: www.workigom.com/flow veya /ledger), direkt olarak uygulamanın kendi domain'indeki (örn: https://flow.workigom.com/login) giriş sayfalarına yönlendirmelidir.
-- **Environment Variables:** low ve ledger gibi gerçek uygulama repoları Vercel'de deploy edilirken .env dosyasındaki tüm API ve veritabanı değişkenleri eksiksiz olarak Vercel paneline girilmelidir, aksi takdirde 500 Internal Server Error hatası alınır.
-- **Root Directory:** Repolar ayrıldığı için Vercel üzerindeki Root Directory ayarları boş bırakılmalıdır (Eskiden pps/flow vs. idi, artık tüm repolar kendi kök dizininde çalışır).
+- **Environment Variables:** `flow` ve ledger gibi gerçek uygulama repoları Vercel'de deploy edilirken .env dosyasındaki tüm API ve veritabanı değişkenleri eksiksiz olarak Vercel paneline girilmelidir, aksi takdirde 500 Internal Server Error hatası alınır.
+- **Root Directory:** Repolar ayrıldığı için Vercel üzerindeki Root Directory ayarları boş bırakılmalıdır (Eskiden `apps/flow` vs. idi, artık tüm repolar kendi kök dizininde çalışır).
 
 ---
 
@@ -1077,8 +1077,8 @@ Web platformu ile tam eşlenik görsel deneyim için Sosyal Medya ekranı başta
 5. **Agent KurallarÄ±:** Web ve Mobil projelerin kalÄ±cÄ± hafÄ±zasÄ±na (AGENTS.md) Ã§apraz veritabanÄ± etkileÅŸimi hakkÄ±nda yeni "ğŸš¨ Kritik Kural: Ortak VeritabanÄ± EtkileÅŸimi" kuralÄ± iÅŸlendi.
 
 ### [16.08.2026] UI Fixes & Veri Senkronizasyonu Hata Giderimi
-1. **Gelen Kutusu (InboxScreen) Silinen Yorumlar Senkronizasyonu:** Silinen yorumlarin veritabani realtime sync dongusu nedeniyle geri gelmesi sorunu tamamen kalici olarak cozuldu. Silinen zernio_comment_id'ler i_communication_logs tablosunda zernio_deleted_comment logu olarak isaretlenip her fazda filtrelenmesi saglandi.
-2. **Klavye Tasmasi ve Alt Bosluk Fixleri:** ChatScreen ve PostCommentsScreen ekranlarindaki TextInput klavye ve iOS/Android alt gezinme cubugu cakismasi SafeAreaView'a ottom margin eklenerek fixlendi. InboxScreen'deki yorum ve mesaj listelerine ise paddingBottom: 160 degeri atanarak ekran doldugunda liste sonlarinin altta ezilmesi / gizli kalmasi onlendi.
+1. **Gelen Kutusu (InboxScreen) Silinen Yorumlar Senkronizasyonu:** Silinen yorumlarin veritabani realtime sync dongusu nedeniyle geri gelmesi sorunu tamamen kalici olarak cozuldu. Silinen zernio_comment_id'ler `ai_communication_logs` tablosunda zernio_deleted_comment logu olarak isaretlenip her fazda filtrelenmesi saglandi.
+2. **Klavye Tasmasi ve Alt Bosluk Fixleri:** ChatScreen ve PostCommentsScreen ekranlarindaki TextInput klavye ve iOS/Android alt gezinme cubugu cakismasi SafeAreaView'a `bottom` margin eklenerek fixlendi. InboxScreen'deki yorum ve mesaj listelerine ise paddingBottom: 160 degeri atanarak ekran doldugunda liste sonlarinin altta ezilmesi / gizli kalmasi onlendi.
 
 ### [16.08.2026] Sosyal Medya Optimizasyonları (Post Silme ve Zamanlama)
 1. **Workigom Flow Özel Silme Modalı:** Web tarafındaki "Sadece panelden sil" veya "Platformlardan da sil" şeklindeki Zernio stili şık modal tasarımı, mobil uygulamanın `PostsScreen.js` ekranına entegre edildi. Silinen gönderiler için veritabanında "soft-delete" (`status = 'deleted'`) mantığı kullanıldı ve veri kaybı önlendi.
@@ -1104,7 +1104,7 @@ Web platformu ile tam eşlenik görsel deneyim için Sosyal Medya ekranı başta
 
 ### Yapılan Değişiklikler ve Çözülen Hatalar:
 1. **Flow Mobil Giriş Ekranı (AuthScreen) Yenilendi:** Web versiyonundaki orijinal Flow logosu (logo2.png) mobil uygulamaya taşındı. Tasarım dili "Neo-Fintech Noir" cam (glassmorphism) stiline tam uyarlandı, gereksiz alt yazılar temizlendi ve esnek ScrollView yapısı ile SafeAreaView sıkışmaları önlendi.
-2. **Deep Link ve URL Scheme Güncellemesi:** Uygulamanın pp.json ve AuthScreen.js dosyalarındaki derin bağlantı şeması (scheme), uygulamanın asıl adı olan workigomflow olacak şekilde güncellendi (eski 'aiesnaf' kalıntıları temizlendi).
+2. **Deep Link ve URL Scheme Güncellemesi:** Uygulamanın `app.json` ve AuthScreen.js dosyalarındaki derin bağlantı şeması (scheme), uygulamanın asıl adı olan workigomflow olacak şekilde güncellendi (eski 'aiesnaf' kalıntıları temizlendi).
 3. **Supabase Google OAuth Çözümlemesi:** Expo Go üzerinde test yaparken workigom.com'a yanlış yönlendirme (fallback) sorununa karşı kod dinamik hale getirildi (makeRedirectUri() sadeleştirildi). Supabase GoTrue motorunun lokal ağ adreslerini (IP ve port içeren exp://) reddetme veya çerez kaybetme kısıtlamaları tespit edildi ve Supabase URL Configuration kurallarında exp://** (çift yıldız) wildcard zorunluluğu teşhis edildi. Doğrudan canlı sürüm (APK/AAB) testlerinde workigomflow:// kalıcı şeması üzerinden hatasız çalışılacağı onaylandı.
 
 ### [23.08.2026] Mobil Versiyon Profil Fetch Hatasının Çözümü (PGRST116)
@@ -1115,8 +1115,8 @@ Web platformu ile tam eşlenik görsel deneyim için Sosyal Medya ekranı başta
 
 ### UI/UX & Bug Fix Güncellemeleri (Mobil Uygulama)
 1. **Frontend-Only Patch Entegrasyonu:** Mobil arayüz hatalarını çözen .patch dosyası sıfır çakışma (conflict) ile main dalına entegre edildi.
-2. **Kırık Import Hatası:** Silinen 	heme.ts dosyasının src/core/index.ts üzerindeki ölü (dead) export bağlantısı temizlendi ve uygulamanın çökmesi engellendi.
-3. **Expo Image Picker Çökmesi:** SDK güncellemesi sonrası katı (strict) veri tipi denetimine geçen xpo-image-picker nedeniyle profil fotoğrafı yükleme ekranında oluşan crash, mediaTypes: ['image'] parametresinin ['images'] olarak çoğullaştırılmasıyla tamamen çözüldü.
+2. **Kırık Import Hatası:** Silinen `theme.ts` dosyasının src/core/index.ts üzerindeki ölü (dead) export bağlantısı temizlendi ve uygulamanın çökmesi engellendi.
+3. **Expo Image Picker Çökmesi:** SDK güncellemesi sonrası katı (strict) veri tipi denetimine geçen `expo-image-picker` nedeniyle profil fotoğrafı yükleme ekranında oluşan crash, mediaTypes: ['image'] parametresinin ['images'] olarak çoğullaştırılmasıyla tamamen çözüldü.
 4. **Dashboard Neon Glow Efekti:** Dashboard en üstündeki değiştirilebilir hero (resim) alanına estetik bir görünüm katmak için özel bir "Shadow Wrapper" tasarlandı ve overflow: hidden kısıtlamasının etrafından dolaşılarak alt kenarlardan sızan şık bir mavi (#00a2ff) neon ışık eklendi.
 5. **Dizin / Path Hatası:** MuhasebecimScreen.js içerisinde modüle yanlış bağlanan (../../../../../shared) kırık relative import, doğru seviyeye (../../../../shared) çekilerek çözüldü.
 
@@ -1189,10 +1189,10 @@ Web tarafında ("Hesap bağlama linki alınırken hata" ve "Facebook bağladım 
 Mobil (`flow`) tarafında "Canlı Fetch" mimarisi (bkz. Adım 5, Sosyal Medya Bağlantı Mimarisi) hesap listesini doğrudan Zernio API'sinden çektiği için sadece veri sözleşmesindeki gecikme/tutarsızlık senaryolarını (arka planda DB'ye yazılamaması AI yanıt akışını etkiler) kapsar; ekranın kendisinde kod değişikliği gerekmedi.
 
 ### [01.09.2026] Mobil ve Web Modüllerinde Tasarım Eşitlemesi, CRM Entegrasyonu ve Bug Fix'ler
-1. **Flow Mobil (React Native) - Müşteriler (CRM) Modülü:** Web tarafındaki "Müşteriler" mantığı mobil tarafa Clean Architecture ile (domain/entities/Customer, ICustomerRepository, SupabaseCustomerRepository) eklendi. Müşteriler, Supabase üzerinden customers ve ppointments join'lenerek ekranda listelendi. MusterilerScreen.js oluşturulup TabNavigator'a bağlandı.
+1. **Flow Mobil (React Native) - Müşteriler (CRM) Modülü:** Web tarafındaki "Müşteriler" mantığı mobil tarafa Clean Architecture ile (domain/entities/Customer, ICustomerRepository, SupabaseCustomerRepository) eklendi. Müşteriler, Supabase üzerinden customers ve `appointments` join'lenerek ekranda listelendi. MusterilerScreen.js oluşturulup TabNavigator'a bağlandı.
 2. **Flow Mobil - Kırık Import ve Bundle Crash Çözümleri:** WahaService.ts içindeki bozuk @infrastructure/api/supabaseClient importu düzeltilerek Metro Bundler'ın çökmesi (App.js bundling failed) giderildi. Ayrıca OAuth Redirect Uri config ayarları güncellenerek Supabase Whitelist sorunları etrafından dolaşıldı.
 3. **Flow Mobil - Master AI Toggle Kaldırılması:** BotYonetimiScreen.js'deki ana AI aç/kapat şalteri UI üzerinden kaldırılarak, alt platform (WhatsApp) şalterlerinin her zaman aktif görünebilmesi sağlandı.
-4. **Flow Web (Next.js) - Takvim Saat Dilimi Bug Fix:** RandevuClient.tsx'in kullandığı sayfa seviyesindeki (page.tsx) 	oday değişkeni UTC olduğu için gece saatlerinde takvimi önceki günde (ör: hala Ağustos) göstermesine sebep oluyordu. Bu, yerel saat dilimi offset'i kullanılarak düzeltildi.
-5. **Flow Web - Randevu Ekranı Tasarımının Mobile Eşitlenmesi:** Web'deki iki sütunlu randevu takvimi ve yoğunluk haritası düzeni lex-direction: column ile tek sütun yapıldı. **Takvim** üstte, **Günlük Yoğunluk Haritası (Müsaitlik)** ortada ve **Randevu Listesi** en altta olacak şekilde dikey olarak sıralandı.
+4. **Flow Web (Next.js) - Takvim Saat Dilimi Bug Fix:** RandevuClient.tsx'in kullandığı sayfa seviyesindeki (page.tsx) `today` değişkeni UTC olduğu için gece saatlerinde takvimi önceki günde (ör: hala Ağustos) göstermesine sebep oluyordu. Bu, yerel saat dilimi offset'i kullanılarak düzeltildi.
+5. **Flow Web - Randevu Ekranı Tasarımının Mobile Eşitlenmesi:** Web'deki iki sütunlu randevu takvimi ve yoğunluk haritası düzeni `flex-direction`: column ile tek sütun yapıldı. **Takvim** üstte, **Günlük Yoğunluk Haritası (Müsaitlik)** ortada ve **Randevu Listesi** en altta olacak şekilde dikey olarak sıralandı.
 6. **Flow Web - Takvim Scroll UX İyileştirmeleri:** Takvim ve Yoğunluk Haritası container'larına yatay kaydırma çubuklarını gizleyen CSS sınıfları eklendi. overscroll-behavior-x: contain eklenerek sağa-sola swipe yaparken tüm ekranın kayması (swipe to go back veya page scroll) engellendi, native mobil hissi yaratıldı.
 7. **Flow Web - Ülke Listesi Dropdown Renk Düzeltmesi:** Profil ekranındaki ülke, şehir, ilçe <select> etiketlerindeki <option>'ların varsayılan beyaz/açık renk arka planları #17151A olacak şekilde güncellenerek, üzerine gelen beyaz metinlerin okunamaması sorunu (koyu tema uyumsuzluğu) çözüldü.
