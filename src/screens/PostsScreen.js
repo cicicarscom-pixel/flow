@@ -338,8 +338,13 @@ export default function PostsScreen({ navigation }) {
                       {Array.isArray(item.platforms) && item.platforms.map((platObj, idx) => {
                         const platName = typeof platObj === 'string' ? platObj : platObj.platform;
                         if (!platName) return null;
-                        let iconName = `logo-${platName.toLowerCase()}`;
-                        if (platName.toLowerCase() === 'twitter') iconName = 'close';
+                        let platLower = platName.toLowerCase();
+                        let iconName = `logo-${platLower}`;
+                        if (platLower === 'twitter' || platLower === 'x') iconName = 'close';
+                        else if (platLower === 'telegram') iconName = 'paper-plane';
+                        else if (platLower === 'bluesky') iconName = 'cloud';
+                        else if (platLower === 'threads') iconName = 'at';
+                        else if (platLower.includes('google')) iconName = 'business';
                         return <Ionicons key={idx} name={iconName} size={12} color="#A79E96" style={{ marginRight: 4 }} />;
                       })}
                     </View>

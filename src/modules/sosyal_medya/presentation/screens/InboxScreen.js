@@ -37,6 +37,17 @@ const GlassCard = ({ children, style }) => (
   </View>
 );
 
+const getPlatformIconName = (platform) => {
+  if (!platform) return 'help';
+  const platLower = platform.toLowerCase();
+  if (platLower === 'twitter' || platLower === 'x') return 'close';
+  if (platLower === 'telegram') return 'paper-plane';
+  if (platLower === 'bluesky') return 'cloud';
+  if (platLower === 'threads') return 'at';
+  if (platLower.includes('google')) return 'business';
+  return `logo-${platLower}`;
+};
+
 // Animated Border Card
 const AnimatedBorderCard = ({ children, style, colors, padding = 16, borderRadius = 12, marginBottom = 0 }) => {
   const spinValue = useRef(new Animated.Value(0)).current;
@@ -967,7 +978,7 @@ const YorumlarTab = ({ navigation }) => {
                   </View>
                 )}
                 <View className="absolute -bottom-1 -right-1 bg-[#17151A] rounded-full p-1 border border-white/10">
-                  <Ionicons name={`logo-${item.platform}`} size={12} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} />
+                  <Ionicons name={getPlatformIconName(item.platform)} size={12} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} />
                 </View>
               </View>
               

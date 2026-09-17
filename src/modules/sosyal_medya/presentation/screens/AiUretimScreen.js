@@ -865,7 +865,11 @@ export default function AiUretimScreen({ route, navigation }) {
                                     platformId.includes('google') ? '#4285F4' : '#A79E96';
               
               let iconName = `logo-${platformId}`;
-              if (platformId.includes('google')) iconName = 'business';
+              if (platformId === 'twitter' || platformId === 'x') iconName = 'close';
+              else if (platformId === 'telegram') iconName = 'paper-plane';
+              else if (platformId === 'bluesky') iconName = 'cloud';
+              else if (platformId === 'threads') iconName = 'at';
+              else if (platformId.includes('google')) iconName = 'business';
 
               return (
                 <TouchableOpacity 
