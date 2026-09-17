@@ -487,6 +487,13 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
 3. **Kümülatif Takipçi Evrimi - Random Veri Temizliği (Faz 4):** "Tümü" filtresi seçiliyken Takipçi Büyümesi grafiğinde geçmiş verilerin `Math.random()` ile uydurulması engellendi. Geriye dönük running-total hesaplaması, `get-daily-metrics` üzerinden gelen gerçek `follows` verisine (metrics.followers || metrics.follows || metrics.newFollowers) bağlanarak grafik tamamen gerçek API verisine dayandırıldı.
 4. **Gelişmiş Posting Grafikleri ve Çift-Unwrap Hatası (Faz 5):** Best Times (Isı Haritası uyarlaması), Content Decay (İçerik Ömrü) ve Posting Frequency (Paylaşım Sıklığı Etkisi) kartları eklendi. Array'lere hatalı ikinci kez `.slots` / `.buckets` ile erişim (double-unwrap) temizlendi. `mediaType` kararsızlığı düzeltilip API'nin gerçek çıktı şemasına (`day_of_week`, `hour`, `avg_pct_of_final`, `posts_per_week` vb.) uygun şık, mobil tabanlı bir veri görselleştirme ızgarasına çevrildi. Ekranda veri kaybını önlemek için KPI grid 3x2 formatına genişletildi.
 
+## 🆕 Son Güncellemeler (Eylül 2026 - Mobil "Tehlikeli Bölge" Veri Sıfırlama Özelliği)
+
+1. **Web-Mobil Özellik Paritesi:** Web versiyonunda (FlowWeb `AiDataResetPanel.tsx`) mevcut olan ancak mobilde bulunmayan veri sıfırlama ("Tehlikeli Bölge") özelliği, `BotYonetimiScreen.js` ("Ai Asistan" sekmesi) ekranının en altına eklendi.
+2. **Soft/Hard Reset Ayrımı:** Web ile birebir aynı mantıkla iki seçenek sunuluyor — "Test Verilerini Sıfırla" (mesaj, yorum, randevu, müşteri, bildirim) ve "Fabrika Ayarlarına Sıfırla" (yukarıdakilere ek olarak AI ayarları, hizmetler, mali kayıtlar). Her ikisi de doğrudan `flow-reset-ai-data` Edge Function'ını (`supabase.functions.invoke`) çağırıyor; mobil tarafta ayrı bir server action katmanı olmadığından çağrı ekrandan direkt yapılıyor.
+3. **Yazılı Onay Modalı:** Web'deki `SIFIRLA` kelimesini yazarak onaylama akışı (`ConfirmModal`) React Native `Modal` + `TextInput` ile birebir uyarlandı; onay kelimesi eşleşmeden "Onayla ve Sil" butonu pasif kalıyor. `RESET_CONFIRM_WORD` sabiti web'deki gibi kasıtlı olarak çevrilmiyor.
+4. **Tasarım Uyumu:** Kırmızı (`#EF4444`) tehlike bölgesi renk paleti korunarak mevcut mobil glassmorphism/koyu tema (`#2A2631` kart zemini) kurallarına uyarlandı; ayrı bir i18n anahtar seti eklenmedi, `BotYonetimiScreen.js` dosyasının geri kalanıyla tutarlı olarak literal Türkçe metin kullanıldı (dosyanın başındaki `i18next/no-literal-string` eslint kuralı zaten devre dışı).
+
 ---
 
 ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)

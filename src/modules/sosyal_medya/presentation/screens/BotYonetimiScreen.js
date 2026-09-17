@@ -46,6 +46,10 @@ import { container } from '../../../../core/container';
 import { ManageBotUseCase } from '@application/useCases/ManageBotUseCase';
 const botUseCase = container.resolve(ManageBotUseCase);
 
+// Not: 'SIFIRLA' onay kelimesi iş mantığında sabit bir değer olarak kullanıldığından
+// KASITLI OLARAK çevrilmez — web versiyonundaki (AiDataResetPanel.tsx) davranışla birebir aynı.
+const RESET_CONFIRM_WORD = 'SIFIRLA';
+
 // "Asistan çalışıyor" hissi: durum noktasının arkasında yavaşça büyüyüp
 // küçülen bir nefes alma animasyonu — sadece görsel.
 const BreathingDot = ({ active, children }) => {
@@ -455,6 +459,41 @@ export default function BotYonetimiScreen() {
       Alert.alert(t('sosyalMedya.alerts.error'), t('sosyalMedya.alerts.disconnectError') + ' ' + err.message);
     } finally {
       setDisconnectingFolder(false);
+    }
+  };
+
+  // --- Tehlikeli Bölge: Veri Sıfırlama (web AiDataResetPanel.tsx ile birebir aynı mantık) ---
+  const [dangerModal, setDangerModal] = useState(null); // 'soft' | 'hard' | null
+  const [dangerConfirmText, setDangerConfirmText] = useState('');
+  const [dangerLoading, setDangerLoading] = useState(false);
+
+  const handleDataReset = async (mode) => {
+    setDangerLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        Alert.alert(t('sosyalMedya.alerts.error'), t('sosyalMedya.alerts.noSession'));
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('flow-reset-ai-data', { body: { mode } });
+      if (error || data?.success === false) {
+        throw new Error(error?.message || data?.error || 'Bilinmeyen bir hata oluştu');
+      }
+
+      setDangerModal(null);
+      setDangerConfirmText('');
+      Alert.alert(
+        t('sosyalMedya.alerts.success'),
+        mode === 'soft'
+          ? 'Test verileri başarıyla sıfırlandı.'
+          : 'Tüm veriler fabrika ayarlarına sıfırlandı.'
+      );
+    } catch (err) {
+      console.error('Veri sıfırlama hatası:', err);
+      Alert.alert(t('sosyalMedya.alerts.error'), err.message);
+    } finally {
+      setDangerLoading(false);
     }
   };
 
@@ -957,6 +996,81 @@ export default function BotYonetimiScreen() {
                   </View>
                 </View>
 
+                {/* SECTION 8: Tehlikeli Bölge (Danger Zone) */}
+                <View
+                  style={{
+                    borderRadius: 20,
+                    padding: 16,
+                    borderWidth: 1,
+                    borderColor: 'rgba(239,68,68,0.3)',
+                    backgroundColor: 'rgba(239,68,68,0.05)',
+                    marginBottom: 4,
+                  }}
+                >
+                  <Text style={{ color: '#EF4444', fontWeight: '700', fontSize: 13, marginBottom: 2 }}>
+                    Tehlikeli Bölge
+                  </Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginBottom: 14 }}>
+                    Bu bölgedeki işlemler geri alınamaz. Lütfen dikkatli olun.
+                  </Text>
+
+                  <View className="flex-row justify-between items-center mb-3">
+                    <View style={{ flex: 1, paddingRight: 10 }}>
+                      <Text style={{ color: '#fff', fontWeight: '600', fontSize: 12 }}>
+                        Test Verilerini Sıfırla
+                      </Text>
+                      <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, marginTop: 2 }}>
+                        Mesaj, yorum, randevu, müşteri ve bildirimleri siler. Ayarlarınız korunur.
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => { setDangerConfirmText(''); setDangerModal('soft'); }}
+                      style={{
+                        backgroundColor: 'rgba(239,68,68,0.15)',
+                        borderWidth: 1,
+                        borderColor: 'rgba(239,68,68,0.4)',
+                        paddingHorizontal: 14,
+                        paddingVertical: 8,
+                        borderRadius: 10,
+                      }}
+                    >
+                      <Text style={{ color: '#EF4444', fontSize: 11, fontWeight: '700' }}>Sıfırla</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      borderTopWidth: 1,
+                      borderTopColor: 'rgba(255,255,255,0.05)',
+                      paddingTop: 12,
+                    }}
+                  >
+                    <View style={{ flex: 1, paddingRight: 10 }}>
+                      <Text style={{ color: '#fff', fontWeight: '600', fontSize: 12 }}>
+                        Fabrika Ayarlarına Sıfırla
+                      </Text>
+                      <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, marginTop: 2 }}>
+                        Yukarıdakilere ek olarak AI ayarlarınızı, hizmetlerinizi ve mali kayıtlarınızı da siler.
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => { setDangerConfirmText(''); setDangerModal('hard'); }}
+                      style={{
+                        backgroundColor: '#EF4444',
+                        paddingHorizontal: 14,
+                        paddingVertical: 8,
+                        borderRadius: 10,
+                      }}
+                    >
+                      <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>Fabrika Ayarları</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+
               </View>
 
               </Animated.View>
@@ -1171,6 +1285,92 @@ export default function BotYonetimiScreen() {
               </ScrollView>
             </View>
           </View>
+          </KeyboardAvoidingView>
+        </Modal>
+
+        {/* Tehlikeli Bölge Onay Modalı (Veri Sıfırlama) */}
+        <Modal
+          visible={!!dangerModal}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => { if (!dangerLoading) { setDangerModal(null); setDangerConfirmText(''); } }}
+        >
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+              <View
+                style={{
+                  width: '100%',
+                  maxWidth: 420,
+                  borderRadius: 20,
+                  padding: 22,
+                  backgroundColor: '#2A2631',
+                  borderWidth: 1,
+                  borderColor: 'rgba(239,68,68,0.4)',
+                }}
+              >
+                <Text style={{ color: '#EF4444', fontWeight: '700', fontSize: 15, marginBottom: 8 }}>
+                  {dangerModal === 'soft' ? 'Test Verilerini Sıfırla' : 'Fabrika Ayarlarına Sıfırla'}
+                </Text>
+                <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, marginBottom: 16, lineHeight: 18 }}>
+                  {dangerModal === 'soft'
+                    ? 'Mesaj, yorum, randevu, müşteri ve bildirimleriniz kalıcı olarak silinecek. Bu işlem geri alınamaz.'
+                    : 'Tüm verileriniz (mesajlar, yorumlar, randevular, müşteriler, AI ayarları, hizmetler ve mali kayıtlar) kalıcı olarak silinecek. Bu işlem geri alınamaz.'}
+                </Text>
+                <Text style={{ color: '#fff', fontSize: 12, marginBottom: 8 }}>
+                  Onaylamak için aşağıya <Text style={{ fontWeight: '700' }}>{RESET_CONFIRM_WORD}</Text> yazın:
+                </Text>
+                <TextInput
+                  value={dangerConfirmText}
+                  onChangeText={setDangerConfirmText}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  placeholder={RESET_CONFIRM_WORD}
+                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  style={{
+                    width: '100%',
+                    padding: 10,
+                    borderRadius: 8,
+                    marginBottom: 18,
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    borderWidth: 1,
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    color: '#fff',
+                  }}
+                />
+                <View style={{ flexDirection: 'row', gap: 12, justifyContent: 'flex-end' }}>
+                  <TouchableOpacity
+                    disabled={dangerLoading}
+                    onPress={() => { setDangerModal(null); setDangerConfirmText(''); }}
+                    style={{ paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8 }}
+                  >
+                    <Text style={{ color: '#fff', fontSize: 12 }}>Vazgeç</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    disabled={dangerConfirmText !== RESET_CONFIRM_WORD || dangerLoading}
+                    onPress={() => handleDataReset(dangerModal)}
+                    style={{
+                      paddingHorizontal: 16,
+                      paddingVertical: 10,
+                      borderRadius: 8,
+                      backgroundColor: '#EF4444',
+                      opacity: dangerConfirmText === RESET_CONFIRM_WORD ? 1 : 0.5,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    {dangerLoading ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>Onayla ve Sil</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
           </KeyboardAvoidingView>
         </Modal>
 
