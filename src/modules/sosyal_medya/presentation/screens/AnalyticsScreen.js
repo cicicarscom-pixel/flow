@@ -675,76 +675,167 @@ export default function AnalyticsScreen({ navigation }) {
         </AnimatedBorderCard>
       )}
       
-      {/* Top Performing Posts */}
+      {/* 17.09.2026: Top Performing Posts — web'deki (analiz/page.tsx) detaylı
+          11 sütunlu tabloyla birebir eşleşecek şekilde genişletildi (eskiden
+          sadece 2 metrik gösteren küçük kartlardı). React Native'de <table>
+          elemanı olmadığından web'in "overflowX: auto" davranışı, sabit
+          genişlikli bir iç View'ı saran yatay ScrollView ile taklit ediliyor —
+          bu tam olarak flowweb-repo'daki PostsScreen.js "Tüm Gönderiler"
+          tablosunda (bkz. width: 1090 deseni) zaten kullanılan yöntem. */}
       {zernioData.postAnalytics && zernioData.postAnalytics.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
           <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Top Performing Posts</Text>
-          <Text className="text-[#A79E96] text-[10px] mb-2">En çok etkileşim alan gönderileriniz</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-1 pb-2">
-            {[...zernioData.postAnalytics]
-              .sort((a, b) => {
-                const aM = a.analytics || a.metrics || a || {};
-                const bM = b.analytics || b.metrics || b || {};
-                const aEng = (aM.likes || 0) + (aM.comments || 0);
-                const bEng = (bM.likes || 0) + (bM.comments || 0);
-                return bEng - aEng;
-              })
-              .slice(0, 5)
-              .map((post, idx) => {
-                const metrics = post.analytics || post.metrics || post || {};
-                return (
-                <View key={idx} className="bg-[#201D24] rounded-lg p-3 mr-3 w-40 border border-white/10 shadow-sm shadow-black">
-                  <Text className="text-[#F6F1EC] text-[11px] font-bold mb-3" numberOfLines={2}>
-                    {post.content || post.title || 'Görsel Gönderi'}
-                  </Text>
-                  <View className="flex-row items-center mb-1.5">
-                    <Ionicons name="heart" size={12} color="#C2478D" style={{ marginRight: 6 }} />
-                    <Text className="text-[#A79E96] text-[10px]">{metrics.likes || 0}</Text>
-                  </View>
-                  <View className="flex-row items-center">
-                    <Ionicons name="chatbubble" size={12} color="#22B573" style={{ marginRight: 6 }} />
-                    <Text className="text-[#A79E96] text-[10px]">{metrics.comments || 0}</Text>
-                  </View>
-                </View>
-              )})}
+          <Text className="text-[#A79E96] text-[10px] mb-3">En çok etkileşim alan gönderileriniz</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+            <View style={{ width: 898 }}>
+              {/* Header */}
+              <View className="flex-row items-center pb-2 mb-2 border-b border-white/10">
+                <Text className="text-[#A79E96] text-[10px] font-bold" style={{ width: 190 }}>Gönderi</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Beğeni</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>Yorum</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>Paylaşım</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>Kaydetme</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>Tıklama</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 96 }}>Görüntülenme</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Takipçi</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Impr.</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Erişim</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 56 }}>ER%</Text>
+              </View>
+              {/* Rows */}
+              {[...zernioData.postAnalytics]
+                .sort((a, b) => {
+                  const aM = a.analytics || a.metrics || a || {};
+                  const bM = b.analytics || b.metrics || b || {};
+                  const aEng = (aM.likes || 0) + (aM.comments || 0) + (aM.shares || 0) + (aM.impressions || aM.views || 0);
+                  const bEng = (bM.likes || 0) + (bM.comments || 0) + (bM.shares || 0) + (bM.impressions || bM.views || 0);
+                  return bEng - aEng;
+                })
+                .slice(0, 10)
+                .map((post, idx) => {
+                  const metrics = post.analytics || post.metrics || post || {};
+                  const likes = metrics.likes || 0;
+                  const comments = metrics.comments || 0;
+                  const shares = metrics.shares || 0;
+                  const saves = metrics.saves || 0;
+                  const clicks = metrics.clicks || 0;
+                  const views = metrics.views || 0;
+                  const follows = metrics.follows || 0;
+                  const impressions = metrics.impressions || 0;
+                  const reach = metrics.reach || 0;
+                  const totalEng = likes + comments + shares + saves + clicks;
+                  const divBy = impressions > 0 ? impressions : views;
+                  const er = metrics.engagementRate || metrics.er || (divBy > 0 ? ((totalEng / divBy) * 100).toFixed(2) : '0.00');
+                  const postName = post.content
+                    ? (post.content.substring(0, 40) + (post.content.length > 40 ? '...' : ''))
+                    : (post.title || `Gönderi #${idx + 1}`);
+                  const dateStr = post.publishedAt || post.date || post.created_at;
+                  const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+                  const platId = post.platform ? (post.platform.toLowerCase() === 'google' ? 'googlebusiness' : post.platform.toLowerCase()) : '';
+                  const platDef = PLATFORMS.find(pl => pl.id === platId);
+
+                  return (
+                    <View key={post.id || idx} className="flex-row items-start py-2.5 border-b border-white/5">
+                      <View style={{ width: 190, paddingRight: 8 }}>
+                        <Text className="text-[#F6F1EC] text-[11px]" numberOfLines={2}>{postName}</Text>
+                        {(platDef || formattedDate) && (
+                          <View className="flex-row items-center mt-1">
+                            {platDef && <Ionicons name={platDef.icon} size={10} color={platDef.color} style={{ marginRight: 4 }} />}
+                            {formattedDate ? <Text className="text-[#A79E96] text-[9px]">{formattedDate}</Text> : null}
+                          </View>
+                        )}
+                      </View>
+                      <Text className="text-[#FF7A59] text-[11px] text-right" style={{ width: 70 }}>{likes.toLocaleString()}</Text>
+                      <Text className="text-[#E8A8CD] text-[11px] text-right" style={{ width: 64 }}>{comments.toLocaleString()}</Text>
+                      <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 74 }}>{shares.toLocaleString()}</Text>
+                      <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 74 }}>{saves.toLocaleString()}</Text>
+                      <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 64 }}>{clicks.toLocaleString()}</Text>
+                      <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 96 }}>{views.toLocaleString()}</Text>
+                      <Text className="text-[#E8A8CD] text-[11px] text-right" style={{ width: 70 }}>{follows.toLocaleString()}</Text>
+                      <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 70 }}>{impressions.toLocaleString()}</Text>
+                      <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 70 }}>{reach.toLocaleString()}</Text>
+                      <View style={{ width: 56, alignItems: 'flex-end' }}>
+                        <View className="bg-[#22B573]/20 px-1.5 py-0.5 rounded-full border border-[#22B573]/30">
+                          <Text className="text-[#22B573] text-[9px] font-bold">{er}%</Text>
+                        </View>
+                      </View>
+                    </View>
+                  );
+                })}
+            </View>
           </ScrollView>
         </AnimatedBorderCard>
       )}
 
-      {/* Platform Breakdown */}
+      {/* 17.09.2026: Platform Kırılımı — web'deki (analiz/page.tsx) 11 sütunlu
+          detaylı tabloyla birebir eşleşecek şekilde genişletildi (eskiden
+          sadece Platform/Gönderi/Erişim/ER% olan 4 sütunluk sade bir listeydi).
+          Aynı yatay-kaydırılabilir-tablo deseni burada da kullanılıyor. */}
       {zernioData.platformBreakdown && zernioData.platformBreakdown.length > 0 && selectedPlatform.id === 'all' && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
-          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-4">Platform Kırılımı</Text>
-          
-          <View className="flex-row mb-3 pb-2 border-b border-white/10">
-            <Text className="text-[#A79E96] text-[10px] flex-1">Platform</Text>
-            <Text className="text-[#A79E96] text-[10px] w-12 text-center">Gönderi</Text>
-            <Text className="text-[#A79E96] text-[10px] w-12 text-center">Erişim</Text>
-            <Text className="text-[#A79E96] text-[10px] w-[50px] text-center">ER %</Text>
-          </View>
-          
-          {zernioData.platformBreakdown.map((p, idx) => {
-            const platformIcon = PLATFORMS.find(pl => pl.id === p.platform?.toLowerCase())?.icon || 'apps-outline';
-            const platformColor = PLATFORMS.find(pl => pl.id === p.platform?.toLowerCase())?.color || '#A79E96';
-            const imp = p.impressions || p.views || 0;
-            const er = imp > 0 ? (((p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0) + (p.clicks || 0)) / imp * 100).toFixed(2) : '0.00';
-            
-            return (
-              <View key={idx} className="flex-row items-center mb-3">
-                <View className="flex-1 flex-row items-center">
-                  <Ionicons name={platformIcon} size={16} color={platformColor} style={{ marginRight: 8 }} />
-                  <Text className="text-[#F6F1EC] text-[12px] capitalize">{p.platform}</Text>
-                </View>
-                <Text className="text-[#F6F1EC] text-[12px] w-12 text-center">{p.postCount || 0}</Text>
-                <Text className="text-[#F6F1EC] text-[12px] w-12 text-center">{imp}</Text>
-                <View className="w-[50px] items-center">
-                  <View className="bg-[#22B573]/20 px-1.5 py-0.5 rounded-full border border-[#22B573]/30">
-                    <Text className="text-[#22B573] text-[9px] font-bold">{er}%</Text>
-                  </View>
-                </View>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-3">Platform Kırılımı</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+            <View style={{ width: 832 }}>
+              {/* Header */}
+              <View className="flex-row items-center pb-2 mb-2 border-b border-white/10">
+                <Text className="text-[#A79E96] text-[10px] font-bold" style={{ width: 130 }}>Platform</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>Gönderi</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Beğeni</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>Yorum</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>Paylaşım</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>Kaydetme</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>Tıklama</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 96 }}>Görüntülenme</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Impr.</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Erişim</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 56 }}>ER%</Text>
               </View>
-            );
-          })}
+              {/* Rows */}
+              {zernioData.platformBreakdown.map((p, idx) => {
+                const platId = p.platform ? (p.platform.toLowerCase() === 'google' ? 'googlebusiness' : p.platform.toLowerCase()) : '';
+                const platDef = PLATFORMS.find(pl => pl.id === platId);
+                const platformIcon = platDef?.icon || 'apps-outline';
+                const platformColor = platDef?.color || '#A79E96';
+                const platformName = platDef?.name || p.platform;
+
+                const posts = p.postCount || p.posts || 0;
+                const likes = p.likes || 0;
+                const comments = p.comments || 0;
+                const shares = p.shares || 0;
+                const saves = p.saves || 0;
+                const clicks = p.clicks || 0;
+                const views = p.views || 0;
+                const impressions = p.impressions || 0;
+                const reach = p.reach || 0;
+                const totalEng = likes + comments + shares + saves + clicks;
+                const divBy = impressions > 0 ? impressions : views;
+                const er = p.engagementRate || p.er || (divBy > 0 ? ((totalEng / divBy) * 100).toFixed(2) : '0.00');
+
+                return (
+                  <View key={idx} className="flex-row items-center py-2.5 border-b border-white/5">
+                    <View className="flex-row items-center" style={{ width: 130 }}>
+                      <Ionicons name={platformIcon} size={14} color={platformColor} style={{ marginRight: 6 }} />
+                      <Text className="text-[#F6F1EC] text-[11px] capitalize" numberOfLines={1}>{platformName}</Text>
+                    </View>
+                    <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 64 }}>{posts.toLocaleString()}</Text>
+                    <Text className="text-[#FF7A59] text-[11px] text-right" style={{ width: 70 }}>{likes.toLocaleString()}</Text>
+                    <Text className="text-[#E8A8CD] text-[11px] text-right" style={{ width: 64 }}>{comments.toLocaleString()}</Text>
+                    <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 74 }}>{shares.toLocaleString()}</Text>
+                    <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 74 }}>{saves.toLocaleString()}</Text>
+                    <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 64 }}>{clicks.toLocaleString()}</Text>
+                    <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 96 }}>{views.toLocaleString()}</Text>
+                    <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 70 }}>{impressions.toLocaleString()}</Text>
+                    <Text className="text-[#F6F1EC] text-[11px] text-right" style={{ width: 70 }}>{reach.toLocaleString()}</Text>
+                    <View style={{ width: 56, alignItems: 'flex-end' }}>
+                      <View className="bg-[#22B573]/20 px-1.5 py-0.5 rounded-full border border-[#22B573]/30">
+                        <Text className="text-[#22B573] text-[9px] font-bold">{er}%</Text>
+                      </View>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </ScrollView>
         </AnimatedBorderCard>
       )}
 

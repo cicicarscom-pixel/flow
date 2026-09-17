@@ -533,6 +533,19 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
 
 **Çözüm:** `AiUretimScreen.js`'de (post oluşturma ekranı) zaten kullanılan `expo-video` paketi (`useVideoPlayer` + `VideoView`) — yeni bir bağımlılık eklemeden — burada da kullanılarak yeni bir `PostVideoThumbnail` bileşeni eklendi. Player hiç `.play()` edilmiyor (sessiz/duraklatılmış kalıyor); native video view yine de 0. saniyedeki kareyi decode edip gösteriyor — web'deki `<video>` davranışının birebir mobil eşdeğeri. Üzerine yarı saydam bir play ikonu overlay'i eklendi (web'deki `fa-play` overlay'iyle aynı görsel dil). `isVideo` regex'i de web'deki (`posts/page.tsx`) ile tutarlı olacak şekilde `ogg` uzantısını da kapsayacak şekilde genişletildi.
 
+### [17.09.2026] Analiz Ekranı: "Top Performing Posts" ve "Platform Kırılımı" Web ile Birebir Detaylı Tablo Paritesi
+
+**İstek:** Kullanıcı, mobildeki (`AnalyticsScreen.js`) "Top Performing Posts" (basit 2 metrikli kartlar) ve "Platform Breakdown" (4 sütunlu sade liste, kaydırılamaz) bölümlerinin, web'deki (`flowweb`, `analiz/page.tsx`) 11 sütunlu, yatay olarak elle kaydırılabilir detaylı tablolarla birebir aynı olmasını istedi; iki bölümün de (web'deki gibi) üst üste durmasını ve her gönderinin tüm metriklerinin görülebilmesini talep etti.
+
+**Kök sorun:** React Native'de HTML `<table>` elemanı yok; web'in `overflowX: auto` davranışı, sabit piksel genişlikli bir iç `View`'ı saran yatay `ScrollView` ile taklit edilmesi gerekiyor — bu desen zaten `PostsScreen.js`'in "Tüm Gönderiler" tablosunda (`width: 1090`) kullanılıyordu.
+
+**Çözüm:**
+1. **Top Performing Posts:** Eski küçük 2 metrikli kartlar kaldırılıp, web'deki `analiz/page.tsx` ile aynı 11 sütunlu (Gönderi, Beğeni, Yorum, Paylaşım, Kaydetme, Tıklama, Görüntülenme, Takipçi, Impr., Erişim, ER%) tablo eklendi. `zernioData.postAnalytics` toplam etkileşime göre sıralanıp ilk 10 gönderi gösteriliyor; her satırda platform ikonu + tarih de gösteriliyor.
+2. **Platform Kırılımı:** Eski 4 sütunlu sade liste kaldırılıp, web ile aynı 11 sütunlu (Platform, Gönderi, Beğeni, Yorum, Paylaşım, Kaydetme, Tıklama, Görüntülenme, Impr., Erişim, ER%) tablo eklendi; `zernioData.platformBreakdown`'dan besleniyor, sadece "Tümü" platform filtresi seçiliyken gösteriliyor (web'deki mantıkla tutarlı).
+3. Her iki tablo da `ScrollView horizontal` + sabit genişlikli iç `View` deseniyle elle yatay kaydırılabilir yapıldı; iki bölüm de (web'deki gibi) doğrudan alt alta (üst üste) render ediliyor.
+
+**Kapsam dışı bırakılan (bilinçli, kullanıcıya ayrıca sorulacak):** Kullanıcının "analiz sayfası web ve mobil versiyonda aynı grafiklerle birebir olsun" şeklindeki daha geniş talebi bu değişiklikte tam olarak kapsanmadı — mobilde zaten var olan diğer grafikler (Best Times ısı haritası web'in tam 24×7 grid'ine kıyasla basitleştirilmiş 6 slotlu, Posting Frequency web'in recharts `ScatterChart`'ına kıyasla farklı bir liste render'ı kullanıyor) ayrı bir takip turunda ele alınacak; görsel olarak test edilemediğinden (React Native uygulaması bu ortamdan çalıştırılamıyor) tek seferde büyük bir yeniden yazım riskli görüldü.
+
 ---
 
 ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
