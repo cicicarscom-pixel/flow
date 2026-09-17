@@ -819,6 +819,7 @@ const YorumlarTab = ({ navigation }) => {
     const postsMap = new Map();
     comments
       .filter(c => connectedPlatforms.size === 0 || connectedPlatforms.has((c.platform || c.posts?.platform)?.toLowerCase()))
+      .filter(c => c.posts?.status !== 'deleted')
       .forEach(c => {
       const pId = c.zernio_post_id || c.posts?.id;
       if (pId && !postsMap.has(pId)) {
