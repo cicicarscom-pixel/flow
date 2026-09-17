@@ -5,7 +5,25 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCommunicationLogs } from '../hooks/useCommunicationLogs';
 
 export const CommunicationLogsTable = () => {
-  const { logs, loading, clearLogs } = useCommunicationLogs();
+  const { logs, platformStats, loading, clearLogs } = useCommunicationLogs();
+
+  const StatsStrip = () => (
+    platformStats.length > 0 ? (
+      <View className="flex-row flex-wrap gap-2 mb-3 px-1">
+        {platformStats.map((s) => (
+          <View key={s.platform} className="bg-[#201D24] border border-white/10 rounded-full px-3 py-1.5 flex-row items-center gap-1.5">
+            <Text className="text-white text-xs font-bold">{s.count}</Text>
+            <Text className="text-white/50 text-[11px] capitalize">{s.platform}</Text>
+          </View>
+        ))}
+        <View className="bg-[#22B573]/10 border border-[#22B573]/30 rounded-full px-3 py-1.5">
+          <Text className="text-[#22B573] text-xs font-bold">
+            Toplam: {platformStats.reduce((sum, s) => sum + s.count, 0)}
+          </Text>
+        </View>
+      </View>
+    ) : null
+  );
 
   if (loading) {
     return (
@@ -18,6 +36,7 @@ export const CommunicationLogsTable = () => {
   if (!logs || logs.length === 0) {
     return (
       <View className="mt-3 mb-4">
+        <StatsStrip />
         <TouchableOpacity 
           className="bg-[#2A2631] border border-[#FF7A59]/50 rounded-xl overflow-hidden py-4 px-6 items-center flex-row justify-center"
           activeOpacity={0.7}
@@ -63,6 +82,7 @@ export const CommunicationLogsTable = () => {
 
   return (
     <View className="bg-[#201D24] border border-white/10 rounded-xl overflow-hidden mt-3 max-h-[350px]">
+      <StatsStrip />
       <View className="bg-black/40 p-3 border-b border-white/5">
         <Text className="text-white/80 text-xs font-bold uppercase tracking-wider">
           <Ionicons name="list" size={12} color="#ffffff" /> İletişim Raporları
