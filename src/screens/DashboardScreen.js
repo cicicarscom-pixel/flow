@@ -256,10 +256,14 @@ export default function DashboardScreen({ navigation }) {
           fetchUnreadNotifications(merchantId);
 
           // Bot Status
+          // NOT: bot_settings ham auth kullanıcı ID'si (merchant_id) ile anahtarlanır —
+          // organizasyon fallback'i YOK (RLS: auth.uid() = merchant_id). Web (page.tsx) ve
+          // SosyalMedyaScreen.js ile aynı davranış için burada organizasyon-çözümlü
+          // merchantId DEĞİL, ham session.user.id kullanılmalı.
           const { data: botData } = await supabase
             .from('bot_settings')
             .select('is_active')
-            .eq('merchant_id', merchantId)
+            .eq('merchant_id', session.user.id)
             .maybeSingle();
           if (botData) setAiActive(botData.is_active);
         }
@@ -419,13 +423,12 @@ export default function DashboardScreen({ navigation }) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
-        const merchantId = orgMember?.organization_id || session.user.id;
-        
+        // bot_settings ham merchant_id (session.user.id) ile anahtarlanır, organizasyon
+        // fallback'i YOK — bkz. fetchData() içindeki Bot Status okuma notu.
         await supabase
           .from('bot_settings')
           .update({ is_active: val })
-          .eq('merchant_id', merchantId);
+          .eq('merchant_id', session.user.id);
       }
     } catch (e) {
       console.warn('Could not save bot status', e);
