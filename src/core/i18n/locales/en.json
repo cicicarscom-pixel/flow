@@ -359,6 +359,7 @@
   },
   "postsScreen": {
     "title": "All Posts",
+    "noContent": "No description",
     "filters": {
       "all": "All",
       "scheduled": "Scheduled",

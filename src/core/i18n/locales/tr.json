@@ -359,6 +359,7 @@
   },
   "postsScreen": {
     "title": "Tüm Gönderiler",
+    "noContent": "Açıklama yok",
     "filters": {
       "all": "Tümü",
       "scheduled": "Planlanan",

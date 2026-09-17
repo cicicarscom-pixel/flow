@@ -359,6 +359,7 @@
   },
   "postsScreen": {
     "title": "Alle Beiträge",
+    "noContent": "Keine Beschreibung",
     "filters": {
       "all": "Alle",
       "scheduled": "Geplant",

@@ -317,7 +317,13 @@ export default function PostsScreen({ navigation }) {
                     {/* Top line: Text & Date */}
                     <View className="flex-row justify-between items-start mb-1.5">
                       <Text className="text-[#F6F1EC] text-[13px] font-medium flex-1 mr-2 leading-5" numberOfLines={2}>
-                        {getPreviewText(item.content || item.title) || t('postCommentsScreen.hiddenComment', { defaultValue: 'Açıklama yok' })}
+                        {/* 17.09.2026: Burada yanlışlıkla postCommentsScreen.hiddenComment ("Bu yorum
+                            gizlendi.") anahtarı kullanılıyordu — bu anahtar tr.json'da GERÇEKTEN var
+                            olduğu için i18next'in defaultValue'su hiçbir zaman devreye girmiyor ve
+                            içeriği boş olan (ya da content/title alanı boş dönen) gönderilerde yanlışlıkla
+                            "Bu yorum gizlendi." metni gösteriliyordu. Doğru, özel bir anahtara
+                            (postsScreen.noContent) taşındı. */}
+                        {getPreviewText(item.content || item.title) || t('postsScreen.noContent', { defaultValue: 'Açıklama yok' })}
                       </Text>
                       <Text className="text-[#A79E96] text-[10px] shrink-0 mt-0.5">
                         {item.scheduled_for ? formatDate(item.scheduled_for) : formatDate(item.created_at || new Date().toISOString())}
