@@ -584,6 +584,18 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
 
 **Bilinen risk:** Uzantı `.png` olarak varsayıldı (kullanıcı onayıyla). Eğer gerçek dosyalar farklı bir uzantıdaysa (örn. `.jpg`/`.webp`), `avatarUrl` yolları 404 verir ve `PersonaCard`/`PersonaAvatarCard` otomatik olarak emojiye geri döner (görsel bozulmaz, sadece eski emoji görünmeye devam eder) — bu yüzden yanlış uzantı durumunda sessiz bir hata olur, build kırılmaz. Antigravity, `public/ai-asistan/tones/` altındaki 3 yeni PNG dosyasını bu patch'in kod değişikliğiyle birlikte `git add` etmeli (patch sadece kod diff'ini içerir, ikili görsel dosyaları içermez).
 
+**Sonuç (18.09.2026):** Uygulandı ve canlıda bağımsız olarak doğrulandı — dosyalar gerçekten `.png` çıktı. İlk push turunda sadece görsel dosyaları eklenmiş, koddaki `avatarUrl` satırları ve bu README kaydı `git commit -a` unutulduğu için unstaged kalıp push'lanmamıştı; bunu `git diff HEAD origin/main`'de fark edip ikinci bir düzeltme patch'i (kod+README, görsellere dokunmadan) gönderdim, o da uygulanıp push'landı. Şu an her iki platform da tam senkron.
+
+---
+
+### [18.09.2026] Threads Yeniden Görünür Yapıldı (Test İçin)
+
+**İstek:** Kullanıcı, 17.09.2026'da Zernio/Meta App OAuth sorunu nedeniyle geçici olarak listeden kaldırılan Threads'i, tekrar test etmek amacıyla hem web hem mobilde yeniden görünür yapmamızı istedi.
+
+**Çözüm:** `SosyalMedyaScreen.js`'teki `PLATFORMS_DATA` dizisinde yorum satırına alınmış `{ id: "threads", ... }` girdisi tekrar aktif edildi (web tarafındaki `flowweb-repo/sosyal-medya/page.tsx` ile eşzamanlı). Kod yorumu, eski kök-neden açıklamasını koruyarak bu ikinci deneme notunu da ekleyecek şekilde güncellendi.
+
+**Önemli — bu bir "düzeltme" DEĞİL, bir "tekrar deneme":** Zernio'nun Meta App yapılandırmasındaki (Threads API ürünü/App Review durumu) altta yatan sorunun çözüldüğü doğrulanmadı; kullanıcı sadece canlıda tekrar test etmek istedi. Bağlantı denemesi yine aynı şekilde (consent ekranı yerine threads.net'in genel login akışına düşme) başarısız olursa, bu satır tekrar yorum satırına alınmalı.
+
 ---
 
 ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
