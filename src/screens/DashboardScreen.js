@@ -27,6 +27,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { decode } from 'base64-arraybuffer';
 
 const PLATFORM_ICONS = {
   WHATSAPP: { name: 'logo-whatsapp', color: '#25D366' },
@@ -471,25 +472,21 @@ export default function DashboardScreen({ navigation }) {
               // Optimistic UI update
               setUserProfile(prev => ({ ...prev, heroImageUrl: asset.uri }));
 
-              // 1. Optimize image (Compress & Resize)
+              // 1. Optimize image (Compress & Resize) and get base64
               const manipResult = await ImageManipulator.manipulateAsync(
                 asset.uri,
                 [{ resize: { width: 1080 } }],
-                { compress: 0.75, format: ImageManipulator.SaveFormat.JPEG }
+                { compress: 0.75, format: ImageManipulator.SaveFormat.JPEG, base64: true }
               );
 
               const { data: { session } } = await supabase.auth.getSession();
               if (session) {
                 const fileName = `${session.user.id}-hero.jpg`;
 
-                // 2. Fetch the file blob
-                const response = await fetch(manipResult.uri);
-                const blob = await response.blob();
-
-                // 3. Upload to Supabase Storage (upsert)
+                // 2. Upload to Supabase Storage (upsert) using base64 arraybuffer
                 const { error: uploadError } = await supabase.storage
                   .from('avatars')
-                  .upload(fileName, blob, { contentType: 'image/jpeg', upsert: true });
+                  .upload(fileName, decode(manipResult.base64), { contentType: 'image/jpeg', upsert: true });
 
                 if (uploadError) throw uploadError;
 
