@@ -171,8 +171,12 @@ const BAR_IMAGES = [
   require('../../image/bar_image/bar8.jpg'),
   require('../../image/bar_image/bar9.jpg'),
   require('../../image/bar_image/bar10.jpg'),
+  require('../../image/bar_image/bar11.jpg'),
+  require('../../image/bar_image/bar12.jpg'),
+  require('../../image/bar_image/bar14.jpg'),
 ];
 const { width: screenWidth } = Dimensions.get('window');
+const innerWidth = screenWidth - 2; // Compensate for left/right borders (1px each)
 
 export default function DashboardScreen({ navigation }) {
   const { t } = useTranslation();
@@ -447,7 +451,7 @@ export default function DashboardScreen({ navigation }) {
     
     setTimeout(() => {
       if (scrollRef.current) {
-        scrollRef.current.scrollTo({ x: screenWidth * initialIndex, animated: false });
+        scrollRef.current.scrollTo({ x: innerWidth * initialIndex, animated: false });
       }
     }, 150);
   }, []);
@@ -486,7 +490,7 @@ export default function DashboardScreen({ navigation }) {
                 showsHorizontalScrollIndicator={false}
               >
                 {BAR_IMAGES.map((img, idx) => (
-                  <Image key={idx} source={img} style={{ width: screenWidth, height: '100%', resizeMode: 'cover' }} />
+                  <Image key={idx} source={img} style={{ width: innerWidth, height: '100%', resizeMode: 'cover' }} />
                 ))}
               </ScrollView>
             </View>
