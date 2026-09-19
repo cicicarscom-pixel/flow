@@ -1,0 +1,76 @@
+From b47ca1363d99c389353c168ace32ce03377dc700 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 18 Sep 2026 18:08:18 +0000
+Subject: [PATCH] =?UTF-8?q?feat(sosyal-medya):=20Threads=20platformu=20tes?=
+ =?UTF-8?q?t=20i=C3=A7in=20yeniden=20g=C3=B6r=C3=BCn=C3=BCr=20yap=C4=B1ld?=
+ =?UTF-8?q?=C4=B1?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+17.09.2026'da Zernio Meta App OAuth sorunu nedeniyle gizlenen Threads
+girdisi, kullanıcının isteğiyle tekrar test edilmek üzere PLATFORMS_DATA
+dizisinde yeniden aktif edildi. Bu bir düzeltme değil, altta yatan
+Zernio/Meta App OAuth sorunu bağımsız doğrulanmadan yapılan bir tekrar
+denemedir — web tarafıyla (flowweb-repo) eşzamanlı.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01ELUQJRUzebZ59B9CrwwdV7
+---
+ README.md                                       | 12 ++++++++++++
+ .../presentation/screens/SosyalMedyaScreen.js   | 17 +++++++++++------
+ 2 files changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/README.md b/README.md
+index d314990..3e8aab3 100644
+--- a/README.md
++++ b/README.md
+@@ -584,6 +584,18 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
+ 
+ **Bilinen risk:** Uzantı `.png` olarak varsayıldı (kullanıcı onayıyla). Eğer gerçek dosyalar farklı bir uzantıdaysa (örn. `.jpg`/`.webp`), `avatarUrl` yolları 404 verir ve `PersonaCard`/`PersonaAvatarCard` otomatik olarak emojiye geri döner (görsel bozulmaz, sadece eski emoji görünmeye devam eder) — bu yüzden yanlış uzantı durumunda sessiz bir hata olur, build kırılmaz. Antigravity, `public/ai-asistan/tones/` altındaki 3 yeni PNG dosyasını bu patch'in kod değişikliğiyle birlikte `git add` etmeli (patch sadece kod diff'ini içerir, ikili görsel dosyaları içermez).
+ 
++**Sonuç (18.09.2026):** Uygulandı ve canlıda bağımsız olarak doğrulandı — dosyalar gerçekten `.png` çıktı. İlk push turunda sadece görsel dosyaları eklenmiş, koddaki `avatarUrl` satırları ve bu README kaydı `git commit -a` unutulduğu için unstaged kalıp push'lanmamıştı; bunu `git diff HEAD origin/main`'de fark edip ikinci bir düzeltme patch'i (kod+README, görsellere dokunmadan) gönderdim, o da uygulanıp push'landı. Şu an her iki platform da tam senkron.
++
++---
++
++### [18.09.2026] Threads Yeniden Görünür Yapıldı (Test İçin)
++
++**İstek:** Kullanıcı, 17.09.2026'da Zernio/Meta App OAuth sorunu nedeniyle geçici olarak listeden kaldırılan Threads'i, tekrar test etmek amacıyla hem web hem mobilde yeniden görünür yapmamızı istedi.
++
++**Çözüm:** `SosyalMedyaScreen.js`'teki `PLATFORMS_DATA` dizisinde yorum satırına alınmış `{ id: "threads", ... }` girdisi tekrar aktif edildi (web tarafındaki `flowweb-repo/sosyal-medya/page.tsx` ile eşzamanlı). Kod yorumu, eski kök-neden açıklamasını koruyarak bu ikinci deneme notunu da ekleyecek şekilde güncellendi.
++
++**Önemli — bu bir "düzeltme" DEĞİL, bir "tekrar deneme":** Zernio'nun Meta App yapılandırmasındaki (Threads API ürünü/App Review durumu) altta yatan sorunun çözüldüğü doğrulanmadı; kullanıcı sadece canlıda tekrar test etmek istedi. Bağlantı denemesi yine aynı şekilde (consent ekranı yerine threads.net'in genel login akışına düşme) başarısız olursa, bu satır tekrar yorum satırına alınmalı.
++
+ ---
+ 
+ ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
+diff --git a/src/modules/sosyal_medya/presentation/screens/SosyalMedyaScreen.js b/src/modules/sosyal_medya/presentation/screens/SosyalMedyaScreen.js
+index f6f2c8b..3181e25 100644
+--- a/src/modules/sosyal_medya/presentation/screens/SosyalMedyaScreen.js
++++ b/src/modules/sosyal_medya/presentation/screens/SosyalMedyaScreen.js
+@@ -69,12 +69,17 @@ const PLATFORMS_DATA = [
+   { id: "reddit", name: "Reddit", color: "#FF4500", glow: "rgba(255,69,0,0.3)", icon: "🤖" },
+   { id: "telegram", name: "Telegram", color: "#2AABEE", glow: "rgba(42,171,238,0.3)", icon: "✈️" },
+   { id: "bluesky", name: "Bluesky", color: "#0085ff", glow: "rgba(0,133,255,0.3)", icon: "☁️" },
+-  // Threads geçici olarak listeden kaldırıldı (17.09.2026): Zernio'nun Threads için kullandığı
+-  // Meta App (client_id 1410550293434390) OAuth authorize adımında kullanıcıyı consent ekranı
+-  // yerine threads.net'in genel hesap oluşturma/login akışına düşürüyor — bağlantı hiçbir zaman
+-  // tamamlanmıyor. Kök neden Zernio'nun Meta App yapılandırmasında (Threads API ürünü/App Review
+-  // durumu), bizim kodumuzda değil. Zernio bunu doğruladığında bu satırı geri ekle.
+-  // { id: "threads", name: "Threads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "🧵" },
++  // 17.09.2026: Threads, Zernio'nun Meta App (client_id 1410550293434390) OAuth authorize
++  // adımının kullanıcıyı consent ekranı yerine threads.net'in genel hesap oluşturma/login
++  // akışına düşürmesi (bağlantı hiçbir zaman tamamlanmıyor) nedeniyle geçici olarak
++  // listeden kaldırılmıştı. Kök neden Zernio'nun Meta App yapılandırmasında (Threads API
++  // ürünü/App Review durumu), bizim kodumuzda değildi.
++  // 18.09.2026: Kullanıcı isteğiyle test amacıyla tekrar görünür yapıldı — altta yatan
++  // Zernio/Meta App sorununun düzeldiği DOĞRULANMADI, sadece kullanıcı canlıda tekrar
++  // deneyip görmek istedi. Bağlantı denemesi yine aynı şekilde başarısız olursa, bu satır
++  // tekrar yorum satırına alınmalı. (Web tarafıyla eşzamanlı, bkz. flowweb-repo/
++  // sosyal-medya/page.tsx'teki aynı tarihli not.)
++  { id: "threads", name: "Threads", color: "#ffffff", glow: "rgba(255,255,255,0.3)", icon: "🧵" },
+   { id: "whatsapp", name: "WhatsApp", color: "#25D366", glow: "rgba(37,211,102,0.3)", icon: "💬" },
+   { id: "discord", name: "Discord", color: "#5865F2", glow: "rgba(88,101,242,0.3)", icon: "👾" },
+ ];
+-- 
+2.43.0

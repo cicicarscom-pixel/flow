@@ -10,7 +10,7 @@ import {
   StyleSheet, 
   Switch,
   Animated,
-  Dimensions, Platform
+  Dimensions, Platform, TouchableWithoutFeedback, Alert
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -23,6 +23,10 @@ import { container } from '../core/container';
 import { AppointmentStatus } from '../modules/randevu/domain/enums/AppointmentStatus';
 import { extractTime } from '../modules/randevu/presentation/hooks/useAppointments';
 import { Ionicons } from '@expo/vector-icons';
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PLATFORM_ICONS = {
   WHATSAPP: { name: 'logo-whatsapp', color: '#25D366' },
@@ -183,9 +187,13 @@ export default function DashboardScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
 
+  const { showActionSheetWithOptions } = useActionSheet();
+  const [showHint, setShowHint] = useState(false);
+  const [hintAnim] = useState(() => new Animated.Value(0));
+
   const [isLoading, setIsLoading] = useState(true);
   const [aiActive, setAiActive] = useState(true);
-  const [userProfile, setUserProfile] = useState({ fullName: '', avatarUrl: null });
+  const [userProfile, setUserProfile] = useState({ fullName: '', avatarUrl: null, heroImageUrl: null });
   const [financeStats, setFinanceStats] = useState({ income: 0, expense: 0 });
   const [upcomingPayments, setUpcomingPayments] = useState([]);
   const [socialStats, setSocialStats] = useState({ followers: 0, trend: 0 });
@@ -202,7 +210,22 @@ export default function DashboardScreen({ navigation }) {
       Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
       Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
     ]).start();
-  }, [fadeAnim, slideAnim]);
+
+    // Check for tooltip hint
+    AsyncStorage.getItem('hasSeenCoverHint').then(val => {
+      if (!val) {
+        setShowHint(true);
+        Animated.sequence([
+          Animated.timing(hintAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+          Animated.delay(3000),
+          Animated.timing(hintAnim, { toValue: 0, duration: 500, useNativeDriver: true })
+        ]).start(() => {
+          setShowHint(false);
+          AsyncStorage.setItem('hasSeenCoverHint', 'true');
+        });
+      }
+    });
+  }, [fadeAnim, slideAnim, hintAnim]);
 
   const fetchUnreadNotifications = async (merchantId) => {
     try {
@@ -246,14 +269,15 @@ export default function DashboardScreen({ navigation }) {
           // Fetch profile for avatar
           const { data: profileData } = await supabase
             .from('profiles')
-            .select('business_name, authorized_person, avatar_url')
+            .select('business_name, authorized_person, avatar_url, hero_image_url')
             .eq('id', merchantId)
             .maybeSingle();
 
           const nameToUse = profileData?.authorized_person || profileData?.business_name || meta.full_name || t('dashboardScreen.greeting.defaultName');
           setUserProfile({
             fullName: nameToUse,
-            avatarUrl: profileData?.avatar_url || meta.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nameToUse)}&background=00daf3&color=fff`
+            avatarUrl: profileData?.avatar_url || meta.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nameToUse)}&background=00daf3&color=fff`,
+            heroImageUrl: profileData?.hero_image_url || null
           });
 
           // Unread Notifications Count
@@ -422,6 +446,102 @@ export default function DashboardScreen({ navigation }) {
     }, [])
   );
 
+  const handleHeroImageChange = () => {
+    showActionSheetWithOptions(
+      {
+        options: ['Galeriden Seç', 'Varsayılana Dön', 'İptal'],
+        cancelButtonIndex: 2,
+        destructiveButtonIndex: 1,
+      },
+      async (buttonIndex) => {
+        if (buttonIndex === 0) {
+          // Galeriden Seç
+          let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [16, 9],
+            quality: 1,
+          });
+
+          if (!result.canceled && result.assets && result.assets.length > 0) {
+            const asset = result.assets[0];
+            const oldHeroImageUrl = userProfile.heroImageUrl;
+
+            try {
+              // Optimistic UI update
+              setUserProfile(prev => ({ ...prev, heroImageUrl: asset.uri }));
+
+              // 1. Optimize image (Compress & Resize)
+              const manipResult = await ImageManipulator.manipulateAsync(
+                asset.uri,
+                [{ resize: { width: 1080 } }],
+                { compress: 0.75, format: ImageManipulator.SaveFormat.JPEG }
+              );
+
+              const { data: { session } } = await supabase.auth.getSession();
+              if (session) {
+                const fileName = `${session.user.id}-hero.jpg`;
+
+                // 2. Fetch the file blob
+                const response = await fetch(manipResult.uri);
+                const blob = await response.blob();
+
+                // 3. Upload to Supabase Storage (upsert)
+                const { error: uploadError } = await supabase.storage
+                  .from('avatars')
+                  .upload(fileName, blob, { contentType: 'image/jpeg', upsert: true });
+
+                if (uploadError) throw uploadError;
+
+                // 4. Get public URL and apply cache-busting
+                const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+                const finalUrl = `${publicUrl}?t=${Date.now()}`;
+
+                // 5. Update profiles table
+                const { error: updateError } = await supabase
+                  .from('profiles')
+                  .update({ hero_image_url: finalUrl })
+                  .eq('id', session.user.id);
+
+                if (updateError) throw updateError;
+
+                // 6. Confirm optimistic update with final URL
+                setUserProfile(prev => ({ ...prev, heroImageUrl: finalUrl }));
+              }
+            } catch (e) {
+              console.warn("Hero image upload failed:", e);
+              // Rollback
+              setUserProfile(prev => ({ ...prev, heroImageUrl: oldHeroImageUrl }));
+              Alert.alert("Hata", "Kapak resmi yüklenemedi. Lütfen tekrar deneyin.");
+            }
+          }
+        } else if (buttonIndex === 1) {
+          // Varsayılana Dön
+          const oldHeroImageUrl = userProfile.heroImageUrl;
+          try {
+            setUserProfile(prev => ({ ...prev, heroImageUrl: null }));
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+              const { error } = await supabase
+                .from('profiles')
+                .update({ hero_image_url: null })
+                .eq('id', session.user.id);
+              if (error) throw error;
+              
+              // Optional: Delete from storage
+              const fileName = `${session.user.id}-hero.jpg`;
+              await supabase.storage.from('avatars').remove([fileName]);
+            }
+          } catch (e) {
+            console.warn("Hero image reset failed:", e);
+            setUserProfile(prev => ({ ...prev, heroImageUrl: oldHeroImageUrl }));
+            Alert.alert("Hata", "Varsayılana dönerken bir hata oluştu.");
+          }
+        }
+      }
+    );
+  };
+
   const handleToggleAiActive = async (val) => {
     setAiActive(val);
     try {
@@ -482,18 +602,31 @@ export default function DashboardScreen({ navigation }) {
           }}>
             {/* HERO: cesur renk bloğu - profil, bildirim ve AI durumu tek odakta */}
             <View style={[styles.hero, { overflow: 'hidden', marginBottom: 0 }]}>
-            <View style={StyleSheet.absoluteFill}>
-              <ScrollView
-                ref={scrollRef}
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-              >
-                {BAR_IMAGES.map((img, idx) => (
-                  <Image key={idx} source={img} style={{ width: innerWidth, height: '100%', resizeMode: 'cover' }} />
-                ))}
-              </ScrollView>
-            </View>
+            <TouchableWithoutFeedback onLongPress={handleHeroImageChange}>
+              <View style={StyleSheet.absoluteFill}>
+                <ScrollView
+                  ref={scrollRef}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                >
+                  {(userProfile.heroImageUrl ? [{ id: 'custom', uri: userProfile.heroImageUrl, isUserImage: true }, ...BAR_IMAGES] : BAR_IMAGES).map((img, idx) => (
+                    <Image key={idx} source={img.isUserImage ? { uri: img.uri } : img} style={{ width: innerWidth, height: '100%', resizeMode: 'cover' }} />
+                  ))}
+                </ScrollView>
+              </View>
+            </TouchableWithoutFeedback>
+            
+            {showHint && (
+              <Animated.View style={{
+                position: 'absolute', top: 80, left: 0, right: 0, alignItems: 'center', opacity: hintAnim, zIndex: 99
+              }} pointerEvents="none">
+                <View style={{ backgroundColor: 'rgba(0,0,0,0.7)', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 }}>
+                  <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>Kendi resmini eklemek için basılı tut</Text>
+                </View>
+              </Animated.View>
+            )}
+
             <View style={[styles.heroTopRow, { paddingTop: Math.max(insets.top, 16) }]}>
               <TouchableOpacity
                 style={styles.heroAvatarOuter}
@@ -513,10 +646,15 @@ export default function DashboardScreen({ navigation }) {
                 {!isLoading && <View style={styles.onlineDot} />}
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.heroIconBtn} onPress={() => navigation.navigate('Inbox', { screen: 'Bildirimler' })}>
-                <MaterialIcons name="notifications" size={20} color={COLORS.background} />
-                {unreadCount > 0 && <View style={styles.notificationBadge} />}
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TouchableOpacity style={[styles.heroIconBtn, { marginRight: 8, backgroundColor: 'rgba(255,255,255,0.15)' }]} onPress={handleHeroImageChange}>
+                  <Ionicons name="image-outline" size={18} color="rgba(255,255,255,0.8)" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.heroIconBtn} onPress={() => navigation.navigate('Inbox', { screen: 'Bildirimler' })}>
+                  <MaterialIcons name="notifications" size={20} color={COLORS.background} />
+                  {unreadCount > 0 && <View style={styles.notificationBadge} />}
+                </TouchableOpacity>
+              </View>
             </View>
 
             <Text style={styles.heroGreeting}>{t('dashboardScreen.greeting.hello')}</Text>

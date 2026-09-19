@@ -10,6 +10,8 @@ import React, { useState, useEffect } from 'react';
 
 import { registerRootComponent } from 'expo';
 
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+
 export default function App() {
   const [session, setSession] = useState(null);
 
@@ -26,12 +28,14 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <StatusBar style="light" />
-        {session && session.user ? <AppNavigator /> : <AuthScreen />}
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <ActionSheetProvider>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <StatusBar style="light" />
+          {session && session.user ? <AppNavigator /> : <AuthScreen />}
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </ActionSheetProvider>
   );
 }
 

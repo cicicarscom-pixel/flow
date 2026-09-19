@@ -1,0 +1,92 @@
+From 3a5416bb86de5d2554d5e425f9ead9fa4c5116f5 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 17 Sep 2026 22:06:15 +0000
+Subject: [PATCH] =?UTF-8?q?feat(persona-engine):=20Komik/Resmi/Samimi=20?=
+ =?UTF-8?q?=C3=BCslup=20kartlar=C4=B1na=20g=C3=B6rsel=20eklendi?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Kullanıcının public/ai-asistan/tones/ altına yerleştirdiği 3 yeni PNG
+(komik/resmi/samimi), diğer 5 mizaçla aynı desende MOODS'a avatarUrl
+olarak bağlandı. "Standart" kasıtlı olarak emoji ile bırakıldı.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01ELUQJRUzebZ59B9CrwwdV7
+---
+ README.md                                        | 15 +++++++++++++++
+ .../persona_engine/domain/config/moods.ts        | 16 +++++++++++++---
+ 2 files changed, 28 insertions(+), 3 deletions(-)
+
+diff --git a/README.md b/README.md
+index 9b7b007..d314990 100644
+--- a/README.md
++++ b/README.md
+@@ -571,6 +571,21 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
+ 
+ ---
+ 
++### [17.09.2026] AI Asistan Üslup Kartları: Komik/Resmi/Samimi İçin Görsel Eklendi
++
++**İstek:** Kullanıcı, hem web (`flowweb`) hem mobil (`flow`) "AI Asistan" bölümündeki üslup seçim kartlarında Resmi/Samimi/Komik için artık emoji yerine kendi sağladığı görselleri kullanmamızı istedi; dosyaları `flowweb`'in `public/ai-asistan/tones/` klasörüne (`resmi`, `samimi`, `komik` isimleriyle) kendisi yerleştirdi.
++
++**Not (bu oturumun kısıtı):** Bu session, kullanıcının bilgisayarına bağlı değildi (device bridge bağlantısı yoktu), bu yüzden klasörü doğrudan göremedim/dosya uzantısını teyit edemedim. Kullanıcıya sorup `.png` olduğunu (diğer 5 mizaç görseliyle — `neseli.png`, `sakin.png`, `dedikoducu.png`, `huysuz.png`, `sinirli.png` — aynı konvansiyon) teyit ettirdim.
++
++**Çözüm:**
++1. **Web (`AICharacterPanel.tsx`):** `TONES` dizisindeki `Komik`/`Resmi`/`Samimi` girdilerine, mevcut 5 mizaçla (Neşeli/Sakin/Dedikoducu/Huysuz/Sinirli) aynı desende `avatarUrl: "/ai-asistan/tones/{komik,resmi,samimi}.png"` eklendi. `PersonaCard` zaten `avatarUrl` varsa görseli, yoksa emojiyi gösteriyor (bkz. `ToneCarousel.tsx`'teki mevcut yorum) — bu yüzden başka bir render değişikliği gerekmedi.
++2. **Mobil (`moods.ts`):** Aynı üç girdiye, dosyanın zaten kullandığı `TONE_AVATAR_BASE` (`https://flow.workigom.com/ai-asistan/tones`) sabitiyle `avatarUrl` eklendi — mobil tarafın mevcut mimarisi zaten web'in barındırdığı statik PNG'lere uzaktan URL ile bağlanıyor (bkz. dosya başındaki Faz 2 notu), bu yüzden mobil tarafta ayrı bir görsel/asset taşıma işlemi gerekmedi.
++3. **"Standart" kasıtlı olarak dokunulmadı:** Kullanıcı sadece Resmi/Samimi/Komik için görsel sağladı; "Standart" hem web hem mobilde zaten var olan gerekçeyle (kullanıcının özellikle istediği robot 🤖 teması) emoji ile bırakıldı.
++
++**Bilinen risk:** Uzantı `.png` olarak varsayıldı (kullanıcı onayıyla). Eğer gerçek dosyalar farklı bir uzantıdaysa (örn. `.jpg`/`.webp`), `avatarUrl` yolları 404 verir ve `PersonaCard`/`PersonaAvatarCard` otomatik olarak emojiye geri döner (görsel bozulmaz, sadece eski emoji görünmeye devam eder) — bu yüzden yanlış uzantı durumunda sessiz bir hata olur, build kırılmaz. Antigravity, `public/ai-asistan/tones/` altındaki 3 yeni PNG dosyasını bu patch'in kod değişikliğiyle birlikte `git add` etmeli (patch sadece kod diff'ini içerir, ikili görsel dosyaları içermez).
++
++---
++
+ ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
+ 
+ 1. **Yapay Zeka Sorumluluk Ayrımı:** Sistemdeki yapay zeka ajanlarının sınırları netleştirildi. `ledger-isleyici-api` yalnızca finansal işlemlere ("Finansal Denetçi" rolü) odaklanırken, WhatsApp/Zernio entegrasyonu ("Ön Büro" rolü) diğer modüllerin sorumluluğunda bırakıldı. AiChatScreen üzerinden atılan tüm mesajlar doğrudan işleyici API'ye bağlandı.
+diff --git a/src/modules/persona_engine/domain/config/moods.ts b/src/modules/persona_engine/domain/config/moods.ts
+index c300a0c..a8e8f3e 100644
+--- a/src/modules/persona_engine/domain/config/moods.ts
++++ b/src/modules/persona_engine/domain/config/moods.ts
+@@ -18,6 +18,13 @@
+ // ile kalıyor (web'de de tam olarak öyle, bkz. AICharacterPanel.tsx). Görsel
+ // URL'leri flowweb'in kendi barındırdığı statik dosyalara işaret ediyor
+ // (kullanıcının "web'den URL ile çek" kararı — mobil bundle'a gömme yok).
++//
++// Faz 3 (17.09.2026): Kullanıcı Komik/Resmi/Samimi için de birer görsel
++// sağladı (flowweb'in public/ai-asistan/tones/{komik,resmi,samimi}.png
++// altına, diğer 5 mizaçla aynı isimlendirme konvansiyonuyla) — bu üçü de
++// artık avatarUrl'li. Sadece "Standart" emoji ile kalmaya devam ediyor
++// (web tarafındaki aynı gerekçe: kullanıcının özellikle istediği robot
++// teması, bkz. AICharacterPanel.tsx'teki aynı tarihli not).
+ // ==============================================================================
+ const TONE_AVATAR_BASE = 'https://flow.workigom.com/ai-asistan/tones';
+ 
+@@ -57,19 +64,22 @@ export const MOODS: MoodConfig[] = [
+     id: 'Komik',
+     title: 'Komik',
+     icon: '😆',
+-    prompt: 'Müşterilerle konuşurken bolca espri yap, eğlenceli teşbihler kullan ve ortamı hep neşeli tut.'
++    prompt: 'Müşterilerle konuşurken bolca espri yap, eğlenceli teşbihler kullan ve ortamı hep neşeli tut.',
++    avatarUrl: `${TONE_AVATAR_BASE}/komik.png`
+   },
+   {
+     id: 'Resmi',
+     title: 'Resmi',
+     icon: '👔',
+-    prompt: 'Son derece kurumsal, ciddi, mesafeli ve profesyonel bir şirket dilinde (sizli bizli) hitap et.'
++    prompt: 'Son derece kurumsal, ciddi, mesafeli ve profesyonel bir şirket dilinde (sizli bizli) hitap et.',
++    avatarUrl: `${TONE_AVATAR_BASE}/resmi.png`
+   },
+   {
+     id: 'Samimi',
+     title: 'Samimi',
+     icon: '🤗',
+-    prompt: 'Müşteriye 40 yıllık dostunmuş gibi senli benli, sıcak, içten ve samimi bir dille hitap et.'
++    prompt: 'Müşteriye 40 yıllık dostunmuş gibi senli benli, sıcak, içten ve samimi bir dille hitap et.',
++    avatarUrl: `${TONE_AVATAR_BASE}/samimi.png`
+   },
+   {
+     id: 'Neşeli',
+-- 
+2.43.0

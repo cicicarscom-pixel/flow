@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, ImageBackground, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { decode } from 'base64-arraybuffer';
 import { GlobalAppBar , supabase } from '../shared';
 
@@ -80,6 +82,8 @@ export default function ProfilScreen() {
   const [organizationId, setOrganizationId] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { showActionSheetWithOptions } = useActionSheet();
+  const [heroImageUrl, setHeroImageUrl] = useState(null);
 
   const fetchProfileData = async () => {
     try {
@@ -88,7 +92,7 @@ export default function ProfilScreen() {
         setEmail(session.user.email || '');
         const { data, error } = await supabase
           .from('profiles')
-          .select('business_name, authorized_person, category, phone_number, address, avatar_url')
+          .select('business_name, authorized_person, category, phone_number, address, avatar_url, hero_image_url')
           .eq('id', session.user.id)
           .maybeSingle();
 
@@ -104,6 +108,9 @@ export default function ProfilScreen() {
           }
           if (data.avatar_url) {
             setAvatar(data.avatar_url);
+          }
+          if (data.hero_image_url) {
+            setHeroImageUrl(data.hero_image_url);
           }
         }
         
@@ -196,7 +203,8 @@ const handleSave = async () => {
             category: category,
             phone_number: phone,
             address: addressData,
-            avatar_url: avatar
+            avatar_url: avatar,
+            hero_image_url: heroImageUrl
           })
           .eq('id', session.user.id);
 
@@ -237,11 +245,103 @@ const handleSave = async () => {
       setSaving(false);
     }
   };
+  const handleHeroImageChange = () => {
+    showActionSheetWithOptions(
+      {
+        options: ['Galeriden Seç', 'Varsayılana Dön', 'İptal'],
+        cancelButtonIndex: 2,
+        destructiveButtonIndex: 1,
+      },
+      async (buttonIndex) => {
+        if (buttonIndex === 0) {
+          // Galeriden Seç
+          let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [16, 9],
+            quality: 1,
+          });
+
+          if (!result.canceled && result.assets && result.assets.length > 0) {
+            const asset = result.assets[0];
+            const oldHeroImageUrl = heroImageUrl;
+
+            try {
+              // Optimistic UI update
+              setHeroImageUrl(asset.uri);
+
+              // 1. Optimize image
+              const manipResult = await ImageManipulator.manipulateAsync(
+                asset.uri,
+                [{ resize: { width: 1080 } }],
+                { compress: 0.75, format: ImageManipulator.SaveFormat.JPEG }
+              );
+
+              const { data: { session } } = await supabase.auth.getSession();
+              if (session) {
+                const fileName = `${session.user.id}-hero.jpg`;
+
+                // 2. Fetch the file blob
+                const response = await fetch(manipResult.uri);
+                const blob = await response.blob();
+
+                // 3. Upload to Supabase Storage (upsert)
+                const { error: uploadError } = await supabase.storage
+                  .from('avatars')
+                  .upload(fileName, blob, { contentType: 'image/jpeg', upsert: true });
+
+                if (uploadError) throw uploadError;
+
+                // 4. Get public URL and apply cache-busting
+                const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+                const finalUrl = `${publicUrl}?t=${Date.now()}`;
+
+                // 5. Update profiles table
+                const { error: updateError } = await supabase
+                  .from('profiles')
+                  .update({ hero_image_url: finalUrl })
+                  .eq('id', session.user.id);
+
+                if (updateError) throw updateError;
+
+                setHeroImageUrl(finalUrl);
+              }
+            } catch (e) {
+              console.warn("Hero image upload failed:", e);
+              setHeroImageUrl(oldHeroImageUrl);
+              Alert.alert("Hata", "Kapak resmi yüklenemedi. Lütfen tekrar deneyin.");
+            }
+          }
+        } else if (buttonIndex === 1) {
+          // Varsayılana Dön
+          const oldHeroImageUrl = heroImageUrl;
+          try {
+            setHeroImageUrl(null);
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+              const { error } = await supabase
+                .from('profiles')
+                .update({ hero_image_url: null })
+                .eq('id', session.user.id);
+              if (error) throw error;
+              
+              const fileName = `${session.user.id}-hero.jpg`;
+              await supabase.storage.from('avatars').remove([fileName]);
+            }
+          } catch (e) {
+            console.warn("Hero image reset failed:", e);
+            setHeroImageUrl(oldHeroImageUrl);
+            Alert.alert("Hata", "Varsayılana dönerken bir hata oluştu.");
+          }
+        }
+      }
+    );
+  };
 
   return (
     <View className="flex-1 bg-[#17151A]">
       <ImageBackground 
-        source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
+        source={{ uri: heroImageUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUpjAKmMNnHDAuGn7KDAmiX4BVuWBLEG-5a7fHFVu_x7Jxrfh8UzY6rM-oy3AiqN0b1h6_K5iobCNsv2B4iHnz_lPjQ6QXfGvJ4UZmCcQLcr6H8o6m3I1JVFmgqk7UubXZx96-wpkV8-ScZZBzzkpl4-_WMzeHLyFljEKugxDZQXZgdkjst86sxa7hU95rBimeOBSnqHbdwH9bj_yj1tbla3T_HPG2xI6XkgTpyJRiDhmg9Po0q7NWy9DKn3JnR0b5tcpUj4Vcxr3w' }}
         style={StyleSheet.absoluteFillObject}
         resizeMode="cover"
       >
@@ -256,7 +356,7 @@ const handleSave = async () => {
           style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
         >
           {/* Avatar Area */}
-          <View className="items-center mb-8">
+          <View className="items-center mb-6">
             <TouchableOpacity onPress={pickImage} className="relative">
               <View className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/50 shadow-lg shadow-primary">
                 <Image 
@@ -267,6 +367,11 @@ const handleSave = async () => {
               <View className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary items-center justify-center border-2 border-background">
                 <Ionicons name="camera" size={16} color="#000" />
               </View>
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={handleHeroImageChange} style={{ marginTop: 12, flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 }}>
+              <Ionicons name="image-outline" size={14} color="#aaa" />
+              <Text style={{ color: '#aaa', fontSize: 12, marginLeft: 6 }}>Kapak Resmini Değiştir</Text>
             </TouchableOpacity>
           </View>
 

@@ -1,0 +1,21 @@
+diff a/src/modules/sosyal_medya/presentation/screens/AnalyticsScreen.js b/src/modules/sosyal_medya/presentation/screens/AnalyticsScreen.js	(rejected hunks)
+@@ -909,14 +909,12 @@ export default function AnalyticsScreen({ navigation }) {
+           })()}
+           <Text className="text-[#A79E96] text-[11px] font-bold mt-3">
+             {(() => {
+-              // Not: Web tarafındaki (analiz/page.tsx) alt özet satırı, üstteki
+-              // grid'de Türkçe gün kısaltmaları kullanmasına rağmen İngilizce
+-              // (Mon/Tue/...) kısaltmalarla yazılmış — bu, web'in kendi
+-              // içindeki bir tutarsızlık/muhtemel gözden kaçmış detay. "Birebir
+-              // eşitleme" talebi doğrultusunda bu davranış kasıtlı olarak
+-              // aynen (İngilizce olarak) korunmuştur.
++              // 17.09.2026: Alt özet satırındaki gün kısaltmaları, üstteki
++              // grid'le tutarlı olması için Türkçeye çevrildi (bkz. README —
++              // eskiden İngilizce Mon/Tue/... kullanılıyordu, web tarafında da
++              // aynı düzeltme eşzamanlı olarak yapıldı).
+               const sorted = [...zernioData.bestTimes].sort((a, b) => (b.avg_engagement || 0) - (a.avg_engagement || 0)).slice(0, 2);
+-              const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
++              const days = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+               const texts = sorted.map(s => `${days[s.day_of_week]} ${s.hour}${s.hour < 12 ? 'am' : 'pm'} · ${s.avg_engagement}`);
+               return texts.length > 0 ? `Best times: ${texts.join(' · ')}` : '';
+             })()}

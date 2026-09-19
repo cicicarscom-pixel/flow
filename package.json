@@ -3,6 +3,7 @@
   "main": "App.js",
   "version": "1.0.0",
   "dependencies": {
+    "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/ui": "~57.0.19",
     "@expo/vector-icons": "^15.0.2",
     "@google/genai": "^2.8.0",
@@ -27,6 +28,7 @@
     "expo-font": "~57.0.0",
     "expo-glass-effect": "~57.0.3",
     "expo-image": "~57.0.5",
+    "expo-image-manipulator": "~57.0.19",
     "expo-image-picker": "~57.0.19",
     "expo-linear-gradient": "~57.0.2",
     "expo-linking": "~57.0.10",

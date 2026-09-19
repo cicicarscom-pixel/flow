@@ -1,0 +1,103 @@
+From c556e8cfb10623a2348bab86a781bdfacecbcce1 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 17 Sep 2026 19:28:38 +0000
+Subject: [PATCH] =?UTF-8?q?fix(sosyal-medya):=20PostsScreen'de=20yanl?=
+ =?UTF-8?q?=C4=B1=C5=9F=20'Bu=20yorum=20gizlendi.'=20fallback'i=20d=C3=BCz?=
+ =?UTF-8?q?elt?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+"Tüm Gönderiler" ekranında boş içerikli gönderiler için postCommentsScreen.hiddenComment
+(yorum-gizleme) anahtarı yanlışlıkla içerik fallback'i olarak kullanılıyordu. Bu anahtar
+tr/en/de.json'da gerçekten var olduğundan i18next'in defaultValue'su hiç devreye girmiyor
+ve gerçek gönderi içeriği boşsa her zaman "Bu yorum gizlendi." gösteriliyordu.
+
+Yeni, özel bir postsScreen.noContent anahtarı eklenip kullanılacak şekilde düzeltildi.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01ELUQJRUzebZ59B9CrwwdV7
+---
+ README.md                     | 10 ++++++++++
+ src/core/i18n/locales/de.json |  1 +
+ src/core/i18n/locales/en.json |  1 +
+ src/core/i18n/locales/tr.json |  1 +
+ src/screens/PostsScreen.js    |  8 +++++++-
+ 5 files changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/README.md b/README.md
+index f53b9ec..0a8e858 100644
+--- a/README.md
++++ b/README.md
+@@ -515,6 +515,16 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
+ 
+ **⚠️ Doğrulanmamış varsayım:** Web tarafındaki notla aynı — Bluesky için Zernio API'nin beklediği platformSpecificData alan adları (isThread, caption) resmi olarak teyit edilmedi, Zernio panelindeki UI ile bu codebase'in Twitter entegrasyonu birebir örtüştüğü için aynı adlandırma varsayıldı.
+ 
++### [17.09.2026] "Tüm Gönderiler" Ekranında Yanlış İçerik Yer Tutucusu Hatası Düzeltildi
++
++**Sorun:** Kullanıcı ekran görüntüleriyle bildirdi: "Tüm Gönderiler" (PostsScreen.js) listesinde gerçek gönderi içeriği/başlığı yerine "Bu yorum gizlendi." metni görünüyordu.
++
++**Kök neden:** PostsScreen.js satır 320'deki içerik önizleme fallback'i (getPreviewText(item.content || item.title) || t(...)), muhtemelen PostCommentsScreen.js'teki (satır ~423) benzer bir satırdan kopyalanırken, gizlenmiş bir YORUM için kullanılan postCommentsScreen.hiddenComment çeviri anahtarını ("Bu yorum gizlendi.") yanlışlıkla GÖNDERİ boş-içerik yer tutucusu olarak yeniden kullanıyordu. Bu anahtar 	r.json/n.json/de.json içinde gerçekten mevcut olduğu için i18next'in defaultValue: 'Açıklama yok' parametresi hiçbir zaman devreye girmiyordu (i18next defaultValue'yu SADECE anahtar hiç bulunamadığında kullanır) — sonuç olarak item.content || item.title boş dönen her gönderide, gerçek içerik yerine hep "Bu yorum gizlendi." yazıyordu.
++
++**Çözüm:** Yanlış postCommentsScreen.hiddenComment anahtarı yerine, src/core/i18n/locales/{tr,en,de}.json'daki mevcut postsScreen namespace'ine eklenen özel bir postsScreen.noContent anahtarı (tr: "Açıklama yok", en: "No description", de: "Keine Beschreibung") kullanılacak şekilde PostsScreen.js güncellendi.
++
++**Bilinen açık nokta:** Kullanıcının ekran görüntüsündeki spesifik gönderilerde item.content ve item.title alanlarının neden boş/falsy döndüğü ayrıca incelenmedi — bu yalnızca yanlış fallback metnini düzeltir, olası boş içerik senkronizasyon sorununu (Zernio sync veya veri girişi kaynaklı olabilir) kapsamaz.
++
+ ---
+ 
+ ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
+diff --git a/src/core/i18n/locales/de.json b/src/core/i18n/locales/de.json
+index 264a276..3f67f39 100644
+--- a/src/core/i18n/locales/de.json
++++ b/src/core/i18n/locales/de.json
+@@ -359,6 +359,7 @@
+   },
+   "postsScreen": {
+     "title": "Alle Beiträge",
++    "noContent": "Keine Beschreibung",
+     "filters": {
+       "all": "Alle",
+       "scheduled": "Geplant",
+diff --git a/src/core/i18n/locales/en.json b/src/core/i18n/locales/en.json
+index df880d0..9b74733 100644
+--- a/src/core/i18n/locales/en.json
++++ b/src/core/i18n/locales/en.json
+@@ -359,6 +359,7 @@
+   },
+   "postsScreen": {
+     "title": "All Posts",
++    "noContent": "No description",
+     "filters": {
+       "all": "All",
+       "scheduled": "Scheduled",
+diff --git a/src/core/i18n/locales/tr.json b/src/core/i18n/locales/tr.json
+index 3460b26..6123246 100644
+--- a/src/core/i18n/locales/tr.json
++++ b/src/core/i18n/locales/tr.json
+@@ -359,6 +359,7 @@
+   },
+   "postsScreen": {
+     "title": "Tüm Gönderiler",
++    "noContent": "Açıklama yok",
+     "filters": {
+       "all": "Tümü",
+       "scheduled": "Planlanan",
+diff --git a/src/screens/PostsScreen.js b/src/screens/PostsScreen.js
+index bc4749e..923e274 100644
+--- a/src/screens/PostsScreen.js
++++ b/src/screens/PostsScreen.js
+@@ -317,7 +317,13 @@ export default function PostsScreen({ navigation }) {
+                     {/* Top line: Text & Date */}
+                     <View className="flex-row justify-between items-start mb-1.5">
+                       <Text className="text-[#F6F1EC] text-[13px] font-medium flex-1 mr-2 leading-5" numberOfLines={2}>
+-                        {getPreviewText(item.content || item.title) || t('postCommentsScreen.hiddenComment', { defaultValue: 'Açıklama yok' })}
++                        {/* 17.09.2026: Burada yanlışlıkla postCommentsScreen.hiddenComment ("Bu yorum
++                            gizlendi.") anahtarı kullanılıyordu — bu anahtar tr.json'da GERÇEKTEN var
++                            olduğu için i18next'in defaultValue'su hiçbir zaman devreye girmiyor ve
++                            içeriği boş olan (ya da content/title alanı boş dönen) gönderilerde yanlışlıkla
++                            "Bu yorum gizlendi." metni gösteriliyordu. Doğru, özel bir anahtara
++                            (postsScreen.noContent) taşındı. */}
++                        {getPreviewText(item.content || item.title) || t('postsScreen.noContent', { defaultValue: 'Açıklama yok' })}
+                       </Text>
+                       <Text className="text-[#A79E96] text-[10px] shrink-0 mt-0.5">
+                         {item.scheduled_for ? formatDate(item.scheduled_for) : formatDate(item.created_at || new Date().toISOString())}

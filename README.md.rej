@@ -1,0 +1,18 @@
+diff a/README.md b/README.md	(rejected hunks)
+@@ -515,6 +515,16 @@ Zernio entegrasyonu sürecinde yaşanan 400 (Bad Request) file:// formatı ve 40
+ 
+ **⚠️ Doğrulanmamış varsayım:** Web tarafındaki notla aynı — Bluesky için Zernio API'nin beklediği platformSpecificData alan adları (isThread, caption) resmi olarak teyit edilmedi, Zernio panelindeki UI ile bu codebase'in Twitter entegrasyonu birebir örtüştüğü için aynı adlandırma varsayıldı.
+ 
++### [17.09.2026] "Tüm Gönderiler" Ekranında Yanlış İçerik Yer Tutucusu Hatası Düzeltildi
++
++**Sorun:** Kullanıcı ekran görüntüleriyle bildirdi: "Tüm Gönderiler" (PostsScreen.js) listesinde gerçek gönderi içeriği/başlığı yerine "Bu yorum gizlendi." metni görünüyordu.
++
++**Kök neden:** PostsScreen.js satır 320'deki içerik önizleme fallback'i (getPreviewText(item.content || item.title) || t(...)), muhtemelen PostCommentsScreen.js'teki (satır ~423) benzer bir satırdan kopyalanırken, gizlenmiş bir YORUM için kullanılan postCommentsScreen.hiddenComment çeviri anahtarını ("Bu yorum gizlendi.") yanlışlıkla GÖNDERİ boş-içerik yer tutucusu olarak yeniden kullanıyordu. Bu anahtar 	r.json/n.json/de.json içinde gerçekten mevcut olduğu için i18next'in defaultValue: 'Açıklama yok' parametresi hiçbir zaman devreye girmiyordu (i18next defaultValue'yu SADECE anahtar hiç bulunamadığında kullanır) — sonuç olarak item.content || item.title boş dönen her gönderide, gerçek içerik yerine hep "Bu yorum gizlendi." yazıyordu.
++
++**Çözüm:** Yanlış postCommentsScreen.hiddenComment anahtarı yerine, src/core/i18n/locales/{tr,en,de}.json'daki mevcut postsScreen namespace'ine eklenen özel bir postsScreen.noContent anahtarı (tr: "Açıklama yok", en: "No description", de: "Keine Beschreibung") kullanılacak şekilde PostsScreen.js güncellendi.
++
++**Bilinen açık nokta:** Kullanıcının ekran görüntüsündeki spesifik gönderilerde item.content ve item.title alanlarının neden boş/falsy döndüğü ayrıca incelenmedi — bu yalnızca yanlış fallback metnini düzeltir, olası boş içerik senkronizasyon sorununu (Zernio sync veya veri girişi kaynaklı olabilir) kapsamaz.
++
+ ---
+ 
+ ## 🆕 Son Güncellemeler (Temmuz 2026 - AI Görev Dağılımı ve Finansal Veri Birleştirme)
