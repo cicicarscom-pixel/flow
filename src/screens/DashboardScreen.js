@@ -471,6 +471,11 @@ export default function DashboardScreen({ navigation }) {
             try {
               // Optimistic UI update
               setUserProfile(prev => ({ ...prev, heroImageUrl: asset.uri }));
+              
+              // Kaydırmayı en başa al (kullanıcının eklediği resim ilk sırada çıkıyor)
+              setTimeout(() => {
+                scrollRef.current?.scrollTo({ x: 0, animated: true });
+              }, 100);
 
               // 1. Optimize image (Compress & Resize) and get base64
               const manipResult = await ImageManipulator.manipulateAsync(
