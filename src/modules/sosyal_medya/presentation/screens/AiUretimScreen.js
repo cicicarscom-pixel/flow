@@ -486,7 +486,13 @@ export default function AiUretimScreen({ route, navigation }) {
       });
       
       if (postError || postData?.error) {
-        const actualError = postError?.message || (typeof postData?.error === 'string' ? postData.error : postData?.error?.message) || "Zernio API hatası";
+        let actualError = postError?.message || (typeof postData?.error === 'string' ? postData.error : postData?.error?.message) || "Zernio API hatası";
+        if (postError && postError.context && typeof postError.context.json === 'function') {
+           try {
+              const errJson = await postError.context.json();
+              actualError = errJson.error || actualError;
+           } catch(e) {}
+        }
         throw new Error(actualError);
       }
       
