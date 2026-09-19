@@ -30,6 +30,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase , GlobalAppBar } from '../../../../shared';
 import { CustomButton } from '../../../../shared';
+import { PLATFORM_MEDIA_RULES } from '../../domain/platformRules';
 
 
 const { width } = Dimensions.get('window');
@@ -615,6 +616,8 @@ export default function AiUretimScreen({ route, navigation }) {
     }
   };
 
+  const [mediaDurationMs, setMediaDurationMs] = useState(0);
+
   const pickMedia = async () => {
     const isInstagramSelected = selectedPlatforms['instagram'] || selectedPlatforms['Instagram'];
     
@@ -635,6 +638,35 @@ export default function AiUretimScreen({ route, navigation }) {
           const newMediaType = isVideo ? 'video' : 'image';
           setMediaType(newMediaType);
           persistedMediaType = newMediaType;
+          
+          const duration = isVideo ? (asset.duration || 0) : 0;
+          setMediaDurationMs(duration);
+
+          if (isVideo && duration > 0) {
+            // Yeni video yüklendiğinde mevcut seçili platformları kontrol et
+            let uncheckedPlatforms = [];
+            const durationSec = duration / 1000;
+            const updatedPlatforms = { ...selectedPlatforms };
+            
+            for (const platform of Object.keys(updatedPlatforms)) {
+              if (updatedPlatforms[platform]) {
+                const rule = PLATFORM_MEDIA_RULES[platform.toLowerCase()];
+                if (rule && rule.maxDurationSec && durationSec > rule.maxDurationSec) {
+                  updatedPlatforms[platform] = false;
+                  uncheckedPlatforms.push(platform);
+                }
+              }
+            }
+
+            if (uncheckedPlatforms.length > 0) {
+              setSelectedPlatforms(updatedPlatforms);
+              Alert.alert(
+                "Video Süre Sınırı Aşıldı",
+                `Yüklediğiniz video ${Math.round(durationSec)} saniye uzunluğunda. Şu platformların sınırlarını aştığı için otomatik olarak kaldırıldılar:\n\n` +
+                uncheckedPlatforms.map(p => `- ${p.charAt(0).toUpperCase() + p.slice(1)} (Max: ${PLATFORM_MEDIA_RULES[p.toLowerCase()].maxDurationSec} sn)`).join('\n')
+              );
+            }
+          }
           
           let mediaData;
           if (isVideo) {
@@ -663,6 +695,28 @@ export default function AiUretimScreen({ route, navigation }) {
     } else {
       launchPicker();
     }
+  };
+
+  const handlePlatformToggle = (platformName) => {
+    const isCurrentlySelected = selectedPlatforms[platformName];
+    
+    // Eğer platform yeni seçiliyorsa (önceden seçili değilse) ve medyada bir video varsa kuralı kontrol et
+    if (!isCurrentlySelected && mediaType === 'video' && mediaDurationMs > 0) {
+      const rule = PLATFORM_MEDIA_RULES[platformName.toLowerCase()];
+      if (rule && rule.maxDurationSec) {
+        const durationSec = mediaDurationMs / 1000;
+        if (durationSec > rule.maxDurationSec) {
+          Alert.alert(
+            "Video Süre Sınırı",
+            `${platformName.charAt(0).toUpperCase() + platformName.slice(1)} platformunda en fazla ${rule.maxDurationSec} saniyelik video paylaşabilirsiniz (Yüklenen: ${Math.round(durationSec)} sn).`
+          );
+          return; // Seçimi engelle
+        }
+      }
+    }
+
+    // Seçime izin ver veya seçimi kaldır
+    setSelectedPlatforms(prev => ({ ...prev, [platformName]: !prev[platformName] }));
   };
 
   return (
@@ -896,7 +950,7 @@ export default function AiUretimScreen({ route, navigation }) {
               return (
                 <TouchableOpacity 
                   key={index}
-                  onPress={() => setSelectedPlatforms(prev => ({ ...prev, [acc.platform]: !prev[acc.platform] }))}
+                  onPress={() => handlePlatformToggle(acc.platform)}
                   className={`flex-row items-center justify-between rounded-lg border p-3 mb-3 w-[48%] ${isSelected ? 'bg-[#22B573]/10 border-[#22B573]/50' : 'bg-[#2A2631]/50 border-white/5'}`}
                 >
                   <View className="flex-row items-center flex-1 overflow-hidden">
