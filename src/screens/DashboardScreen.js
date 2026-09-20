@@ -271,7 +271,7 @@ export default function DashboardScreen({ navigation }) {
           const { data: profileData } = await supabase
             .from('profiles')
             .select('business_name, authorized_person, avatar_url, hero_image_url')
-            .eq('id', merchantId)
+            .eq('id', session.user.id)
             .maybeSingle();
 
           const nameToUse = profileData?.authorized_person || profileData?.business_name || meta.full_name || t('dashboardScreen.greeting.defaultName');
