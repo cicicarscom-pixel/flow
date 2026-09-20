@@ -4,15 +4,18 @@ import { supabase } from '../../shared';
 import * as Linking from 'expo-linking';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function VerifyEmailScreen() {
-  const [email, setEmail] = useState(null);
+export default function VerifyEmailScreen({ emailFromProps }) {
+  const [email, setEmail] = useState(emailFromProps || null);
   const [resending, setResending] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setEmail(user.email);
-    });
+    // If not passed from props, try to get from session
+    if (!emailFromProps) {
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) setEmail(user.email);
+      });
+    }
 
     // Handle deep link (when user clicks email link and returns to app)
     const handleDeepLink = (event) => {

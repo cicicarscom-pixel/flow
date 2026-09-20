@@ -14,7 +14,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 const { width, height } = Dimensions.get('window');
 
-export default function AuthScreen() {
+export default function AuthScreen({ onSignUpSuccess }) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
@@ -100,7 +100,7 @@ export default function AuthScreen() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { error, data } = await supabase.auth.signUp({
       email: email,
       password: password,
       options: {
@@ -114,8 +114,12 @@ export default function AuthScreen() {
     if (error) {
       Alert.alert(t('authScreen.errors.signupTitle'), error.message);
     } else {
-      Alert.alert(t('authScreen.success.title'), t('authScreen.success.signupMessage'));
-      setIsLogin(true);
+      if (onSignUpSuccess) {
+         onSignUpSuccess(email);
+      } else {
+         Alert.alert(t('authScreen.success.title'), t('authScreen.success.signupMessage'));
+         setIsLogin(true);
+      }
     }
     setLoading(false);
   }
