@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import TabNavigator from './TabNavigator';
@@ -8,6 +8,8 @@ import AiChatScreen from '../../screens/AiChatScreen';
 import AiAssistantScreen from '../../screens/AiAssistantScreen';
 import PostsScreen from '../../screens/PostsScreen';
 import PostCommentsScreen from '../../screens/PostCommentsScreen';
+import VerifyEmailScreen from '../../screens/VerifyEmailScreen';
+import OnboardingScreen from '../../screens/OnboardingScreen';
 
 import { OdemeTakvimiScreen, IsletmemScreen } from '../../modules/muhasebe';
 import { 
@@ -17,11 +19,67 @@ import {
   ChatScreen 
 } from '../../modules/sosyal_medya';
 
+import { ActivityIndicator, View } from 'react-native';
+import { supabase } from '../../shared';
+import { useNavigation } from '@react-navigation/native';
+
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
+  const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkAuthGuard() {
+      setLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+         setLoading(false);
+         return;
+      }
+      
+      if (!session.user.email_confirmed_at) {
+        navigation.reset({ index: 0, routes: [{ name: 'VerifyEmail' }] });
+        setLoading(false);
+        return;
+      }
+
+      const { data: profile } = await supabase.from('profiles').select('onboarding_completed').eq('id', session.user.id).single();
+      
+      if (profile && profile.onboarding_completed === false) {
+        navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] });
+      } else {
+        navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
+      }
+      
+      setLoading(false);
+    }
+
+    checkAuthGuard();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Re-run guard on sign in or session update (like email confirmed)
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
+        checkAuthGuard();
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigation]);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0F172A', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+      </View>
+    );
+  }
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
+      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="MainTabs" component={TabNavigator} />
       <Stack.Screen name="Profil" component={ProfilScreen} />
       <Stack.Screen name="Bildirimler" component={BildirimlerScreen} />
