@@ -45,8 +45,14 @@ export default function AppNavigator() {
         return;
       }
 
-      const { data: profile } = await supabase.from('profiles').select('onboarding_completed').eq('id', session.user.id).single();
+      const { data: profile } = await supabase.from('profiles').select('user_type, onboarding_completed').eq('id', session.user.id).single();
       
+      if (profile && !profile.user_type) {
+         // Mobile generic user_type fallback assignment for flow app
+         await supabase.from('profiles').update({ user_type: 'business' }).eq('id', session.user.id);
+         await supabase.from('organizations').insert({ owner_id: session.user.id, name: null });
+      }
+
       if (profile && profile.onboarding_completed === false) {
         navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] });
       } else {
