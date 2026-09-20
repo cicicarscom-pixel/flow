@@ -173,7 +173,7 @@ export default function ProfilScreen() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session && asset.base64) {
-          const fileName = `${session.user.id}-${Date.now()}.jpg`;
+          const fileName = `${session.user.id}/avatar-${Date.now()}.jpg`;
           const { data, error } = await supabase.storage
             .from('avatars')
             .upload(fileName, decode(asset.base64), { contentType: 'image/jpeg' });
@@ -279,7 +279,7 @@ const handleSave = async () => {
 
               const { data: { session } } = await supabase.auth.getSession();
               if (session) {
-                const fileName = `${session.user.id}-hero.jpg`;
+                const fileName = `${session.user.id}/hero.jpg`;
 
                 // 2. Upload to Supabase Storage (upsert) using base64 arraybuffer
                 const { error: uploadError } = await supabase.storage
@@ -321,7 +321,7 @@ const handleSave = async () => {
                 .eq('id', session.user.id);
               if (error) throw error;
               
-              const fileName = `${session.user.id}-hero.jpg`;
+              const fileName = `${session.user.id}/hero.jpg`;
               await supabase.storage.from('avatars').remove([fileName]);
             }
           } catch (e) {

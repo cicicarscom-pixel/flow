@@ -486,7 +486,7 @@ export default function DashboardScreen({ navigation }) {
 
               const { data: { session } } = await supabase.auth.getSession();
               if (session) {
-                const fileName = `${session.user.id}-hero.jpg`;
+                const fileName = `${session.user.id}/hero.jpg`;
 
                 // 2. Upload to Supabase Storage (upsert) using base64 arraybuffer
                 const { error: uploadError } = await supabase.storage
@@ -531,7 +531,7 @@ export default function DashboardScreen({ navigation }) {
               if (error) throw error;
               
               // Optional: Delete from storage
-              const fileName = `${session.user.id}-hero.jpg`;
+              const fileName = `${session.user.id}/hero.jpg`;
               await supabase.storage.from('avatars').remove([fileName]);
             }
           } catch (e) {

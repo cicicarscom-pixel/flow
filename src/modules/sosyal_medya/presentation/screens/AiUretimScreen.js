@@ -447,7 +447,9 @@ export default function AiUretimScreen({ route, navigation }) {
         
         if (!isRemoteOrDataUrl) {
           const ext = contentType === 'video' ? 'mp4' : 'jpg';
-          const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) throw new Error("No session");
+          const fileName = `${session.user.id}/post-${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
           
           const base64 = await FileSystem.readAsStringAsync(localImage, { encoding: FileSystem.EncodingType.Base64 });
 
