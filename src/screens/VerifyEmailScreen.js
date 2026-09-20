@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'rea
 import { supabase } from '../../shared';
 import * as Linking from 'expo-linking';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { makeRedirectUri } from 'expo-auth-session';
 
 export default function VerifyEmailScreen({ emailFromProps }) {
   const [email, setEmail] = useState(emailFromProps || null);
@@ -40,6 +41,9 @@ export default function VerifyEmailScreen({ emailFromProps }) {
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: email,
+      options: {
+        emailRedirectTo: makeRedirectUri(),
+      }
     });
 
     if (error) {

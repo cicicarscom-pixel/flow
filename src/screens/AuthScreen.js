@@ -104,10 +104,12 @@ export default function AuthScreen({ onSignUpSuccess }) {
       email: email,
       password: password,
       options: {
+        emailRedirectTo: makeRedirectUri(),
         data: {
           phone: phone,
           display_name: name,
           full_name: name,
+          user_type: 'business'
         },
       },
     });
