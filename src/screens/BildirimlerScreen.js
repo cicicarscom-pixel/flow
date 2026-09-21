@@ -133,8 +133,8 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
     }
   };
 
-  const markAllAsRead = async () => {
-    const unread = notifications.filter(n => !n.is_read);
+  const markAllAsRead = async (notifsToMark) => {
+    const unread = notifsToMark ? notifsToMark.filter(n => !n.is_read) : notifications.filter(n => !n.is_read);
     if (unread.length === 0) return;
     
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
@@ -146,20 +146,29 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
       const unreadBroadcasts = unread.filter(n => n.is_broadcast).map(n => n.id);
       
       if (unreadRegular.length > 0) {
-        await supabase
+        const { error } = await supabase
           .from('notifications')
           .update({ is_read: true })
           .in('id', unreadRegular);
+        if (error) console.warn('Notifications okundu hatası:', error);
       }
       
       if (unreadBroadcasts.length > 0) {
         const inserts = unreadBroadcasts.map(id => ({ user_id: session.user.id, broadcast_id: id }));
-        await supabase.from('broadcast_reads').upsert(inserts, { onConflict: 'user_id, broadcast_id' });
+        const { error } = await supabase.from('broadcast_reads').upsert(inserts, { onConflict: 'user_id, broadcast_id' });
+        if (error) console.warn('Broadcast okundu hatası:', error);
       }
     } catch (error) {
       console.warn('Tümü okundu işaretlenirken hata:', error);
     }
   };
+
+  useEffect(() => {
+    // Automatically mark all as read when they are loaded and displayed
+    if (notifications.length > 0 && notifications.some(n => !n.is_read)) {
+      markAllAsRead(notifications);
+    }
+  }, [notifications]);
 
   const deleteNotification = async (id) => {
     Alert.alert(t('bildirimlerScreen.alerts.deleteTitle'), t('bildirimlerScreen.alerts.deleteMessage'), [
