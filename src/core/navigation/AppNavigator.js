@@ -28,6 +28,7 @@ const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
+  const [initialRoute, setInitialRoute] = useState(null);
 
   useEffect(() => {
     async function checkAuthGuard() {
@@ -40,7 +41,8 @@ export default function AppNavigator() {
       }
       
       if (!session.user.email_confirmed_at) {
-        navigation.reset({ index: 0, routes: [{ name: 'VerifyEmail' }] });
+        if (!initialRoute) setInitialRoute('VerifyEmail');
+        else navigation.reset({ index: 0, routes: [{ name: 'VerifyEmail' }] });
         setLoading(false);
         return;
       }
@@ -54,9 +56,11 @@ export default function AppNavigator() {
       }
 
       if (profile && profile.onboarding_completed === false) {
-        navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] });
+        if (!initialRoute) setInitialRoute('Onboarding');
+        else navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] });
       } else {
-        navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
+        if (!initialRoute) setInitialRoute('MainTabs');
+        else navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
       }
       
       setLoading(false);
@@ -65,16 +69,16 @@ export default function AppNavigator() {
     checkAuthGuard();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Re-run guard on sign in or session update (like email confirmed)
-      if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
+      // Re-run guard on session update only if navigator is mounted
+      if (initialRoute && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
         checkAuthGuard();
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigation]);
+  }, [navigation, initialRoute]);
 
-  if (loading) {
+  if (loading || !initialRoute) {
     return (
       <View style={{ flex: 1, backgroundColor: '#0F172A', justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#3b82f6" />
@@ -83,7 +87,7 @@ export default function AppNavigator() {
   }
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
       <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} />
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="MainTabs" component={TabNavigator} />
