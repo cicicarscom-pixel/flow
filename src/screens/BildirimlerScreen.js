@@ -46,17 +46,29 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       
+      let organizationId = session.user.id;
+      const { data: orgData } = await supabase
+        .from('organization_members')
+        .select('organization_id')
+        .eq('user_id', session.user.id)
+        .limit(1);
+      if (orgData && orgData.length > 0 && orgData[0].organization_id) {
+        organizationId = orgData[0].organization_id;
+      }
+      
       let regularNotifs = [];
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('profile_id', session.user.id);
+        .eq('profile_id', organizationId);
       if (!error) regularNotifs = data || [];
 
       const { data: profileData } = await supabase.from('profiles').select('user_type').eq('id', session.user.id).limit(1);
       const userType = profileData?.[0]?.user_type || 'business';
 
-      const { data: broadcasts } = await supabase.from('broadcast_notifications').select('*').in('target', ['all', userType]);
+      const { data: broadcasts, error: bError } = await supabase.from('broadcast_notifications').select('*').in('target', ['all', userType]);
+      if (bError) console.warn("Broadcast Error:", bError);
+      
       const { data: reads } = await supabase.from('broadcast_reads').select('broadcast_id').eq('user_id', session.user.id);
       
       const readSet = new Set(reads?.map(r => r.broadcast_id) || []);
