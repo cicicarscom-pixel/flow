@@ -315,16 +315,17 @@ export default function DashboardScreen({ navigation }) {
         const { data: { session } } = await supabase.auth.getSession();
         let merchantId = null;
         if (session) {
-          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
-          merchantId = orgMember?.organization_id || session.user.id;
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).limit(1);
+          merchantId = orgMember?.[0]?.organization_id || session.user.id;
           const meta = session.user.user_metadata || {};
 
           // Fetch profile for avatar
-          const { data: profileData } = await supabase
+          const { data: profileDataArr } = await supabase
             .from('profiles')
             .select('business_name, authorized_person, avatar_url, hero_image_url')
             .eq('id', session.user.id)
-            .maybeSingle();
+            .limit(1);
+          const profileData = profileDataArr?.[0];
 
           const nameToUse = profileData?.authorized_person || profileData?.business_name || meta.full_name || t('dashboardScreen.greeting.defaultName');
           setUserProfile({
@@ -333,19 +334,17 @@ export default function DashboardScreen({ navigation }) {
             heroImageUrl: profileData?.hero_image_url || null
           });
 
-          // Unread Notifications Count
-          fetchUnreadNotifications(merchantId);
-
           // Bot Status
           // NOT: bot_settings ham auth kullanıcı ID'si (merchant_id) ile anahtarlanır —
           // organizasyon fallback'i YOK (RLS: auth.uid() = merchant_id). Web (page.tsx) ve
           // SosyalMedyaScreen.js ile aynı davranış için burada organizasyon-çözümlü
           // merchantId DEĞİL, ham session.user.id kullanılmalı.
-          const { data: botData } = await supabase
+          const { data: botDataArr } = await supabase
             .from('bot_settings')
             .select('is_active')
             .eq('merchant_id', session.user.id)
-            .maybeSingle();
+            .limit(1);
+          const botData = botDataArr?.[0];
           if (botData) setAiActive(botData.is_active);
         }
 
@@ -372,8 +371,8 @@ export default function DashboardScreen({ navigation }) {
         // Fetch finance_documents
         let orgId = null;
         if (session) {
-          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
-          orgId = orgMember?.organization_id;
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).limit(1);
+          orgId = orgMember?.[0]?.organization_id;
         }
 
         if (orgId) {
