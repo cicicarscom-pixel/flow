@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { supabase } from '../../shared';
+import { supabase } from '../shared';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function OnboardingScreen({ navigation }) {
