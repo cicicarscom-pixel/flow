@@ -42,7 +42,7 @@ export default function AppNavigator() {
       
       if (!session.user.email_confirmed_at) {
         if (!initialRoute) setInitialRoute('VerifyEmail');
-        else navigation.reset({ index: 0, routes: [{ name: 'VerifyEmail' }] });
+        else setTimeout(() => navigation.reset({ index: 0, routes: [{ name: 'VerifyEmail' }] }), 100);
         setLoading(false);
         return;
       }
@@ -57,10 +57,10 @@ export default function AppNavigator() {
 
       if (profile && profile.onboarding_completed === false) {
         if (!initialRoute) setInitialRoute('Onboarding');
-        else navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] });
+        else setTimeout(() => navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] }), 100);
       } else {
         if (!initialRoute) setInitialRoute('MainTabs');
-        else navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
+        else setTimeout(() => navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] }), 100);
       }
       
       setLoading(false);
