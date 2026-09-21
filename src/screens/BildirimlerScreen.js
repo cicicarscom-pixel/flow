@@ -46,14 +46,32 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       
+      let regularNotifs = [];
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('profile_id', session.user.id)
-        .order('created_at', { ascending: false });
+        .eq('profile_id', session.user.id);
+      if (!error) regularNotifs = data || [];
 
-      if (error) throw error;
-      setNotifications(data || []);
+      const { data: profileData } = await supabase.from('profiles').select('user_type').eq('id', session.user.id).limit(1);
+      const userType = profileData?.[0]?.user_type || 'business';
+
+      const { data: broadcasts } = await supabase.from('broadcast_notifications').select('*').in('target', ['all', userType]);
+      const { data: reads } = await supabase.from('broadcast_reads').select('broadcast_id').eq('user_id', session.user.id);
+      
+      const readSet = new Set(reads?.map(r => r.broadcast_id) || []);
+      
+      const broadcastNotifs = (broadcasts || []).map(b => ({
+         id: b.id,
+         is_broadcast: true,
+         title: b.title,
+         message: b.message,
+         created_at: b.created_at,
+         is_read: readSet.has(b.id)
+      }));
+      
+      const combined = [...regularNotifs, ...broadcastNotifs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      setNotifications(combined);
     } catch (err) {
       console.warn('Bildirimler alınamadı:', err);
     } finally {
@@ -64,6 +82,15 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
 
   useEffect(() => {
     fetchNotifications();
+    
+    const notifChannel = supabase.channel('mobile_realtime_notifications')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, fetchNotifications)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'broadcast_notifications' }, fetchNotifications)
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(notifChannel);
+    };
   }, []);
 
   const handleRefresh = () => {
@@ -71,33 +98,52 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
     fetchNotifications();
   };
 
-  const markAsRead = async (id, currentStatus) => {
+  const markAsRead = async (id, currentStatus, is_broadcast) => {
     if (currentStatus) return; // Zaten okunduysa işlem yapma
     
     // UI optimistic update
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
     
     try {
-      await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', id);
+      if (is_broadcast) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+           await supabase.from('broadcast_reads').insert({ user_id: session.user.id, broadcast_id: id });
+        }
+      } else {
+        await supabase
+          .from('notifications')
+          .update({ is_read: true })
+          .eq('id', id);
+      }
     } catch (error) {
       console.warn('Okundu işaretlenirken hata:', error);
     }
   };
 
   const markAllAsRead = async () => {
+    const unread = notifications.filter(n => !n.is_read);
+    if (unread.length === 0) return;
+    
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       
-      await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('profile_id', session.user.id)
-        .eq('is_read', false);
+      const unreadRegular = unread.filter(n => !n.is_broadcast).map(n => n.id);
+      const unreadBroadcasts = unread.filter(n => n.is_broadcast).map(n => n.id);
+      
+      if (unreadRegular.length > 0) {
+        await supabase
+          .from('notifications')
+          .update({ is_read: true })
+          .in('id', unreadRegular);
+      }
+      
+      if (unreadBroadcasts.length > 0) {
+        const inserts = unreadBroadcasts.map(id => ({ user_id: session.user.id, broadcast_id: id }));
+        await supabase.from('broadcast_reads').upsert(inserts, { onConflict: 'user_id, broadcast_id' });
+      }
     } catch (error) {
       console.warn('Tümü okundu işaretlenirken hata:', error);
     }
@@ -139,7 +185,7 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
     return (
       <TouchableOpacity 
         style={[styles.notificationCard, !item.is_read && styles.unreadCard]}
-        onPress={() => markAsRead(item.id, item.is_read)}
+        onPress={() => markAsRead(item.id, item.is_read, item.is_broadcast)}
         activeOpacity={0.7}
       >
         <View style={[styles.iconWrapper, { backgroundColor: `${icon.color}1A`, borderColor: `${icon.color}33` }]}>

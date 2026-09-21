@@ -228,32 +228,84 @@ export default function DashboardScreen({ navigation }) {
     });
   }, [fadeAnim, slideAnim, hintAnim]);
 
-  const fetchUnreadNotifications = async (merchantId) => {
-    try {
-      const { count } = await supabase
-        .from('notifications')
-        .select('*', { count: 'exact', head: true })
-        .eq('profile_id', merchantId)
-        .eq('is_read', false);
-      setUnreadCount(count || 0);
-    } catch (e) {
-      console.warn('Notification count error:', e);
-    }
-  };
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const loadCounts = async () => {
+    const fetchUnreadNotifications = async (merchantId) => {
+      try {
         const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
-          const merchantId = orgMember?.organization_id || session.user.id;
-          fetchUnreadNotifications(merchantId);
+        if (!session?.user?.id) return;
+
+        let regularCount = 0;
+        if (merchantId) {
+          const { count } = await supabase
+            .from('notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('profile_id', merchantId)
+            .eq('is_read', false);
+          regularCount = count || 0;
         }
-      };
-      loadCounts();
-    }, [])
-  );
+
+        const { data: profileData } = await supabase.from('profiles').select('user_type').eq('id', session.user.id).limit(1);
+        const userType = profileData?.[0]?.user_type || 'business';
+
+        const { count: totalBroadcasts } = await supabase
+          .from('broadcast_notifications')
+          .select('id', { count: 'exact', head: true })
+          .in('target', ['all', userType]);
+
+        const { count: readBroadcasts } = await supabase
+          .from('broadcast_reads')
+          .select('broadcast_id', { count: 'exact', head: true })
+          .eq('user_id', session.user.id);
+
+        const broadcastUnreadCount = Math.max(0, (totalBroadcasts || 0) - (readBroadcasts || 0));
+        setUnreadCount(regularCount + broadcastUnreadCount);
+      } catch (e) {
+        console.warn('Notification count error:', e);
+      }
+    };
+  
+    useFocusEffect(
+      React.useCallback(() => {
+        let organizationId = null;
+        const loadCounts = async () => {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            const { data: orgData } = await supabase
+              .from('organization_members')
+              .select('organization_id')
+              .eq('user_id', session.user.id)
+              .limit(1);
+            
+            organizationId = orgData?.[0]?.organization_id;
+            if (organizationId) {
+              fetchAppointments(organizationId);
+              fetchSocialStats(organizationId);
+              fetchUnreadNotifications(organizationId);
+            } else {
+              fetchUnreadNotifications(null);
+            }
+          }
+        };
+        loadCounts();
+        
+        let notifChannel;
+        let broadcastChannel;
+
+        notifChannel = supabase.channel('mobile_dashboard_notifs')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => {
+            fetchUnreadNotifications(organizationId);
+          }).subscribe();
+
+        broadcastChannel = supabase.channel('mobile_dashboard_broadcasts')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'broadcast_notifications' }, () => {
+            fetchUnreadNotifications(organizationId);
+          }).subscribe();
+
+        return () => {
+          if (notifChannel) supabase.removeChannel(notifChannel);
+          if (broadcastChannel) supabase.removeChannel(broadcastChannel);
+        };
+      }, [])
+    );
 
   useFocusEffect(
     React.useCallback(() => {
