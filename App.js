@@ -37,7 +37,7 @@ export default function App() {
           {session && session.user ? (
             <AppNavigator />
           ) : pendingVerificationEmail ? (
-            <VerifyEmailScreen emailFromProps={pendingVerificationEmail} />
+            <VerifyEmailScreen emailFromProps={pendingVerificationEmail} onClear={() => setPendingVerificationEmail(null)} />
           ) : (
             <AuthScreen onSignUpSuccess={(email) => setPendingVerificationEmail(email)} />
           )}

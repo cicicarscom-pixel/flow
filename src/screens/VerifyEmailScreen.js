@@ -5,8 +5,8 @@ import * as Linking from 'expo-linking';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { makeRedirectUri } from 'expo-auth-session';
 
-export default function VerifyEmailScreen({ emailFromProps }) {
-  const [email, setEmail] = useState(emailFromProps || null);
+export default function VerifyEmailScreen({ emailFromProps, onClear }) {
+  const [email, setEmail] = useState(emailFromProps || '');
   const [resending, setResending] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -43,13 +43,13 @@ export default function VerifyEmailScreen({ emailFromProps }) {
       email: email,
       options: {
         emailRedirectTo: makeRedirectUri(),
-      }
+      },
     });
 
     if (error) {
-      setMessage('Bağlantı gönderilirken bir hata oluştu: ' + error.message);
+      setMessage('Hata: ' + error.message);
     } else {
-      setMessage('Doğrulama bağlantısı tekrar gönderildi.');
+      setMessage('Doğrulama e-postası tekrar gönderildi.');
     }
     
     setResending(false);
@@ -57,13 +57,9 @@ export default function VerifyEmailScreen({ emailFromProps }) {
 
   const handleCheckStatus = async () => {
     setMessage('');
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (session?.user?.email_confirmed_at) {
-      setMessage('E-posta doğrulandı! Yönlendiriliyorsunuz...');
-      // App.js onAuthStateChange listener will automatically navigate
-    } else {
-      setMessage('Henüz doğrulanmamış. Lütfen e-postanızı kontrol edin.');
-    }
+    // If they verified on another device or the deep link didn't work,
+    // they need to log in to get a session.
+    setMessage('Hesabınızı doğruladıysanız, lütfen Giriş Ekranına Dön butonuna tıklayarak giriş yapın.');
   };
 
   return (
@@ -85,11 +81,11 @@ export default function VerifyEmailScreen({ emailFromProps }) {
           style={styles.button} 
           onPress={handleCheckStatus}
         >
-          <Text style={styles.buttonText}>Onayladım, Devam Et</Text>
+          <Text style={styles.buttonText}>Durumu Kontrol Et</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={[styles.outlineButton, resending && styles.disabledButton]} 
+          style={[styles.outlineButton, resending && styles.disabledButton, { marginBottom: 12 }]} 
           onPress={handleResend}
           disabled={resending}
         >
@@ -99,6 +95,15 @@ export default function VerifyEmailScreen({ emailFromProps }) {
             <Text style={styles.outlineButtonText}>Tekrar Gönder</Text>
           )}
         </TouchableOpacity>
+
+        {onClear && (
+          <TouchableOpacity 
+            style={[styles.outlineButton, { borderColor: 'rgba(255,255,255,0.5)' }]} 
+            onPress={onClear}
+          >
+            <Text style={styles.outlineButtonText}>Giriş Ekranına Dön</Text>
+          </TouchableOpacity>
+        )}
         
         {message ? <Text style={styles.messageText}>{message}</Text> : null}
       </View>
