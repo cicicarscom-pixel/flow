@@ -31,37 +31,48 @@ export default function AppNavigator() {
   const [initialRoute, setInitialRoute] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function checkAuthGuard() {
       setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       
+      if (!isMounted) return;
       if (!session) {
          setLoading(false);
          return;
       }
       
+      let targetRoute = 'MainTabs';
       if (!session.user.email_confirmed_at) {
-        if (!initialRoute) setInitialRoute('VerifyEmail');
-        else setTimeout(() => navigation.reset({ index: 0, routes: [{ name: 'VerifyEmail' }] }), 100);
-        setLoading(false);
-        return;
-      }
-
-      const { data: profile } = await supabase.from('profiles').select('user_type, onboarding_completed').eq('id', session.user.id).single();
-      
-      if (profile && !profile.user_type) {
-         // Mobile generic user_type fallback assignment for flow app
-         await supabase.from('profiles').update({ user_type: 'business' }).eq('id', session.user.id);
-         await supabase.from('organizations').insert({ owner_id: session.user.id, name: null });
-      }
-
-      if (profile && profile.onboarding_completed === false) {
-        if (!initialRoute) setInitialRoute('Onboarding');
-        else setTimeout(() => navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] }), 100);
+        targetRoute = 'VerifyEmail';
       } else {
-        if (!initialRoute) setInitialRoute('MainTabs');
-        else setTimeout(() => navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] }), 100);
+        const { data: profile } = await supabase.from('profiles').select('user_type, onboarding_completed').eq('id', session.user.id).single();
+        
+        if (profile && !profile.user_type) {
+           await supabase.from('profiles').update({ user_type: 'business' }).eq('id', session.user.id);
+           await supabase.from('organizations').insert({ owner_id: session.user.id, name: null });
+        }
+
+        if (profile && profile.onboarding_completed === false) {
+          targetRoute = 'Onboarding';
+        }
       }
+
+      setInitialRoute((prev) => {
+        // Only trigger navigation if we already mounted and are changing routes
+        if (prev && prev !== targetRoute) {
+          setTimeout(() => {
+             // Use setTimeout to ensure we don't call it during a render cycle
+             try {
+               navigation.reset({ index: 0, routes: [{ name: targetRoute }] });
+             } catch (e) {
+               console.warn("Navigation reset error:", e);
+             }
+          }, 100);
+        }
+        return targetRoute;
+      });
       
       setLoading(false);
     }
@@ -69,14 +80,16 @@ export default function AppNavigator() {
     checkAuthGuard();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Re-run guard on session update only if navigator is mounted
-      if (initialRoute && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         checkAuthGuard();
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [navigation, initialRoute]);
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigation]);
 
   if (loading || !initialRoute) {
     return (
