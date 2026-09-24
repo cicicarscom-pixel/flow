@@ -1,0 +1,1 @@
+﻿const fs = require("fs"); let c = fs.readFileSync("src/modules/randevu/infrastructure/repositories/SupabaseAppointmentRepository.ts", "utf8"); c = c.replace(/like\("date", \\\`\$\{date\}%\\\`\)/g, "like(\"date\", `${date}%`)"); fs.writeFileSync("src/modules/randevu/infrastructure/repositories/SupabaseAppointmentRepository.ts", c, "utf8"); console.log("OK");

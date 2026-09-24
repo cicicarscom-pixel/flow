@@ -73,7 +73,7 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
   }
 
   async findAvailableHours(date: string, serviceId: string, calendarId?: string): Promise<string[]> {
-    let query = supabase.from("appointments").select("date").like("date", \`${date}%\`).in("status", [AppointmentStatus.Pending, AppointmentStatus.Approved]);
+    let query = supabase.from("appointments").select("date").like("date", `${date}%`).in("status", [AppointmentStatus.Pending, AppointmentStatus.Approved]);
     if (calendarId) query = query.eq("calendar_id", calendarId);
     const { data, error } = await query;
 
@@ -89,7 +89,7 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
   }
 
   async getAppointmentsByDate(date: string, calendarId?: string): Promise<Appointment[]> {
-    let query = supabase.from("appointments").select("*").like("date", \`${date}%\`).in("status", [AppointmentStatus.Pending, AppointmentStatus.Approved]).order("created_at", { ascending: true });
+    let query = supabase.from("appointments").select("*").like("date", `${date}%`).in("status", [AppointmentStatus.Pending, AppointmentStatus.Approved]).order("created_at", { ascending: true });
     if (calendarId) query = query.eq("calendar_id", calendarId);
     const { data: appointments, error } = await query;
 
