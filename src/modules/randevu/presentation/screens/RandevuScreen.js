@@ -101,6 +101,7 @@ export default function RandevuScreen() {
   const [availableModalHours, setAvailableModalHours] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
     const [showCalendarDropdown, setShowCalendarDropdown] = useState(false);
+    const [isManageModalVisible, setIsManageModalVisible] = useState(false);
 
   const handleDaySelect = (dayObj) => {
     setSelectedDate(dayObj.fullDate);
@@ -193,45 +194,12 @@ export default function RandevuScreen() {
             {multiCalendarEnabled && (
               <View style={{ marginHorizontal: 20, marginBottom: 16 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 14, gap: 16, width: '100%' }}>
-                  {activeCalendarId ? (
-                    <TouchableOpacity 
-                      onPress={() => {
-                         Alert.alert(
-                           "Takvim Seçenekleri", 
-                           "Ne yapmak istiyorsunuz?", 
-                           [
-                             { text: "İptal", style: "cancel" },
-                             { text: "Düzenle", onPress: () => {
-                                 const cal = calendars.find(c => c.id === activeCalendarId);
-                                 Alert.prompt("Takvimi Düzenle", "Yeni takvim adı:", [
-                                   { text: "İptal", style: "cancel" },
-                                   { text: "Kaydet", onPress: (newName) => {
-                                       if (newName && newName.trim()) {
-                                         updateCalendar(activeCalendarId, newName.trim()).catch(e => Alert.alert("Hata", e.message));
-                                       }
-                                     }
-                                   }
-                                 ], "plain-text", cal?.name || "");
-                               }
-                             },
-                             { text: "Sil", style: "destructive", onPress: () => {
-                                 Alert.alert("Emin misiniz?", "Bu takvimi silmek istediğinize emin misiniz?", [
-                                   { text: "İptal", style: "cancel" },
-                                   { text: "Sil", style: "destructive", onPress: () => {
-                                       deleteCalendar(activeCalendarId).catch(e => Alert.alert("Hata", e.message));
-                                     }
-                                   }
-                                 ]);
-                               }
-                             }
-                           ]
-                         );
-                      }}
+                  <TouchableOpacity 
+                      onPress={() => setIsManageModalVisible(true)}
                       style={{ width: '45%', maxWidth: 160, alignItems: 'center', paddingVertical: 10, backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(239, 68, 68, 0.3)' }}
                     >
                       <Text style={{ color: '#ef4444', fontSize: 14, fontWeight: '500' }}>Düzenle</Text>
                     </TouchableOpacity>
-                  ) : null}
                   
                   <TouchableOpacity 
                     onPress={() => {
@@ -426,7 +394,60 @@ export default function RandevuScreen() {
       </Animated.View>
 
       {/* ── ADD APPOINTMENT MODAL ── */}
-      <Modal
+      
+        {/* Personel Yönetimi Modalı */}
+        <Modal visible={isManageModalVisible} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Takvim / Personel Yönetimi</Text>
+                <TouchableOpacity onPress={() => setIsManageModalVisible(false)}>
+                  <Ionicons name="close" size={24} color="#A79E96" />
+                </TouchableOpacity>
+              </View>
+              
+              <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={false}>
+                {calendars.length === 0 ? (
+                  <Text style={{ color: '#A79E96', textAlign: 'center', marginVertical: 20 }}>Henüz takvim bulunmuyor.</Text>
+                ) : (
+                  calendars.map(cal => (
+                    <View key={cal.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}>
+                      <Text style={{ color: '#fff', fontSize: 16, flex: 1 }} numberOfLines={1}>{cal.name}</Text>
+                      <View style={{ flexDirection: 'row', gap: 20, marginLeft: 10 }}>
+                        <TouchableOpacity onPress={() => {
+                            Alert.prompt("Takvimi Düzenle", "Yeni takvim adı:", [
+                              { text: "İptal", style: "cancel" },
+                              { text: "Kaydet", onPress: (newName) => {
+                                  if (newName && newName.trim()) {
+                                    updateCalendar(cal.id, newName.trim()).catch(e => Alert.alert("Hata", e.message));
+                                  }
+                                }
+                              }
+                            ], "plain-text", cal.name);
+                        }}>
+                          <Ionicons name="pencil" size={22} color="#22B573" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {
+                            Alert.alert("Emin misiniz?", `'${cal.name}' silinecek.`, [
+                              { text: "İptal", style: "cancel" },
+                              { text: "Sil", style: "destructive", onPress: () => {
+                                  deleteCalendar(cal.id).catch(e => Alert.alert("Hata", e.message));
+                                }
+                              }
+                            ]);
+                        }}>
+                          <Ionicons name="trash" size={22} color="#ef4444" />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ))
+                )}
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
         visible={isModalVisible}
         transparent={true}
         animationType="slide"
