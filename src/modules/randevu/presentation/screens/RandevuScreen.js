@@ -192,7 +192,7 @@ export default function RandevuScreen() {
             {/* Personel / Takvim Stepper Selector */}
             {multiCalendarEnabled && (
               <View style={{ marginHorizontal: 20, marginBottom: 16 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 10, gap: 15 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 14, gap: 16, width: '100%' }}>
                   {activeCalendarId ? (
                     <TouchableOpacity 
                       onPress={() => {
@@ -227,9 +227,9 @@ export default function RandevuScreen() {
                            ]
                          );
                       }}
-                      style={{ paddingHorizontal: 12, paddingVertical: 6, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}
+                      style={{ width: '45%', maxWidth: 160, alignItems: 'center', paddingVertical: 10, backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(239, 68, 68, 0.3)' }}
                     >
-                      <Text style={{ color: '#A79E96', fontSize: 13 }}>Düzenle</Text>
+                      <Text style={{ color: '#ef4444', fontSize: 14, fontWeight: '500' }}>Düzenle</Text>
                     </TouchableOpacity>
                   ) : null}
                   
@@ -249,9 +249,9 @@ export default function RandevuScreen() {
                         ]
                       );
                     }}
-                    style={{ paddingHorizontal: 12, paddingVertical: 6, backgroundColor: 'rgba(34, 181, 115, 0.1)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(34, 181, 115, 0.3)' }}
+                    style={{ width: '45%', maxWidth: 160, alignItems: 'center', paddingVertical: 10, backgroundColor: 'rgba(34, 181, 115, 0.1)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(34, 181, 115, 0.3)' }}
                   >
-                    <Text style={{ color: '#22B573', fontSize: 13, fontWeight: '500' }}>+ Yeni Ekle</Text>
+                    <Text style={{ color: '#22B573', fontSize: 14, fontWeight: '500' }}>+ Yeni Ekle</Text>
                   </TouchableOpacity>
                 </View>
 
