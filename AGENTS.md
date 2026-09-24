@@ -1,3 +1,23 @@
+
+
+## 🔄 AKTARIM NOTU (HANDOVER) - 24 EYLÜL 2026
+
+**Şu Anki Durum:** Çoklu Takvim (Multi-Calendar) Mimarisinin Mobil (Faz 2A) geçişi yapılıyor.
+**Web (Faz 1, 2B, 3, 4) Durumu:** Tamamlandı. Veritabanı constraintleri (exclusion), RLS ayarları ve Web UI (Chip Bar) sorunsuz çalışıyor.
+**Mobil (Faz 2A) Durumu:**
+- `Calendar.ts`, `ICalendarRepository.ts`, `SupabaseCalendarRepository.ts` ve `useCalendars.ts` oluşturuldu.
+- `RandevuScreen.js` üzerinde Chip Bar arayüzü ve Yeni Randevu Modalında "Takvim Seçici" (Chip listesi) eklendi.
+- Modal içindeki saat seçici (TextInput), seçilen takvime göre `findAvailableHours` kullanılarak sadece boş saatleri (Chip) gösterecek şekilde güncellendi.
+- `SupabaseAppointmentRepository.ts` içindeki `findAvailableHours` ve `getAppointmentsByDate` fonksiyonlarına `calendarId` parametresi eklendi, backtick (``) ve ters slash hataları (syntax) düzeltildi.
+- `container.ts` içindeki DI (Dependency Injection) eşleşmesi (`CalendarRepository`) onarıldı.
+
+**Diğer Bilgisayarda Yapılacak İlk İş:**
+1. `flow` (mobil) reposunda `git pull` yaparak son commitleri alın.
+2. `npm install` çalıştırın.
+3. `npx expo start -c` ile projeyi (cache temizleyerek) ayağa kaldırın.
+4. Expo Go veya lokal simülatörde "Randevular" ekranına girip Multi-Calendar şalteri açıkken/kapalıyken UI davranışını ve yeni randevu eklerken takvim seçimi / veritabanı (calendar_id) yansımasını test edin.
+5. Test başarılı olursa, yapay zekanın mesajlara "Hangi doktor için randevu istiyorsunuz?" diye sorabilmesi için doğrudan **Faz 5 (AI Core / Ledger Updates)** aşamasına geçin.
+
 # Workigom Flow — Agent Kuralları ve Proje Hafızası
 
 ## 🚨 Kritik Kural: Ortak Veritabanı Etkileşimi (Web & Mobil)
