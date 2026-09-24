@@ -72,4 +72,32 @@ export class SupabaseCalendarRepository implements ICalendarRepository {
     if (error || !data || data.length === 0) return false;
     return !!data[0].multi_calendar_enabled;
   }
+
+  async updateCalendar(id: string, name: string): Promise<Calendar> {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("No session");
+    
+    const { data, error } = await supabase
+      .from('calendars')
+      .update({ name })
+      .eq('id', id)
+      .select()
+      .limit(1);
+      
+    if (error) throw error;
+    if (!data || data.length === 0) throw new Error("Calendar not found");
+    return data[0] as Calendar;
+  }
+
+  async deleteCalendar(id: string): Promise<void> {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("No session");
+    
+    const { error } = await supabase
+      .from('calendars')
+      .delete()
+      .eq('id', id);
+      
+    if (error) throw error;
+  }
 }

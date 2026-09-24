@@ -45,12 +45,36 @@ export function useCalendars() {
     }
   };
 
+  
+  const updateCalendar = async (id: string, name: string) => {
+    try {
+      const updatedCal = await repo.updateCalendar(id, name);
+      setCalendars(prev => prev.map(c => c.id === id ? updatedCal : c));
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+
+  const deleteCalendar = async (id: string) => {
+    try {
+      await repo.deleteCalendar(id);
+      setCalendars(prev => prev.filter(c => c.id !== id));
+      if (activeCalendarId === id) setActiveCalendarId(null);
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+
   return {
     calendars,
     multiCalendarEnabled,
     activeCalendarId,
     setActiveCalendarId,
     createCalendar,
+    updateCalendar,
+    deleteCalendar,
     loading
   };
 }

@@ -96,7 +96,7 @@ export default function RandevuScreen() {
   const [newApptPhone, setNewApptPhone] = useState('');
   const [newApptTime, setNewApptTime] = useState('10:00');
   const [newApptService, setNewApptService] = useState('Genel Bakım');
-  const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar } = useCalendars();
+  const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar, updateCalendar, deleteCalendar } = useCalendars();
   const [newApptCalendarId, setNewApptCalendarId] = useState(null);
   const [availableModalHours, setAvailableModalHours] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -206,9 +206,49 @@ export default function RandevuScreen() {
                     <Ionicons name="chevron-back" size={18} color="#A79E96" />
                   </TouchableOpacity>
                   
-                  <Text style={[styles.dateSelectorText, { flex: 1, textAlign: 'center' }]} numberOfLines={1}>
-                    {activeCalendarId ? (calendars.find(c => c.id === activeCalendarId)?.name || 'Bilinmiyor') : 'Tümü'}
-                  </Text>
+                  <TouchableOpacity 
+                      disabled={!activeCalendarId}
+                      style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}
+                      onPress={() => {
+                         Alert.alert(
+                           "Takvim Seçenekleri", 
+                           "Ne yapmak istiyorsunuz?", 
+                           [
+                             { text: "İptal", style: "cancel" },
+                             { text: "Düzenle", onPress: () => {
+                                 const cal = calendars.find(c => c.id === activeCalendarId);
+                                 Alert.prompt("Takvimi Düzenle", "Yeni takvim adı:", [
+                                   { text: "İptal", style: "cancel" },
+                                   { text: "Kaydet", onPress: (newName) => {
+                                       if (newName && newName.trim()) {
+                                         updateCalendar(activeCalendarId, newName.trim()).catch(e => Alert.alert("Hata", e.message));
+                                       }
+                                     }
+                                   }
+                                 ], "plain-text", cal?.name || "");
+                               }
+                             },
+                             { text: "Sil", style: "destructive", onPress: () => {
+                                 Alert.alert("Emin misiniz?", "Bu takvimi silmek istediğinize emin misiniz?", [
+                                   { text: "İptal", style: "cancel" },
+                                   { text: "Sil", style: "destructive", onPress: () => {
+                                       deleteCalendar(activeCalendarId).catch(e => Alert.alert("Hata", e.message));
+                                     }
+                                   }
+                                 ]);
+                               }
+                             }
+                           ]
+                         );
+                      }}
+                    >
+                      <Text style={[styles.dateSelectorText, { textAlign: 'center' }]} numberOfLines={1}>
+                        {activeCalendarId ? (calendars.find(c => c.id === activeCalendarId)?.name || 'Bilinmiyor') : 'Tümü'}
+                      </Text>
+                      {activeCalendarId ? (
+                        <Ionicons name="ellipsis-vertical" size={14} color="#A79E96" style={{ marginLeft: 4 }} />
+                      ) : null}
+                    </TouchableOpacity>
                   
                   <TouchableOpacity 
                     hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ padding: 4 }}
