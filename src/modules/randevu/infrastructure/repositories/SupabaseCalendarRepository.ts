@@ -108,11 +108,13 @@ export class SupabaseCalendarRepository implements ICalendarRepository {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("No session");
     
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('calendars')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select();
       
     if (error) throw error;
+    if (!data || data.length === 0) throw new Error("Bu takvimi silme yetkiniz yok (eski kayıt). Lütfen web panelinden veya Supabase üzerinden silin.");
   }
 }
