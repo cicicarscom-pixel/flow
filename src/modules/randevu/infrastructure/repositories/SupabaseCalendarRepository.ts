@@ -1,4 +1,4 @@
-﻿import { ICalendarRepository } from "../../domain/repositories/ICalendarRepository";
+import { ICalendarRepository } from "../../domain/repositories/ICalendarRepository";
 import { Calendar } from "../../domain/entities/Calendar";
 import { supabase } from "../../../../shared";
 
@@ -29,22 +29,25 @@ export class SupabaseCalendarRepository implements ICalendarRepository {
     if (!userData.user) throw new Error("Not logged in");
 
     // Need organization_id. For simplicity, just fetch the first org.
-    const { data: orgData } = await supabase
+    const { data: orgDataResponse } = await supabase
       .from("organizations")
       .select("id")
       .eq("owner_id", userData.user.id)
-      .single();
+      .limit(1);
+    
+    const orgData = orgDataResponse?.[0];
 
     if (!orgData) throw new Error("Organization not found");
 
-    const { data, error } = await supabase
+    const { data: insertResponse, error } = await supabase
       .from("calendars")
       .insert([{ name, organization_id: orgData.id, is_active: true }])
-      .select()
-      .single();
+      .select();
+      
+    const data = insertResponse?.[0];
 
-    if (error) {
-      throw new Error(`Takvim oluşturulamadı: ${error.message}`);
+    if (error || !data) {
+      throw new Error(`Takvim oluşturulamadı: ${error?.message || 'Bilinmeyen hata'}`);
     }
 
     return new Calendar({
@@ -64,10 +67,9 @@ export class SupabaseCalendarRepository implements ICalendarRepository {
       .from("organizations")
       .select("multi_calendar_enabled")
       .eq("owner_id", userData.user.id)
-      .single();
+      .limit(1);
 
-    if (error || !data) return false;
-    return !!data.multi_calendar_enabled;
+    if (error || !data || data.length === 0) return false;
+    return !!data[0].multi_calendar_enabled;
   }
 }
-
