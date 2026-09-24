@@ -4,9 +4,13 @@ import { supabase } from "../../../../shared";
 
 export class SupabaseCalendarRepository implements ICalendarRepository {
   async getCalendars(): Promise<Calendar[]> {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return [];
+
     const { data, error } = await supabase
       .from("calendars")
       .select("*")
+      .eq("merchant_id", session.user.id)
       .eq("is_active", true)
       .order("created_at", { ascending: true });
 
