@@ -102,6 +102,7 @@ export default function RandevuScreen() {
   const [isSaving, setIsSaving] = useState(false);
     const [showCalendarDropdown, setShowCalendarDropdown] = useState(false);
     const [isManageModalVisible, setIsManageModalVisible] = useState(false);
+  const [promptConfig, setPromptConfig] = useState({ visible: false, title: "", placeholder: "", value: "", onSave: null });
 
   const handleDaySelect = (dayObj) => {
     setSelectedDate(dayObj.fullDate);
@@ -203,19 +204,17 @@ export default function RandevuScreen() {
                   
                   <TouchableOpacity 
                     onPress={() => {
-                      Alert.prompt(
-                        "Yeni Takvim",
-                        "Yeni takvim/personel adını girin:",
-                        [
-                          { text: "İptal", style: "cancel" },
-                          { text: "Ekle", onPress: (name) => {
-                              if (name && name.trim()) {
-                                createCalendar(name.trim()).catch(e => Alert.alert("Hata", e.message));
-                              }
-                            }
+                      setPromptConfig({
+                        visible: true,
+                        title: "Yeni Takvim",
+                        placeholder: "Yeni takvim/personel adını girin",
+                        value: "",
+                        onSave: (name) => {
+                          if (name && name.trim()) {
+                            createCalendar(name.trim()).catch(e => Alert.alert("Hata", e.message));
                           }
-                        ]
-                      );
+                        }
+                      });
                     }}
                     style={{ width: '45%', maxWidth: 160, alignItems: 'center', paddingVertical: 10, backgroundColor: 'rgba(34, 181, 115, 0.1)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(34, 181, 115, 0.3)' }}
                   >
@@ -395,6 +394,35 @@ export default function RandevuScreen() {
 
       {/* ── ADD APPOINTMENT MODAL ── */}
       
+        
+        {/* Custom Prompt Modal */}
+        <Modal visible={promptConfig.visible} transparent animationType="fade">
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>{promptConfig.title}</Text>
+              <TextInput
+                 style={[styles.modalInput, { marginTop: 20 }]}
+                 placeholder={promptConfig.placeholder}
+                 placeholderTextColor="#A79E96"
+                 value={promptConfig.value}
+                 onChangeText={(t) => setPromptConfig(p => ({...p, value: t}))}
+                 autoFocus
+              />
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 24, gap: 15 }}>
+                <TouchableOpacity style={{ padding: 10 }} onPress={() => setPromptConfig({ visible: false, title: '', placeholder: '', value: '', onSave: null })}>
+                  <Text style={{ color: '#A79E96', fontSize: 16 }}>İptal</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{ paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#22B573', borderRadius: 8 }} onPress={() => {
+                  if (promptConfig.onSave) promptConfig.onSave(promptConfig.value);
+                  setPromptConfig({ visible: false, title: '', placeholder: '', value: '', onSave: null });
+                }}>
+                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>Kaydet</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </KeyboardAvoidingView>
+        </Modal>
+        
         {/* Personel Yönetimi Modalı */}
         <Modal visible={isManageModalVisible} transparent animationType="fade">
           <View style={styles.modalOverlay}>
@@ -415,15 +443,17 @@ export default function RandevuScreen() {
                       <Text style={{ color: '#fff', fontSize: 16, flex: 1 }} numberOfLines={1}>{cal.name}</Text>
                       <View style={{ flexDirection: 'row', gap: 20, marginLeft: 10 }}>
                         <TouchableOpacity onPress={() => {
-                            Alert.prompt("Takvimi Düzenle", "Yeni takvim adı:", [
-                              { text: "İptal", style: "cancel" },
-                              { text: "Kaydet", onPress: (newName) => {
-                                  if (newName && newName.trim()) {
-                                    updateCalendar(cal.id, newName.trim()).catch(e => Alert.alert("Hata", e.message));
-                                  }
-                                }
+                            setPromptConfig({
+                            visible: true,
+                            title: "Takvimi Düzenle",
+                            placeholder: "Yeni takvim adı",
+                            value: cal.name,
+                            onSave: (newName) => {
+                              if (newName && newName.trim()) {
+                                updateCalendar(cal.id, newName.trim()).catch(e => Alert.alert("Hata", e.message));
                               }
-                            ], "plain-text", cal.name);
+                            }
+                          });
                         }}>
                           <Ionicons name="pencil" size={22} color="#22B573" />
                         </TouchableOpacity>
