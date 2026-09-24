@@ -189,6 +189,64 @@ export default function RandevuScreen() {
       >
         {/* ── STICKY BLOCK (index 0): Calendar + Time Slots ── */}
         <View style={styles.stickyBlock}>
+            {/* Personel / Takvim Stepper Selector */}
+            {multiCalendarEnabled && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, marginHorizontal: 20 }}>
+                <View style={[styles.dateSelectorPill, { flex: 1, marginRight: 10 }]}>
+                  <TouchableOpacity 
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ padding: 4 }}
+                    onPress={() => {
+                      const allOptions = [{id: null, name: 'Tümü'}, ...calendars];
+                      if (allOptions.length <= 1) return;
+                      const currentIndex = allOptions.findIndex(c => c.id === activeCalendarId);
+                      const prevIndex = (currentIndex - 1 + allOptions.length) % allOptions.length;
+                      setActiveCalendarId(allOptions[prevIndex].id);
+                    }}
+                  >
+                    <Ionicons name="chevron-back" size={18} color="#A79E96" />
+                  </TouchableOpacity>
+                  
+                  <Text style={[styles.dateSelectorText, { flex: 1, textAlign: 'center' }]} numberOfLines={1}>
+                    {activeCalendarId ? (calendars.find(c => c.id === activeCalendarId)?.name || 'Bilinmiyor') : 'Tümü'}
+                  </Text>
+                  
+                  <TouchableOpacity 
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} style={{ padding: 4 }}
+                    onPress={() => {
+                      const allOptions = [{id: null, name: 'Tümü'}, ...calendars];
+                      if (allOptions.length <= 1) return;
+                      const currentIndex = allOptions.findIndex(c => c.id === activeCalendarId);
+                      const nextIndex = (currentIndex + 1) % allOptions.length;
+                      setActiveCalendarId(allOptions[nextIndex].id);
+                    }}
+                  >
+                    <Ionicons name="chevron-forward" size={18} color="#A79E96" />
+                  </TouchableOpacity>
+                </View>
+                
+                <TouchableOpacity 
+                  style={[styles.dateSelectorPill, { paddingHorizontal: 16, borderColor: 'rgba(34, 181, 115, 0.3)', backgroundColor: 'rgba(34, 181, 115, 0.05)' }]}
+                  onPress={() => {
+                    Alert.prompt(
+                      "Yeni Takvim",
+                      "Yeni takvim/personel adını girin:",
+                      [
+                        { text: "İptal", style: "cancel" },
+                        { text: "Ekle", onPress: (name) => {
+                            if (name && name.trim()) {
+                              createCalendar(name.trim()).catch(e => Alert.alert("Hata", e.message));
+                            }
+                          }
+                        }
+                      ]
+                    );
+                  }}
+                >
+                  <Text style={[styles.dateSelectorText, { color: '#22B573', fontWeight: '500' }]}>+ Yeni Ekle</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+    
 
           {/* Weekly Calendar Strip */}
           <ScrollView
@@ -218,51 +276,7 @@ export default function RandevuScreen() {
 
           {/* Time Slots — 3-row heatmap */}
           
-            {/* Calendar Selector Chip Bar */}
-            {multiCalendarEnabled && (
-              <View style={{ marginBottom: 16 }}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}>
-                  <TouchableOpacity 
-                    onPress={() => setActiveCalendarId(null)}
-                    style={[styles.chip, !activeCalendarId && styles.chipActive]}
-                  >
-                    <Text style={[styles.chipText, !activeCalendarId && styles.chipTextActive]}>Tümü</Text>
-                  </TouchableOpacity>
-                  {calendars.map(cal => (
-                    <TouchableOpacity 
-                      key={cal.id} 
-                      onPress={() => setActiveCalendarId(cal.id)}
-                      style={[styles.chip, activeCalendarId === cal.id && styles.chipActive]}
-                    >
-                      <Text style={[styles.chipText, activeCalendarId === cal.id && styles.chipTextActive]}>{cal.name}</Text>
-                    </TouchableOpacity>
-                  ))}
-                  
-                  {/* Create Calendar Button */}
-                  <TouchableOpacity 
-                    onPress={() => {
-                      Alert.prompt(
-                        "Yeni Takvim",
-                        "Yeni takvim/personel adını girin:",
-                        [
-                          { text: "İptal", style: "cancel" },
-                          { text: "Ekle", onPress: (name) => {
-                              if (name && name.trim()) {
-                                createCalendar(name.trim()).catch(e => Alert.alert("Hata", e.message));
-                              }
-                            }
-                          }
-                        ]
-                      );
-                    }}
-                    style={[styles.chip, { backgroundColor: 'rgba(34, 181, 115, 0.1)', borderColor: 'rgba(34, 181, 115, 0.3)' }]}
-                  >
-                    <Text style={[styles.chipText, { color: '#22B573' }]}>+ Yeni Ekle</Text>
-                  </TouchableOpacity>
-                </ScrollView>
-              </View>
-            )}
-<View style={styles.slotsCard}>
+            <View style={styles.slotsCard}>
             <View style={styles.slotsHeader}>
               <Text style={styles.slotsTitle}>{t('randevu.randevuScreen.dailyAvailability')}</Text>
               <View style={styles.slotsLegend}>
