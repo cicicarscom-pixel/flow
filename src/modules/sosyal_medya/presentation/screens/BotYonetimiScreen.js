@@ -164,6 +164,7 @@ export default function BotYonetimiScreen() {
 
   const [timezone, setTimezone] = useState("Europe/Istanbul");
   const [appointmentModuleEnabled, setAppointmentModuleEnabled] = useState(true);
+  const [multiCalendarEnabled, setMultiCalendarEnabled] = useState(false);
 
   // Karakter (Persona): artık web ile aynı kaynaktan, canlı olarak
   // ai_personas'tan çekiliyor (bkz. fetchInitialData) — eski hardcoded
@@ -217,6 +218,16 @@ export default function BotYonetimiScreen() {
           .maybeSingle();
 
         if (orgAiSettings?.timezone) setTimezone(orgAiSettings.timezone);
+
+        const { data: orgData } = await supabase
+          .from('organizations')
+          .select('multi_calendar_enabled')
+          .eq('owner_id', session.user.id)
+          .maybeSingle();
+
+        if (orgData?.multi_calendar_enabled !== undefined) {
+          setMultiCalendarEnabled(orgData.multi_calendar_enabled);
+        }
 
         // Faz 1 (mobil-web paritesi): daha önce bu ekran kayıtlı AI Kişiliği
         // seçimini (rol/karakter/üslup/randevu modülü) HİÇBİR ZAMAN geri
@@ -299,6 +310,20 @@ export default function BotYonetimiScreen() {
       }
     } catch (e) {
       console.warn('Auto save error', e);
+    }
+  };
+
+  const handleMultiCalendarSave = async (newValue) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await supabase
+          .from('organizations')
+          .update({ multi_calendar_enabled: newValue })
+          .eq('owner_id', session.user.id);
+      }
+    } catch (e) {
+      console.warn('Multi calendar save error', e);
     }
   };
 
@@ -780,6 +805,21 @@ export default function BotYonetimiScreen() {
                       thumbColor="#ffffff"
                       style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
                     />
+
+
+                    <View className="flex-row justify-between items-center border-t border-white/5 pt-4 mb-4">
+                      <View className="flex-1 pr-2">
+                        <Text className="text-white text-sm font-bold mb-1">Personel / Çoklu Takvim Modu</Text>
+                        <Text className="text-gray-400 text-[10px] leading-3">Müşteriler randevu alırken personel veya hizmet veren seçebilir.</Text>
+                      </View>
+                      <Switch
+                        value={multiCalendarEnabled}
+                        onValueChange={(val) => { setMultiCalendarEnabled(val); handleMultiCalendarSave(val); }}
+                        trackColor={{ false: '#34303C', true: '#22B573' }}
+                        thumbColor="#ffffff"
+                        style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+                      />
+                    </View>
                   </View>
 
                   <View className="flex-row justify-between items-center border-t border-white/5 pt-4">
