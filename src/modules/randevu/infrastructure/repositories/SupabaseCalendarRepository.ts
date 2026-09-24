@@ -41,7 +41,7 @@ export class SupabaseCalendarRepository implements ICalendarRepository {
 
     const { data: insertResponse, error } = await supabase
       .from("calendars")
-      .insert([{ name, organization_id: orgData.id, is_active: true }])
+      .insert([{ name, user_id: userData.user.id, is_active: true }])
       .select();
       
     const data = insertResponse?.[0];
