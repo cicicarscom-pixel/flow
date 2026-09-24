@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/refs */
 /* eslint-disable i18next/no-literal-string */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   View, 
@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -293,11 +293,11 @@ export default function BotYonetimiScreen() {
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
+  useFocusEffect(
+    useCallback(() => {
       fetchInitialData();
-    }, 0);
-  }, []);
+    }, [])
+  );
 
   const handleAutoSave = async (updates) => {
     try {

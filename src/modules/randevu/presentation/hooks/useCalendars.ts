@@ -1,4 +1,5 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState, useCallback } from "react";
+import { useFocusEffect } from '@react-navigation/native';
 import { container } from "../../../../core/container";
 import { Calendar } from "../../domain/entities/Calendar";
 import { ICalendarRepository } from "../../domain/repositories/ICalendarRepository";
@@ -11,24 +12,28 @@ export function useCalendars() {
 
   const repo = container.resolve("CalendarRepository") as ICalendarRepository;
 
-  useEffect(() => {
-    async function fetchAll() {
-      setLoading(true);
-      try {
-        const enabled = await repo.getMultiCalendarEnabled();
-        setMultiCalendarEnabled(enabled);
-        if (enabled) {
-          const data = await repo.getCalendars();
-          setCalendars(data);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      async function fetchAll() {
+        setLoading(true);
+        try {
+          const enabled = await repo.getMultiCalendarEnabled();
+          if (isActive) setMultiCalendarEnabled(enabled);
+          if (enabled) {
+            const data = await repo.getCalendars();
+            if (isActive) setCalendars(data);
+          }
+        } catch (e) {
+          console.error(e);
+        } finally {
+          if (isActive) setLoading(false);
         }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
       }
-    }
-    fetchAll();
-  }, []);
+      fetchAll();
+      return () => { isActive = false; };
+    }, [repo])
+  );
 
   const createCalendar = async (name: string) => {
     try {

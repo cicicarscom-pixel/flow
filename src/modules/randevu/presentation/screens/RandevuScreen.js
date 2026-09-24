@@ -1,7 +1,6 @@
 /* eslint-disable i18next/no-literal-string, no-unused-vars */
 import React, { useState, useRef, useMemo } from 'react';
-import {
-  View, Text, ScrollView, TouchableOpacity,
+import { View, Text, ScrollView, TouchableOpacity, Alert,
   StyleSheet, Animated, ActivityIndicator, Modal, TextInput, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -115,7 +114,6 @@ export default function RandevuScreen() {
         customerPhone: newApptPhone,
         date: `${selectedDate}T${newApptTime}:00`,
         serviceId: newApptService,
-          calendarId: multiCalendarEnabled ? newApptCalendarId : undefined,
           calendarId: multiCalendarEnabled ? newApptCalendarId : undefined,
         status: AppointmentStatus.Pending,
         bookingToken: Math.random().toString(36).substring(7)
@@ -369,38 +367,21 @@ export default function RandevuScreen() {
                 <View style={{ flex: 1 }}>
                   
                   {multiCalendarEnabled && (
-                    <>
-                      <Text style={styles.modalLabel}>Takvim Seçimi</Text>
-                      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
-                        {calendars.map(cal => (
-                          <TouchableOpacity 
-                            key={cal.id} 
-                            onPress={() => setNewApptCalendarId(cal.id)}
-                            style={[styles.chip, newApptCalendarId === cal.id && styles.chipActive]}
-                          >
-                            <Text style={[styles.chipText, newApptCalendarId === cal.id && styles.chipTextActive]}>{cal.name}</Text>
-                          </TouchableOpacity>
-                        ))}
-                      </ScrollView>
-                    </>
-                  )}
-                  
-                  {multiCalendarEnabled && (
-                    <>
-                      <Text style={styles.modalLabel}>Takvim Seçimi</Text>
-                      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
-                        {calendars.map(cal => (
-                          <TouchableOpacity 
-                            key={cal.id} 
-                            onPress={() => setNewApptCalendarId(cal.id)}
-                            style={[styles.chip, newApptCalendarId === cal.id && styles.chipActive]}
-                          >
-                            <Text style={[styles.chipText, newApptCalendarId === cal.id && styles.chipTextActive]}>{cal.name}</Text>
-                          </TouchableOpacity>
-                        ))}
-                      </ScrollView>
-                    </>
-                  )}
+                      <>
+                        <Text style={styles.modalLabel}>Takvim Seçimi</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                          {calendars.map(cal => (
+                            <TouchableOpacity 
+                              key={cal.id} 
+                              onPress={() => setNewApptCalendarId(cal.id)}
+                              style={[styles.chip, newApptCalendarId === cal.id && styles.chipActive]}
+                            >
+                              <Text style={[styles.chipText, newApptCalendarId === cal.id && styles.chipTextActive]}>{cal.name}</Text>
+                            </TouchableOpacity>
+                          ))}
+                        </ScrollView>
+                      </>
+                    )}
                   <Text style={styles.modalLabel}>Saat</Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
                       {availableModalHours.map(hour => (
