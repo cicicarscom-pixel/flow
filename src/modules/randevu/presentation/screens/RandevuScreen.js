@@ -99,6 +99,8 @@ export default function RandevuScreen() {
   const [newApptService, setNewApptService] = useState('Genel Bakım');
   const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar } = useCalendars();
   const [newApptCalendarId, setNewApptCalendarId] = useState(null);
+  const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar } = useCalendars();
+  const [newApptCalendarId, setNewApptCalendarId] = useState(null);
   const [availableModalHours, setAvailableModalHours] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -115,6 +117,7 @@ export default function RandevuScreen() {
         customerPhone: newApptPhone,
         date: `${selectedDate}T${newApptTime}:00`,
         serviceId: newApptService,
+          calendarId: multiCalendarEnabled ? newApptCalendarId : undefined,
           calendarId: multiCalendarEnabled ? newApptCalendarId : undefined,
         status: AppointmentStatus.Pending,
         bookingToken: Math.random().toString(36).substring(7)
@@ -383,6 +386,23 @@ export default function RandevuScreen() {
                       </ScrollView>
                     </>
                   )}
+                  
+                  {multiCalendarEnabled && (
+                    <>
+                      <Text style={styles.modalLabel}>Takvim Seçimi</Text>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                        {calendars.map(cal => (
+                          <TouchableOpacity 
+                            key={cal.id} 
+                            onPress={() => setNewApptCalendarId(cal.id)}
+                            style={[styles.chip, newApptCalendarId === cal.id && styles.chipActive]}
+                          >
+                            <Text style={[styles.chipText, newApptCalendarId === cal.id && styles.chipTextActive]}>{cal.name}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
+                    </>
+                  )}
                   <Text style={styles.modalLabel}>Saat</Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
                       {availableModalHours.map(hour => (
@@ -596,6 +616,10 @@ const styles = StyleSheet.create({
   },
   modalTitle: { fontSize: 18, fontWeight: '700', color: '#F6F1EC' },
   modalLabel: { fontSize: 12, fontWeight: '600', color: '#A79E96', marginBottom: 6, marginTop: 12 },
+  chip: { backgroundColor: 'rgba(255,255,255,0.05)', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  chipActive: { backgroundColor: '#22B573', borderColor: '#22B573' },
+  chipText: { color: '#A79E96', fontSize: 13, fontWeight: '600' },
+  chipTextActive: { color: '#17151A' },
   chip: { backgroundColor: 'rgba(255,255,255,0.05)', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
   chipActive: { backgroundColor: '#22B573', borderColor: '#22B573' },
   chipText: { color: '#A79E96', fontSize: 13, fontWeight: '600' },
