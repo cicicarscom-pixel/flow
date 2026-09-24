@@ -114,7 +114,7 @@ export class SupabaseCalendarRepository implements ICalendarRepository {
     
     const { data, error } = await supabase
       .from('calendars')
-      .delete()
+      .update({ is_active: false })
       .eq('id', id)
       .select();
       
