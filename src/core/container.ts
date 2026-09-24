@@ -36,6 +36,7 @@ const container: IDIContainer = {
     if (cls === 'WahaService' || cls?.name === 'WahaService') return wahaService;
     if (cls === 'SupabaseTransactionRepository' || cls?.name === 'SupabaseTransactionRepository') return transactionRepository;
     if (cls === 'AppointmentRepository') return appointmentRepository;
+    if (cls === 'CalendarRepository') return calendarRepository;
     if (cls === 'CustomerRepository') return customerRepository;
     if (cls === ManageBotUseCase) return manageBotUseCase;
     if (cls === GetTransactionsUseCase) return getTransactionsUseCase;
