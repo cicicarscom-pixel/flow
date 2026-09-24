@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string, no-unused-vars */
 import React, { useState, useRef, useMemo } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,

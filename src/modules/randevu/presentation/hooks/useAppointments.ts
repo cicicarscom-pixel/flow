@@ -1,20 +1,18 @@
-import { useState, useEffect } from 'react';
-import { container } from '../../../../core/container';
-import { SupabaseAppointmentRepository } from '@infrastructure/repositories/SupabaseAppointmentRepository';
-import { Appointment } from '@domain/entities/Appointment';
-import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
+﻿import { useState, useEffect } from "react";
+import { container } from "../../../../core/container";
+import { SupabaseAppointmentRepository } from "@infrastructure/repositories/SupabaseAppointmentRepository";
+import { Appointment } from "@domain/entities/Appointment";
+import { AppointmentStatus } from "@domain/enums/AppointmentStatus";
 
-// Appointment'ın date alanından "HH:MM" formatında saat çıkarır
 export function extractTime(dateStr: string): string {
-  if (!dateStr) return '';
-  if (dateStr.includes('T')) return dateStr.split('T')[1].substring(0, 5);
-  if (dateStr.includes(' ')) return dateStr.split(' ')[1].substring(0, 5);
-  return '';
+  if (!dateStr) return "";
+  if (dateStr.includes("T")) return dateStr.split("T")[1].substring(0, 5);
+  if (dateStr.includes(" ")) return dateStr.split(" ")[1].substring(0, 5);
+  return "";
 }
 
-// Seçili tarihi "YYYY-MM-DD" formatında döndürür
 function toDateString(date: Date): string {
-  return date.toISOString().split('T')[0];
+  return date.toISOString().split("T")[0];
 }
 
 export interface UseAppointmentsResult {
@@ -23,9 +21,8 @@ export interface UseAppointmentsResult {
   error: string | null;
   selectedDate: string;
   setSelectedDate: (date: string) => void;
-  /** Saat diliminin dolu olup olmadığını kontrol eder (PENDING veya APPROVED randevu varsa true) */
   isSlotBusy: (timeSlot: string) => boolean;
-  addAppointment: (appointment: Omit<Appointment, 'id' |const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {| 'updatedAt'>) => Promise<void>;
+  addAppointment: (appointment: Omit<Appointment, "id" | "createdAt" | "updatedAt">) => Promise<void>;
 }
 
 export function useAppointments(initialDate?: string, activeCalendarId?: string | null): UseAppointmentsResult {
@@ -35,7 +32,7 @@ export function useAppointments(initialDate?: string, activeCalendarId?: string 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const repo = container.resolve('AppointmentRepository') as SupabaseAppointmentRepository;
+  const repo = container.resolve("AppointmentRepository") as SupabaseAppointmentRepository;
 
   useEffect(() => {
     let unsubscribe: (() => void) | null = null;
@@ -48,12 +45,11 @@ export function useAppointments(initialDate?: string, activeCalendarId?: string 
         const data = await repo.getAppointmentsByDate(selectedDate, activeCalendarId || undefined);
         if (!cancelled) setAppointments(data);
       } catch (e: any) {
-        if (!cancelled) setError(e.message || 'Randevular yuklenemedi');
+        if (!cancelled) setError(e.message || "Randevular yuklenemedi");
       } finally {
         if (!cancelled) setLoading(false);
       }
 
-      // Realtime aboneliği başlat
       unsubscribe = repo.subscribeToAppointments(selectedDate, activeCalendarId || undefined, (fresh) => {
         if (!cancelled) setAppointments(fresh);
       });
@@ -78,15 +74,14 @@ export function useAppointments(initialDate?: string, activeCalendarId?: string 
     });
   };
 
-  const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {|const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {|const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addAppointment = async (appointment: Omit<Appointment, "id" | "createdAt" | "updatedAt">) => {
     try {
       setLoading(true);
       await repo.create(appointment);
-      // Wait for realtime subscription to trigger or re-fetch
       const data = await repo.getAppointmentsByDate(selectedDate, activeCalendarId || undefined);
       setAppointments(data);
     } catch (e: any) {
-      setError(e.message || 'Randevu eklenemedi');
+      setError(e.message || "Randevu eklenemedi");
       throw e;
     } finally {
       setLoading(false);
@@ -95,3 +90,4 @@ export function useAppointments(initialDate?: string, activeCalendarId?: string 
 
   return { appointments, loading, error, selectedDate, setSelectedDate, isSlotBusy, addAppointment };
 }
+
