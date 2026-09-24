@@ -99,8 +99,6 @@ export default function RandevuScreen() {
   const [newApptService, setNewApptService] = useState('Genel Bakım');
   const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar } = useCalendars();
   const [newApptCalendarId, setNewApptCalendarId] = useState(null);
-  const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar } = useCalendars();
-  const [newApptCalendarId, setNewApptCalendarId] = useState(null);
   const [availableModalHours, setAvailableModalHours] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
 
