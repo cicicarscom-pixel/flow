@@ -41,7 +41,7 @@ export class SupabaseCalendarRepository implements ICalendarRepository {
 
     const { data: insertResponse, error } = await supabase
       .from("calendars")
-      .insert([{ name, user_id: userData.user.id, is_active: true }])
+      .insert([{ name, merchant_id: userData.user.id, is_active: true }])
       .select();
       
     const data = insertResponse?.[0];
@@ -77,16 +77,31 @@ export class SupabaseCalendarRepository implements ICalendarRepository {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("No session");
     
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('calendars')
       .update({ name })
-      .eq('id', id)
-      .select()
-      .limit(1);
+      .eq('id', id);
       
     if (error) throw error;
+    
+    // Fetch it again to get the updated fields
+    const { data, error: fetchError } = await supabase
+      .from('calendars')
+      .select('*')
+      .eq('id', id)
+      .limit(1);
+      
+    if (fetchError) throw fetchError;
     if (!data || data.length === 0) throw new Error("Calendar not found");
-    return data[0] as Calendar;
+    
+    const row = data[0];
+    return new Calendar({
+      id: row.id,
+      name: row.name,
+      isActive: row.is_active,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    });
   }
 
   async deleteCalendar(id: string): Promise<void> {
