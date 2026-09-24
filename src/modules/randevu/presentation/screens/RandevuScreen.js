@@ -100,6 +100,7 @@ export default function RandevuScreen() {
   const [newApptCalendarId, setNewApptCalendarId] = useState(null);
   const [availableModalHours, setAvailableModalHours] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
+    const [showCalendarDropdown, setShowCalendarDropdown] = useState(false);
 
   const handleDaySelect = (dayObj) => {
     setSelectedDate(dayObj.fullDate);
@@ -216,7 +217,52 @@ export default function RandevuScreen() {
           </ScrollView>
 
           {/* Time Slots — 3-row heatmap */}
-          <View style={styles.slotsCard}>
+          
+            {/* Calendar Selector Chip Bar */}
+            {multiCalendarEnabled && (
+              <View style={{ marginBottom: 16 }}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}>
+                  <TouchableOpacity 
+                    onPress={() => setActiveCalendarId(null)}
+                    style={[styles.chip, !activeCalendarId && styles.chipActive]}
+                  >
+                    <Text style={[styles.chipText, !activeCalendarId && styles.chipTextActive]}>Tümü</Text>
+                  </TouchableOpacity>
+                  {calendars.map(cal => (
+                    <TouchableOpacity 
+                      key={cal.id} 
+                      onPress={() => setActiveCalendarId(cal.id)}
+                      style={[styles.chip, activeCalendarId === cal.id && styles.chipActive]}
+                    >
+                      <Text style={[styles.chipText, activeCalendarId === cal.id && styles.chipTextActive]}>{cal.name}</Text>
+                    </TouchableOpacity>
+                  ))}
+                  
+                  {/* Create Calendar Button */}
+                  <TouchableOpacity 
+                    onPress={() => {
+                      Alert.prompt(
+                        "Yeni Takvim",
+                        "Yeni takvim/personel adını girin:",
+                        [
+                          { text: "İptal", style: "cancel" },
+                          { text: "Ekle", onPress: (name) => {
+                              if (name && name.trim()) {
+                                createCalendar(name.trim()).catch(e => Alert.alert("Hata", e.message));
+                              }
+                            }
+                          }
+                        ]
+                      );
+                    }}
+                    style={[styles.chip, { backgroundColor: 'rgba(34, 181, 115, 0.1)', borderColor: 'rgba(34, 181, 115, 0.3)' }]}
+                  >
+                    <Text style={[styles.chipText, { color: '#22B573' }]}>+ Yeni Ekle</Text>
+                  </TouchableOpacity>
+                </ScrollView>
+              </View>
+            )}
+<View style={styles.slotsCard}>
             <View style={styles.slotsHeader}>
               <Text style={styles.slotsTitle}>{t('randevu.randevuScreen.dailyAvailability')}</Text>
               <View style={styles.slotsLegend}>
@@ -367,20 +413,31 @@ export default function RandevuScreen() {
                 <View style={{ flex: 1 }}>
                   
                   {multiCalendarEnabled && (
-                      <>
-                        <Text style={styles.modalLabel}>Takvim Seçimi</Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
-                          {calendars.map(cal => (
-                            <TouchableOpacity 
-                              key={cal.id} 
-                              onPress={() => setNewApptCalendarId(cal.id)}
-                              style={[styles.chip, newApptCalendarId === cal.id && styles.chipActive]}
-                            >
-                              <Text style={[styles.chipText, newApptCalendarId === cal.id && styles.chipTextActive]}>{cal.name}</Text>
-                            </TouchableOpacity>
-                          ))}
-                        </ScrollView>
-                      </>
+                      <View style={{ marginBottom: 12 }}>
+                        <Text style={styles.modalLabel}>Takvim / Personel</Text>
+                        <TouchableOpacity 
+                          style={styles.modalInput} 
+                          onPress={() => setShowCalendarDropdown(!showCalendarDropdown)}
+                        >
+                          <Text style={{ color: newApptCalendarId ? '#fff' : 'rgba(185, 202, 203, 0.5)' }}>
+                            {newApptCalendarId ? calendars.find(c => c.id === newApptCalendarId)?.name : "Seçiniz"}
+                          </Text>
+                        </TouchableOpacity>
+                        
+                        {showCalendarDropdown && (
+                          <View style={{ backgroundColor: '#201f22', borderRadius: 10, marginTop: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
+                            {calendars.map(cal => (
+                              <TouchableOpacity 
+                                key={cal.id} 
+                                style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}
+                                onPress={() => { setNewApptCalendarId(cal.id); setShowCalendarDropdown(false); }}
+                              >
+                                <Text style={{ color: newApptCalendarId === cal.id ? '#22B573' : '#fff' }}>{cal.name}</Text>
+                              </TouchableOpacity>
+                            ))}
+                          </View>
+                        )}
+                      </View>
                     )}
                   <Text style={styles.modalLabel}>Saat</Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
