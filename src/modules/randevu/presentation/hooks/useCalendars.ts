@@ -1,4 +1,4 @@
-﻿import { useState, useCallback } from "react";
+﻿import { useState, useCallback, useMemo } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import { container } from "../../../../core/container";
 import { Calendar } from "../../domain/entities/Calendar";
@@ -10,7 +10,7 @@ export function useCalendars() {
   const [activeCalendarId, setActiveCalendarId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const repo = container.resolve("CalendarRepository") as ICalendarRepository;
+  const repo = useMemo(() => container.resolve("CalendarRepository") as ICalendarRepository, []);
 
   useFocusEffect(
     useCallback(() => {
