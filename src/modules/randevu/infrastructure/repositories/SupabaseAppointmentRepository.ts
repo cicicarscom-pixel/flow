@@ -14,7 +14,8 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
       employee_id: appointmentData.employeeId,
       date: appointmentData.date,
       status: appointmentData.status,
-      booking_token: appointmentData.bookingToken
+      booking_token: appointmentData.bookingToken,
+      calendar_id: appointmentData.calendarId
     };
 
     const { data, error } = await supabase.from('appointments').insert([rawData]).select().single();
@@ -71,12 +72,10 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     return AppointmentMapper.toDomain(data);
   }
 
-  async findAvailableHours(date: string, serviceId: string): Promise<string[]> {
-    const { data, error } = await supabase
-      .from('appointments')
-      .select('date')
-      .like('date', `${date}%`)
-      .in('status', [AppointmentStatus.Pending, AppointmentStatus.Approved]);
+  async findAvailableHours(date: string, serviceId: string, calendarId?: string): Promise<string[]> {
+    let query = supabase.from("appointments").select("date").like("date", \`${date}%\`).in("status", [AppointmentStatus.Pending, AppointmentStatus.Approved]);
+    if (calendarId) query = query.eq("calendar_id", calendarId);
+    const { data, error } = await query;
 
     if (error) return [];
     const bookedTimes = (data || []).map((r: any) => {
@@ -89,13 +88,10 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     return allHours.filter(h => !bookedTimes.includes(h));
   }
 
-  async getAppointmentsByDate(date: string): Promise<Appointment[]> {
-    const { data: appointments, error } = await supabase
-      .from('appointments')
-      .select('*')
-      .like('date', `${date}%`)
-      .in('status', [AppointmentStatus.Pending, AppointmentStatus.Approved])
-      .order('created_at', { ascending: true });
+  async getAppointmentsByDate(date: string, calendarId?: string): Promise<Appointment[]> {
+    let query = supabase.from("appointments").select("*").like("date", \`${date}%\`).in("status", [AppointmentStatus.Pending, AppointmentStatus.Approved]).order("created_at", { ascending: true });
+    if (calendarId) query = query.eq("calendar_id", calendarId);
+    const { data: appointments, error } = await query;
 
     if (error) {
       throw new NetworkError(`Randevular cekilemedi: ${error.message}`);
@@ -158,6 +154,7 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
 
   subscribeToAppointments(
     date: string,
+    calendarId: string | undefined,
     callback: (appointments: Appointment[]) => void
   ): () => void {
     const channel = supabase
@@ -171,7 +168,7 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
         },
         async () => {
           // Re-fetch tüm randevuları her değişiklikte
-          const fresh = await this.getAppointmentsByDate(date);
+          const fresh = await this.getAppointmentsByDate(date, calendarId);
           callback(fresh);
         }
       )

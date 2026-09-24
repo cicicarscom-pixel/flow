@@ -11,6 +11,8 @@ export class Appointment {
   private readonly _createdAt: string;
   private readonly _updatedAt: string;
   private readonly _bookingToken: string;
+    calendarId?: string | null;
+  private readonly _calendarId: string | null;
   private _services?: string[];
 
   constructor(data: {
@@ -24,6 +26,7 @@ export class Appointment {
     createdAt?: string;
     updatedAt?: string;
     bookingToken: string;
+    calendarId?: string | null;
     services?: string[];
   }) {
     this._id = data.id;
@@ -36,6 +39,7 @@ export class Appointment {
     this._createdAt = data.createdAt || new Date().toISOString();
     this._updatedAt = data.updatedAt || new Date().toISOString();
     this._bookingToken = data.bookingToken;
+    this._calendarId = data.calendarId || null;
     this._services = data.services;
   }
 
@@ -49,6 +53,7 @@ export class Appointment {
   get createdAt(): string { return this._createdAt; }
   get updatedAt(): string { return this._updatedAt; }
   get bookingToken(): string { return this._bookingToken; }
+  get calendarId(): string | null { return this._calendarId; }
   get services(): string[] | undefined { return this._services; }
   set services(val: string[] | undefined) { this._services = val; }
 }

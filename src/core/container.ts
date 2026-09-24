@@ -1,3 +1,4 @@
+import { SupabaseCalendarRepository } from '../modules/randevu/infrastructure/repositories/SupabaseCalendarRepository';
 import { WahaService } from '../modules/sosyal_medya/infrastructure/services/WahaService';
 import { SupabaseTransactionRepository } from '../modules/muhasebe/infrastructure/repositories/SupabaseTransactionRepository';
 import { ManageBotUseCase } from '../modules/sosyal_medya/application/useCases/ManageBotUseCase';
@@ -13,6 +14,7 @@ import { StartAppointmentFlowUseCase } from '../modules/randevu/application/useC
 const wahaService = new WahaService();
 const transactionRepository = new SupabaseTransactionRepository();
 const appointmentRepository = new SupabaseAppointmentRepository();
+const calendarRepository = new SupabaseCalendarRepository();
 const customerRepository = new SupabaseCustomerRepository();
 const wahaRandevuService = new WahaRandevuService();
 

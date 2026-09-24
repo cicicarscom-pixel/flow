@@ -13,7 +13,8 @@ export class AppointmentMapper {
       status: raw.status as AppointmentStatus,
       createdAt: raw.created_at,
       updatedAt: raw.updated_at,
-      bookingToken: raw.booking_token
+      bookingToken: raw.booking_token,
+      calendarId: raw.calendar_id
     });
   }
 
@@ -28,7 +29,8 @@ export class AppointmentMapper {
       status: entity.status,
       created_at: entity.createdAt,
       updated_at: entity.updatedAt,
-      booking_token: entity.bookingToken
+      booking_token: entity.bookingToken,
+      calendar_id: entity.calendarId
     };
   }
 }

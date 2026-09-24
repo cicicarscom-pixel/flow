@@ -9,6 +9,7 @@ import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useAppointments, extractTime } from '../hooks/useAppointments';
+import { useCalendars } from '../hooks/useCalendars';
 import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
 
 // Generate 30-min slots from 08:00 to 00:00
@@ -75,13 +76,29 @@ export default function RandevuScreen() {
   }, []);
   
   // ── Supabase veri bağlantısı ──
-  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment } = useAppointments(todayStr);
+  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment } = useAppointments(todayStr, activeCalendarId);
+  
+  React.useEffect(() => { if(isModalVisible && activeCalendarId) setNewApptCalendarId(activeCalendarId); else if(isModalVisible) setNewApptCalendarId(calendars[0]?.id || null); }, [isModalVisible, activeCalendarId, calendars]);
+  
+  React.useEffect(() => {
+    if (isModalVisible) {
+      const fetchHours = async () => {
+        const repo = require("../../../../core/container").container.resolve("AppointmentRepository");
+        const hours = await repo.findAvailableHours(selectedDate, newApptService, newApptCalendarId || undefined);
+        setAvailableModalHours(hours);
+      };
+      fetchHours();
+    }
+  }, [isModalVisible, selectedDate, newApptService, newApptCalendarId]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newApptName, setNewApptName] = useState('');
   const [newApptPhone, setNewApptPhone] = useState('');
   const [newApptTime, setNewApptTime] = useState('10:00');
   const [newApptService, setNewApptService] = useState('Genel Bakım');
+  const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar } = useCalendars();
+  const [newApptCalendarId, setNewApptCalendarId] = useState(null);
+  const [availableModalHours, setAvailableModalHours] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleDaySelect = (dayObj) => {
@@ -97,6 +114,7 @@ export default function RandevuScreen() {
         customerPhone: newApptPhone,
         date: `${selectedDate}T${newApptTime}:00`,
         serviceId: newApptService,
+          calendarId: multiCalendarEnabled ? newApptCalendarId : undefined,
         status: AppointmentStatus.Pending,
         bookingToken: Math.random().toString(36).substring(7)
       });
@@ -347,14 +365,35 @@ export default function RandevuScreen() {
 
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <View style={{ flex: 1 }}>
+                  
+                  {multiCalendarEnabled && (
+                    <>
+                      <Text style={styles.modalLabel}>Takvim Seçimi</Text>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                        {calendars.map(cal => (
+                          <TouchableOpacity 
+                            key={cal.id} 
+                            onPress={() => setNewApptCalendarId(cal.id)}
+                            style={[styles.chip, newApptCalendarId === cal.id && styles.chipActive]}
+                          >
+                            <Text style={[styles.chipText, newApptCalendarId === cal.id && styles.chipTextActive]}>{cal.name}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
+                    </>
+                  )}
                   <Text style={styles.modalLabel}>Saat</Text>
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="10:00"
-                    placeholderTextColor="rgba(185, 202, 203, 0.5)"
-                    value={newApptTime}
-                    onChangeText={setNewApptTime}
-                  />
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                      {availableModalHours.map(hour => (
+                        <TouchableOpacity 
+                          key={hour}
+                          onPress={() => setNewApptTime(hour)}
+                          style={[styles.chip, newApptTime === hour && styles.chipActive]}
+                        >
+                          <Text style={[styles.chipText, newApptTime === hour && styles.chipTextActive]}>{hour}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.modalLabel}>Hizmet Tipi</Text>
@@ -556,6 +595,10 @@ const styles = StyleSheet.create({
   },
   modalTitle: { fontSize: 18, fontWeight: '700', color: '#F6F1EC' },
   modalLabel: { fontSize: 12, fontWeight: '600', color: '#A79E96', marginBottom: 6, marginTop: 12 },
+  chip: { backgroundColor: 'rgba(255,255,255,0.05)', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  chipActive: { backgroundColor: '#22B573', borderColor: '#22B573' },
+  chipText: { color: '#A79E96', fontSize: 13, fontWeight: '600' },
+  chipTextActive: { color: '#17151A' },
   modalInput: {
     backgroundColor: 'rgba(32,31,34,0.4)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',

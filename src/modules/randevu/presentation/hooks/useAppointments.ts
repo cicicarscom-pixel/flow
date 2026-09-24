@@ -25,10 +25,10 @@ export interface UseAppointmentsResult {
   setSelectedDate: (date: string) => void;
   /** Saat diliminin dolu olup olmadığını kontrol eder (PENDING veya APPROVED randevu varsa true) */
   isSlotBusy: (timeSlot: string) => boolean;
-  addAppointment: (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+  addAppointment: (appointment: Omit<Appointment, 'id' |const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {| 'updatedAt'>) => Promise<void>;
 }
 
-export function useAppointments(initialDate?: string): UseAppointmentsResult {
+export function useAppointments(initialDate?: string, activeCalendarId?: string | null): UseAppointmentsResult {
   const today = toDateString(new Date());
   const [selectedDate, setSelectedDate] = useState<string>(initialDate || today);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -45,7 +45,7 @@ export function useAppointments(initialDate?: string): UseAppointmentsResult {
       try {
         setLoading(true);
         setError(null);
-        const data = await repo.getAppointmentsByDate(selectedDate);
+        const data = await repo.getAppointmentsByDate(selectedDate, activeCalendarId || undefined);
         if (!cancelled) setAppointments(data);
       } catch (e: any) {
         if (!cancelled) setError(e.message || 'Randevular yuklenemedi');
@@ -54,7 +54,7 @@ export function useAppointments(initialDate?: string): UseAppointmentsResult {
       }
 
       // Realtime aboneliği başlat
-      unsubscribe = repo.subscribeToAppointments(selectedDate, (fresh) => {
+      unsubscribe = repo.subscribeToAppointments(selectedDate, activeCalendarId || undefined, (fresh) => {
         if (!cancelled) setAppointments(fresh);
       });
     };
@@ -65,7 +65,7 @@ export function useAppointments(initialDate?: string): UseAppointmentsResult {
       cancelled = true;
       if (unsubscribe) unsubscribe();
     };
-  }, [selectedDate]);
+  }, [selectedDate, activeCalendarId]);
 
   const isSlotBusy = (timeSlot: string): boolean => {
     return appointments.some(appt => {
@@ -78,12 +78,12 @@ export function useAppointments(initialDate?: string): UseAppointmentsResult {
     });
   };
 
-  const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {|const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {|const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
       setLoading(true);
       await repo.create(appointment);
       // Wait for realtime subscription to trigger or re-fetch
-      const data = await repo.getAppointmentsByDate(selectedDate);
+      const data = await repo.getAppointmentsByDate(selectedDate, activeCalendarId || undefined);
       setAppointments(data);
     } catch (e: any) {
       setError(e.message || 'Randevu eklenemedi');

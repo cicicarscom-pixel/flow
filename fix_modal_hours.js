@@ -1,0 +1,10 @@
+﻿const fs = require("fs"); let c = fs.readFileSync("src/modules/randevu/presentation/screens/RandevuScreen.js", "utf8"); 
+c = c.replace(/const \[newApptCalendarId, setNewApptCalendarId\] = useState\(null\);/, "const [newApptCalendarId, setNewApptCalendarId] = useState(null);\n  const [availableModalHours, setAvailableModalHours] = useState([]);");
+c = c.replace(/React\.useEffect\(\(\) => \{ if\(isModalVisible && activeCalendarId\) setNewApptCalendarId\(activeCalendarId\); else if\(isModalVisible\) setNewApptCalendarId\(calendars\[0\]\?.id \|\| null\); \}, \[isModalVisible, activeCalendarId, calendars\]\);/, "React.useEffect(() => { if(isModalVisible && activeCalendarId) setNewApptCalendarId(activeCalendarId); else if(isModalVisible) setNewApptCalendarId(calendars[0]?.id || null); }, [isModalVisible, activeCalendarId, calendars]);\n  \n  React.useEffect(() => {\n    if (isModalVisible) {\n      const fetchHours = async () => {\n        const repo = require(\"../../../../core/container\").container.resolve(\"AppointmentRepository\");\n        const hours = await repo.findAvailableHours(selectedDate, newApptService, newApptCalendarId || undefined);\n        setAvailableModalHours(hours);\n      };\n      fetchHours();\n    }\n  }, [isModalVisible, selectedDate, newApptService, newApptCalendarId]);");
+c = c.replace(/\{TIME_SLOTS\.filter\(s => !s\.full && !isSlotBusy\(s\.time\)\)\.map\(s => \(/, "{availableModalHours.map(hour => (");
+c = c.replace(/key=\{s\.time\}/, "key={hour}");
+c = c.replace(/onPress=\{\(\) => setNewApptTime\(s\.time\)\}/, "onPress={() => setNewApptTime(hour)}");
+c = c.replace(/newApptTime === s\.time && styles\.chipActive/g, "newApptTime === hour && styles.chipActive");
+c = c.replace(/newApptTime === s\.time && styles\.chipTextActive/g, "newApptTime === hour && styles.chipTextActive");
+c = c.replace(/\{s\.time\}/, "{hour}");
+fs.writeFileSync("src/modules/randevu/presentation/screens/RandevuScreen.js", c, "utf8"); console.log("OK");
