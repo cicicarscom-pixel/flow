@@ -729,14 +729,10 @@ const styles = StyleSheet.create({
   modalTitle: { fontSize: 18, fontWeight: '700', color: '#F6F1EC' },
   modalLabel: { fontSize: 12, fontWeight: '600', color: '#A79E96', marginBottom: 6, marginTop: 12 },
   chip: { backgroundColor: 'rgba(255,255,255,0.05)', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
-  chipActive: { backgroundColor: '#22B573', borderColor: '#22B573' },
-  chipText: { color: '#A79E96', fontSize: 13, fontWeight: '600' },
-  chipTextActive: { color: '#17151A' },
-  chip: { backgroundColor: 'rgba(255,255,255,0.05)', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, marginRight: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
-  chipActive: { backgroundColor: '#22B573', borderColor: '#22B573' },
-  chipText: { color: '#A79E96', fontSize: 13, fontWeight: '600' },
-  chipTextActive: { color: '#17151A' },
-  modalInput: {
+    chipActive: { backgroundColor: '#22B573', borderColor: '#22B573' },
+    chipText: { color: '#A79E96', fontSize: 13, fontWeight: '600' },
+    chipTextActive: { color: '#17151A' },
+    modalInput: {
     backgroundColor: 'rgba(32,31,34,0.4)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
     borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12,
