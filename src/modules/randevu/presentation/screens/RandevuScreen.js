@@ -254,7 +254,7 @@ export default function RandevuScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
-            )}
+
             
             {/* Weekly Calendar Strip */}
           <ScrollView
@@ -544,9 +544,7 @@ export default function RandevuScreen() {
 
               <View style={{ flexDirection: 'row', gap: 16 }}>
                 <View style={{ flex: 1 }}>
-                  
-                  
-                      <View style={{ marginBottom: 12 }}>
+                    <View style={{ marginBottom: 12 }}>
                         <Text style={styles.webModalLabel}>Takvim</Text>
                         <TouchableOpacity 
                           style={[styles.webModalInput, { paddingVertical: 14 }]} 
