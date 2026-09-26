@@ -475,11 +475,11 @@ export default function DashboardScreen({ navigation }) {
             [AppointmentStatus.Pending]: COLORS.secondary,
           };
           setAppointments(upcoming.map(appt => {
-            const serviceName = appt.services && appt.services.length > 0 ? appt.services[0] : '';
+            const serviceName = appt.services && appt.services.length > 0 ? appt.services.join(' + ') : (appt.customerRequestRaw ? `📝 Not: ${appt.customerRequestRaw}` : '');
             const customerName = appt.customerName || t('dashboardScreen.appointments.unnamedCustomer');
             return {
               id: appt.id,
-              time: extractTime(appt.date),
+              time: (new Date(appt.date).getDate() === new Date().getDate() ? '' : new Date(appt.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + ' ') + extractTime(appt.date),
               title: serviceName ? `${customerName} · ${serviceName}` : customerName,
               color: statusColor[appt.status] || COLORS.tertiary,
             };

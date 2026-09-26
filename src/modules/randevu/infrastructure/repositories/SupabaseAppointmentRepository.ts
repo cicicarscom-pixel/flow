@@ -103,7 +103,13 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
   /** YENİ: Dashboard'daki "Randevu / Rezervasyon" widget'ı için — bugünden itibaren
    * kronolojik sırayla en yakın N adet Pending/Approved randevu/rezervasyon. */
   async getUpcomingAppointments(limit: number = 7): Promise<Appointment[]> {
-    const todayStr = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+    let timezone = 'Europe/Istanbul';
+    const { data: user } = await supabase.auth.getUser();
+    if (user?.user?.id) {
+      const { data: orgData } = await supabase.from('organizations').select('timezone').eq('owner_id', user.user.id).maybeSingle();
+      if (orgData?.timezone) timezone = orgData.timezone;
+    }
+    const todayStr = todayInTimezone(timezone);
     const { data: appointments, error } = await supabase
       .from('appointments')
       .select('*')

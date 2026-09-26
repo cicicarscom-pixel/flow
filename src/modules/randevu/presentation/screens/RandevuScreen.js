@@ -351,7 +351,7 @@ export default function RandevuScreen() {
           ) : (
             appointments.map((appt, index) => {
               const palette = CARD_COLORS[index % CARD_COLORS.length];
-              const apptTime = extractTime(appt.date);
+              const apptTime = appt.startsAt ? new Date(appt.startsAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: appt.timezone ?? 'Europe/Istanbul' }) : extractTime(appt.date);
               return (
                 <View key={appt.id} style={styles.timelineRow}>
                   <View style={styles.timeCol}>
@@ -369,7 +369,7 @@ export default function RandevuScreen() {
                           {appt.customerName || appt.customerPhone}
                         </Text>
                         <Text style={styles.cardService}>
-                          {appt.services?.length > 0 ? appt.services.join(' + ') : appt.serviceId}
+                          {appt.services?.length > 0 ? appt.services.join(' + ') : (appt.customerRequestRaw ? `📝 Not: ${appt.customerRequestRaw}` : t('randevu.randevuScreen.noAppointments'))}
                         </Text>
                         <View style={styles.cardTimeRow}>
                           <Ionicons name="time-outline" size={12} color="#A79E96" />

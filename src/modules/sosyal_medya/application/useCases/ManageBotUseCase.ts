@@ -19,7 +19,7 @@ export class ManageBotUseCase {
   }
 
   async checkAndStartSession(merchantId: string | number): Promise<IServiceResponse<any>> {
-    const statusResponse = await this.wahaService.getSessionStatus(merchantId);
+    const statusResponse = await this.getSessionStatus(merchantId);
     
     if (!statusResponse.data || statusResponse.data.status !== 'WORKING') {
       return await this.wahaService.startSession(merchantId);
@@ -41,6 +41,20 @@ export class ManageBotUseCase {
   }
 
   async getSessionStatus(merchantId: string | number): Promise<IServiceResponse<any>> {
-    return await this.wahaService.getSessionStatus(merchantId);
+    try {
+      const response = await this.wahaService.getWahaSession(merchantId);
+      if (response && response.data) {
+        // Return in the format expected by the UI (similar to Waha API format)
+        if (response.data.status === 'WORKING') {
+           // waha_sessions stores session_data
+           return { data: { status: 'WORKING', me: response.data.session_data?.me }, error: null };
+        }
+        return { data: { status: response.data.status }, error: null };
+      }
+      return { data: null, error: null };
+    } catch (e) {
+      console.warn("Could not get session status from DB:", e);
+      return { data: null, error: null };
+    }
   }
 }
