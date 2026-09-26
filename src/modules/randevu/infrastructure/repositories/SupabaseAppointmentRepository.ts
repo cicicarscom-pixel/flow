@@ -4,6 +4,7 @@ import { AppointmentMapper } from '../mappers/AppointmentMapper';
 import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
 import { supabase } from '../../../../shared';
 import { NetworkError } from '../../../../shared/errors/NetworkError';
+import { todayInTimezone } from '../../../../lib/dates';
 
 export class SupabaseAppointmentRepository implements IAppointmentRepository {
   async create(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Appointment> {
