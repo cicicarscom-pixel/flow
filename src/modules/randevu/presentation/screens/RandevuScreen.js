@@ -545,7 +545,7 @@ export default function RandevuScreen() {
               <View style={{ flexDirection: 'row', gap: 16 }}>
                 <View style={{ flex: 1 }}>
                   
-                  {multiCalendarEnabled && (
+                  
                       <View style={{ marginBottom: 12 }}>
                         <Text style={styles.webModalLabel}>Takvim</Text>
                         <TouchableOpacity 
