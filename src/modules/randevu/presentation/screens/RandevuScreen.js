@@ -117,7 +117,7 @@ export default function RandevuScreen() {
         customerPhone: newApptPhone,
         date: `${selectedDate}T${newApptTime}:00`,
         serviceId: newApptService,
-          calendarId: multiCalendarEnabled ? newApptCalendarId : undefined,
+          calendarId: newApptCalendarId || undefined,
         status: AppointmentStatus.Pending,
         bookingToken: Math.random().toString(36).substring(7)
       });
@@ -192,7 +192,7 @@ export default function RandevuScreen() {
         {/* ── STICKY BLOCK (index 0): Calendar + Time Slots ── */}
         <View style={styles.stickyBlock}>
             {/* Personel / Takvim Stepper Selector */}
-            {multiCalendarEnabled && (
+            
               <View style={{ marginHorizontal: 20, marginBottom: 16 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 14, gap: 16, width: '100%' }}>
                   <TouchableOpacity 
@@ -488,50 +488,77 @@ export default function RandevuScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>{t('randevu.randevuScreen.addAppointment', 'Yeni Randevu Ekle')}</Text>
-                <TouchableOpacity onPress={() => setIsModalVisible(false)}>
-                  <Ionicons name="close" size={24} color="#A79E96" />
-                </TouchableOpacity>
+            <View style={[styles.modalContent, { 
+              backgroundColor: '#201D24', padding: 32, borderRadius: 32, 
+              borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+              shadowColor: '#000', shadowOffset: { width: 0, height: 24 }, 
+              shadowOpacity: 0.4, shadowRadius: 48, elevation: 10
+            }]}>
+              
+              <TouchableOpacity 
+                onPress={() => setIsModalVisible(false)}
+                style={{ 
+                  position: 'absolute', top: 20, right: 20, width: 36, height: 36, 
+                  borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.1)', 
+                  borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)', 
+                  alignItems: 'center', justifyContent: 'center', zIndex: 10 
+                }}
+              >
+                <Ionicons name="close" size={20} color="#fff" />
+              </TouchableOpacity>
+              
+              <View style={{ alignItems: 'center', marginBottom: 28 }}>
+                <View style={{ 
+                  width: 64, height: 64, borderRadius: 32, 
+                  backgroundColor: 'rgba(34,181,115,0.2)', 
+                  alignItems: 'center', justifyContent: 'center', marginBottom: 12 
+                }}>
+                  <Text style={{ fontSize: 32 }}>🪄</Text>
+                </View>
+                <Text style={{ fontSize: 20, fontWeight: '700', color: '#fff', margin: 0 }}>
+                  {t('randevu.randevuScreen.addAppointment', 'Yeni Randevu Ekle')}
+                </Text>
+                <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>
+                  Takviminize yeni bir kayıt oluşturun
+                </Text>
               </View>
               
-              <Text style={styles.modalLabel}>Müşteri Adı</Text>
+              <Text style={styles.webModalLabel}>Müşteri Adı</Text>
               <TextInput
-                style={styles.modalInput}
+                style={styles.webModalInput}
                 placeholder="Örn: Ahmet Yılmaz"
-                placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                placeholderTextColor="rgba(255, 255, 255, 0.4)"
                 value={newApptName}
                 onChangeText={setNewApptName}
               />
 
-              <Text style={styles.modalLabel}>Telefon Numarası</Text>
+              <Text style={styles.webModalLabel}>Telefon Numarası</Text>
               <TextInput
-                style={styles.modalInput}
+                style={styles.webModalInput}
                 placeholder="Örn: +90 555 123 4567"
-                placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                placeholderTextColor="rgba(255, 255, 255, 0.4)"
                 value={newApptPhone}
                 onChangeText={setNewApptPhone}
                 keyboardType="phone-pad"
               />
 
-              <View style={{ flexDirection: 'row', gap: 10 }}>
+              <View style={{ flexDirection: 'row', gap: 16 }}>
                 <View style={{ flex: 1 }}>
                   
                   {multiCalendarEnabled && (
                       <View style={{ marginBottom: 12 }}>
-                        <Text style={styles.modalLabel}>Takvim / Personel</Text>
+                        <Text style={styles.webModalLabel}>Takvim</Text>
                         <TouchableOpacity 
-                          style={styles.modalInput} 
+                          style={[styles.webModalInput, { paddingVertical: 14 }]} 
                           onPress={() => setShowCalendarDropdown(!showCalendarDropdown)}
                         >
-                          <Text style={{ color: newApptCalendarId ? '#fff' : 'rgba(185, 202, 203, 0.5)' }}>
+                          <Text style={{ color: newApptCalendarId ? '#fff' : 'rgba(255, 255, 255, 0.4)' }}>
                             {newApptCalendarId ? calendars.find(c => c.id === newApptCalendarId)?.name : "Seçiniz"}
                           </Text>
                         </TouchableOpacity>
                         
                         {showCalendarDropdown && (
-                          <View style={{ backgroundColor: '#201f22', borderRadius: 10, marginTop: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
+                          <View style={{ backgroundColor: '#1A181C', borderRadius: 16, marginTop: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' }}>
                             {calendars.map(cal => (
                               <TouchableOpacity 
                                 key={cal.id} 
@@ -544,9 +571,8 @@ export default function RandevuScreen() {
                           </View>
                         )}
                       </View>
-                    )}
-                  <Text style={styles.modalLabel}>Saat</Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                  <Text style={styles.webModalLabel}>Saat</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
                       {availableModalHours.map(hour => (
                         <TouchableOpacity 
                           key={hour}
@@ -559,11 +585,11 @@ export default function RandevuScreen() {
                     </ScrollView>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.modalLabel}>Hizmet Tipi</Text>
+                  <Text style={styles.webModalLabel}>Hizmet Tipi</Text>
                   <TextInput
-                    style={styles.modalInput}
+                    style={styles.webModalInput}
                     placeholder="Genel Bakım"
-                    placeholderTextColor="rgba(185, 202, 203, 0.5)"
+                    placeholderTextColor="rgba(255, 255, 255, 0.4)"
                     value={newApptService}
                     onChangeText={setNewApptService}
                   />
@@ -571,7 +597,7 @@ export default function RandevuScreen() {
               </View>
 
               <TouchableOpacity 
-                style={styles.saveButton}
+                style={styles.webSaveButton}
                 activeOpacity={0.8}
                 onPress={handleSaveAppointment}
                 disabled={isSaving}
@@ -579,7 +605,7 @@ export default function RandevuScreen() {
                 {isSaving ? (
                   <ActivityIndicator color="#1C3327" />
                 ) : (
-                  <Text style={styles.saveButtonText}>Kaydet</Text>
+                  <Text style={styles.webSaveButtonText}>{t('randevu.randevuScreen.saveAppointment', 'Randevu Oluştur')}</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -762,7 +788,24 @@ const styles = StyleSheet.create({
     chipActive: { backgroundColor: '#22B573', borderColor: '#22B573' },
     chipText: { color: '#A79E96', fontSize: 13, fontWeight: '600' },
     chipTextActive: { color: '#17151A' },
-    modalInput: {
+  
+  webModalLabel: {
+    fontSize: 12, fontWeight: '600', color: '#A79E96', marginBottom: 8, paddingLeft: 4
+  },
+  webModalInput: {
+    width: '100%', paddingVertical: 14, paddingHorizontal: 16, borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.2)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+    color: '#fff', fontSize: 14, marginBottom: 16
+  },
+  webSaveButton: {
+    width: '100%', padding: 16, borderRadius: 16, marginTop: 8,
+    backgroundColor: '#22B573', alignItems: 'center', justifyContent: 'center',
+    shadowColor: '#22B573', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.2, shadowRadius: 16, elevation: 4
+  },
+  webSaveButtonText: {
+    color: '#17151A', fontWeight: '700', fontSize: 15
+  },
+  modalInput: {
     backgroundColor: 'rgba(32,31,34,0.4)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
     borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12,
