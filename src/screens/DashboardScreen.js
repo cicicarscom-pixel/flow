@@ -10,7 +10,7 @@ import {
   StyleSheet, 
   Switch,
   Animated,
-  Dimensions, Platform, TouchableWithoutFeedback, Alert, ActivityIndicator
+  Dimensions, Platform, TouchableWithoutFeedback, Alert, ActivityIndicator, Modal
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -241,12 +241,17 @@ const AppointmentNotifications = ({ navigation, onRead }) => {
         
         return (
           <TouchableOpacity key={n.id} onPress={() => handlePress(n)} style={{
-            backgroundColor: 'rgba(255,255,255,0.03)',
-            padding: 12, borderRadius: 12, borderWidth: 1, borderColor: n.is_read ? 'transparent' : 'rgba(0, 242, 254, 0.3)'
+            backgroundColor: n.is_read ? 'rgba(255,255,255,0.03)' : 'rgba(34, 181, 115, 0.1)',
+            padding: 12, borderRadius: 12, borderWidth: 1, 
+            borderColor: n.is_read ? 'transparent' : '#22B573',
+            borderLeftWidth: n.is_read ? 1 : 3
           }}>
-            <Text style={{ color: '#fff', fontSize: 13, fontWeight: n.is_read ? '400' : '600' }}>{title}</Text>
-            {!!m.calendar_name && <Text style={{ color: '#849495', fontSize: 12, marginTop: 4 }}>👨‍⚕️ {m.calendar_name}</Text>}
-            {!!m.customer_request_raw && <Text style={{ color: '#849495', fontSize: 12, marginTop: 2 }}>📝 {m.customer_request_raw}</Text>}
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+              {!n.is_read && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#22B573', marginRight: 8, marginTop: 4 }} />}
+              <Text style={{ color: '#fff', fontSize: 13, fontWeight: n.is_read ? '400' : 'bold', flex: 1 }}>{title}</Text>
+            </View>
+            {!!m.calendar_name && <Text style={{ color: '#849495', fontSize: 12, marginTop: 4, marginLeft: n.is_read ? 0 : 16 }}>👨‍⚕️ {m.calendar_name}</Text>}
+            {!!m.customer_request_raw && <Text style={{ color: '#849495', fontSize: 12, marginTop: 2, marginLeft: n.is_read ? 0 : 16 }}>📝 {m.customer_request_raw}</Text>}
           </TouchableOpacity>
         );
       })}
@@ -262,6 +267,7 @@ export default function DashboardScreen({ navigation }) {
   const { showActionSheetWithOptions } = useActionSheet();
   const [showHint, setShowHint] = useState(false);
   const [hintAnim] = useState(() => new Animated.Value(0));
+  const [isBellModalVisible, setBellModalVisible] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [aiActive, setAiActive] = useState(true);
@@ -271,6 +277,7 @@ export default function DashboardScreen({ navigation }) {
   const [socialStats, setSocialStats] = useState({ followers: 0, trend: 0 });
   const [recentActivities, setRecentActivities] = useState([]);
   const [appointments, setAppointments] = useState([]);
+  const [totalAppointments, setTotalAppointments] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
 
   // --- Sadece görsel: ekran girişinde içerik yumuşakça belirir ---
@@ -766,7 +773,7 @@ export default function DashboardScreen({ navigation }) {
                 <TouchableOpacity style={[styles.heroIconBtn, { marginRight: 8, backgroundColor: 'rgba(255,255,255,0.15)' }]} onPress={handleHeroImageChange}>
                   <Ionicons name="image-outline" size={18} color="rgba(255,255,255,0.8)" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.heroIconBtn} onPress={() => navigation.navigate('Inbox', { screen: 'Bildirimler' })}>
+                <TouchableOpacity style={styles.heroIconBtn} onPress={() => setBellModalVisible(true)}>
                   <MaterialIcons name="notifications" size={20} color={COLORS.background} />
                   {unreadCount > 0 && <View style={styles.notificationBadge} />}
                 </TouchableOpacity>
@@ -881,13 +888,22 @@ export default function DashboardScreen({ navigation }) {
               </View>
             ) : appointments.length > 0 ? (
               <View style={styles.apptList}>
-                {appointments.map(a => (
-                  <View key={a.id} style={styles.apptListRow}>
+                {appointments.map(a => {
+                  const targetDate = a.dateText ? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date(a.dateText)) : null;
+                  return (
+                  <TouchableOpacity key={a.id} style={styles.apptListRow} onPress={() => {
+                    if (targetDate) navigation.navigate('Ai Asistan', { screen: 'RandevuMain', params: { date: targetDate } });
+                  }}>
                     <View style={[styles.apptListDot, { backgroundColor: a.color }]} />
                     <Text style={styles.apptListTime}>{a.time}</Text>
                     <Text style={styles.apptListTitle} numberOfLines={1}>{a.title}</Text>
-                  </View>
-                ))}
+                  </TouchableOpacity>
+                )})} 
+                {totalAppointments > appointments.length && (
+                  <TouchableOpacity onPress={() => navigation.navigate('Ai Asistan', { screen: 'RandevuMain' })} style={{ marginTop: 10, alignItems: 'center' }}>
+                    <Text style={{ color: '#00F2FE', fontSize: 13, fontWeight: '500' }}>{t('dashboardScreen.appointments.viewAll', 'Tümünü gör')} ({totalAppointments})</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             ) : (
               <Text style={styles.emptyText}>{t('dashboardScreen.appointments.empty')}</Text>
@@ -1059,6 +1075,21 @@ export default function DashboardScreen({ navigation }) {
           </View>
         </Animated.View>
       </ScrollView>
+
+      <Modal visible={isBellModalVisible} animationType='slide' transparent={true} onRequestClose={() => setBellModalVisible(false)}>
+        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <View style={{ backgroundColor: '#131315', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, maxHeight: '80%' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>{t('dashboardScreen.appointmentNotifications.title', 'Randevu Bildirimleri')}</Text>
+              <TouchableOpacity onPress={() => setBellModalVisible(false)}><MaterialIcons name='close' size={24} color='#fff' /></TouchableOpacity>
+            </View>
+            <ScrollView>
+              <AppointmentNotifications navigation={{ navigate: (stack, args) => { setBellModalVisible(false); navigation.navigate(stack, args); } }} onRead={() => setUnreadCount(prev => Math.max(0, prev - 1))} />
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
@@ -1590,6 +1621,15 @@ const styles = StyleSheet.create({
     padding: 4,
   },
 });
+
+
+
+
+
+
+
+
+
 
 
 

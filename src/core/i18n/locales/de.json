@@ -687,8 +687,8 @@
       "total": "Gesamt",
       "scanButton": "+ Neue Rechnung scannen"
     },
-    "communicationReports": {
-      "title": "Kommunikationsberichte"
+    "appointmentNotifications": {
+      "title": "Terminbenachrichtigungen"
     }
   }
 }

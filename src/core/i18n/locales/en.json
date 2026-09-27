@@ -687,8 +687,8 @@
       "total": "Total",
       "scanButton": "+ Scan New Invoice"
     },
-    "communicationReports": {
-      "title": "Communication reports"
+    "appointmentNotifications": {
+      "title": "Appointment Notifications"
     }
   }
 }

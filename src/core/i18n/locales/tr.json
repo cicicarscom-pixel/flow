@@ -687,8 +687,8 @@
       "total": "Toplam",
       "scanButton": "+ Yeni Fatura Tara"
     },
-    "communicationReports": {
-      "title": "İletişim raporları"
+    "appointmentNotifications": {
+      "title": "Randevu Bildirimleri"
     }
   }
 }

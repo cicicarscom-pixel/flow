@@ -123,9 +123,9 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     const { data: appointments, error } = await supabase
       .from('appointments')
       .select('*')
-      .gte('date', todayStr)
+      .gte('starts_at', new Date().toISOString())
       .in('status', [AppointmentStatus.Pending, AppointmentStatus.Approved])
-      .order('date', { ascending: true })
+      .order('starts_at', { ascending: true })
       .limit(limit);
 
     if (error) {
@@ -195,3 +195,5 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     };
   }
 }
+
+
