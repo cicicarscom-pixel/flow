@@ -18,6 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import { AppState } from 'react-native';
+import { todayInTimezone } from '../lib/dates';
 import { supabase } from '../shared/lib/supabase';
 import { container } from '../core/container';
 import { AppointmentStatus } from '../modules/randevu/domain/enums/AppointmentStatus';
@@ -1589,6 +1590,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
 });
+
 
 
 
