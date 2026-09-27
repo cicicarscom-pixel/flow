@@ -265,7 +265,24 @@
       "morning": "Sabah",
       "afternoon": "Öğle",
       "evening": "Akşam",
-      "noAppointments": "Bugün için randevu yok"
+      "noAppointments": "Bugün için randevu yok",
+      "actions": {
+        "cancel": "Randevuyu iptal et",
+        "delete": "Kalıcı olarak sil",
+        "cancelTitle": "Randevu iptal edilsin mi?",
+        "deleteTitle": "Randevu kalıcı olarak silinsin mi?",
+        "deleteWarning": "Bu işlem geri alınamaz. Randevu kaydı tamamen silinir.",
+        "reasonLabel": "İptal nedeni (isteğe bağlı)",
+        "cancelledBadge": "İptal edildi",
+        "reasonBadge": "İptal nedeni: ",
+        "back": "Vazgeç",
+        "submit": "İptal et",
+        "alreadyCancelled": "Randevu zaten iptal edilmiş.",
+        "notFound": "Randevu bulunamadı.",
+        "genericError": "Bir hata oluştu.",
+        "cancelSuccess": "Randevu başarıyla iptal edildi.",
+        "deleteSuccess": "Randevu başarıyla silindi."
+      }
     }
   },
   "musteriler": {
@@ -693,25 +710,6 @@
     },
     "appointmentNotifications": {
       "title": "Randevu Bildirimleri"
-    }
-  },
-  "randevuPage": {
-    "actions": {
-      "cancel": "Randevuyu iptal et",
-      "delete": "Kalıcı olarak sil",
-      "cancelTitle": "Randevu iptal edilsin mi?",
-      "deleteTitle": "Randevu kalıcı olarak silinsin mi?",
-      "deleteWarning": "Bu işlem geri alınamaz. Randevu kaydı tamamen silinir.",
-      "reasonLabel": "İptal nedeni (isteğe bağlı)",
-      "cancelledBadge": "İptal edildi",
-      "reasonBadge": "İptal nedeni: ",
-      "back": "Vazgeç",
-      "submit": "İptal et",
-      "alreadyCancelled": "Randevu zaten iptal edilmiş.",
-      "notFound": "Randevu bulunamadı.",
-      "genericError": "Bir hata oluştu.",
-      "cancelSuccess": "Randevu başarıyla iptal edildi.",
-      "deleteSuccess": "Randevu başarıyla silindi."
     }
   }
 }

@@ -1,47 +1,3 @@
-
-  const handleCardOptions = (appt) => {
-    const isCancelled = appt.status === 'Cancelled' || appt.status === 'İptal Edildi' || appt.status === AppointmentStatus.Cancelled;
-    const options = isCancelled 
-      ? [t('randevu.randevuScreen.actions.delete'), t('randevu.randevuScreen.actions.back')] 
-      : [t('randevu.randevuScreen.actions.cancel'), t('randevu.randevuScreen.actions.delete'), t('randevu.randevuScreen.actions.back')];
-    const destructiveIndex = isCancelled ? 0 : 1;
-    const cancelIndex = isCancelled ? 1 : 2;
-
-    showActionSheetWithOptions({
-      options,
-      cancelButtonIndex: cancelIndex,
-      destructiveButtonIndex: destructiveIndex,
-    }, (btnIndex) => {
-      if (btnIndex === (isCancelled ? 0 : 1)) {
-        Alert.alert(t('randevu.randevuScreen.actions.deleteTitle'), t('randevu.randevuScreen.actions.deleteWarning'), [
-          { text: t('randevu.randevuScreen.actions.back'), style: 'cancel' },
-          { text: t('randevu.randevuScreen.actions.delete'), style: 'destructive', onPress: async () => {
-            try {
-              if (appointmentRepo.delete) await appointmentRepo.delete(appt.id);
-              loadData();
-            } catch (err) {
-              Alert.alert(t('randevu.randevuScreen.actions.genericError'), err.message);
-            }
-          }}
-        ]);
-      } else if (!isCancelled && btnIndex === 0) {
-        setPromptConfig({
-          visible: true,
-          title: t('randevu.randevuScreen.actions.cancelTitle'),
-          placeholder: t('randevu.randevuScreen.actions.reasonLabel'),
-          value: '',
-          onSave: async (reason) => {
-            try {
-              if (appointmentRepo.cancel) await appointmentRepo.cancel(appt.id, reason);
-              loadData();
-            } catch (err) {
-              Alert.alert(t('randevu.randevuScreen.actions.genericError'), err.message);
-            }
-          }
-        });
-      }
-    });
-  };
 /* eslint-disable i18next/no-literal-string, no-unused-vars */
 import React, { useState, useRef, useMemo } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -88,6 +44,51 @@ export default function RandevuScreen() {
   const route = useRoute();
   const insets = useSafeAreaInsets();
   const [pulseAnim] = useState(() => new Animated.Value(1));
+
+  const handleCardOptions = (appt) => {
+    const isCancelled = appt.status === AppointmentStatus.Cancelled;
+    const options = isCancelled 
+      ? [t('randevu.randevuScreen.actions.delete'), t('randevu.randevuScreen.actions.back')] 
+      : [t('randevu.randevuScreen.actions.cancel'), t('randevu.randevuScreen.actions.delete'), t('randevu.randevuScreen.actions.back')];
+    const destructiveIndex = isCancelled ? 0 : 1;
+    const cancelIndex = isCancelled ? 1 : 2;
+
+    showActionSheetWithOptions({
+      options,
+      cancelButtonIndex: cancelIndex,
+      destructiveButtonIndex: destructiveIndex,
+    }, (btnIndex) => {
+      if (btnIndex === (isCancelled ? 0 : 1)) {
+        Alert.alert(t('randevu.randevuScreen.actions.deleteTitle'), t('randevu.randevuScreen.actions.deleteWarning'), [
+          { text: t('randevu.randevuScreen.actions.back'), style: 'cancel' },
+          { text: t('randevu.randevuScreen.actions.delete'), style: 'destructive', onPress: async () => {
+            try {
+              if (deleteAppointment) await deleteAppointment(appt.id);
+              Alert.alert('', t('randevu.randevuScreen.actions.deleteSuccess'));
+            } catch (err) {
+              Alert.alert(t('randevu.randevuScreen.actions.genericError'), err.message);
+            }
+          }}
+        ]);
+      } else if (!isCancelled && btnIndex === 0) {
+        setPromptConfig({
+          visible: true,
+          title: t('randevu.randevuScreen.actions.cancelTitle'),
+          placeholder: t('randevu.randevuScreen.actions.reasonLabel'),
+          value: '',
+          onSave: async (reason) => {
+            try {
+              if (cancelAppointment) await cancelAppointment(appt.id, reason);
+              Alert.alert('', t('randevu.randevuScreen.actions.cancelSuccess'));
+            } catch (err) {
+              Alert.alert(t('randevu.randevuScreen.actions.genericError'), err.message);
+            }
+          }
+        });
+      }
+    });
+  };
+
 
   // -- Dynamic Date State --
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -151,7 +152,8 @@ export default function RandevuScreen() {
 
   const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar, updateCalendar, deleteCalendar } = useCalendars();
 
-  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment } = useAppointments(route.params?.date || todayStr, activeCalendarId);
+  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment, cancelAppointment, deleteAppointment } = useAppointments(route.params?.date || todayStr, activeCalendarId); // MODIFIED
+  
   
   React.useEffect(() => {
     if (route.params?.date) {
@@ -473,14 +475,17 @@ export default function RandevuScreen() {
                     <Text style={[styles.timeText, { color: palette.color }]}>{apptTime || '??:??'}</Text>
                     <View style={styles.timeLine} />
                   </View>
-                  <View style={[styles.card, { borderLeftColor: (appt.status === AppointmentStatus.Cancelled || appt.status === 'Cancelled' || appt.status === 'İptal Edildi') ? '#666' : palette.border, opacity: (appt.status === AppointmentStatus.Cancelled || appt.status === 'Cancelled' || appt.status === 'İptal Edildi') ? 0.5 : 1 }]}>
-                    <View style={[styles.cardTint, { backgroundColor: (appt.status === AppointmentStatus.Cancelled || appt.status === 'Cancelled' || appt.status === 'İptal Edildi') ? '#66666611' : (palette.color + '08') }]} />
+                  <View style={[styles.card, { borderLeftColor: (appt.status === AppointmentStatus.Cancelled) ? '#666' : palette.border, opacity: (appt.status === AppointmentStatus.Cancelled) ? 0.5 : 1 }]}>
+                    <View style={[styles.cardTint, { backgroundColor: (appt.status === AppointmentStatus.Cancelled) ? '#66666611' : (palette.color + '08') }]} />
                     <View style={styles.cardContent}>
 
                       <View style={[styles.iconBox, { backgroundColor: '#34303C' }]}>
                         <Ionicons name={palette.icon} size={20} color={palette.color} />
                       </View>
                       <View style={styles.cardInfo}>
+<TouchableOpacity onPress={() => handleCardOptions(appt)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ position: 'absolute', top: 10, right: 10, padding: 8, justifyContent: 'center' }}>
+                          <Ionicons name="ellipsis-vertical" size={20} color="#A79E96" />
+                        </TouchableOpacity>
                         <Text style={styles.cardName}>
                           {appt.customerName || appt.customerPhone}
                         </Text>
@@ -495,12 +500,12 @@ export default function RandevuScreen() {
                             </Text>
                           )}
                         
-                        {(appt.status === AppointmentStatus.Cancelled || appt.status === 'Cancelled' || appt.status === 'İptal Edildi') && (
+                        {(appt.status === AppointmentStatus.Cancelled) && (
                           <Text style={[styles.cardService, { color: '#9ca3af', marginTop: 4 }]}>
                             {t('randevu.randevuScreen.actions.cancelledBadge')}
                           </Text>
                         )}
-                        {(appt.status === AppointmentStatus.Cancelled || appt.status === 'Cancelled' || appt.status === 'İptal Edildi') && appt.cancelReason && (
+                        {(appt.status === AppointmentStatus.Cancelled) && appt.cancelReason && (
                           <Text style={[styles.cardService, { color: '#9ca3af' }]}>
                             {t('randevu.randevuScreen.actions.reasonBadge')}{appt.cancelReason}
                           </Text>

@@ -25,6 +25,8 @@ export interface UseAppointmentsResult {
   setSelectedDate: (date: string) => void;
   isSlotBusy: (timeSlot: string) => boolean;
   addAppointment: (appointment: Omit<Appointment, "id" | "createdAt" | "updatedAt">) => Promise<void>;
+  cancelAppointment: (id: string, reason?: string) => Promise<void>;
+  deleteAppointment: (id: string) => Promise<void>;
 }
 
 export function useAppointments(initialDate?: string, activeCalendarId?: string | null): UseAppointmentsResult {
@@ -78,6 +80,42 @@ export function useAppointments(initialDate?: string, activeCalendarId?: string 
     );
   };
 
+  
+  const reloadAppointments = async () => {
+    try {
+      const data = await repo.getAppointmentsByDate(selectedDate, activeCalendarId || undefined);
+      setAppointments(data);
+    } catch (e: any) {
+      setError(e.message || "Yenileme hatası");
+    }
+  };
+
+  const cancelAppointment = async (id: string, reason?: string) => {
+    try {
+      setLoading(true);
+      if (repo.cancel) await repo.cancel(id, reason);
+      await reloadAppointments();
+    } catch (e: any) {
+      setError(e.message || "İptal edilemedi");
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteAppointment = async (id: string) => {
+    try {
+      setLoading(true);
+      if (repo.delete) await repo.delete(id);
+      await reloadAppointments();
+    } catch (e: any) {
+      setError(e.message || "Silinemedi");
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const addAppointment = async (appointment: Omit<Appointment, "id" | "createdAt" | "updatedAt">) => {
     try {
       setLoading(true);
@@ -92,6 +130,6 @@ export function useAppointments(initialDate?: string, activeCalendarId?: string 
     }
   };
 
-  return { appointments, loading, error, selectedDate, setSelectedDate, isSlotBusy, addAppointment };
+  return { appointments, loading, error, selectedDate, setSelectedDate, isSlotBusy, addAppointment, cancelAppointment, deleteAppointment };
 }
 
