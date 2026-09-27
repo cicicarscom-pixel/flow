@@ -1,4 +1,24 @@
 
+## 🔄 AKTARIM NOTU (HANDOVER) - 27 EYLÜL 2026 (İptal/Silme Modülü Tamamlandı)
+
+**Şu Anki Durum:**
+Randevu modüllerinde Web ve Mobil tarafında eşitlik sağlandı ve "İptal Et" / "Kalıcı Olarak Sil" arayüzleri, RPC'ler üzerinden (cancel_appointment, delete_appointment) başarılı bir şekilde entegre edildi. DB update işlemleri frontend'den tamamen kaldırıldı.
+
+**Web (flowweb) Durumu:**
+- İptal edilen randevular kartlarda "İptal Edildi" (gri rozet) ve iptal nedeni etiketiyle gösteriliyor.
+- Randevu listesindeki sorguya `Cancelled` statüsü dahil edildi (`getAppointmentsByDate`).
+- UI Modal bildirimleri, zaman dilimi hatalarını çözen cihaz yereline bağlandı.
+
+**Mobil (flow) Durumu:**
+- `DashboardScreen.js` üzerinde bildirim çanının yanlış sekmeyi açması çözülüp, `Inbox > Bildirimler` doğrudan bağlandı.
+- `RandevuScreen.js`'de randevu kartı içine "⋮" ActionSheet eklendi. Silme (Alert) ve İptal Nedenli (promptConfig) akışlar tamamlandı.
+
+**Kalan / Yapılacak İşler (Faz 4/5 için):**
+1. Persona modülündeki sessiz kısmi başarıların kontrolü.
+2. Hizmet sorgusuna açık işletme (merchant) filtresi eklenmesi.
+3. Common Scheduling Core (Merkezi saat üretimi) ve taslak mekanizması.
+
+
 
 ## 🔄 AKTARIM NOTU (HANDOVER) - 24 EYLÜL 2026
 
