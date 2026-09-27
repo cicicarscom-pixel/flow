@@ -41,7 +41,8 @@
       "expo-sharing",
       "expo-status-bar",
       "expo-web-browser",
-      "expo-localization"
+      "expo-localization",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": false,
