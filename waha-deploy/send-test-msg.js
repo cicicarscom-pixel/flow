@@ -1,10 +1,10 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 
 async function sendTestMessage() {
   const payload = {
     session: "92a3d0e4-d4db-479b-99d9-a3ea02c29da8",
     chatId: "905076457908@c.us",
-    text: "Merhaba! Ben Workigom asistanı, bağlantı testim başarılı. 🚀"
+    text: "Merhaba! Ben Workigom asistanÄ±, baÄŸlantÄ± testim baÅŸarÄ±lÄ±. ğŸš€"
   };
 
   try {
@@ -13,7 +13,7 @@ async function sendTestMessage() {
       method: 'POST',
       headers: {
         'accept': 'application/json',
-        'X-Api-Key': 'workigom_key_2026',
+        'X-Api-Key': process.env.WAHA_API_KEY,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
@@ -28,3 +28,4 @@ async function sendTestMessage() {
 }
 
 sendTestMessage();
+

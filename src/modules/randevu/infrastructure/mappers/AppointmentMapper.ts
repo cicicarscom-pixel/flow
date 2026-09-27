@@ -18,9 +18,7 @@ export class AppointmentMapper {
       updatedAt: raw.updated_at,
       bookingToken: raw.booking_token,
       calendarId: raw.calendar_id,
-      customerRequestRaw: raw.customer_request_raw,
-      startsAt: raw.starts_at,
-      timezone: raw.timezone
+      customerRequestRaw: raw.customer_request_raw
     });
   }
 
@@ -40,9 +38,7 @@ export class AppointmentMapper {
       updated_at: entity.updatedAt,
       booking_token: entity.bookingToken,
       calendar_id: entity.calendarId,
-      customer_request_raw: entity.customerRequestRaw,
-      starts_at: entity.startsAt,
-      timezone: entity.timezone
+      customer_request_raw: entity.customerRequestRaw
     };
   }
 }

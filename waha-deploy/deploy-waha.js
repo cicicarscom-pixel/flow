@@ -1,10 +1,10 @@
-const { Client } = require('ssh2');
+﻿const { Client } = require('ssh2');
 
 const conn = new Client();
-console.log('Sunucuya bağlanılıyor...');
+console.log('Sunucuya baÄŸlanÄ±lÄ±yor...');
 
 conn.on('ready', () => {
-  console.log('Bağlantı başarılı. WAHA Docker konteyneri başlatılıyor...');
+  console.log('BaÄŸlantÄ± baÅŸarÄ±lÄ±. WAHA Docker konteyneri baÅŸlatÄ±lÄ±yor...');
   
   const cmd = 'docker run -it -d --name waha --restart unless-stopped -p 3000:3000 devlikeapro/waha';
   
@@ -12,19 +12,20 @@ conn.on('ready', () => {
     if (err) throw err;
     
     stream.on('close', (code, signal) => {
-      console.log('Konteyner başlatma işlemi tamamlandı. Çıkış kodu:', code);
+      console.log('Konteyner baÅŸlatma iÅŸlemi tamamlandÄ±. Ã‡Ä±kÄ±ÅŸ kodu:', code);
       conn.end();
     }).on('data', (data) => {
-      console.log('Çıktı: ' + data);
+      console.log('Ã‡Ä±ktÄ±: ' + data);
     }).stderr.on('data', (data) => {
-      console.log('Hata Çıktısı: ' + data);
+      console.log('Hata Ã‡Ä±ktÄ±sÄ±: ' + data);
     });
   });
 }).on('error', (err) => {
-  console.error('SSH Bağlantı Hatası:', err);
+  console.error('SSH BaÄŸlantÄ± HatasÄ±:', err);
 }).connect({
   host: '31.97.37.208',
   port: 22,
   username: 'root',
-  password: 'Vd9ZF@-JnbmP6x/'
+  password: process.env.SSH_PASSWORD
 });
+

@@ -1,11 +1,11 @@
-import { supabase } from '../../../../shared';
+﻿import { supabase } from '../../../../shared';
 import { IWahaService, IServiceResponse } from '@domain/interfaces/IWahaService';
 
 const WAHA_BASE_URL = 'http://31.97.37.208:3000';
 
 export class WahaService implements IWahaService {
   /**
-   * Esnaf�n mevcut bot ayarlar�n� ve promptunu �eker.
+   * Esnafï¿½n mevcut bot ayarlarï¿½nï¿½ ve promptunu ï¿½eker.
    * Tablo: bot_settings
    */
   async getBotSettings(merchantId: string | number): Promise<IServiceResponse<any>> {
@@ -29,7 +29,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * Prompt veya ayar de�i�ikliklerini kaydeder.
+   * Prompt veya ayar deï¿½iï¿½ikliklerini kaydeder.
    * Tablo: bot_settings
    */
   async updateBotSettings(merchantId: string | number, settingsData: any): Promise<IServiceResponse<any>> {
@@ -57,7 +57,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * Esnaf�n WAHA ba�lant� durumunu (QR, status vs.) �eker.
+   * Esnafï¿½n WAHA baï¿½lantï¿½ durumunu (QR, status vs.) ï¿½eker.
    * Tablo: waha_sessions
    */
   async getWahaSession(merchantId: string | number): Promise<IServiceResponse<any>> {
@@ -79,7 +79,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * Yeni oturum a��ld���nda veya QR/Status g�ncellendi�inde tabloyu g�nceller (upsert).
+   * Yeni oturum aï¿½ï¿½ldï¿½ï¿½ï¿½nda veya QR/Status gï¿½ncellendiï¿½inde tabloyu gï¿½nceller (upsert).
    * Tablo: waha_sessions
    */
   async upsertWahaSession(merchantId: string | number, sessionData: any): Promise<IServiceResponse<any>> {
@@ -107,12 +107,12 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * WAHA �zerinde yeni bir oturum ba�lat�r.
+   * WAHA ï¿½zerinde yeni bir oturum baï¿½latï¿½r.
    */
   async startSession(merchantId: string | number): Promise<IServiceResponse<any>> {
     if (!merchantId) {
-      console.error('merchantId bulunamad�');
-      return { data: null, error: new Error('merchantId bulunamad�') };
+      console.error('merchantId bulunamadï¿½');
+      return { data: null, error: new Error('merchantId bulunamadï¿½') };
     }
 
     try {
@@ -133,7 +133,7 @@ export class WahaService implements IWahaService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Api-Key': 'workigom_key_2026',
+          'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */,
         },
         body: JSON.stringify(requestBody),
       });
@@ -146,18 +146,18 @@ export class WahaService implements IWahaService {
           
           await fetch(`${WAHA_BASE_URL}/api/sessions/stop`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Api-Key': 'workigom_key_2026' },
+            headers: { 'Content-Type': 'application/json', 'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */ },
             body: JSON.stringify({ name: String(merchantId), logout: true })
           });
           
           const retryResponse = await fetch(`${WAHA_BASE_URL}/api/sessions/start`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Api-Key': 'workigom_key_2026' },
+            headers: { 'Content-Type': 'application/json', 'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */ },
             body: JSON.stringify(requestBody)
           });
           
           if (!retryResponse.ok) {
-            throw new Error('Oto-onar�m sonras� oturum ba�lat�lamad�.');
+            throw new Error('Oto-onarï¿½m sonrasï¿½ oturum baï¿½latï¿½lamadï¿½.');
           }
           
           await new Promise(resolve => setTimeout(resolve, 4000));
@@ -179,7 +179,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * Ba�lat�lan oturumun QR kodunu getirir.
+   * Baï¿½latï¿½lan oturumun QR kodunu getirir.
    */
   async getQrCode(merchantId: string | number): Promise<IServiceResponse<any>> {
     try {
@@ -187,7 +187,7 @@ export class WahaService implements IWahaService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'X-Api-Key': 'workigom_key_2026',
+          'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */,
         },
       });
       
@@ -206,7 +206,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * Numara e�le�tirme (Pairing Code) i�in kod al�r.
+   * Numara eï¿½leï¿½tirme (Pairing Code) iï¿½in kod alï¿½r.
    */
   async getPairingCode(merchantId: string | number, phoneNumber: string): Promise<IServiceResponse<any>> {
     try {
@@ -215,7 +215,7 @@ export class WahaService implements IWahaService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-Api-Key': 'workigom_key_2026',
+          'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */,
         },
         body: JSON.stringify({ phoneNumber }),
       });
@@ -233,7 +233,7 @@ export class WahaService implements IWahaService {
   }
 
   /**
-   * WAHA �zerinden mevcut oturumun durumunu getirir.
+   * WAHA ï¿½zerinden mevcut oturumun durumunu getirir.
    */
   async getSessionStatus(merchantId: string | number): Promise<IServiceResponse<any>> {
     try {
@@ -241,7 +241,7 @@ export class WahaService implements IWahaService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'X-Api-Key': 'workigom_key_2026',
+          'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */,
         },
       });
       
@@ -259,3 +259,4 @@ export class WahaService implements IWahaService {
     }
   }
 }
+

@@ -1,13 +1,13 @@
-const { Client } = require('ssh2');
+﻿const { Client } = require('ssh2');
 
 // Use process.env.DOCKER_PAT for security
-const DOCKER_PAT = process.env.DOCKER_PAT || "YOUR_DOCKER_PAT_HERE";
+const DOCKER_PAT = process.env.DOCKER_PAT || "YOUR_DOCKER_process.env.DOCKER_PATE";
 const conn = new Client();
 
 conn.on('ready', () => {
   console.log('Deploying WAHA PLUS...');
   
-  const cmd = `docker login -u devlikeapro -p ${DOCKER_PAT} && docker pull devlikeapro/waha-plus:latest && docker stop waha; docker rm waha; docker run -it -d --name waha --restart unless-stopped -p 3000:3000 -e WAHA_API_KEY=workigom_key_2026 devlikeapro/waha-plus`;
+  const cmd = `docker login -u devlikeapro -p ${DOCKER_PAT} && docker pull devlikeapro/waha-plus:latest && docker stop waha; docker rm waha; docker run -it -d --name waha --restart unless-stopped -p 3000:3000 -e WAHA_API_KEY=${process.env.WAHA_API_KEY} devlikeapro/waha-plus`;
   
   conn.exec(cmd, (err, stream) => {
     if (err) throw err;
@@ -21,5 +21,6 @@ conn.on('ready', () => {
   host: '31.97.37.208',
   port: 22,
   username: 'root',
-  password: 'Vd9ZF@-JnbmP6x/'
+  password: process.env.SSH_PASSWORD
 });
+

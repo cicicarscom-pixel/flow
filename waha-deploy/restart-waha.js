@@ -1,4 +1,4 @@
-const { Client } = require('ssh2');
+﻿const { Client } = require('ssh2');
 const conn = new Client();
 
 conn.on('ready', () => {
@@ -18,5 +18,6 @@ conn.on('ready', () => {
   host: '31.97.37.208',
   port: 22,
   username: 'root',
-  password: 'Vd9ZF@-JnbmP6x/'
+  password: process.env.SSH_PASSWORD
 });
+

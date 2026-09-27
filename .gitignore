@@ -43,3 +43,6 @@ example
 /ios
 /android
 supabase/.temp/
+
+.env*
+!.env.example

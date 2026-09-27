@@ -7,15 +7,15 @@ import { NetworkError } from '../../../../shared/errors/NetworkError';
 import { todayInTimezone } from '../../../../lib/dates';
 
 export class SupabaseAppointmentRepository implements IAppointmentRepository {
-  async create(appointmentData: Omit<Appointment, "id" | "createdAt" | "updatedAt">): Promise<Appointment> {
-    const { data, error } = await supabase.rpc("create_manual_appointment", {
+  async create(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Appointment> {
+    const { data, error } = await supabase.rpc('create_manual_appointment', {
       p_local_start: appointmentData.date.substring(0, 16),
       p_customer_name: appointmentData.customerName || null,
       p_customer_phone: appointmentData.customerPhone,
       p_calendar_id: appointmentData.calendarId || null,
-      p_service_id: appointmentData.serviceId === "Bilinmiyor" ? null : (appointmentData.serviceId || null),
+      p_service_id: appointmentData.serviceId === 'Bilinmiyor' ? null : (appointmentData.serviceId || null),
       p_request_raw: appointmentData.customerRequestRaw || null,
-      p_source: "mobile"
+      p_source: 'mobile'
     });
 
     if (error) {
@@ -41,38 +41,6 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
       case "CUSTOMER_REQUIRED": throw new Error("Müşteri adı ve telefonu zorunlu");
       default: throw new Error("Randevu oluşturulamadı (" + data.status + ")");
     }
-  }main/repositories/IAppointmentRepository';
-import { Appointment } from '@domain/entities/Appointment';
-import { AppointmentMapper } from '../mappers/AppointmentMapper';
-import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
-import { supabase } from '../../../../shared';
-import { NetworkError } from '../../../../shared/errors/NetworkError';
-import { todayInTimezone } from '../../../../lib/dates';
-
-export class SupabaseAppointmentRepository implements IAppointmentRepository {
-  async create(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Appointment> {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    const rawData = {
-      organization_id: user?.id,
-      customer_phone: appointmentData.customerPhone,
-      customer_name: appointmentData.customerName,
-      service_id: appointmentData.serviceId,
-      employee_id: appointmentData.employeeId,
-      date: appointmentData.date,
-      status: appointmentData.status,
-      booking_token: appointmentData.bookingToken,
-      calendar_id: appointmentData.calendarId,
-      customer_request_raw: appointmentData.customerRequestRaw || null
-    };
-
-    const { data, error } = await supabase.from('appointments').insert([rawData]).select().single();
-    
-    if (error) {
-      throw new NetworkError(`Randevu oluşturulurken hata: ${error.message}`);
-    }
-    
-    return AppointmentMapper.toDomain(data);
   }
 
   async approve(id: string): Promise<Appointment> {
