@@ -58,19 +58,33 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     return AppointmentMapper.toDomain(data);
   }
 
-  async cancel(id: string): Promise<Appointment> {
-    const { data, error } = await supabase
-      .from('appointments')
-      .update({ status: AppointmentStatus.Cancelled, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single();
+  async cancel(id: string, reason?: string): Promise<void> {
+    const { data, error } = await supabase.rpc('cancel_appointment', {
+      p_appointment_id: id,
+      p_reason: reason || null
+    });
 
     if (error) {
       throw new NetworkError(`Randevu iptal edilirken hata: ${error.message}`);
     }
 
-    return AppointmentMapper.toDomain(data);
+    if (data?.status !== 'SUCCESS') {
+      throw new NetworkError(`Randevu iptal edilemedi (${data?.status})`);
+    }
+  }
+
+  async delete(id: string): Promise<void> {
+    const { data, error } = await supabase.rpc('delete_appointment', {
+      p_appointment_id: id
+    });
+
+    if (error) {
+      throw new NetworkError(`Randevu silinirken hata: ${error.message}`);
+    }
+
+    if (data?.status !== 'SUCCESS') {
+      throw new NetworkError(`Randevu silinemedi (${data?.status})`);
+    }
   }
 
   async findByToken(token: string): Promise<Appointment | null> {
@@ -99,7 +113,7 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
 
   async getAppointmentsByDate(date: string, calendarId?: string): Promise<Appointment[]> {
     const nextDayStr = addDaysYmd(date, 1);
-    let query = supabase.from("appointments").select("*").gte("date", `${date}T00:00:00`).lt("date", `${nextDayStr}T00:00:00`).in("status", [AppointmentStatus.Pending, AppointmentStatus.Approved]).order("created_at", { ascending: true });
+    let query = supabase.from("appointments").select("*").gte("date", `${date}T00:00:00`).lt("date", `${nextDayStr}T00:00:00`).in("status", [AppointmentStatus.Pending, AppointmentStatus.Approved, AppointmentStatus.Cancelled]).order("created_at", { ascending: true });
     if (calendarId) query = query.eq("calendar_id", calendarId);
     const { data: appointments, error } = await query;
 

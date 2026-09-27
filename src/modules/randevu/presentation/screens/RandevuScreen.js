@@ -1,3 +1,47 @@
+
+  const handleCardOptions = (appt) => {
+    const isCancelled = appt.status === 'Cancelled' || appt.status === 'İptal Edildi' || appt.status === AppointmentStatus.Cancelled;
+    const options = isCancelled 
+      ? [t('randevu.randevuScreen.actions.delete'), t('randevu.randevuScreen.actions.back')] 
+      : [t('randevu.randevuScreen.actions.cancel'), t('randevu.randevuScreen.actions.delete'), t('randevu.randevuScreen.actions.back')];
+    const destructiveIndex = isCancelled ? 0 : 1;
+    const cancelIndex = isCancelled ? 1 : 2;
+
+    showActionSheetWithOptions({
+      options,
+      cancelButtonIndex: cancelIndex,
+      destructiveButtonIndex: destructiveIndex,
+    }, (btnIndex) => {
+      if (btnIndex === (isCancelled ? 0 : 1)) {
+        Alert.alert(t('randevu.randevuScreen.actions.deleteTitle'), t('randevu.randevuScreen.actions.deleteWarning'), [
+          { text: t('randevu.randevuScreen.actions.back'), style: 'cancel' },
+          { text: t('randevu.randevuScreen.actions.delete'), style: 'destructive', onPress: async () => {
+            try {
+              if (appointmentRepo.delete) await appointmentRepo.delete(appt.id);
+              loadData();
+            } catch (err) {
+              Alert.alert(t('randevu.randevuScreen.actions.genericError'), err.message);
+            }
+          }}
+        ]);
+      } else if (!isCancelled && btnIndex === 0) {
+        setPromptConfig({
+          visible: true,
+          title: t('randevu.randevuScreen.actions.cancelTitle'),
+          placeholder: t('randevu.randevuScreen.actions.reasonLabel'),
+          value: '',
+          onSave: async (reason) => {
+            try {
+              if (appointmentRepo.cancel) await appointmentRepo.cancel(appt.id, reason);
+              loadData();
+            } catch (err) {
+              Alert.alert(t('randevu.randevuScreen.actions.genericError'), err.message);
+            }
+          }
+        });
+      }
+    });
+  };
 /* eslint-disable i18next/no-literal-string, no-unused-vars */
 import React, { useState, useRef, useMemo } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -9,6 +53,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useAppointments, extractTime } from '../hooks/useAppointments';
 import { useCalendars } from '../hooks/useCalendars';
 import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
@@ -37,6 +82,7 @@ const CARD_COLORS = [
 ];
 
 export default function RandevuScreen() {
+  const { showActionSheetWithOptions } = useActionSheet();
   const { t, i18n } = useTranslation();
   const navigation = useNavigation();
   const route = useRoute();
@@ -427,9 +473,10 @@ export default function RandevuScreen() {
                     <Text style={[styles.timeText, { color: palette.color }]}>{apptTime || '??:??'}</Text>
                     <View style={styles.timeLine} />
                   </View>
-                  <View style={[styles.card, { borderLeftColor: palette.border }]}>
-                    <View style={[styles.cardTint, { backgroundColor: palette.color + '08' }]} />
+                  <View style={[styles.card, { borderLeftColor: (appt.status === AppointmentStatus.Cancelled || appt.status === 'Cancelled' || appt.status === 'İptal Edildi') ? '#666' : palette.border, opacity: (appt.status === AppointmentStatus.Cancelled || appt.status === 'Cancelled' || appt.status === 'İptal Edildi') ? 0.5 : 1 }]}>
+                    <View style={[styles.cardTint, { backgroundColor: (appt.status === AppointmentStatus.Cancelled || appt.status === 'Cancelled' || appt.status === 'İptal Edildi') ? '#66666611' : (palette.color + '08') }]} />
                     <View style={styles.cardContent}>
+
                       <View style={[styles.iconBox, { backgroundColor: '#34303C' }]}>
                         <Ionicons name={palette.icon} size={20} color={palette.color} />
                       </View>
@@ -447,6 +494,17 @@ export default function RandevuScreen() {
                               📝 {appt.customerRequestRaw}
                             </Text>
                           )}
+                        
+                        {(appt.status === AppointmentStatus.Cancelled || appt.status === 'Cancelled' || appt.status === 'İptal Edildi') && (
+                          <Text style={[styles.cardService, { color: '#9ca3af', marginTop: 4 }]}>
+                            {t('randevu.randevuScreen.actions.cancelledBadge')}
+                          </Text>
+                        )}
+                        {(appt.status === AppointmentStatus.Cancelled || appt.status === 'Cancelled' || appt.status === 'İptal Edildi') && appt.cancelReason && (
+                          <Text style={[styles.cardService, { color: '#9ca3af' }]}>
+                            {t('randevu.randevuScreen.actions.reasonBadge')}{appt.cancelReason}
+                          </Text>
+                        )}
                         <View style={styles.cardTimeRow}>
                           <Ionicons name="time-outline" size={12} color="#A79E96" />
                           <Text style={styles.cardTimeText}>{apptTime}</Text>

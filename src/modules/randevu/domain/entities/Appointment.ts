@@ -35,6 +35,7 @@ export class Appointment {
     calendarId?: string | null;
     services?: string[];
     customerRequestRaw?: string | null;
+  cancelReason?: string | null;
   }) {
     this._id = data.id;
     this._customerPhone = data.customerPhone;

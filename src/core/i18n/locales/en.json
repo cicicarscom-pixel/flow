@@ -700,5 +700,24 @@
       "appointment": "{customer} booked an appointment with {doctor} on {when}",
       "appointmentNoDoctor": "{customer} booked an appointment on {when}"
     }
+  },
+  "randevuPage": {
+    "actions": {
+      "cancel": "Cancel appointment",
+      "delete": "Delete permanently",
+      "cancelTitle": "Cancel the appointment?",
+      "deleteTitle": "Delete appointment permanently?",
+      "deleteWarning": "This action cannot be undone. The appointment record will be permanently deleted.",
+      "reasonLabel": "Reason for cancellation",
+      "cancelledBadge": "Cancelled",
+      "reasonBadge": "Reason: ",
+      "back": "Cancel",
+      "submit": "Confirm",
+      "alreadyCancelled": "Appointment is already cancelled.",
+      "notFound": "Appointment not found.",
+      "genericError": "An error occurred.",
+      "cancelSuccess": "Appointment cancelled successfully.",
+      "deleteSuccess": "Appointment deleted successfully."
+    }
   }
 }
