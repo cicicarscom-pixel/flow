@@ -14,7 +14,7 @@ export class Appointment {
     calendarId?: string | null;
   private readonly _calendarId: string | null;
   private readonly _customerRequestRaw: string | null;
-  private _services?: string[];
+  private _services?: string[];\n    customerRequestRaw?: string | null;
 
   constructor(data: {
     id: string;

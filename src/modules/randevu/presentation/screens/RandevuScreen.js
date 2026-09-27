@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppointments, extractTime } from '../hooks/useAppointments';
 import { useCalendars } from '../hooks/useCalendars';
 import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
+import { supabase } from '../../../../shared';
 
 // Generate 30-min slots from 08:00 to 00:00
 const TIME_SLOTS = (() => {
@@ -80,7 +81,9 @@ export default function RandevuScreen() {
   const [newApptName, setNewApptName] = useState('');
   const [newApptPhone, setNewApptPhone] = useState('');
   const [newApptTime, setNewApptTime] = useState('10:00');
-  const [newApptService, setNewApptService] = useState('Genel Bakım');
+  const [newApptService, setNewApptService] = useState('');
+  const [newApptNote, setNewApptNote] = useState('');
+  const [services, setServices] = useState([]);
   const [newApptCalendarId, setNewApptCalendarId] = useState(null);
   const [availableModalHours, setAvailableModalHours] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -91,6 +94,24 @@ export default function RandevuScreen() {
   const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar, updateCalendar, deleteCalendar } = useCalendars();
 
   const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment } = useAppointments(todayStr, activeCalendarId);
+  
+  React.useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data } = await supabase.from('business_services').select('*').eq('merchant_id', user.id);
+          if (data && data.length > 0) {
+            setServices(data);
+            setNewApptService(data[0].id);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchServices();
+  }, []);
   
   React.useEffect(() => { if(isModalVisible && activeCalendarId) setNewApptCalendarId(activeCalendarId); else if(isModalVisible) setNewApptCalendarId(calendars[0]?.id || null); }, [isModalVisible, activeCalendarId, calendars]);
   
@@ -117,15 +138,17 @@ export default function RandevuScreen() {
         customerName: newApptName,
         customerPhone: newApptPhone,
         date: `${selectedDate}T${newApptTime}:00`,
-        serviceId: newApptService,
+        serviceId: newApptService || 'Bilinmiyor',
           calendarId: newApptCalendarId || undefined,
-        status: AppointmentStatus.Pending,
+          customerRequestRaw: newApptNote || null,
+          status: AppointmentStatus.Pending,
         bookingToken: Math.random().toString(36).substring(7)
       });
       setIsModalVisible(false);
       setNewApptName('');
       setNewApptPhone('');
       setNewApptTime('10:00');
+      setNewApptNote('');
     } catch (e) {
       console.error(e);
     } finally {
@@ -582,19 +605,37 @@ export default function RandevuScreen() {
                 )}
               </View>
 
-              <View style={{ flexDirection: 'row', gap: 16, zIndex: 1 }}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.webModalLabel}>Hizmet Tipi</Text>
-                  <TextInput
-                    style={styles.webModalInput}
-                    placeholder="Genel Bakım"
-                    placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                    value={newApptService}
-                    onChangeText={setNewApptService}
-                  />
-                </View>
-              </View>
               
+              
+              {services.length > 0 && (
+                <View style={{ marginBottom: 16, zIndex: 1 }}>
+                  <Text style={styles.webModalLabel}>Hizmet Tipi</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {services.map(s => (
+                      <TouchableOpacity 
+                        key={s.id}
+                        onPress={() => setNewApptService(s.id)}
+                        style={[styles.chip, newApptService === s.id && styles.chipActive]}
+                      >
+                        <Text style={[styles.chipText, newApptService === s.id && styles.chipTextActive]}>{s.name}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+
+              <View style={{ marginBottom: 16, zIndex: 1 }}>
+                <Text style={styles.webModalLabel}>Açıklama / Not</Text>
+                <TextInput
+                  style={[styles.webModalInput, { height: 80, textAlignVertical: 'top' }]}
+                  placeholder="Yapay zekaya verilen notlar gibi... (Örn: Dolgum düştü dolgu yaptırmak istiyorum)"
+                  placeholderTextColor="rgba(255, 255, 255, 0.4)"
+                  multiline
+                  value={newApptNote}
+                  onChangeText={setNewApptNote}
+                />
+              </View>
+
               <View style={{ zIndex: 1 }}>
                 <Text style={styles.webModalLabel}>Saat</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
