@@ -476,11 +476,10 @@ export default function RandevuScreen() {
                 }}>
                   <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>Kaydet</Text>
                 </TouchableOpacity>
-              </ScrollView>
+              </View>
             </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+          </KeyboardAvoidingView>
+        </Modal>
         
         {/* Personel Yönetimi Modalı */}
         <Modal visible={isManageModalVisible} transparent animationType="fade">
