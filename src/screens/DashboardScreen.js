@@ -10,7 +10,7 @@ import {
   StyleSheet, 
   Switch,
   Animated,
-  Dimensions, Platform, TouchableWithoutFeedback, Alert
+  Dimensions, Platform, TouchableWithoutFeedback, Alert, ActivityIndicator
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -298,31 +298,27 @@ export default function DashboardScreen({ navigation }) {
     });
   }, [fadeAnim, slideAnim, hintAnim]);
 
-    const fetchUnreadNotifications = async (merchantId) => {
+    const fetchUnreadNotifications = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user?.id) return;
-
-        const fetchUnreadCount = async () => {
-          try {
-            const { count } = await supabase
-              .from('notifications')
-              .select('id', { count: 'exact', head: true })
-              .eq('type', 'appointment_created')
-              .eq('is_read', false);
-            setUnreadCount(count || 0);
-          } catch (e) {
-            console.warn('Unread count error:', e);
-          }
-        };
-        fetchUnreadCount();
-        
-        AppState.addEventListener('change', nextAppState => {
-          if (nextAppState === 'active') {
-            fetchUnreadCount();
-          }
-        });
+        const { count, error } = await supabase
+          .from('notifications')
+          .select('id', { count: 'exact', head: true })
+          .eq('type', 'appointment_created')
+          .eq('is_read', false);
+        if (error) throw error;
+        setUnreadCount(count || 0);
+      } catch (e) {
+        console.warn('Unread count error:', e);
+      }
     };
+
+    // Uygulama öne gelince okunmamış sayısını yenile (tek dinleyici, ekrandan çıkınca kaldırılır)
+    useEffect(() => {
+      const sub = AppState.addEventListener('change', (state) => {
+        if (state === 'active') fetchUnreadNotifications();
+      });
+      return () => sub.remove();
+    }, []);
   
     useFocusEffect(
       React.useCallback(() => {
