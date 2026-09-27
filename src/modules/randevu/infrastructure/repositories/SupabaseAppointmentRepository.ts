@@ -19,7 +19,8 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
       date: appointmentData.date,
       status: appointmentData.status,
       booking_token: appointmentData.bookingToken,
-      calendar_id: appointmentData.calendarId,calendar_id: appointmentData.calendarId,\n      customer_request_raw: appointmentData.customerRequestRaw || nulln      customer_request_raw: appointmentData.customerRequestRaw || null
+      calendar_id: appointmentData.calendarId,
+      customer_request_raw: appointmentData.customerRequestRaw || null
     };
 
     const { data, error } = await supabase.from('appointments').insert([rawData]).select().single();
