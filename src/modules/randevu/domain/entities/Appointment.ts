@@ -11,7 +11,6 @@ export class Appointment {
   private readonly _createdAt: string;
   private readonly _updatedAt: string;
   private readonly _bookingToken: string;
-    calendarId?: string | null;
   private readonly _calendarId: string | null;
   private readonly _customerRequestRaw: string | null;
   private _services?: string[];
