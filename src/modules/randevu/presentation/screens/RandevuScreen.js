@@ -145,8 +145,15 @@ export default function RandevuScreen() {
     if (isModalVisible) {
       const fetchHours = async () => {
         const repo = require("../../../../core/container").container.resolve("AppointmentRepository");
-        const hours = await repo.findAvailableHours(selectedDate, newApptService, newApptCalendarId || undefined);
-        setAvailableModalHours(hours);
+        const { isSlotBusy } = require("../../../../lib/slotBusy");
+        try {
+          const dayAppts = await repo.getDayAppointmentsForCalendar(selectedDate, newApptCalendarId || undefined);
+          const allHours = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
+          const hours = allHours.filter(hour => !isSlotBusy(hour, selectedDate, dayAppts));
+          setAvailableModalHours(hours);
+        } catch (e) {
+          Alert.alert("Hata", e.message || "Saatler cekilemedi");
+        }
       };
       fetchHours();
     }

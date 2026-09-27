@@ -88,23 +88,15 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     return AppointmentMapper.toDomain(data);
   }
 
-  async findAvailableHours(date: string, serviceId: string, calendarId?: string): Promise<string[]> {
+  async getDayAppointmentsForCalendar(date: string, calendarId?: string): Promise<{starts_at: string | null, ends_at: string | null, timezone: string | null, status: string}[]> {
     const nextDay = new Date(date);
     nextDay.setDate(nextDay.getDate() + 1);
     const nextDayStr = nextDay.toISOString().split('T')[0];
-    let query = supabase.from("appointments").select("date").gte("date", `${date}T00:00:00`).lt("date", `${nextDayStr}T00:00:00`).in("status", [AppointmentStatus.Pending, AppointmentStatus.Approved]);
+    let query = supabase.from("appointments").select("starts_at, ends_at, timezone, status").gte("date", `${date}T00:00:00`).lt("date", `${nextDayStr}T00:00:00`);
     if (calendarId) query = query.eq("calendar_id", calendarId);
     const { data, error } = await query;
-
-    if (error) return [];
-    const bookedTimes = (data || []).map((r: any) => {
-      const d = r.date || '';
-      const t = d.includes('T') ? d.split('T')[1] : d.split(' ')[1] || '';
-      return t.substring(0, 5);
-    });
-    const allHours = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-      '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00'];
-    return allHours.filter(h => !bookedTimes.includes(h));
+    if (error) throw new NetworkError(`Müsaitlik çekilemedi: ${error.message}`);
+    return data || [];
   }
 
   async getAppointmentsByDate(date: string, calendarId?: string): Promise<Appointment[]> {

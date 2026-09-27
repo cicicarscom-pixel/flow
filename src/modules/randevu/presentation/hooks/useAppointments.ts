@@ -1,8 +1,9 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { container } from "../../../../core/container";
 import { SupabaseAppointmentRepository } from "@infrastructure/repositories/SupabaseAppointmentRepository";
 import { Appointment } from "@domain/entities/Appointment";
 import { AppointmentStatus } from "@domain/enums/AppointmentStatus";
+import { isSlotBusy as coreIsSlotBusy } from "../../../../lib/slotBusy";
 
 export function extractTime(dateStr: string): string {
   if (!dateStr) return "";
@@ -64,14 +65,16 @@ export function useAppointments(initialDate?: string, activeCalendarId?: string 
   }, [selectedDate, activeCalendarId]);
 
   const isSlotBusy = (timeSlot: string): boolean => {
-    return appointments.some(appt => {
-      const apptTime = extractTime(appt.date);
-      return (
-        apptTime === timeSlot &&
-        (appt.status === AppointmentStatus.Approved ||
-          appt.status === AppointmentStatus.Pending)
-      );
-    });
+    return coreIsSlotBusy(
+      timeSlot,
+      selectedDate,
+      appointments.map(a => ({
+        starts_at: a.startsAt,
+        ends_at: a.endsAt,
+        timezone: a.timezone,
+        status: a.status
+      }))
+    );
   };
 
   const addAppointment = async (appointment: Omit<Appointment, "id" | "createdAt" | "updatedAt">) => {
