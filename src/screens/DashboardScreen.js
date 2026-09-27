@@ -538,24 +538,51 @@ export default function DashboardScreen({ navigation }) {
         setRecentActivities(merged.slice(0, 3));
 
         // 5. Yaklaşan Randevu / Rezervasyonlar (gerçek veri — Randevu modülü repository'si üzerinden)
-        try {
-          const appointmentRepo = container.resolve('AppointmentRepository');
-          const upcoming = await appointmentRepo.getUpcomingAppointments(7);
-          const statusColor = {
-            [AppointmentStatus.Approved]: COLORS.tertiary,
-            [AppointmentStatus.Pending]: COLORS.secondary,
-          };
-          setAppointments(upcoming.map(appt => {
-            const serviceName = appt.services && appt.services.length > 0 ? appt.services.join(' + ') : (appt.customerRequestRaw ? `📝 Not: ${appt.customerRequestRaw}` : '');
-            const customerName = appt.customerName || t('dashboardScreen.appointments.unnamedCustomer');
-            return {
-              id: appt.id,
-              time: (new Date(appt.date).getDate() === new Date().getDate() ? '' : new Date(appt.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + ' ') + extractTime(appt.date),
-              title: serviceName ? `${customerName} · ${serviceName}` : customerName,
-              color: statusColor[appt.status] || COLORS.tertiary,
+          try {
+            const appointmentRepo = container.resolve('AppointmentRepository');
+            // Fetch more to ensure we have enough for upcoming after filtering today
+            const upcomingRaw = await appointmentRepo.getUpcomingAppointments(20); 
+            const statusColor = {
+              [AppointmentStatus.Approved]: COLORS.tertiary,
+              [AppointmentStatus.Pending]: COLORS.secondary,
             };
-          }));
-        } catch (apptError) {
+            
+            const now = new Date();
+            const todayStr = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
+            
+            const todayList = [];
+            const upcomingList = [];
+            
+            for (const appt of upcomingRaw) {
+               const apptDate = new Date(appt.date);
+               const apptDateStr = apptDate.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
+               
+               const serviceName = appt.services && appt.services.length > 0 ? appt.services.join(' + ') : '';
+               const customerName = appt.customerName || t('dashboardScreen.appointments.unnamedCustomer', 'İsimsiz müşteri');
+               const note = appt.customerRequestRaw || '';
+               const doc = appt.calendarName || '';
+               
+               const formatted = {
+                  id: appt.id,
+                  time: extractTime(appt.date),
+                  dateText: appt.date,
+                  customerName,
+                  serviceName,
+                  note,
+                  calendarName: doc,
+                  color: statusColor[appt.status] || COLORS.tertiary,
+               };
+               
+               if (apptDateStr === todayStr) {
+                  todayList.push(formatted);
+               } else if (apptDateStr > todayStr && upcomingList.length < 7) {
+                  upcomingList.push(formatted);
+               }
+            }
+            
+            setTodayAppointments(todayList);
+            setAppointments(upcomingList);
+          } catch (apptError) {
           console.warn('Upcoming appointments fetch error:', apptError);
           setAppointments([]);
         }
@@ -889,13 +916,22 @@ export default function DashboardScreen({ navigation }) {
                 {todayAppointments.map(a => {
                   const targetDate = a.dateText ? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date(a.dateText)) : null;
                   return (
-                  <TouchableOpacity key={a.id} style={styles.apptListRow} onPress={() => {
-                    if (targetDate) navigation.navigate('Ai Asistan', { screen: 'RandevuMain', params: { date: targetDate } });
-                  }}>
-                    <View style={[styles.apptListDot, { backgroundColor: a.color }]} />
-                    <Text style={styles.apptListTime}>{a.time}</Text>
-                    <Text style={styles.apptListTitle} numberOfLines={1}>{a.title}</Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity key={a.id} style={styles.apptListRow} onPress={() => {
+                      if (targetDate) navigation.navigate('Ai Asistan', { screen: 'RandevuMain', params: { date: targetDate } });
+                    }}>
+                      <View style={[styles.apptListDot, { backgroundColor: a.color }]} />
+                      <Text style={styles.apptListTime}>{a.time}</Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.apptListTitle} numberOfLines={1}>{a.customerName}</Text>
+                        {(a.calendarName || a.serviceName || a.note) ? (
+                           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+                             {a.calendarName ? <Text style={{ color: '#00F2FE', fontSize: 11, fontWeight: '500' }}>👨‍⚕️ Dr. {a.calendarName}</Text> : null}
+                             {a.serviceName ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11 }}>🏷️ {a.serviceName}</Text> : null}
+                             {a.note ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11, fontStyle: 'italic' }}>📝 {a.note}</Text> : null}
+                           </View>
+                        ) : null}
+                      </View>
+                    </TouchableOpacity>
                 )})}
               </View>
             ) : (
@@ -913,13 +949,22 @@ export default function DashboardScreen({ navigation }) {
                   const targetDate = a.dateText ? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date(a.dateText)) : null;
                   const displayTime = (new Date(a.dateText).getDate() === new Date().getDate() ? '' : new Date(a.dateText).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + ' ') + a.time;
                   return (
-                  <TouchableOpacity key={a.id} style={styles.apptListRow} onPress={() => {
-                    if (targetDate) navigation.navigate('Ai Asistan', { screen: 'RandevuMain', params: { date: targetDate } });
-                  }}>
-                    <View style={[styles.apptListDot, { backgroundColor: a.color }]} />
-                    <Text style={styles.apptListTime}>{displayTime}</Text>
-                    <Text style={styles.apptListTitle} numberOfLines={1}>{a.title}</Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity key={a.id} style={styles.apptListRow} onPress={() => {
+                      if (targetDate) navigation.navigate('Ai Asistan', { screen: 'RandevuMain', params: { date: targetDate } });
+                    }}>
+                      <View style={[styles.apptListDot, { backgroundColor: a.color }]} />
+                      <Text style={[styles.apptListTime, { width: 55, textAlign: 'right' }]}>{displayTime}</Text>
+                      <View style={{ flex: 1, marginLeft: 8 }}>
+                        <Text style={styles.apptListTitle} numberOfLines={1}>{a.customerName}</Text>
+                        {(a.calendarName || a.serviceName || a.note) ? (
+                           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+                             {a.calendarName ? <Text style={{ color: '#00F2FE', fontSize: 11, fontWeight: '500' }}>👨‍⚕️ Dr. {a.calendarName}</Text> : null}
+                             {a.serviceName ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11 }}>🏷️ {a.serviceName}</Text> : null}
+                             {a.note ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11, fontStyle: 'italic' }}>📝 {a.note}</Text> : null}
+                           </View>
+                        ) : null}
+                      </View>
+                    </TouchableOpacity>
                 )})}
                 {totalAppointments > appointments.length && (
                   <TouchableOpacity onPress={() => navigation.navigate('Ai Asistan', { screen: 'RandevuMain' })} style={{ marginTop: 10, alignItems: 'center' }}>
