@@ -4,7 +4,7 @@ const conn = new Client();
 conn.on('ready', () => {
   console.log('Checking WAHA status...');
   
-  const cmd = `curl -s -X GET http://localhost:3000/api/sessions -H "X-Api-Key: workigom_key_2026" -H "accept: application/json" && echo -e "\n\n--- DOCKER LOGS ---" && docker logs --tail 50 waha`;
+  const cmd = `curl -s -X GET http://localhost:3000/api/sessions -H "X-Api-Key: ${process.env.WAHA_API_KEY}" -H "accept: application/json" && echo -e "\n\n--- DOCKER LOGS ---" && docker logs --tail 50 waha`;
   
   conn.exec(cmd, (err, stream) => {
     if (err) throw err;
@@ -19,4 +19,5 @@ conn.on('ready', () => {
   username: 'root',
   password: process.env.SSH_PASSWORD
 });
+
 

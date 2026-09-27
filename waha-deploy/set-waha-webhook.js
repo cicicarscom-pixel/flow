@@ -4,7 +4,7 @@ const conn = new Client();
 conn.on('ready', () => {
   console.log('Registering Webhook on WAHA...');
   
-  const cmd = `curl -X POST http://localhost:3000/api/webhooks -H "accept: application/json" -H "X-Api-Key: workigom_key_2026" -H "Content-Type: application/json" -d '{ "url": "https://qybzidylewzsnmlofjul.supabase.co/functions/v1/waha-webhook", "events": ["message"]}'`;
+  const cmd = `curl -X POST http://localhost:3000/api/webhooks -H "accept: application/json" -H "X-Api-Key: ${process.env.WAHA_API_KEY}" -H "Content-Type: application/json" -d '{ "url": "https://qybzidylewzsnmlofjul.supabase.co/functions/v1/waha-webhook", "events": ["message"]}'`;
   
   conn.exec(cmd, (err, stream) => {
     if (err) throw err;
@@ -20,4 +20,5 @@ conn.on('ready', () => {
   username: 'root',
   password: process.env.SSH_PASSWORD
 });
+
 

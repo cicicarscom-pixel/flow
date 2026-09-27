@@ -1,38 +1,39 @@
-## 📞 8. Adım: WAHA Plus (WhatsApp HTTP API) Mimarisi ve Kurulumu
+﻿## ğŸ“ 8. AdÄ±m: WAHA Plus (WhatsApp HTTP API) Mimarisi ve Kurulumu
 
-Projenin WhatsApp botu altyapısı, resmi Meta API kısıtlamalarını (24 saat penceresi vb.) aşmak ve esnafların kendi numaralarını saniyeler içinde bağlayabilmesini sağlamak için **WAHA (WhatsApp HTTP API) Plus** üzerine kurulmuştur.
+Projenin WhatsApp botu altyapÄ±sÄ±, resmi Meta API kÄ±sÄ±tlamalarÄ±nÄ± (24 saat penceresi vb.) aÅŸmak ve esnaflarÄ±n kendi numaralarÄ±nÄ± saniyeler iÃ§inde baÄŸlayabilmesini saÄŸlamak iÃ§in **WAHA (WhatsApp HTTP API) Plus** Ã¼zerine kurulmuÅŸtur.
 
-### 8.1 Özel Sunucu (VPS) ve Global Webhook Deployment
-WAHA Plus, ayrı bir Docker konteyneri olarak Ubuntu VPS (Örn: `31.97.37.208`) üzerinde çalışır. Gelen WhatsApp mesajlarının Supabase'e düşmesi için **Global Webhook** yapılandırmasının Docker ayağa kalkarken çevre değişkeni (Environment Variable) olarak verilmesi hayati önem taşır.
+### 8.1 Ã–zel Sunucu (VPS) ve Global Webhook Deployment
+WAHA Plus, ayrÄ± bir Docker konteyneri olarak Ubuntu VPS (Ã–rn: `31.97.37.208`) Ã¼zerinde Ã§alÄ±ÅŸÄ±r. Gelen WhatsApp mesajlarÄ±nÄ±n Supabase'e dÃ¼ÅŸmesi iÃ§in **Global Webhook** yapÄ±landÄ±rmasÄ±nÄ±n Docker ayaÄŸa kalkarken Ã§evre deÄŸiÅŸkeni (Environment Variable) olarak verilmesi hayati Ã¶nem taÅŸÄ±r.
 
-**Sıfırdan Kurulum Komutu:**
+**SÄ±fÄ±rdan Kurulum Komutu:**
 ```bash
 docker login -u devlikeapro -p <DOCKER_HUB_PAT>
 docker run -it -d --name waha --restart unless-stopped -p 3000:3000 \
-  -e WAHA_API_KEY=workigom_key_2026 \
+  -e WAHA_API_KEY=<GİZLENDİ> \
   -e WAHA_DASHBOARD_USERNAME=admin \
   -e WAHA_DASHBOARD_PASSWORD=workigom \
   -e WAHA_WEBHOOK_URL=https://<YOUR_SUPABASE_PROJECT>.supabase.co/functions/v1/waha-webhook \
   -e WAHA_WEBHOOK_EVENTS=message \
   devlikeapro/waha-plus
 ```
-*(Not: `WAHA_WEBHOOK_URL` parametresi verilmezse, bot gelen mesajlara sağır kalır).*
+*(Not: `WAHA_WEBHOOK_URL` parametresi verilmezse, bot gelen mesajlara saÄŸÄ±r kalÄ±r).*
 
 ### 8.2 Frontend Entegrasyonu ve Kritik Zamanlama (`wahaService.js`)
-React Native tarafında Bot Yönetimi ekranı, WAHA sunucusuyla iletişim kurar. 
-- `startSession(merchantId)`: Her esnafın kendi ID'si (UUID) ile izole (multi-tenant) bir WhatsApp oturumu başlatılır.
-- **Kritik "Auto-Heal" ve 4 Saniye Kuralı:** Eğer session zaten açıksa, WAHA `422 Unprocessable Entity` hatası verir. Bu durumda sistem eski oturumu silip (`stopSession`) yenisini başlatır. Yeni oturum (Chromium/Puppeteer motoru) başlarken **kesinlikle 3-4 saniye beklenmelidir.** Eğer beklenmeden hemen `getPairingCode` çağrılırsa WAHA `500 Internal Server Error (Cannot read properties of null (reading 'evaluate'))` hatası fırlatır.
-- **Çifte Mesaj (Double Message) Tuzağı:** Webhook ayarı `docker run` ile global olarak yapıldığı için, `startSession` isteğinin içine ekstra olarak `config: { webhooks: [...] }` parametresi **EKLENMEMELİDİR**. Eğer eklenirse WAHA aynı mesajı Supabase'e iki kere yollar ve bot müşteriye iki kere aynı cevabı verir.
+React Native tarafÄ±nda Bot YÃ¶netimi ekranÄ±, WAHA sunucusuyla iletiÅŸim kurar. 
+- `startSession(merchantId)`: Her esnafÄ±n kendi ID'si (UUID) ile izole (multi-tenant) bir WhatsApp oturumu baÅŸlatÄ±lÄ±r.
+- **Kritik "Auto-Heal" ve 4 Saniye KuralÄ±:** EÄŸer session zaten aÃ§Ä±ksa, WAHA `422 Unprocessable Entity` hatasÄ± verir. Bu durumda sistem eski oturumu silip (`stopSession`) yenisini baÅŸlatÄ±r. Yeni oturum (Chromium/Puppeteer motoru) baÅŸlarken **kesinlikle 3-4 saniye beklenmelidir.** EÄŸer beklenmeden hemen `getPairingCode` Ã§aÄŸrÄ±lÄ±rsa WAHA `500 Internal Server Error (Cannot read properties of null (reading 'evaluate'))` hatasÄ± fÄ±rlatÄ±r.
+- **Ã‡ifte Mesaj (Double Message) TuzaÄŸÄ±:** Webhook ayarÄ± `docker run` ile global olarak yapÄ±ldÄ±ÄŸÄ± iÃ§in, `startSession` isteÄŸinin iÃ§ine ekstra olarak `config: { webhooks: [...] }` parametresi **EKLENMEMELÄ°DÄ°R**. EÄŸer eklenirse WAHA aynÄ± mesajÄ± Supabase'e iki kere yollar ve bot mÃ¼ÅŸteriye iki kere aynÄ± cevabÄ± verir.
 
-### 8.3 Supabase Webhook Güvenliği (Kritik RLS ve JWT Ayarları)
-WAHA'dan gelen anlık (POST) webhook isteklerini karşılayan mikroservis `waha-webhook` fonksiyonudur.
-- WAHA, Supabase'in beklediği yetkilendirme (Authorization: Bearer Token) başlıklarına sahip olmadığı için Supabase API Gateway bu isteklere anında `401 Unauthorized` hatası verir.
-- **Bunu aşmak için webhook fonksiyonu KESİNLİKLE `--no-verify-jwt` bayrağı ile deploy edilmelidir:**
+### 8.3 Supabase Webhook GÃ¼venliÄŸi (Kritik RLS ve JWT AyarlarÄ±)
+WAHA'dan gelen anlÄ±k (POST) webhook isteklerini karÅŸÄ±layan mikroservis `waha-webhook` fonksiyonudur.
+- WAHA, Supabase'in beklediÄŸi yetkilendirme (Authorization: Bearer Token) baÅŸlÄ±klarÄ±na sahip olmadÄ±ÄŸÄ± iÃ§in Supabase API Gateway bu isteklere anÄ±nda `401 Unauthorized` hatasÄ± verir.
+- **Bunu aÅŸmak iÃ§in webhook fonksiyonu KESÄ°NLÄ°KLE `--no-verify-jwt` bayraÄŸÄ± ile deploy edilmelidir:**
   ```bash
   npx supabase functions deploy waha-webhook --no-verify-jwt
   ```
-- Fonksiyon JWT doğrulaması yapmadığı için, veritabanına yazma işlemini (`api_usage_logs` tablosuna) yapabilmesi adına içeride `supabaseAdmin` (Service Role Key kullanılarak) yetkisiyle işlem yapmalıdır. 
+- Fonksiyon JWT doÄŸrulamasÄ± yapmadÄ±ÄŸÄ± iÃ§in, veritabanÄ±na yazma iÅŸlemini (`api_usage_logs` tablosuna) yapabilmesi adÄ±na iÃ§eride `supabaseAdmin` (Service Role Key kullanÄ±larak) yetkisiyle iÅŸlem yapmalÄ±dÄ±r. 
 
-### 8.4 Gelen Mesajları Dinleme ve Gemini Yanıtı
-- Payload içinden `session` (merchantId), `from` (müşteri numarası) ve `body` (mesaj metni) ayrıştırılır. Kendi gönderdiğimiz mesajların (isFromMe) sonsuz döngüye girmesi engellenerek 200 OK yanıtı dönülür.
-- Kullanıcının `bot_settings` tablosundaki `system_prompt` yönergesi çekilerek Gemini'ye sorulur. Çıkan sonuç WAHA `/api/sendText` endpoint'i üzerinden WhatsApp'a iletilir.
+### 8.4 Gelen MesajlarÄ± Dinleme ve Gemini YanÄ±tÄ±
+- Payload iÃ§inden `session` (merchantId), `from` (mÃ¼ÅŸteri numarasÄ±) ve `body` (mesaj metni) ayrÄ±ÅŸtÄ±rÄ±lÄ±r. Kendi gÃ¶nderdiÄŸimiz mesajlarÄ±n (isFromMe) sonsuz dÃ¶ngÃ¼ye girmesi engellenerek 200 OK yanÄ±tÄ± dÃ¶nÃ¼lÃ¼r.
+- KullanÄ±cÄ±nÄ±n `bot_settings` tablosundaki `system_prompt` yÃ¶nergesi Ã§ekilerek Gemini'ye sorulur. Ã‡Ä±kan sonuÃ§ WAHA `/api/sendText` endpoint'i Ã¼zerinden WhatsApp'a iletilir.
+
