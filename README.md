@@ -1246,3 +1246,12 @@ Mobil (`flow`) tarafında "Canlı Fetch" mimarisi (bkz. Adım 5, Sosyal Medya Ba
 5. **Flow Web - Randevu Ekranı Tasarımının Mobile Eşitlenmesi:** Web'deki iki sütunlu randevu takvimi ve yoğunluk haritası düzeni `flex-direction`: column ile tek sütun yapıldı. **Takvim** üstte, **Günlük Yoğunluk Haritası (Müsaitlik)** ortada ve **Randevu Listesi** en altta olacak şekilde dikey olarak sıralandı.
 6. **Flow Web - Takvim Scroll UX İyileştirmeleri:** Takvim ve Yoğunluk Haritası container'larına yatay kaydırma çubuklarını gizleyen CSS sınıfları eklendi. overscroll-behavior-x: contain eklenerek sağa-sola swipe yaparken tüm ekranın kayması (swipe to go back veya page scroll) engellendi, native mobil hissi yaratıldı.
 7. **Flow Web - Ülke Listesi Dropdown Renk Düzeltmesi:** Profil ekranındaki ülke, şehir, ilçe <select> etiketlerindeki <option>'ların varsayılan beyaz/açık renk arka planları #17151A olacak şekilde güncellenerek, üzerine gelen beyaz metinlerin okunamaması sorunu (koyu tema uyumsuzluğu) çözüldü.
+
+
+## Session 27.09.2026 - Randevu Bug Fixes
+- Separated Notes and Services UI rendering in Randevu cards on Web & Mobile.
+- Synced selectedDate with currentDate for correct month view across platforms.
+- Replaced horizontal scrollable date chips in Mobile with native DateTimePicker.
+- Wrapped Mobile modal form in ScrollView to fix keyboard overlap and unresponsiveness.
+- Made serviceId optional and added Validation Alert in Mobile.
+- Fixed database constraint overlapping bug in Web and Mobile by replacing timestamp LIKE queries with gte/lt bounds.
