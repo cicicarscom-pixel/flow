@@ -44,6 +44,15 @@ export default function RandevuScreen() {
   // -- Dynamic Date State --
   const [currentDate, setCurrentDate] = useState(new Date());
 
+  const calendarScrollRef = useRef(null);
+
+  React.useEffect(() => {
+    const index = dynamicDays.findIndex(d => d.fullDate === selectedDate);
+    if (index !== -1 && calendarScrollRef.current) {
+      calendarScrollRef.current.scrollTo({ x: index * 60 - 150, animated: true });
+    }
+  }, [selectedDate, dynamicDays]);
+
   const dynamicDays = useMemo(() => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -94,6 +103,18 @@ export default function RandevuScreen() {
   const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar, updateCalendar, deleteCalendar } = useCalendars();
 
   const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment } = useAppointments(todayStr, activeCalendarId);
+  
+  React.useEffect(() => {
+    if (selectedDate) {
+      const parts = selectedDate.split('-');
+      if (parts.length === 3) {
+        const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        if (d.getMonth() !== currentDate.getMonth() || d.getFullYear() !== currentDate.getFullYear()) {
+          setCurrentDate(d);
+        }
+      }
+    }
+  }, [selectedDate, currentDate]);
   
   React.useEffect(() => {
     const fetchServices = async () => {
@@ -282,6 +303,7 @@ export default function RandevuScreen() {
             
             {/* Weekly Calendar Strip */}
           <ScrollView
+            ref={calendarScrollRef}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.calendarStrip}
@@ -392,9 +414,16 @@ export default function RandevuScreen() {
                         <Text style={styles.cardName}>
                           {appt.customerName || appt.customerPhone}
                         </Text>
-                        <Text style={styles.cardService}>
-                          {appt.services?.length > 0 ? appt.services.join(' + ') : (appt.customerRequestRaw ? `📝 Not: ${appt.customerRequestRaw}` : t('randevu.randevuScreen.noAppointments'))}
-                        </Text>
+                        {(appt.services && appt.services.length > 0) && (
+                            <Text style={styles.cardService}>
+                              {appt.services.join(' + ')}
+                            </Text>
+                          )}
+                          {appt.customerRequestRaw && (
+                            <Text style={[styles.cardService, { color: '#F59E0B' }]}>
+                              📝 {appt.customerRequestRaw}
+                            </Text>
+                          )}
                         <View style={styles.cardTimeRow}>
                           <Ionicons name="time-outline" size={12} color="#A79E96" />
                           <Text style={styles.cardTimeText}>{apptTime}</Text>
