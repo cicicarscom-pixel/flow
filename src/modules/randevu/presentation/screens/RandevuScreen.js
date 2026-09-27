@@ -157,7 +157,10 @@ export default function RandevuScreen() {
   };
 
   const handleSaveAppointment = async () => {
-    if (!newApptName || !newApptPhone || !newApptTime || !newApptService) return;
+    if (!newApptName || !newApptPhone || !newApptTime) {
+      Alert.alert('Eksik Bilgi', 'Lütfen müşteri adı, telefon numarası ve saat seçiniz.');
+      return;
+    }
     try {
       setIsSaving(true);
       await addAppointment({
@@ -569,8 +572,8 @@ export default function RandevuScreen() {
               <ScrollView 
                   showsVerticalScrollIndicator={false} 
                   keyboardShouldPersistTaps="handled"
-                  style={{ flexGrow: 0 }}
-                  contentContainerStyle={{ paddingBottom: 24 }}
+                  style={{ flexShrink: 1, width: '100%' }}
+                  contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
                 >
                 <View style={{ alignItems: 'center', marginBottom: 28 }}>
                 <View style={{ 
