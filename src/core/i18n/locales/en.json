@@ -637,7 +637,11 @@
     },
     "appointments": {
       "unnamedCustomer": "Appointment",
-      "empty": "No upcoming appointments or reservations."
+      "empty": "No upcoming appointments or reservations.",
+      "todayTitle": "Today's Appointments",
+      "todayEmpty": "No appointments planned for today.",
+      "upcomingTitle": "Upcoming Appointments",
+      "viewAll": "View All"
     },
     "greeting": {
       "defaultName": "User",

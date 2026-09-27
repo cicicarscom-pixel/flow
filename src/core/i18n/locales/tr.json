@@ -637,7 +637,11 @@
     },
     "appointments": {
       "unnamedCustomer": "Randevu",
-      "empty": "Yaklaşan randevu veya rezervasyon bulunmuyor."
+      "empty": "Yaklaşan randevu veya rezervasyon bulunmuyor.",
+      "todayTitle": "Bugünkü Randevular",
+      "todayEmpty": "Bugün için planlı randevu yok.",
+      "upcomingTitle": "Yaklaşan Randevular",
+      "viewAll": "Tümünü gör"
     },
     "greeting": {
       "defaultName": "Kullanıcı",

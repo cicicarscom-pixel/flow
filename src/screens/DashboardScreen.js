@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import { AppState } from 'react-native';
-import { todayInTimezone } from '../lib/dates';
+import { todayInTimezone, addDaysYmd } from '../lib/dates';
 import { supabase } from '../shared/lib/supabase';
 import { container } from '../core/container';
 import { AppointmentStatus } from '../modules/randevu/domain/enums/AppointmentStatus';
@@ -278,6 +278,7 @@ export default function DashboardScreen({ navigation }) {
   const [recentActivities, setRecentActivities] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [totalAppointments, setTotalAppointments] = useState(0);
+  const [todayAppointments, setTodayAppointments] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
   // --- Sadece görsel: ekran girişinde içerik yumuşakça belirir ---
@@ -879,16 +880,13 @@ export default function DashboardScreen({ navigation }) {
 
             {/* Bugünkü Randevu/Rezervasyonlar — dikey liste */}
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>{t('dashboardScreen.today.title')}</Text>
+              <Text style={styles.sectionTitle}>{t('dashboardScreen.appointments.todayTitle', 'Bugünkü Randevular')}</Text>
             </View>
             {isLoading ? (
+              <View style={styles.apptList}><Skeleton width="100%" height={44} borderRadius={14} /><Skeleton width="100%" height={44} borderRadius={14} /></View>
+            ) : todayAppointments.length > 0 ? (
               <View style={styles.apptList}>
-                <Skeleton width="100%" height={44} borderRadius={14} />
-                <Skeleton width="100%" height={44} borderRadius={14} />
-              </View>
-            ) : appointments.length > 0 ? (
-              <View style={styles.apptList}>
-                {appointments.map(a => {
+                {todayAppointments.map(a => {
                   const targetDate = a.dateText ? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date(a.dateText)) : null;
                   return (
                   <TouchableOpacity key={a.id} style={styles.apptListRow} onPress={() => {
@@ -898,7 +896,31 @@ export default function DashboardScreen({ navigation }) {
                     <Text style={styles.apptListTime}>{a.time}</Text>
                     <Text style={styles.apptListTitle} numberOfLines={1}>{a.title}</Text>
                   </TouchableOpacity>
-                )})} 
+                )})}
+              </View>
+            ) : (
+              <Text style={styles.emptyText}>{t('dashboardScreen.appointments.todayEmpty', 'Bugün için planlı randevu yok.')}</Text>
+            )}
+
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>{t('dashboardScreen.appointments.upcomingTitle', 'Yaklaşan Randevular')}</Text>
+            </View>
+            {isLoading ? (
+              <View style={styles.apptList}><Skeleton width="100%" height={44} borderRadius={14} /><Skeleton width="100%" height={44} borderRadius={14} /></View>
+            ) : appointments.length > 0 ? (
+              <View style={styles.apptList}>
+                {appointments.map(a => {
+                  const targetDate = a.dateText ? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date(a.dateText)) : null;
+                  const displayTime = (new Date(a.dateText).getDate() === new Date().getDate() ? '' : new Date(a.dateText).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) + ' ') + a.time;
+                  return (
+                  <TouchableOpacity key={a.id} style={styles.apptListRow} onPress={() => {
+                    if (targetDate) navigation.navigate('Ai Asistan', { screen: 'RandevuMain', params: { date: targetDate } });
+                  }}>
+                    <View style={[styles.apptListDot, { backgroundColor: a.color }]} />
+                    <Text style={styles.apptListTime}>{displayTime}</Text>
+                    <Text style={styles.apptListTitle} numberOfLines={1}>{a.title}</Text>
+                  </TouchableOpacity>
+                )})}
                 {totalAppointments > appointments.length && (
                   <TouchableOpacity onPress={() => navigation.navigate('Ai Asistan', { screen: 'RandevuMain' })} style={{ marginTop: 10, alignItems: 'center' }}>
                     <Text style={{ color: '#00F2FE', fontSize: 13, fontWeight: '500' }}>{t('dashboardScreen.appointments.viewAll', 'Tümünü gör')} ({totalAppointments})</Text>
@@ -906,7 +928,7 @@ export default function DashboardScreen({ navigation }) {
                 )}
               </View>
             ) : (
-              <Text style={styles.emptyText}>{t('dashboardScreen.appointments.empty')}</Text>
+              <Text style={styles.emptyText}>{t('dashboardScreen.appointments.empty', 'Yaklaşan randevu veya rezervasyon bulunmuyor.')}</Text>
             )}
 
             {/* Tüm Hesaplar — sosyal özet */}
@@ -1068,7 +1090,7 @@ export default function DashboardScreen({ navigation }) {
 
             {/* İletişim Raporları */}
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>{t('dashboardScreen.communicationReports.title')}</Text>
+              <Text style={styles.sectionTitle}>{t('dashboardScreen.appointmentNotifications.title')}</Text>
             </View>
             <AppointmentNotifications navigation={navigation} onRead={() => setUnreadCount(prev => Math.max(0, prev - 1))} />
             <View style={{ height: 40 }} />
@@ -1621,6 +1643,14 @@ const styles = StyleSheet.create({
     padding: 4,
   },
 });
+
+
+
+
+
+
+
+
 
 
 

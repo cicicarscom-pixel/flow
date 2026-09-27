@@ -637,7 +637,11 @@
     },
     "appointments": {
       "unnamedCustomer": "Termin",
-      "empty": "Keine bevorstehenden Termine oder Reservierungen."
+      "empty": "Keine bevorstehenden Termine oder Reservierungen.",
+      "todayTitle": "Heutige Termine",
+      "todayEmpty": "Heute sind keine Termine geplant.",
+      "upcomingTitle": "Anstehende Termine",
+      "viewAll": "Alle ansehen"
     },
     "greeting": {
       "defaultName": "Benutzer",
