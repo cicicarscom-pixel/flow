@@ -109,12 +109,15 @@ export default function RandevuScreen() {
       const parts = selectedDate.split('-');
       if (parts.length === 3) {
         const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-        if (d.getMonth() !== currentDate.getMonth() || d.getFullYear() !== currentDate.getFullYear()) {
-          setCurrentDate(d);
-        }
+        setCurrentDate(prev => {
+          if (d.getMonth() !== prev.getMonth() || d.getFullYear() !== prev.getFullYear()) {
+            return d;
+          }
+          return prev;
+        });
       }
     }
-  }, [selectedDate, currentDate]);
+  }, [selectedDate]);
   
   React.useEffect(() => {
     const fetchServices = async () => {
