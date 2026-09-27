@@ -4,7 +4,10 @@ export class Appointment {
   private readonly _id: string;
   private readonly _customerPhone: string;
   private readonly _customerName: string | null;
-  private readonly _serviceId: string;
+  private readonly _serviceId: string | null;
+  private readonly _startsAt: string | null;
+  private readonly _endsAt: string | null;
+  private readonly _timezone: string | null;
   private readonly _employeeId: string | null;
   private readonly _date: string;
   private readonly _status: AppointmentStatus;
@@ -19,7 +22,10 @@ export class Appointment {
     id: string;
     customerPhone: string;
     customerName?: string | null;
-    serviceId: string;
+    serviceId: string | null;
+    startsAt?: string | null;
+    endsAt?: string | null;
+    timezone?: string | null;
     employeeId?: string | null;
     date: string;
     status: AppointmentStatus;
@@ -33,7 +39,10 @@ export class Appointment {
     this._id = data.id;
     this._customerPhone = data.customerPhone;
     this._customerName = data.customerName || null;
-    this._serviceId = data.serviceId;
+    this._serviceId = data.serviceId || null;
+    this._startsAt = data.startsAt || null;
+    this._endsAt = data.endsAt || null;
+    this._timezone = data.timezone || null;
     this._employeeId = data.employeeId || null;
     this._date = data.date;
     this._status = data.status;
@@ -48,7 +57,10 @@ export class Appointment {
   get id(): string { return this._id; }
   get customerPhone(): string { return this._customerPhone; }
   get customerName(): string | null { return this._customerName; }
-  get serviceId(): string { return this._serviceId; }
+  get serviceId(): string | null { return this._serviceId; }
+  get startsAt(): string | null { return this._startsAt; }
+  get endsAt(): string | null { return this._endsAt; }
+  get timezone(): string | null { return this._timezone; }
   get employeeId(): string | null { return this._employeeId; }
   get date(): string { return this._date; }
   get status(): AppointmentStatus { return this._status; }

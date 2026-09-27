@@ -167,7 +167,7 @@ export default function RandevuScreen() {
         customerName: newApptName,
         customerPhone: newApptPhone,
         date: `${selectedDate}T${newApptTime}:00`,
-        serviceId: newApptService || 'Bilinmiyor',
+        serviceId: newApptService || null,
           calendarId: newApptCalendarId || undefined,
           customerRequestRaw: newApptNote || null,
           status: AppointmentStatus.Pending,
@@ -180,6 +180,7 @@ export default function RandevuScreen() {
       setNewApptNote('');
     } catch (e) {
       console.error(e);
+      Alert.alert("Hata", e.message || "Randevu eklenemedi");
     } finally {
       setIsSaving(false);
     }

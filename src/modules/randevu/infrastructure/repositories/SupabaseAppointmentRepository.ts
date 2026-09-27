@@ -7,6 +7,49 @@ import { NetworkError } from '../../../../shared/errors/NetworkError';
 import { todayInTimezone } from '../../../../lib/dates';
 
 export class SupabaseAppointmentRepository implements IAppointmentRepository {
+  async create(appointmentData: Omit<Appointment, "id" | "createdAt" | "updatedAt">): Promise<Appointment> {
+    const { data, error } = await supabase.rpc("create_manual_appointment", {
+      p_local_start: appointmentData.date.substring(0, 16),
+      p_customer_name: appointmentData.customerName || null,
+      p_customer_phone: appointmentData.customerPhone,
+      p_calendar_id: appointmentData.calendarId || null,
+      p_service_id: appointmentData.serviceId === "Bilinmiyor" ? null : (appointmentData.serviceId || null),
+      p_request_raw: appointmentData.customerRequestRaw || null,
+      p_source: "mobile"
+    });
+
+    if (error) {
+      throw new Error("Ağ/Yetki hatası: " + error.message);
+    }
+
+    switch (data.status) {
+      case "SUCCESS":
+        return new Appointment({
+          id: data.appointment_id,
+          customerPhone: appointmentData.customerPhone,
+          serviceId: appointmentData.serviceId || "",
+          date: appointmentData.date,
+          status: AppointmentStatus.Pending,
+          bookingToken: "",
+          startsAt: data.starts_at,
+          endsAt: data.ends_at,
+        });
+      case "SLOT_TAKEN": throw new Error("Bu saat dolu");
+      case "CUSTOMER_TIME_CONFLICT": throw new Error("Bu müşterinin bu saatte başka randevusu var");
+      case "CALENDAR_REQUIRED": throw new Error("Lütfen bir doktor/takvim seçin");
+      case "INVALID_LOCAL_TIME": throw new Error("Bu saat, saat değişikliği nedeniyle mevcut değil");
+      case "CUSTOMER_REQUIRED": throw new Error("Müşteri adı ve telefonu zorunlu");
+      default: throw new Error("Randevu oluşturulamadı (" + data.status + ")");
+    }
+  }main/repositories/IAppointmentRepository';
+import { Appointment } from '@domain/entities/Appointment';
+import { AppointmentMapper } from '../mappers/AppointmentMapper';
+import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
+import { supabase } from '../../../../shared';
+import { NetworkError } from '../../../../shared/errors/NetworkError';
+import { todayInTimezone } from '../../../../lib/dates';
+
+export class SupabaseAppointmentRepository implements IAppointmentRepository {
   async create(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Appointment> {
     const { data: { user } } = await supabase.auth.getUser();
     
