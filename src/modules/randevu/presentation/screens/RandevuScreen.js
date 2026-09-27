@@ -76,6 +76,20 @@ export default function RandevuScreen() {
   }, []);
   
   // ── Supabase veri bağlantısı ──
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newApptName, setNewApptName] = useState('');
+  const [newApptPhone, setNewApptPhone] = useState('');
+  const [newApptTime, setNewApptTime] = useState('10:00');
+  const [newApptService, setNewApptService] = useState('Genel Bakım');
+  const [newApptCalendarId, setNewApptCalendarId] = useState(null);
+  const [availableModalHours, setAvailableModalHours] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showCalendarDropdown, setShowCalendarDropdown] = useState(false);
+  const [isManageModalVisible, setIsManageModalVisible] = useState(false);
+  const [promptConfig, setPromptConfig] = useState({ visible: false, title: "", placeholder: "", value: "", onSave: null });
+
+  const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar, updateCalendar, deleteCalendar } = useCalendars();
+
   const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment } = useAppointments(todayStr, activeCalendarId);
   
   React.useEffect(() => { if(isModalVisible && activeCalendarId) setNewApptCalendarId(activeCalendarId); else if(isModalVisible) setNewApptCalendarId(calendars[0]?.id || null); }, [isModalVisible, activeCalendarId, calendars]);
@@ -90,19 +104,6 @@ export default function RandevuScreen() {
       fetchHours();
     }
   }, [isModalVisible, selectedDate, newApptService, newApptCalendarId]);
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [newApptName, setNewApptName] = useState('');
-  const [newApptPhone, setNewApptPhone] = useState('');
-  const [newApptTime, setNewApptTime] = useState('10:00');
-  const [newApptService, setNewApptService] = useState('Genel Bakım');
-  const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar, updateCalendar, deleteCalendar } = useCalendars();
-  const [newApptCalendarId, setNewApptCalendarId] = useState(null);
-  const [availableModalHours, setAvailableModalHours] = useState([]);
-  const [isSaving, setIsSaving] = useState(false);
-    const [showCalendarDropdown, setShowCalendarDropdown] = useState(false);
-    const [isManageModalVisible, setIsManageModalVisible] = useState(false);
-  const [promptConfig, setPromptConfig] = useState({ visible: false, title: "", placeholder: "", value: "", onSave: null });
 
   const handleDaySelect = (dayObj) => {
     setSelectedDate(dayObj.fullDate);
@@ -542,46 +543,33 @@ export default function RandevuScreen() {
                 keyboardType="phone-pad"
               />
 
-              <View style={{ flexDirection: 'row', gap: 16 }}>
-                <View style={{ flex: 1 }}>
-                    <View style={{ marginBottom: 12 }}>
-                        <Text style={styles.webModalLabel}>Takvim</Text>
-                        <TouchableOpacity 
-                          style={[styles.webModalInput, { paddingVertical: 14 }]} 
-                          onPress={() => setShowCalendarDropdown(!showCalendarDropdown)}
-                        >
-                          <Text style={{ color: newApptCalendarId ? '#fff' : 'rgba(255, 255, 255, 0.4)' }}>
-                            {newApptCalendarId ? calendars.find(c => c.id === newApptCalendarId)?.name : "Seçiniz"}
-                          </Text>
-                        </TouchableOpacity>
-                        
-                        {showCalendarDropdown && (
-                          <View style={{ backgroundColor: '#1A181C', borderRadius: 16, marginTop: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' }}>
-                            {calendars.map(cal => (
-                              <TouchableOpacity 
-                                key={cal.id} 
-                                style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}
-                                onPress={() => { setNewApptCalendarId(cal.id); setShowCalendarDropdown(false); }}
-                              >
-                                <Text style={{ color: newApptCalendarId === cal.id ? '#22B573' : '#fff' }}>{cal.name}</Text>
-                              </TouchableOpacity>
-                            ))}
-                          </View>
-                        )}
-                      </View>
-                  <Text style={styles.webModalLabel}>Saat</Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
-                      {availableModalHours.map(hour => (
-                        <TouchableOpacity 
-                          key={hour}
-                          onPress={() => setNewApptTime(hour)}
-                          style={[styles.chip, newApptTime === hour && styles.chipActive]}
-                        >
-                          <Text style={[styles.chipText, newApptTime === hour && styles.chipTextActive]}>{hour}</Text>
-                        </TouchableOpacity>
-                      ))}
-                    </ScrollView>
-                </View>
+              <View style={{ marginBottom: 16, zIndex: 10 }}>
+                <Text style={styles.webModalLabel}>Takvim</Text>
+                <TouchableOpacity 
+                  style={[styles.webModalInput, { paddingVertical: 14, marginBottom: 0 }]} 
+                  onPress={() => setShowCalendarDropdown(!showCalendarDropdown)}
+                >
+                  <Text style={{ color: newApptCalendarId ? '#fff' : 'rgba(255, 255, 255, 0.4)' }}>
+                    {newApptCalendarId ? calendars.find(c => c.id === newApptCalendarId)?.name : "Seçiniz"}
+                  </Text>
+                </TouchableOpacity>
+                
+                {showCalendarDropdown && (
+                  <View style={{ position: 'absolute', top: 70, left: 0, right: 0, backgroundColor: '#1A181C', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', zIndex: 20 }}>
+                    {calendars.map(cal => (
+                      <TouchableOpacity 
+                        key={cal.id} 
+                        style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}
+                        onPress={() => { setNewApptCalendarId(cal.id); setShowCalendarDropdown(false); }}
+                      >
+                        <Text style={{ color: newApptCalendarId === cal.id ? '#22B573' : '#fff' }}>{cal.name}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+
+              <View style={{ flexDirection: 'row', gap: 16, zIndex: 1 }}>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.webModalLabel}>Hizmet Tipi</Text>
                   <TextInput
@@ -592,6 +580,21 @@ export default function RandevuScreen() {
                     onChangeText={setNewApptService}
                   />
                 </View>
+              </View>
+              
+              <View style={{ zIndex: 1 }}>
+                <Text style={styles.webModalLabel}>Saat</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
+                    {availableModalHours.map(hour => (
+                      <TouchableOpacity 
+                        key={hour}
+                        onPress={() => setNewApptTime(hour)}
+                        style={[styles.chip, newApptTime === hour && styles.chipActive]}
+                      >
+                        <Text style={[styles.chipText, newApptTime === hour && styles.chipTextActive]}>{hour}</Text>
+                      </TouchableOpacity>
+                    ))}
+                </ScrollView>
               </View>
 
               <TouchableOpacity 
