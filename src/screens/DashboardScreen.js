@@ -801,7 +801,7 @@ export default function DashboardScreen({ navigation }) {
                 <TouchableOpacity style={[styles.heroIconBtn, { marginRight: 8, backgroundColor: 'rgba(255,255,255,0.15)' }]} onPress={handleHeroImageChange}>
                   <Ionicons name="image-outline" size={18} color="rgba(255,255,255,0.8)" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.heroIconBtn} onPress={() => navigation.navigate('Sosyal Medya', { screen: 'Inbox', params: { screen: 'Bildirimler' } })}>
+                <TouchableOpacity style={styles.heroIconBtn} onPress={() => navigation.navigate('Inbox', { screen: 'Bildirimler' })}>
                   <MaterialIcons name="notifications" size={20} color={COLORS.background} />
                   {unreadCount > 0 && <View style={styles.notificationBadge} />}
                 </TouchableOpacity>
