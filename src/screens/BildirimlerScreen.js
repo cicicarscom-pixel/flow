@@ -12,6 +12,7 @@ import {
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlobalAppBar, supabase } from '../shared';
+import { appointmentSentence } from '../lib/appointmentSentence';
 
 const COLORS = {
   background: '#17151A',
@@ -110,26 +111,24 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
     fetchNotifications();
   };
 
-  const markAsRead = async (id, currentStatus, is_broadcast) => {
-    if (currentStatus) return; // Zaten okunduysa işlem yapma
-    
-    // UI optimistic update
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
-    
-    try {
-      if (is_broadcast) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-           await supabase.from('broadcast_reads').insert({ user_id: session.user.id, broadcast_id: id });
+  const markAsRead = async (id, currentStatus, is_broadcast, targetDate) => {
+    if (!currentStatus) {
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+      try {
+        if (is_broadcast) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+             await supabase.from('broadcast_reads').upsert({ user_id: session.user.id, broadcast_id: id }, { onConflict: 'user_id, broadcast_id' });
+          }
+        } else {
+          await supabase.from('notifications').update({ is_read: true }).eq('id', id);
         }
-      } else {
-        await supabase
-          .from('notifications')
-          .update({ is_read: true })
-          .eq('id', id);
+      } catch (error) {
+        console.warn('Okundu isaretlenirken hata:', error);
       }
-    } catch (error) {
-      console.warn('Okundu işaretlenirken hata:', error);
+    }
+    if (targetDate && navigation) {
+      navigation.navigate('Ai Asistan', { screen: 'RandevuMain', params: { date: targetDate } });
     }
   };
 

@@ -694,5 +694,11 @@
     "appointmentNotifications": {
       "title": "Terminbenachrichtigungen"
     }
+  },
+  "notifications": {
+    "sentences": {
+      "appointment": "{customer} hat einen Termin bei {doctor} am {when} gebucht",
+      "appointmentNoDoctor": "{customer} hat einen Termin am {when} gebucht"
+    }
   }
 }

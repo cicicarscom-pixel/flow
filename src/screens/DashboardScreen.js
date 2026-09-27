@@ -19,6 +19,7 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import { AppState } from 'react-native';
 import { todayInTimezone, addDaysYmd } from '../lib/dates';
+import { appointmentSentence } from '../lib/appointmentSentence';
 import { supabase } from '../shared/lib/supabase';
 import { container } from '../core/container';
 import { AppointmentStatus } from '../modules/randevu/domain/enums/AppointmentStatus';
@@ -267,8 +268,7 @@ export default function DashboardScreen({ navigation }) {
   const { showActionSheetWithOptions } = useActionSheet();
   const [showHint, setShowHint] = useState(false);
   const [hintAnim] = useState(() => new Animated.Value(0));
-  const [isBellModalVisible, setBellModalVisible] = useState(false);
-
+  
   const [isLoading, setIsLoading] = useState(true);
   const [aiActive, setAiActive] = useState(true);
   const [userProfile, setUserProfile] = useState({ fullName: '', avatarUrl: null, heroImageUrl: null });
@@ -774,7 +774,7 @@ export default function DashboardScreen({ navigation }) {
                 <TouchableOpacity style={[styles.heroIconBtn, { marginRight: 8, backgroundColor: 'rgba(255,255,255,0.15)' }]} onPress={handleHeroImageChange}>
                   <Ionicons name="image-outline" size={18} color="rgba(255,255,255,0.8)" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.heroIconBtn} onPress={() => setBellModalVisible(true)}>
+                <TouchableOpacity style={styles.heroIconBtn} onPress={() => navigation.navigate('Sosyal Medya', { screen: 'Inbox', params: { screen: 'Bildirimler' } })}>
                   <MaterialIcons name="notifications" size={20} color={COLORS.background} />
                   {unreadCount > 0 && <View style={styles.notificationBadge} />}
                 </TouchableOpacity>
@@ -1098,19 +1098,7 @@ export default function DashboardScreen({ navigation }) {
         </Animated.View>
       </ScrollView>
 
-      <Modal visible={isBellModalVisible} animationType='slide' transparent={true} onRequestClose={() => setBellModalVisible(false)}>
-        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <View style={{ backgroundColor: '#131315', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, maxHeight: '80%' }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>{t('dashboardScreen.appointmentNotifications.title', 'Randevu Bildirimleri')}</Text>
-              <TouchableOpacity onPress={() => setBellModalVisible(false)}><MaterialIcons name='close' size={24} color='#fff' /></TouchableOpacity>
-            </View>
-            <ScrollView>
-              <AppointmentNotifications navigation={{ navigate: (stack, args) => { setBellModalVisible(false); navigation.navigate(stack, args); } }} onRead={() => setUnreadCount(prev => Math.max(0, prev - 1))} />
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+      
 
     </View>
   );
@@ -1643,6 +1631,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
 });
+
 
 
 
