@@ -8,7 +8,10 @@ import { todayInTimezone } from '../../../../lib/dates';
 
 export class SupabaseAppointmentRepository implements IAppointmentRepository {
   async create(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Appointment> {
+    const { data: { user } } = await supabase.auth.getUser();
+    
     const rawData = {
+      organization_id: user?.id,
       customer_phone: appointmentData.customerPhone,
       customer_name: appointmentData.customerName,
       service_id: appointmentData.serviceId,
