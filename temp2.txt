@@ -1,9 +1,0 @@
-
-      }
-    };
-  
->   if (loading) return <ActivityIndicator size="small" color="#00F2FE" />;
-    if (notifications.length === 0) return <Text style={{ color: '#849495', textAlign: 'center' }}>Henüz randevu bildirimi yok</Text>;
-  
-    return (
-
