@@ -184,22 +184,26 @@ const { width: screenWidth } = Dimensions.get('window');
 const innerWidth = screenWidth - 2; // Compensate for left/right borders (1px each)
 
 
-const AppointmentNotifications = ({ navigation }) => {
+const AppointmentNotifications = ({ navigation, onRead }) => {
   const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const fetchNotifs = async () => {
     try {
-      const { data } = await supabase
+      setErrorMsg(null);
+      const { data, error } = await supabase
         .from('notifications')
         .select('id, created_at, is_read, metadata')
         .eq('type', 'appointment_created')
         .order('created_at', { ascending: false })
         .limit(10);
+      if (error) throw error;
       setNotifications(data || []);
     } catch (e) {
       console.warn('Notifs error', e);
+      setErrorMsg('Bildirimler yüklenemedi');
     } finally {
       setLoading(false);
     }
@@ -215,6 +219,7 @@ const AppointmentNotifications = ({ navigation }) => {
     if (!n.is_read) {
       await supabase.from('notifications').update({ is_read: true }).eq('id', n.id);
       setNotifications(prev => prev.map(p => p.id === n.id ? { ...p, is_read: true } : p));
+      if (onRead) onRead();
     }
     const targetDate = n.metadata?.starts_at ? new Intl.DateTimeFormat('en-CA', { timeZone: n.metadata.timezone || 'Europe/Istanbul' }).format(new Date(n.metadata.starts_at)) : null;
     if (targetDate) {
@@ -223,6 +228,7 @@ const AppointmentNotifications = ({ navigation }) => {
   };
 
   if (loading) return <ActivityIndicator size="small" color="#00F2FE" />;
+  if (errorMsg) return <Text style={{ color: '#FF4D4D', textAlign: 'center' }}>{errorMsg}</Text>;
   if (notifications.length === 0) return <Text style={{ color: '#849495', textAlign: 'center' }}>Henüz randevu bildirimi yok</Text>;
 
   return (
@@ -297,34 +303,25 @@ export default function DashboardScreen({ navigation }) {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session?.user?.id) return;
 
-        let regularCount = 0;
-        if (merchantId) {
-          const { count } = await supabase
-            .from('notifications')
-            .select('*', { count: 'exact', head: true })
-            .eq('profile_id', merchantId)
-            .eq('is_read', false);
-          regularCount = count || 0;
-        }
-
-        const { data: profileData } = await supabase.from('profiles').select('user_type').eq('id', session.user.id).limit(1);
-        const userType = profileData?.[0]?.user_type || 'business';
-
-        const { count: totalBroadcasts } = await supabase
-          .from('broadcast_notifications')
-          .select('id', { count: 'exact', head: true })
-          .in('target', ['all', userType]);
-
-        const { count: readBroadcasts } = await supabase
-          .from('broadcast_reads')
-          .select('broadcast_id', { count: 'exact', head: true })
-          .eq('user_id', session.user.id);
-
-        const broadcastUnreadCount = Math.max(0, (totalBroadcasts || 0) - (readBroadcasts || 0));
-        setUnreadCount(regularCount + broadcastUnreadCount);
-      } catch (e) {
-        console.warn('Notification count error:', e);
-      }
+        const fetchUnreadCount = async () => {
+          try {
+            const { count } = await supabase
+              .from('notifications')
+              .select('id', { count: 'exact', head: true })
+              .eq('type', 'appointment_created')
+              .eq('is_read', false);
+            setUnreadCount(count || 0);
+          } catch (e) {
+            console.warn('Unread count error:', e);
+          }
+        };
+        fetchUnreadCount();
+        
+        AppState.addEventListener('change', nextAppState => {
+          if (nextAppState === 'active') {
+            fetchUnreadCount();
+          }
+        });
     };
   
     useFocusEffect(
@@ -1060,7 +1057,7 @@ export default function DashboardScreen({ navigation }) {
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>{t('dashboardScreen.communicationReports.title')}</Text>
             </View>
-            <CommunicationLogsTable />
+            <AppointmentNotifications navigation={navigation} onRead={() => setUnreadCount(prev => Math.max(0, prev - 1))} />
             <View style={{ height: 40 }} />
           </View>
         </Animated.View>

@@ -46,3 +46,13 @@ supabase/.temp/
 
 .env*
 !.env.example
+
+/fix_*.js
+/add_*.js
+/check_*.js
+/find_*.js
+/patch_*.js
+/update_*.js
+/test_*.js
+/inject_*.js
+/apply_*.js

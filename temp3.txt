@@ -1,0 +1,36 @@
+
+    const [financeStats, setFinanceStats] = useState({ income: 0, expense: 0 });
+    const [upcomingPayments, setUpcomingPayments] = useState([]);
+    const [socialStats, setSocialStats] = useState({ followers: 0, trend: 0 });
+    const [recentActivities, setRecentActivities] = useState([]);
+    const [appointments, setAppointments] = useState([]);
+>   const [unreadCount, setUnreadCount] = useState(0);
+  
+    // --- Sadece görsel: ekran girişinde içerik yumuşakça belirir ---
+    const [fadeAnim] = useState(() => new Animated.Value(0));
+    const [slideAnim] = useState(() => new Animated.Value(20));
+  
+          const { count: readBroadcasts } = await supabase
+            .from('broadcast_reads')
+            .select('broadcast_id', { count: 'exact', head: true })
+            .eq('user_id', session.user.id);
+  
+>         const broadcastUnreadCount = Math.max(0, (totalBroadcasts || 0) - (readBroadcasts || 0));
+>         setUnreadCount(regularCount + broadcastUnreadCount);
+        } catch (e) {
+          console.warn('Notification count error:', e);
+        }
+      };
+    
+                  <TouchableOpacity style={[styles.heroIconBtn, { marginRight: 8, backgroundColor: 'rgba(255,255,255,0.15)' }]} onPress={handleHeroImageChange}>
+                    <Ionicons name="image-outline" size={18} color="rgba(255,255,255,0.8)" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.heroIconBtn} onPress={() => navigation.navigate('Inbox', { screen: 'Bildirimler' })}>
+                    <MaterialIcons name="notifications" size={20} color={COLORS.background} />
+>                   {unreadCount > 0 && <View style={styles.notificationBadge} />}
+                  </TouchableOpacity>
+                </View>
+              </View>
+  
+              <Text style={styles.heroGreeting}>{t('dashboardScreen.greeting.hello')}</Text>
+

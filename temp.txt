@@ -1,0 +1,6 @@
+            {/* İletişim Raporları */}
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>{t('dashboardScreen.communicationReports.title')}</Text>
+            </View>
+            <CommunicationLogsTable />
+            <View style={{ height: 40 }} />
