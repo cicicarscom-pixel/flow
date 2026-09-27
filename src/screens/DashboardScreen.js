@@ -343,8 +343,8 @@ export default function DashboardScreen({ navigation }) {
             
             organizationId = orgData?.[0]?.organization_id;
             if (organizationId) {
-              fetchAppointments(organizationId);
-              fetchSocialStats(organizationId);
+              
+              
               fetchUnreadNotifications(organizationId);
             } else {
               fetchUnreadNotifications(null);
