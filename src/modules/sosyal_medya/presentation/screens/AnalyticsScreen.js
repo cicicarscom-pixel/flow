@@ -239,8 +239,9 @@ export default function AnalyticsScreen({ navigation }) {
         ? socialAccounts 
         : socialAccounts.filter(a => a.platform.toLowerCase() === selectedPlatform.id);
 
-      const _toDate = new Date().toISOString().split('T')[0];
-      const _fromDate = new Date(Date.now() - (selectedTimeRange?.days || 30) * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const tz = 'Europe/Istanbul'; // We can grab user timezone if available, fallback Istanbul
+      const _toDate = todayInTimezone(tz);
+      const _fromDate = addDaysYmd(_toDate, -(selectedTimeRange?.days || 30));
       
       let queryArgs = { fromDate: _fromDate, toDate: _toDate };
       if (selectedPlatform && selectedPlatform.id !== 'all') {

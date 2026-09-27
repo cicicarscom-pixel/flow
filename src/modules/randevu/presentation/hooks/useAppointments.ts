@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { todayInTimezone } from "../../../../lib/dates";
 import { container } from "../../../../core/container";
 import { SupabaseAppointmentRepository } from "@infrastructure/repositories/SupabaseAppointmentRepository";
 import { Appointment } from "@domain/entities/Appointment";
@@ -27,7 +28,7 @@ export interface UseAppointmentsResult {
 }
 
 export function useAppointments(initialDate?: string, activeCalendarId?: string | null): UseAppointmentsResult {
-  const today = toDateString(new Date());
+  const today = todayInTimezone('Europe/Istanbul'); // Will be updated by component if needed
   const [selectedDate, setSelectedDate] = useState<string>(initialDate || today);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

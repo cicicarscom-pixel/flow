@@ -1,18 +1,16 @@
 /* eslint-disable i18next/no-literal-string, no-unused-vars */
 import React, { useState, useRef, useMemo } from 'react';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { View, Text, ScrollView, TouchableOpacity, Alert,
   StyleSheet, Animated, ActivityIndicator, Modal, TextInput, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useAppointments, extractTime } from '../hooks/useAppointments';
 import { useCalendars } from '../hooks/useCalendars';
 import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
-import { supabase } from '../../../../shared';
 
 // Generate 30-min slots from 08:00 to 00:00
 const TIME_SLOTS = (() => {
@@ -39,22 +37,11 @@ const CARD_COLORS = [
 export default function RandevuScreen() {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation();
-  const route = useRoute();
   const insets = useSafeAreaInsets();
   const [pulseAnim] = useState(() => new Animated.Value(1));
 
   // -- Dynamic Date State --
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-
-  const calendarScrollRef = useRef(null);
-
-  React.useEffect(() => {
-    const index = dynamicDays.findIndex(d => d.fullDate === selectedDate);
-    if (index !== -1 && calendarScrollRef.current) {
-      calendarScrollRef.current.scrollTo({ x: index * 60 - 150, animated: true });
-    }
-  }, [selectedDate, dynamicDays]);
 
   const dynamicDays = useMemo(() => {
     const year = currentDate.getFullYear();
@@ -89,62 +76,7 @@ export default function RandevuScreen() {
   }, []);
   
   // ── Supabase veri bağlantısı ──
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [newApptName, setNewApptName] = useState('');
-  const [newApptPhone, setNewApptPhone] = useState('');
-  const [newApptTime, setNewApptTime] = useState('10:00');
-  const [newApptService, setNewApptService] = useState('');
-  const [newApptNote, setNewApptNote] = useState('');
-  const [services, setServices] = useState([]);
-  const [newApptCalendarId, setNewApptCalendarId] = useState(null);
-  const [availableModalHours, setAvailableModalHours] = useState([]);
-  const [isSaving, setIsSaving] = useState(false);
-  const [showCalendarDropdown, setShowCalendarDropdown] = useState(false);
-  const [isManageModalVisible, setIsManageModalVisible] = useState(false);
-  const [promptConfig, setPromptConfig] = useState({ visible: false, title: "", placeholder: "", value: "", onSave: null });
-
-  const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar, updateCalendar, deleteCalendar } = useCalendars();
-
-  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment } = useAppointments(route.params?.date || todayStr, activeCalendarId);
-  
-  React.useEffect(() => {
-    if (route.params?.date) {
-      setSelectedDate(route.params.date);
-    }
-  }, [route.params?.date]);
-
-  React.useEffect(() => {
-    if (selectedDate) {
-      const parts = selectedDate.split('-');
-      if (parts.length === 3) {
-        const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-        setCurrentDate(prev => {
-          if (d.getMonth() !== prev.getMonth() || d.getFullYear() !== prev.getFullYear()) {
-            return d;
-          }
-          return prev;
-        });
-      }
-    }
-  }, [selectedDate]);
-  
-  React.useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data } = await supabase.from('business_services').select('*').eq('merchant_id', user.id);
-          if (data && data.length > 0) {
-            setServices(data);
-            setNewApptService(data[0].id);
-          }
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    fetchServices();
-  }, []);
+  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment } = useAppointments(todayStr, activeCalendarId);
   
   React.useEffect(() => { if(isModalVisible && activeCalendarId) setNewApptCalendarId(activeCalendarId); else if(isModalVisible) setNewApptCalendarId(calendars[0]?.id || null); }, [isModalVisible, activeCalendarId, calendars]);
   
@@ -152,49 +84,49 @@ export default function RandevuScreen() {
     if (isModalVisible) {
       const fetchHours = async () => {
         const repo = require("../../../../core/container").container.resolve("AppointmentRepository");
-        const { isSlotBusy } = require("../../../../lib/slotBusy");
-        try {
-          const dayAppts = await repo.getDayAppointmentsForCalendar(selectedDate, newApptCalendarId || undefined);
-          const allHours = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
-          const hours = allHours.filter(hour => !isSlotBusy(hour, selectedDate, dayAppts));
-          setAvailableModalHours(hours);
-        } catch (e) {
-          Alert.alert("Hata", e.message || "Saatler cekilemedi");
-        }
+        const hours = await repo.findAvailableHours(selectedDate, newApptService, newApptCalendarId || undefined);
+        setAvailableModalHours(hours);
       };
       fetchHours();
     }
   }, [isModalVisible, selectedDate, newApptService, newApptCalendarId]);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newApptName, setNewApptName] = useState('');
+  const [newApptPhone, setNewApptPhone] = useState('');
+  const [newApptTime, setNewApptTime] = useState('10:00');
+  const [newApptService, setNewApptService] = useState('Genel Bakım');
+  const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar, updateCalendar, deleteCalendar } = useCalendars();
+  const [newApptCalendarId, setNewApptCalendarId] = useState(null);
+  const [availableModalHours, setAvailableModalHours] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+    const [showCalendarDropdown, setShowCalendarDropdown] = useState(false);
+    const [isManageModalVisible, setIsManageModalVisible] = useState(false);
+  const [promptConfig, setPromptConfig] = useState({ visible: false, title: "", placeholder: "", value: "", onSave: null });
 
   const handleDaySelect = (dayObj) => {
     setSelectedDate(dayObj.fullDate);
   };
 
   const handleSaveAppointment = async () => {
-    if (!newApptName || !newApptPhone || !newApptTime) {
-      Alert.alert('Eksik Bilgi', 'Lütfen müşteri adı, telefon numarası ve saat seçiniz.');
-      return;
-    }
+    if (!newApptName || !newApptPhone || !newApptTime || !newApptService) return;
     try {
       setIsSaving(true);
       await addAppointment({
         customerName: newApptName,
         customerPhone: newApptPhone,
         date: `${selectedDate}T${newApptTime}:00`,
-        serviceId: newApptService || null,
+        serviceId: newApptService,
           calendarId: newApptCalendarId || undefined,
-          customerRequestRaw: newApptNote || null,
-          status: AppointmentStatus.Pending,
+        status: AppointmentStatus.Pending,
         bookingToken: Math.random().toString(36).substring(7)
       });
       setIsModalVisible(false);
       setNewApptName('');
       setNewApptPhone('');
       setNewApptTime('10:00');
-      setNewApptNote('');
     } catch (e) {
       console.error(e);
-      Alert.alert("Hata", e.message || "Randevu eklenemedi");
     } finally {
       setIsSaving(false);
     }
@@ -326,7 +258,6 @@ export default function RandevuScreen() {
             
             {/* Weekly Calendar Strip */}
           <ScrollView
-            ref={calendarScrollRef}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.calendarStrip}
@@ -437,16 +368,9 @@ export default function RandevuScreen() {
                         <Text style={styles.cardName}>
                           {appt.customerName || appt.customerPhone}
                         </Text>
-                        {(appt.services && appt.services.length > 0) && (
-                            <Text style={styles.cardService}>
-                              {appt.services.join(' + ')}
-                            </Text>
-                          )}
-                          {appt.customerRequestRaw && (
-                            <Text style={[styles.cardService, { color: '#F59E0B' }]}>
-                              📝 {appt.customerRequestRaw}
-                            </Text>
-                          )}
+                        <Text style={styles.cardService}>
+                          {appt.services?.length > 0 ? appt.services.join(' + ') : (appt.customerRequestRaw ? `📝 Not: ${appt.customerRequestRaw}` : t('randevu.randevuScreen.noAppointments'))}
+                        </Text>
                         <View style={styles.cardTimeRow}>
                           <Ionicons name="time-outline" size={12} color="#A79E96" />
                           <Text style={styles.cardTimeText}>{apptTime}</Text>
@@ -568,9 +492,8 @@ export default function RandevuScreen() {
               backgroundColor: '#201D24', padding: 32, borderRadius: 32, 
               borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
               shadowColor: '#000', shadowOffset: { width: 0, height: 24 }, 
-              shadowOpacity: 0.4, shadowRadius: 48, elevation: 10,
-                maxHeight: Platform.OS === 'ios' ? '85%' : '90%'
-              }]}>
+              shadowOpacity: 0.4, shadowRadius: 48, elevation: 10
+            }]}>
               
               <TouchableOpacity 
                 onPress={() => setIsModalVisible(false)}
@@ -584,13 +507,7 @@ export default function RandevuScreen() {
                 <Ionicons name="close" size={20} color="#fff" />
               </TouchableOpacity>
               
-              <ScrollView 
-                  showsVerticalScrollIndicator={false} 
-                  keyboardShouldPersistTaps="handled"
-                  style={{ flexShrink: 1, width: '100%' }}
-                  contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
-                >
-                <View style={{ alignItems: 'center', marginBottom: 28 }}>
+              <View style={{ alignItems: 'center', marginBottom: 28 }}>
                 <View style={{ 
                   width: 64, height: 64, borderRadius: 32, 
                   backgroundColor: 'rgba(34,181,115,0.2)', 
@@ -606,39 +523,6 @@ export default function RandevuScreen() {
                 </Text>
               </View>
               
-                            <Text style={styles.webModalLabel}>Tarih</Text>
-              <TouchableOpacity
-                onPress={() => setShowDatePicker(true)}
-                style={[styles.webModalInput, { marginBottom: 16, justifyContent: 'center' }]}
-              >
-                <Text style={{ color: selectedDate ? '#fff' : '#A79E96', fontSize: 14 }}>
-                  {selectedDate || 'YYYY-AA-GG'}
-                </Text>
-              </TouchableOpacity>
-              
-              {showDatePicker && (
-                <DateTimePicker
-                  value={selectedDate ? new Date(selectedDate) : new Date()}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  onValueChange={(selectedDateObj) => {
-                    if (Platform.OS === 'android') setShowDatePicker(false);
-                    if (selectedDateObj) {
-                      const y = selectedDateObj.getFullYear();
-                      const m = String(selectedDateObj.getMonth() + 1).padStart(2, '0');
-                      const d = String(selectedDateObj.getDate()).padStart(2, '0');
-                      setSelectedDate(`${y}-${m}-${d}`);
-                    }
-                  }}
-                  onDismiss={() => setShowDatePicker(false)}
-                />
-              )}
-              {Platform.OS === 'ios' && showDatePicker && (
-                <TouchableOpacity onPress={() => setShowDatePicker(false)} style={{ alignSelf: 'flex-end', marginBottom: 16, marginTop: -8 }}>
-                  <Text style={{ color: '#22B573', fontWeight: 'bold' }}>Bitti</Text>
-                </TouchableOpacity>
-              )}
-
               <Text style={styles.webModalLabel}>Müşteri Adı</Text>
               <TextInput
                 style={styles.webModalInput}
@@ -684,37 +568,19 @@ export default function RandevuScreen() {
                 )}
               </View>
 
-              
-              
-              {services.length > 0 && (
-                <View style={{ marginBottom: 16, zIndex: 1 }}>
+              <View style={{ flexDirection: 'row', gap: 16, zIndex: 1 }}>
+                <View style={{ flex: 1 }}>
                   <Text style={styles.webModalLabel}>Hizmet Tipi</Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {services.map(s => (
-                      <TouchableOpacity 
-                        key={s.id}
-                        onPress={() => setNewApptService(s.id)}
-                        style={[styles.chip, newApptService === s.id && styles.chipActive]}
-                      >
-                        <Text style={[styles.chipText, newApptService === s.id && styles.chipTextActive]}>{s.name}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
+                  <TextInput
+                    style={styles.webModalInput}
+                    placeholder="Genel Bakım"
+                    placeholderTextColor="rgba(255, 255, 255, 0.4)"
+                    value={newApptService}
+                    onChangeText={setNewApptService}
+                  />
                 </View>
-              )}
-
-              <View style={{ marginBottom: 16, zIndex: 1 }}>
-                <Text style={styles.webModalLabel}>Açıklama / Not</Text>
-                <TextInput
-                  style={[styles.webModalInput, { height: 80, textAlignVertical: 'top' }]}
-                  placeholder="Yapay zekaya verilen notlar gibi... (Örn: Dolgum düştü dolgu yaptırmak istiyorum)"
-                  placeholderTextColor="rgba(255, 255, 255, 0.4)"
-                  multiline
-                  value={newApptNote}
-                  onChangeText={setNewApptNote}
-                />
               </View>
-
+              
               <View style={{ zIndex: 1 }}>
                 <Text style={styles.webModalLabel}>Saat</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
@@ -742,7 +608,6 @@ export default function RandevuScreen() {
                   <Text style={styles.webSaveButtonText}>{t('randevu.randevuScreen.saveAppointment', 'Randevu Oluştur')}</Text>
                 )}
               </TouchableOpacity>
-              </ScrollView>
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -908,12 +773,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-      backgroundColor: '#201D24',
-      borderTopLeftRadius: 24, borderTopRightRadius: 24,
-      padding: 20, paddingBottom: Platform.OS === 'ios' ? 40 : 20,
-      borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
-      maxHeight: '90%'
-    },
+    backgroundColor: '#201D24',
+    borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    padding: 20, paddingBottom: 40,
+    borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+  },
   modalHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     marginBottom: 20,

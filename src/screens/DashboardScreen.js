@@ -17,7 +17,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
-import { CommunicationLogsTable } from '../modules/sosyal_medya/presentation/components/CommunicationLogsTable';
+import { AppState } from 'react-native';
 import { supabase } from '../shared/lib/supabase';
 import { container } from '../core/container';
 import { AppointmentStatus } from '../modules/randevu/domain/enums/AppointmentStatus';
@@ -182,6 +182,70 @@ const BAR_IMAGES = [
 ];
 const { width: screenWidth } = Dimensions.get('window');
 const innerWidth = screenWidth - 2; // Compensate for left/right borders (1px each)
+
+
+const AppointmentNotifications = ({ navigation }) => {
+  const { t } = useTranslation();
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchNotifs = async () => {
+    try {
+      const { data } = await supabase
+        .from('notifications')
+        .select('id, created_at, is_read, metadata')
+        .eq('type', 'appointment_created')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      setNotifications(data || []);
+    } catch (e) {
+      console.warn('Notifs error', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchNotifs();
+    }, [])
+  );
+
+  const handlePress = async (n) => {
+    if (!n.is_read) {
+      await supabase.from('notifications').update({ is_read: true }).eq('id', n.id);
+      setNotifications(prev => prev.map(p => p.id === n.id ? { ...p, is_read: true } : p));
+    }
+    const targetDate = n.metadata?.starts_at ? new Intl.DateTimeFormat('en-CA', { timeZone: n.metadata.timezone || 'Europe/Istanbul' }).format(new Date(n.metadata.starts_at)) : null;
+    if (targetDate) {
+      navigation.navigate('Ai Asistan', { screen: 'RandevuMain', params: { date: targetDate } });
+    }
+  };
+
+  if (loading) return <ActivityIndicator size="small" color="#00F2FE" />;
+  if (notifications.length === 0) return <Text style={{ color: '#849495', textAlign: 'center' }}>Henüz randevu bildirimi yok</Text>;
+
+  return (
+    <View style={{ gap: 10 }}>
+      {notifications.map(n => {
+        const m = n.metadata || {};
+        const dateText = m.starts_at ? new Date(m.starts_at).toLocaleString('tr-TR', { timeZone: m.timezone || 'Europe/Istanbul', weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
+        const title = `${m.customer_name || 'İsimsiz'} için ${dateText} tarihine randevu oluşturuldu`;
+        
+        return (
+          <TouchableOpacity key={n.id} onPress={() => handlePress(n)} style={{
+            backgroundColor: 'rgba(255,255,255,0.03)',
+            padding: 12, borderRadius: 12, borderWidth: 1, borderColor: n.is_read ? 'transparent' : 'rgba(0, 242, 254, 0.3)'
+          }}>
+            <Text style={{ color: '#fff', fontSize: 13, fontWeight: n.is_read ? '400' : '600' }}>{title}</Text>
+            {!!m.calendar_name && <Text style={{ color: '#849495', fontSize: 12, marginTop: 4 }}>👨‍⚕️ {m.calendar_name}</Text>}
+            {!!m.customer_request_raw && <Text style={{ color: '#849495', fontSize: 12, marginTop: 2 }}>📝 {m.customer_request_raw}</Text>}
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+};
 
 export default function DashboardScreen({ navigation }) {
   const { t } = useTranslation();
@@ -351,7 +415,12 @@ export default function DashboardScreen({ navigation }) {
         // 2. Finance Stats (Transactions + Finance Documents)
         let inc = 0, exp = 0;
         let upcoming = [];
-        const today = new Date().toISOString().split('T')[0];
+        let tz = 'Europe/Istanbul';
+        if (orgId) {
+          const { data: orgData } = await supabase.from('organizations').select('timezone').eq('id', orgId).single();
+          if (orgData?.timezone) tz = orgData.timezone;
+        }
+        const today = todayInTimezone(tz);
 
         // Fetch transactions
         const defaultPaymentTitle = t('dashboardScreen.upcomingPayments.defaultTitle');
@@ -386,7 +455,7 @@ export default function DashboardScreen({ navigation }) {
                 if (d.flow_payment_status === 'paid') {
                   exp += amt;
                 } else {
-                  const docDate = d.created_at ? new Date(d.created_at).toISOString().split('T')[0] : null;
+                  const docDate = d.created_at ? new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date(d.created_at)) : null;
                   if (docDate && docDate >= today) {
                     upcoming.push({ id: d.id, date: docDate, amount: amt, description: d.title || t('dashboardScreen.upcomingPayments.invoiceDefaultTitle'), type: 'expense' });
                   }

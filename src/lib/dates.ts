@@ -8,3 +8,9 @@ export function dateFromYmd(ymd: string): Date {
   const [y, m, d] = ymd.split('-').map(Number);
   return new Date(y, m - 1, d, 12, 0, 0);
 }
+
+/** "YYYY-MM-DD" + n gün → "YYYY-MM-DD" (saat dilimi ve tarayıcıdan bağımsız) */
+export function addDaysYmd(ymd: string, n: number): string {
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+}
