@@ -596,17 +596,16 @@ export default function RandevuScreen() {
                   value={selectedDate ? new Date(selectedDate) : new Date()}
                   mode="date"
                   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  onChange={(event, selectedDateObj) => {
+                  onValueChange={(selectedDateObj) => {
                     if (Platform.OS === 'android') setShowDatePicker(false);
-                    if (event.type === 'set' && selectedDateObj) {
+                    if (selectedDateObj) {
                       const y = selectedDateObj.getFullYear();
                       const m = String(selectedDateObj.getMonth() + 1).padStart(2, '0');
                       const d = String(selectedDateObj.getDate()).padStart(2, '0');
                       setSelectedDate(`${y}-${m}-${d}`);
-                    } else if (event.type === 'dismissed') {
-                      setShowDatePicker(false);
                     }
                   }}
+                  onDismiss={() => setShowDatePicker(false)}
                 />
               )}
               {Platform.OS === 'ios' && showDatePicker && (
