@@ -476,10 +476,11 @@ export default function RandevuScreen() {
                 }}>
                   <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>Kaydet</Text>
                 </TouchableOpacity>
-              </View>
+              </ScrollView>
             </View>
-          </KeyboardAvoidingView>
-        </Modal>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
         
         {/* Personel Yönetimi Modalı */}
         <Modal visible={isManageModalVisible} transparent animationType="fade">
@@ -550,8 +551,9 @@ export default function RandevuScreen() {
               backgroundColor: '#201D24', padding: 32, borderRadius: 32, 
               borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
               shadowColor: '#000', shadowOffset: { width: 0, height: 24 }, 
-              shadowOpacity: 0.4, shadowRadius: 48, elevation: 10
-            }]}>
+              shadowOpacity: 0.4, shadowRadius: 48, elevation: 10,
+                maxHeight: Platform.OS === 'ios' ? '85%' : '90%'
+              }]}>
               
               <TouchableOpacity 
                 onPress={() => setIsModalVisible(false)}
@@ -565,7 +567,13 @@ export default function RandevuScreen() {
                 <Ionicons name="close" size={20} color="#fff" />
               </TouchableOpacity>
               
-              <View style={{ alignItems: 'center', marginBottom: 28 }}>
+              <ScrollView 
+                  showsVerticalScrollIndicator={false} 
+                  keyboardShouldPersistTaps="handled"
+                  style={{ flexGrow: 0 }}
+                  contentContainerStyle={{ paddingBottom: 24 }}
+                >
+                <View style={{ alignItems: 'center', marginBottom: 28 }}>
                 <View style={{ 
                   width: 64, height: 64, borderRadius: 32, 
                   backgroundColor: 'rgba(34,181,115,0.2)', 
@@ -717,6 +725,7 @@ export default function RandevuScreen() {
                   <Text style={styles.webSaveButtonText}>{t('randevu.randevuScreen.saveAppointment', 'Randevu Oluştur')}</Text>
                 )}
               </TouchableOpacity>
+              </ScrollView>
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -882,11 +891,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#201D24',
-    borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    padding: 20, paddingBottom: 40,
-    borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
-  },
+      backgroundColor: '#201D24',
+      borderTopLeftRadius: 24, borderTopRightRadius: 24,
+      padding: 20, paddingBottom: Platform.OS === 'ios' ? 40 : 20,
+      borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.05)',
+      maxHeight: '90%'
+    },
   modalHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     marginBottom: 20,
