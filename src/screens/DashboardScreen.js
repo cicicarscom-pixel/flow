@@ -892,7 +892,7 @@ export default function DashboardScreen({ navigation }) {
                         <Text style={styles.apptListTitle} numberOfLines={1}>{a.customerName}</Text>
                         {(a.calendarName || a.serviceName || a.note) ? (
                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
-                             {a.calendarName ? <Text style={{ color: '#00F2FE', fontSize: 11, fontWeight: '500' }}>{a.calendarName}</Text> : null}
+                             {a.calendarName ? <View style={{ backgroundColor: 'rgba(34,181,115,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 99 }}><Text style={{ color: '#22B573', fontSize: 11, fontWeight: '500' }}>{a.calendarName}</Text></View> : null}
                              {a.serviceName ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11 }}>🏷️ {a.serviceName}</Text> : null}
                              {a.note ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11, fontStyle: 'italic' }}>📝 {a.note}</Text> : null}
                            </View>
@@ -925,7 +925,7 @@ export default function DashboardScreen({ navigation }) {
                         <Text style={styles.apptListTitle} numberOfLines={1}>{a.customerName}</Text>
                         {(a.calendarName || a.serviceName || a.note) ? (
                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
-                             {a.calendarName ? <Text style={{ color: '#00F2FE', fontSize: 11, fontWeight: '500' }}>{a.calendarName}</Text> : null}
+                             {a.calendarName ? <View style={{ backgroundColor: 'rgba(34,181,115,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 99 }}><Text style={{ color: '#22B573', fontSize: 11, fontWeight: '500' }}>{a.calendarName}</Text></View> : null}
                              {a.serviceName ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11 }}>🏷️ {a.serviceName}</Text> : null}
                              {a.note ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11, fontStyle: 'italic' }}>📝 {a.note}</Text> : null}
                            </View>
@@ -1090,6 +1090,11 @@ export default function DashboardScreen({ navigation }) {
               )}
             </CustomGlassCard>
 
+            {/* İletişim Raporları */}
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>{t('dashboardScreen.appointmentNotifications.title')}</Text>
+            </View>
+            <AppointmentNotifications navigation={navigation} onRead={() => setUnreadCount(prev => Math.max(0, prev - 1))} />
             {recentActivities.length > 0 && (
             <>
             {/* Son Aktiviteler */}
@@ -1174,11 +1179,6 @@ export default function DashboardScreen({ navigation }) {
               <Text style={styles.emptyText}>{t('dashboardScreen.upcomingPayments.empty')}</Text>
             )}
 
-            {/* İletişim Raporları */}
-            <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>{t('dashboardScreen.appointmentNotifications.title')}</Text>
-            </View>
-            <AppointmentNotifications navigation={navigation} onRead={() => setUnreadCount(prev => Math.max(0, prev - 1))} />
             <View style={{ height: 40 }} />
           </View>
         </Animated.View>
