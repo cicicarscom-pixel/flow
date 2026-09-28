@@ -129,71 +129,35 @@ export default function AiMuhasebeScreen({ navigation }) {
         const { data: { session } } = await supabase.auth.getSession();
         
         let orgId = null;
+        let tz = 'Europe/Istanbul';
         if (session) {
-          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).limit(1).maybeSingle();
           orgId = orgMember?.organization_id;
         }
 
-        const [docRes, transRes] = await Promise.all([
-          orgId ? supabase.from('finance_documents').select('*').eq('organization_id', orgId) : supabase.from('finance_documents').select('*'),
-          session ? supabase.from('transactions').select('*').eq('profile_id', session.user.id) : supabase.from('transactions').select('*')
-        ]);
-        
-        if (docRes.error) throw docRes.error;
-        if (transRes.error) throw transRes.error;
-        
-        const documents = docRes.data;
-        const transactions = transRes.data;
-        
-        const now = new Date();
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-        
-        let inc = 0, exp = 0;
-        let receivable = 0, payable = 0;
-
-        if (documents) {
-          documents.forEach(doc => {
-             const dDate = new Date(doc.created_at);
-             const amount = Number(doc.amount_minor) / 100;
-             
-             if (dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear && doc.flow_payment_status === 'paid') {
-                if (doc.type === 'income' || doc.type === 'sales') inc += amount;
-                if (doc.type === 'expense') exp += amount;
-             }
-             
-             if (doc.flow_payment_status === 'unpaid' || doc.flow_payment_status === 'partial') {
-                if (doc.type === 'income' || doc.type === 'sales') receivable += amount;
-                if (doc.type === 'expense') payable += amount;
-             }
-          });
+        if (orgId) {
+          const { data: orgData } = await supabase.from('organizations').select('timezone').eq('id', orgId).single();
+          if (orgData?.timezone) tz = orgData.timezone;
         }
 
-        if (transactions) {
-          transactions.forEach(t => {
-            if (!t.date) return;
-            const dDate = new Date(t.date);
-            const amount = Number(t.amount);
+        const today = new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date());
+        const dateObj = new Date(today);
+        const p_from = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString().split("T")[0];
+        const p_to = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0).toISOString().split("T")[0];
 
-            if (dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear && t.status === 'paid') {
-              if (t.type === 'income') inc += amount;
-              if (t.type === 'expense') exp += amount;
-            }
-
-            if (t.status === 'pending') {
-              if (t.type === 'income') receivable += amount;
-              if (t.type === 'expense') payable += amount;
-            }
-          });
-        }
+        const { data: summaryData } = await supabase.rpc('get_finance_summary', { p_from, p_to });
         
-        setFinanceData({ 
-          income: inc, 
-          expense: exp, 
-          net: inc - exp,
-          receivable, 
-          payable 
-        });
+        if (summaryData && summaryData.status === 'SUCCESS') {
+          setFinanceData({
+            income: summaryData.income / 100,
+            expense: summaryData.expense / 100,
+            net: (summaryData.income - summaryData.expense) / 100,
+            receivable: summaryData.receivable / 100,
+            payable: summaryData.payable / 100
+          });
+        } else {
+          setFinanceData({ income: 0, expense: 0, net: 0, receivable: 0, payable: 0 });
+        }
       } catch (err) {
          console.warn("Error fetching finance data", err);
       } finally {

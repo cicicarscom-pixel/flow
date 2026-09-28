@@ -430,38 +430,49 @@ export default function DashboardScreen({ navigation }) {
           if (botData) setAiActive(botData.is_active);
         }
 
-        // 2. Finance Stats (Transactions + Finance Documents)
-        let inc = 0, exp = 0;
-        let upcoming = [];
+        // 2. Finance Stats (RPC get_finance_summary)
         let tz = 'Europe/Istanbul';
-        if (orgId) {
-          const { data: orgData } = await supabase.from('organizations').select('timezone').eq('id', orgId).single();
-          if (orgData?.timezone) tz = orgData.timezone;
-        }
-        const today = todayInTimezone(tz);
-
-        // Fetch transactions
-        const defaultPaymentTitle = t('dashboardScreen.upcomingPayments.defaultTitle');
-        const { data: transactions } = await supabase.from('transactions').select('*');
-        if (transactions) {
-          transactions.forEach(tx => {
-            if (tx.type === 'income') inc += Number(tx.amount);
-            if (tx.type === 'expense') {
-              exp += Number(tx.amount);
-              if (tx.date && tx.date >= today) {
-                upcoming.push({ ...tx, description: tx.title || defaultPaymentTitle });
-              }
-            }
-          });
-        }
-
-        
-        // Fetch finance_documents
         let orgId = null;
         if (session) {
           const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).limit(1);
           orgId = orgMember?.[0]?.organization_id;
         }
+
+        if (orgId) {
+          const { data: orgData } = await supabase.from('organizations').select('timezone').eq('id', orgId).single();
+          if (orgData?.timezone) tz = orgData.timezone;
+        }
+
+        const today = new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date());
+        const dateObj = new Date(today);
+        const p_from = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString().split("T")[0];
+        const p_to = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0).toISOString().split("T")[0];
+
+        const { data: summaryData } = await supabase.rpc('get_finance_summary', { p_from, p_to });
+        if (summaryData && summaryData.status === 'SUCCESS') {
+          setFinanceStats({ income: summaryData.income / 100, expense: summaryData.expense / 100 });
+        } else {
+          setFinanceStats({ income: 0, expense: 0 });
+        }
+
+        const futureDateObj = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate() + 30);
+        const p_future = futureDateObj.toISOString().split("T")[0];
+        const { data: calendarData } = await supabase.rpc('get_payment_calendar', { p_from: today, p_to: p_future });
+        
+        let upcoming = [];
+        if (calendarData) {
+          upcoming = calendarData
+            .filter(d => d.type === 'expense' && d.payment_status !== 'paid')
+            .slice(0, 5)
+            .map(d => ({
+              id: d.id,
+              date: d.day,
+              amount: d.amount_minor / 100,
+              description: d.title || t('dashboardScreen.upcomingPayments.defaultTitle'),
+              type: 'expense'
+            }));
+        }
+        setUpcomingPayments(upcoming);
 
         if (orgId) {
           const { data: latestDoc } = await supabase.from('finance_documents')
@@ -472,30 +483,7 @@ export default function DashboardScreen({ navigation }) {
             .limit(1)
             .maybeSingle();
           setLatestInvoice(latestDoc);
-
-          const { data: docs } = await supabase.from('finance_documents').select('*').eq('organization_id', orgId);
-          if (docs) {
-            docs.forEach(d => {
-              const amt = Number(d.amount_minor) / 100;
-              if (d.type === 'income' || d.type === 'sales') {
-                if (d.flow_payment_status === 'paid') inc += amt;
-              } else if (d.type === 'expense') {
-                if (d.flow_payment_status === 'paid') {
-                  exp += amt;
-                } else {
-                  const docDate = d.created_at ? new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date(d.created_at)) : null;
-                  if (docDate && docDate >= today) {
-                    upcoming.push({ id: d.id, date: docDate, amount: amt, description: d.title || t('dashboardScreen.upcomingPayments.invoiceDefaultTitle'), type: 'expense' });
-                  }
-                }
-              }
-            });
-          }
         }
-
-        upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
-        setUpcomingPayments(upcoming.slice(0, 5));
-        setFinanceStats({ income: inc, expense: exp });
 
         // 3. Social Stats (Zernio)
         const { data: followRes } = await supabase.functions.invoke('zernio-client', {

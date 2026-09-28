@@ -6,7 +6,7 @@ import { supabase } from '../../../../shared';
 import { useTranslation } from 'react-i18next';
 
 const formatCurrency = (amount) => {
-  return Number(amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return Number(amount || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 const getBadge = (status, t) => {
@@ -31,46 +31,58 @@ export default function IsletmemScreen({ navigation }) {
   useEffect(() => {
     const fetchPastDocuments = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const todayStr = new Date().toISOString().split("T")[0];
+        const { data: calendarData } = await supabase.rpc('get_payment_calendar', { p_from: '2020-01-01', p_to: todayStr });
         
-        let orgId = null;
-        if (session) {
-          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
-          orgId = orgMember?.organization_id;
-        }
-
-        const [docRes, transRes] = await Promise.all([
-          orgId ? supabase.from('finance_documents').select('*').eq('organization_id', orgId).order('created_at', { ascending: false }) : supabase.from('finance_documents').select('*').order('created_at', { ascending: false }),
-          session ? supabase.from('transactions').select('*').eq('profile_id', session.user.id).order('date', { ascending: false }) : supabase.from('transactions').select('*').order('date', { ascending: false })
-        ]);
-        
-        const rawDocs = docRes.data || [];
-        const rawTrans = transRes.data || [];
-
-        const unifiedDocs = [
-           ...rawDocs.map(d => ({ ...d, unifiedDate: d.created_at, unifiedAmount: Number(d.amount_minor)/100, source: 'doc' })),
-           ...rawTrans.map(t => ({ ...t, unifiedDate: t.date || new Date().toISOString(), unifiedAmount: Number(t.amount), flow_payment_status: t.status, source: 'trans' }))
-        ];
-
-        unifiedDocs.sort((a,b) => new Date(b.unifiedDate) - new Date(a.unifiedDate));
+        const rawDocs = calendarData || [];
 
         // Group by Month Year
-        const grouped = unifiedDocs.reduce((acc, doc) => {
-          const dDate = new Date(doc.unifiedDate);
+        const grouped = rawDocs.reduce((acc, doc) => {
+          if (!doc.day) return acc;
+          const dDate = new Date(doc.day);
           const monthYear = dDate.toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
           if (!acc[monthYear]) {
             acc[monthYear] = [];
           }
-          acc[monthYear].push(doc);
+          acc[monthYear].push({
+             ...doc,
+             unifiedDate: doc.day,
+             unifiedAmount: doc.amount_minor / 100,
+             flow_payment_status: doc.payment_status
+          });
           return acc;
         }, {});
 
-        const monthKeys = Object.keys(grouped);
+        const currentMonthStr = new Date().toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
+        let monthKeys = Object.keys(grouped);
+        
+        if (!monthKeys.includes(currentMonthStr)) {
+          monthKeys.push(currentMonthStr);
+          grouped[currentMonthStr] = [];
+        }
+
+        // Sort months descending
+        monthKeys.sort((a, b) => {
+          const parseMY = (str) => {
+             const parts = str.split(' ');
+             const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+             const mIndex = monthNames.indexOf(parts[0]);
+             return new Date(parseInt(parts[1] || "2000"), Math.max(0, mIndex), 1).getTime();
+          };
+          return parseMY(b) - parseMY(a);
+        });
+
         setMonths(monthKeys);
-        if (monthKeys.length > 0) {
+        if (monthKeys.length > 0 && !selectedMonth) {
           setSelectedMonth(monthKeys[0]);
         }
-        setDocuments(unifiedDocs);
+        
+        // Flatten docs
+        const allDocs = [];
+        monthKeys.forEach(m => {
+           if(grouped[m]) allDocs.push(...grouped[m]);
+        });
+        setDocuments(allDocs);
       } catch (err) {
         console.warn("Error fetching past documents", err);
       }
@@ -79,15 +91,51 @@ export default function IsletmemScreen({ navigation }) {
     fetchPastDocuments();
   }, []);
 
+  const [monthSummaries, setMonthSummaries] = useState({});
+
+  useEffect(() => {
+    if (!selectedMonth) return;
+
+    const fetchSummary = async () => {
+      try {
+        const parts = selectedMonth.split(' ');
+        const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+        const mIndex = monthNames.indexOf(parts[0]);
+        const y = parseInt(parts[1] || "2000");
+
+        const dateObj = new Date(y, Math.max(0, mIndex), 1);
+        const p_from = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString().split("T")[0];
+        const p_to = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0).toISOString().split("T")[0];
+
+        const { data: summaryData } = await supabase.rpc('get_finance_summary', { p_from, p_to });
+        if (summaryData && summaryData.status === 'SUCCESS') {
+          setMonthSummaries(prev => ({
+            ...prev,
+            [selectedMonth]: {
+              income: summaryData.income / 100,
+              expense: summaryData.expense / 100,
+              balance: (summaryData.income - summaryData.expense) / 100
+            }
+          }));
+        } else {
+          setMonthSummaries(prev => ({ ...prev, [selectedMonth]: { income: 0, expense: 0, balance: 0 } }));
+        }
+      } catch (err) {
+        setMonthSummaries(prev => ({ ...prev, [selectedMonth]: { income: 0, expense: 0, balance: 0 } }));
+      }
+    };
+
+    fetchSummary();
+  }, [selectedMonth]);
+
   const getMonthData = (monthStr) => {
-    if (!monthStr) return { income: 0, expense: 0, docs: [] };
+    if (!monthStr) return { income: 0, expense: 0, balance: 0, docs: [] };
     const mDocs = documents.filter(doc => {
       const dDate = new Date(doc.unifiedDate);
       return dDate.toLocaleString('tr-TR', { month: 'long', year: 'numeric' }) === monthStr;
     });
-    const income = mDocs.filter(d => d.type === 'income' || d.type === 'sales').reduce((sum, d) => sum + d.unifiedAmount, 0);
-    const expense = mDocs.filter(d => d.type === 'expense').reduce((sum, d) => sum + d.unifiedAmount, 0);
-    return { income, expense, docs: mDocs, balance: income - expense };
+    const summary = monthSummaries[monthStr] || { income: 0, expense: 0, balance: 0 };
+    return { ...summary, docs: mDocs };
   };
 
   const currentData = getMonthData(selectedMonth);
@@ -129,9 +177,9 @@ export default function IsletmemScreen({ navigation }) {
     : 0;
 
   const displayDocs = currentData.docs.filter(doc => {
-    if (activeTab === 'Gelirler') return doc.type === 'income';
+    if (activeTab === 'Gelirler') return doc.type === 'income' || doc.type === 'sales';
     if (activeTab === 'Giderler') return doc.type === 'expense';
-    return true; // Faturalar
+    return doc.source === 'invoice_scan'; // Faturalar
   });
 
   const tabLabels = {
