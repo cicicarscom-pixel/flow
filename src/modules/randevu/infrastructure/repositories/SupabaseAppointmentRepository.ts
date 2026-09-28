@@ -151,8 +151,19 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
 
   /** appointment_services + business_services join'i ile services[] alanını doldurur.
    * Daha önce getAppointmentsByDate içinde inline duran kod — değişmedi, sadece taşındı. */
+  
   private async enrichWithServices(appointments: any[]): Promise<Appointment[]> {
     if (!appointments || appointments.length === 0) return [];
+
+    const { data: user } = await supabase.auth.getUser();
+    let calsMap = new Map<string, string>();
+    if (user?.user?.id) {
+      const { data: cals } = await supabase.from('calendars').select('id, name').eq('merchant_id', user.user.id);
+      if (cals) {
+        cals.forEach((c: any) => calsMap.set(c.id, c.name));
+      }
+    }
+
 
     const appointmentIds = appointments.map((a: any) => a.id);
     const { data: links } = await supabase
@@ -175,6 +186,7 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     }
 
     return appointments.map((raw: any) => {
+      if (raw.calendar_id && calsMap.has(raw.calendar_id)) { raw.calendar_name = calsMap.get(raw.calendar_id); }
       const mapped = AppointmentMapper.toDomain(raw);
       const apptServices = servicesByAppointment.get(raw.id) || (raw.service_id && serviceNameById.get(raw.service_id) ? [serviceNameById.get(raw.service_id) as string] : []);
       mapped.services = apptServices;

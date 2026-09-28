@@ -18,6 +18,7 @@ export class AppointmentMapper {
       updatedAt: raw.updated_at,
       bookingToken: raw.booking_token,
       calendarId: raw.calendar_id,
+      calendarName: raw.calendar_name,
       customerRequestRaw: raw.customer_request_raw,
       cancelReason: raw.cancel_reason
     });

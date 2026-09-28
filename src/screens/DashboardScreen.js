@@ -554,7 +554,10 @@ export default function DashboardScreen({ navigation }) {
           try {
             const appointmentRepo = container.resolve('AppointmentRepository');
             // Fetch more to ensure we have enough for upcoming after filtering today
-            const upcomingRaw = await appointmentRepo.getUpcomingAppointments(20); 
+            const upcomingRaw = await appointmentRepo.getUpcomingAppointments(20);
+
+              
+ 
             const statusColor = {
               [AppointmentStatus.Approved]: COLORS.tertiary,
               [AppointmentStatus.Pending]: COLORS.secondary,
