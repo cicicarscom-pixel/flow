@@ -91,7 +91,7 @@ const formatDayMonth = (dateStr, t) => {
   return `${d.getDate()} ${months[d.getMonth()]}`;
 };
 
-const formatCurrency = (amount) => { return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(amount); };
+const formatCurrency = (amount) => { return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(amount); };
 
 // --- Subcomponents ---
 
