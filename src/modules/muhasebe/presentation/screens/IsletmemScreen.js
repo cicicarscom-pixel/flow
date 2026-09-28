@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../../../../shared';
 import { useTranslation } from 'react-i18next';
+import { todayInTimezone, monthRangeYmd } from '../../../../lib/dates';
 
 const formatCurrency = (amount) => {
   return Number(amount || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -31,7 +32,16 @@ export default function IsletmemScreen({ navigation }) {
   useEffect(() => {
     const fetchPastDocuments = async () => {
       try {
-        const todayStr = new Date().toISOString().split("T")[0];
+        const { data: { session } } = await supabase.auth.getSession();
+        let tz = 'Europe/Istanbul';
+        if (session) {
+          const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).limit(1).maybeSingle();
+          if (orgMember?.organization_id) {
+            const { data: orgData } = await supabase.from('organizations').select('timezone').eq('id', orgMember.organization_id).single();
+            if (orgData?.timezone) tz = orgData.timezone;
+          }
+        }
+        const todayStr = todayInTimezone(tz);
         const { data: calendarData } = await supabase.rpc('get_payment_calendar', { p_from: '2020-01-01', p_to: todayStr });
         
         const rawDocs = calendarData || [];
@@ -103,9 +113,8 @@ export default function IsletmemScreen({ navigation }) {
         const mIndex = monthNames.indexOf(parts[0]);
         const y = parseInt(parts[1] || "2000");
 
-        const dateObj = new Date(y, Math.max(0, mIndex), 1);
-        const p_from = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString().split("T")[0];
-        const p_to = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0).toISOString().split("T")[0];
+        const mm = String(mIndex + 1).padStart(2, '0');
+        const { from: p_from, to: p_to } = monthRangeYmd(`${y}-${mm}-01`);
 
         const { data: summaryData } = await supabase.rpc('get_finance_summary', { p_from, p_to });
         if (summaryData && summaryData.status === 'SUCCESS') {
@@ -333,3 +342,6 @@ const styles = StyleSheet.create({
   tabButton: { paddingBottom: 8 },
   activeTab: { borderBottomWidth: 2, borderBottomColor: '#22B573' }
 });
+
+
+

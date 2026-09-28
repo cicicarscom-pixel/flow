@@ -19,7 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 import { AppState } from 'react-native';
-import { todayInTimezone, addDaysYmd } from '../lib/dates';
+import { todayInTimezone, addDaysYmd, monthRangeYmd } from '../lib/dates';
 import { appointmentSentence } from '../lib/appointmentSentence';
 import { supabase } from '../shared/lib/supabase';
 import { container } from '../core/container';
@@ -444,9 +444,7 @@ export default function DashboardScreen({ navigation }) {
         }
 
         const today = new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date());
-        const dateObj = new Date(today);
-        const p_from = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString().split("T")[0];
-        const p_to = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0).toISOString().split("T")[0];
+        const { from: p_from, to: p_to } = monthRangeYmd(today);
 
         const { data: summaryData } = await supabase.rpc('get_finance_summary', { p_from, p_to });
         if (summaryData && summaryData.status === 'SUCCESS') {
@@ -455,8 +453,7 @@ export default function DashboardScreen({ navigation }) {
           setFinanceStats({ income: 0, expense: 0 });
         }
 
-        const futureDateObj = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate() + 30);
-        const p_future = futureDateObj.toISOString().split("T")[0];
+        const p_future = addDaysYmd(today, 30);
         const { data: calendarData } = await supabase.rpc('get_payment_calendar', { p_from: today, p_to: p_future });
         
         let upcoming = [];

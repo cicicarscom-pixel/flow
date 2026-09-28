@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GlobalAppBar, supabase } from '../../../../shared';
 import { useTranslation } from 'react-i18next';
+import { monthRangeYmd } from '../../../../lib/dates';
 
 // --- Utilities ---
 const Skeleton = ({ width, height, style, borderRadius = 8 }) => {
@@ -141,9 +142,7 @@ export default function AiMuhasebeScreen({ navigation }) {
         }
 
         const today = new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date());
-        const dateObj = new Date(today);
-        const p_from = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString().split("T")[0];
-        const p_to = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0).toISOString().split("T")[0];
+        const { from: p_from, to: p_to } = monthRangeYmd(today);
 
         const { data: summaryData } = await supabase.rpc('get_finance_summary', { p_from, p_to });
         
@@ -462,3 +461,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+

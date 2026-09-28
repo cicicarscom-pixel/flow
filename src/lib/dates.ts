@@ -14,3 +14,11 @@ export function addDaysYmd(ymd: string, n: number): string {
   const [y, m, d] = ymd.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
 }
+
+/** "YYYY-MM-DD" (ayın herhangi bir günü) → o ayın ilk ve son günü, metin olarak (saat diliminden bağımsız) */
+export function monthRangeYmd(ymd: string): { from: string; to: string } {
+  const [y, m] = ymd.split('-').map(Number);
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const mm = String(m).padStart(2, '0');
+  return { from: `${y}-${mm}-01`, to: `${y}-${mm}-${String(last).padStart(2, '0')}` };
+}
