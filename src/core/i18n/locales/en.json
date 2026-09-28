@@ -254,7 +254,9 @@
       "statusOverdue": "Overdue",
       "statusPartial": "Partial",
       "markPaid": "Mark as Paid",
-      "markPending": "Mark as Pending"
+      "markPending": "Mark as Pending",
+      "incomes": "Incomes",
+      "expenses": "Expenses"
     }
   },
   "randevu": {
@@ -363,7 +365,8 @@
       "english": "English",
       "german": "Deutsch",
       "systemDefault": "Automatic (Device Language)"
-    }
+    },
+    "cancel": "Cancel"
   },
   "profil": {
     "title": "Profile Settings",

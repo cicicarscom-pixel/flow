@@ -209,7 +209,7 @@ export default function OdemeTakvimiScreen({ navigation }) {
         <View className="mb-2">
           <View className="flex-row justify-between items-center mb-1">
             <Text className="text-[10px] text-gray-500 uppercase tracking-widest">{t("muhasebe.odemeTakvimi.incomes", "GELİRLER")}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('AiChatScreen', { transactionType: 'income', date: dayStr })} className="py-1 px-2 min-h-[44px] justify-center">
+            <TouchableOpacity onPress={() => navigation.navigate('AiChat', { transactionType: 'income', date: dayStr })} className="py-1 px-2 min-h-[44px] justify-center">
               <Text className="text-xs text-[#3ccf8e]">{t("muhasebe.odemeTakvimi.addIncome", "+ Gelir")}</Text>
             </TouchableOpacity>
           </View>
@@ -225,7 +225,7 @@ export default function OdemeTakvimiScreen({ navigation }) {
         <View>
           <View className="flex-row justify-between items-center mb-1">
             <Text className="text-[10px] text-gray-500 uppercase tracking-widest">{t("muhasebe.odemeTakvimi.expenses", "GİDERLER")}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('AiChatScreen', { transactionType: 'expense', date: dayStr })} className="py-1 px-2 min-h-[44px] justify-center">
+            <TouchableOpacity onPress={() => navigation.navigate('AiChat', { transactionType: 'expense', date: dayStr })} className="py-1 px-2 min-h-[44px] justify-center">
               <Text className="text-xs text-[#ff7b7b]">{t("muhasebe.odemeTakvimi.addExpense", "+ Gider")}</Text>
             </TouchableOpacity>
           </View>

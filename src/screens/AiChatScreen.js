@@ -10,7 +10,7 @@ import { supabase , ChatInputBar , GlobalAppBar } from '../shared';
 
 export default function AiChatScreen({ route, navigation }) {
   const { t } = useTranslation();
-  const { transactionType } = route.params || { transactionType: 'income' };
+  const { transactionType, date } = route.params || { transactionType: 'income' };
 
   const [messages, setMessages] = useState([
     { id: 1, text: t('aiChatScreen.welcomeMessage', { type: transactionType === 'income' ? t('aiChatScreen.incomeWord') : t('aiChatScreen.expenseWord') }), sender: 'ai' }
@@ -61,9 +61,10 @@ export default function AiChatScreen({ route, navigation }) {
       if (insertError) throw insertError;
 
       // 3. Call ledger-isleyici-api
+      const typeStr = transactionType === 'income' ? 'gelir' : 'gider';
       const payload = {
         document_id: draftDoc.id,
-        prompt: textPrompt,
+        prompt: date ? `Tür: ${typeStr}, Tarih: ${date}. ${textPrompt || ''}`.trim() : textPrompt,
         mimeType: mimeType || 'image/jpeg',
         profile_id: profileId,
         organization_id: orgId
@@ -97,7 +98,7 @@ export default function AiChatScreen({ route, navigation }) {
       // Metin mesajlari icin ledger-isleyici-api'yi dogrudan cagir
       const { data: result, error: invokeError } = await supabase.functions.invoke('ledger-isleyici-api', {
         body: { 
-          prompt: textPrompt,
+          prompt: date ? `Tür: ${transactionType === 'income' ? 'gelir' : 'gider'}, Tarih: ${date}. ${textPrompt}`.trim() : textPrompt,
           profile_id: profileId,
           organization_id: orgId
         }

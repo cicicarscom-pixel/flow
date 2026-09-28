@@ -254,7 +254,9 @@
       "statusOverdue": "Gecikti",
       "statusPartial": "Kısmi",
       "markPaid": "Ödendi olarak işaretle",
-      "markPending": "Bekliyor olarak işaretle"
+      "markPending": "Bekliyor olarak işaretle",
+      "incomes": "Gelirler",
+      "expenses": "Giderler"
     }
   },
   "randevu": {
@@ -363,7 +365,8 @@
       "english": "English",
       "german": "Deutsch",
       "systemDefault": "Cihaz Diline Göre Otomatik"
-    }
+    },
+    "cancel": "İptal"
   },
   "profil": {
     "title": "Profil Ayarları",

@@ -254,7 +254,9 @@
       "statusOverdue": "Überfällig",
       "statusPartial": "Teilweise",
       "markPaid": "Als bezahlt markieren",
-      "markPending": "Als ausstehend markieren"
+      "markPending": "Als ausstehend markieren",
+      "incomes": "Einnahmen",
+      "expenses": "Ausgaben"
     }
   },
   "randevu": {
@@ -363,7 +365,8 @@
       "english": "English",
       "german": "Deutsch",
       "systemDefault": "Automatisch (Gerätesprache)"
-    }
+    },
+    "cancel": "Abbrechen"
   },
   "profil": {
     "title": "Profileinstellungen",
