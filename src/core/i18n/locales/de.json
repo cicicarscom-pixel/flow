@@ -237,7 +237,24 @@
         "fri": "FR",
         "sat": "SA",
         "sun": "SO"
-      }
+      },
+      "summaryIncome": "Gesamteinkommen",
+      "summaryExpense": "Gesamtausgaben",
+      "summaryNet": "Netto",
+      "summaryOverdue": "Überfällig",
+      "net": "NETTO",
+      "noRecords": "keine Einträge",
+      "today": "HEUTE",
+      "moreRecords": "+{{count}} weitere Einträge",
+      "showLess": "Weniger anzeigen",
+      "addIncome": "+ Einnahme hinzufügen",
+      "addExpense": "+ Ausgabe hinzufügen",
+      "statusPaid": "Bezahlt",
+      "statusPending": "Ausstehend",
+      "statusOverdue": "Überfällig",
+      "statusPartial": "Teilweise",
+      "markPaid": "Als bezahlt markieren",
+      "markPending": "Als ausstehend markieren"
     }
   },
   "randevu": {

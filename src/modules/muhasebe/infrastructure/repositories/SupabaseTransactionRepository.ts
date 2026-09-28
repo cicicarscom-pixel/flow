@@ -25,20 +25,24 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
   }
 
   async create(transaction: Omit<Transaction, 'id' | 'createdAt'>): Promise<Transaction> {
-    // Actually entity doesn't have an id in omit, but toPersistence needs a full Transaction
-    // Let's create a dummy id for the persistence payload if necessary, or let DB handle it.
-    const payload = {
+    const { data, error } = await supabase.rpc('create_finance_entry', {
+      p_type: transaction.type,
+      p_title: transaction.title,
+      p_amount: transaction.amount,
+      p_date: transaction.date,
+      p_payment_status: transaction.status === 'completed' ? 'paid' : (transaction.status || 'paid')
+    });
+    
+    if (error) {
+      throw new NetworkError(`Islem olusturulurken hata olustu: ${error.message}`);
+    }
+    return TransactionMapper.toDomain({
+      id: data?.id || 'new-id',
       title: transaction.title,
       amount: transaction.amount,
       date: transaction.date,
       type: transaction.type,
       status: transaction.status
-    };
-    
-    const { data, error } = await supabase.from('transactions').insert([payload]).select().single();
-    if (error) {
-      throw new NetworkError(`İşlem oluşturulurken hata oluştu: ${error.message}`);
-    }
-    return TransactionMapper.toDomain(data);
+    });
   }
 }
