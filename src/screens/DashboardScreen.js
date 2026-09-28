@@ -894,7 +894,7 @@ export default function DashboardScreen({ navigation }) {
                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
                              {a.calendarName ? <View style={{ backgroundColor: 'rgba(34,181,115,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 99 }}><Text style={{ color: '#22B573', fontSize: 11, fontWeight: '500' }}>{a.calendarName}</Text></View> : null}
                              {a.serviceName ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11 }}>🏷️ {a.serviceName}</Text> : null}
-                             {a.note ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11, fontStyle: 'italic' }}>📝 {a.note}</Text> : null}
+                             {a.note ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 12 }}>📝 {a.note}</Text> : null}
                            </View>
                         ) : null}
                       </View>
@@ -927,7 +927,7 @@ export default function DashboardScreen({ navigation }) {
                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
                              {a.calendarName ? <View style={{ backgroundColor: 'rgba(34,181,115,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 99 }}><Text style={{ color: '#22B573', fontSize: 11, fontWeight: '500' }}>{a.calendarName}</Text></View> : null}
                              {a.serviceName ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11 }}>🏷️ {a.serviceName}</Text> : null}
-                             {a.note ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11, fontStyle: 'italic' }}>📝 {a.note}</Text> : null}
+                             {a.note ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 12 }}>📝 {a.note}</Text> : null}
                            </View>
                         ) : null}
                       </View>
@@ -995,7 +995,7 @@ export default function DashboardScreen({ navigation }) {
 
             {/* Fatura Tarayıcı */}
             <CustomGlassCard style={styles.invoiceCard} glowColor="#F59E0B">
-              <Text style={styles.invoiceCardHeader}>{t('dashboardScreen.invoiceScanner.header')}</Text>
+              <Text style={styles.sectionTitle}>{t('dashboardScreen.invoiceScanner.header')}</Text>
               {latestInvoice ? (
                 <View style={styles.invoiceContentRow}>
                   <View style={[styles.invoiceImageWrapper, { justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(245,158,11,0.05)' }]}>
@@ -1045,7 +1045,7 @@ export default function DashboardScreen({ navigation }) {
             {/* Tüm Hesaplar — sosyal özet */}
             <CustomGlassCard style={styles.socialCard} glowColor="#A5B4FC">
               <View style={[styles.socialHeader, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-                <Text style={{ fontSize: 11, color: COLORS.onSurfaceVariant, fontWeight: '600' }}>{t('dashboardScreen.social.allAccounts')}</Text>
+                <Text style={styles.sectionTitle}>{t('dashboardScreen.social.allAccounts')}</Text>
                 {hasSocialAccounts && (
                   <View style={{ backgroundColor: 'rgba(34,197,94,0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
                     <Text style={{ color: '#22C55E', fontSize: 9, fontWeight: '700', letterSpacing: 0.5 }}>{t('dashboardScreen.social.liveAnalysis')}</Text>
@@ -1402,11 +1402,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginTop: 4,
   },
-  sectionTitle: {
-    color: COLORS.onSurface,
-    fontSize: 17,
-    fontWeight: '700',
-  },
+  sectionTitle: { color: COLORS.onSurfaceVariant, fontSize: 12, fontWeight: '600', letterSpacing: 0.84 },
   seeAllBtn: {
     color: '#38BDF8',
     fontSize: 11,
