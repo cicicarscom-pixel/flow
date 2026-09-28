@@ -186,7 +186,7 @@ const innerWidth = screenWidth - 2; // Compensate for left/right borders (1px ea
 
 
 const AppointmentNotifications = ({ navigation, onRead }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -236,8 +236,13 @@ const AppointmentNotifications = ({ navigation, onRead }) => {
     <View style={{ gap: 10 }}>
       {notifications.map(n => {
         const m = n.metadata || {};
-        const dateText = m.starts_at ? new Date(m.starts_at).toLocaleString('tr-TR', { timeZone: m.timezone || 'Europe/Istanbul', weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
-        const title = `${m.customer_name || 'İsimsiz'} için ${dateText} tarihine randevu oluşturuldu`;
+        const lang = i18n.language?.startsWith('en') ? 'en' : (i18n.language?.startsWith('de') ? 'de' : 'tr');
+        const localeStr = lang === 'en' ? 'en-US' : (lang === 'de' ? 'de-DE' : 'tr-TR');
+        const dateText = m.starts_at ? new Date(m.starts_at).toLocaleString(localeStr, { timeZone: m.timezone || 'Europe/Istanbul', weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
+        const name = m.customer_name || t('dashboardScreen.appointmentNotifications.unknownCustomer', "İsimsiz");
+        const title = lang === 'en' ? `Appointment booked for ${name} on ${dateText}` :
+                      lang === 'de' ? `Termin für ${name} am ${dateText} erstellt` :
+                      appointmentSentence(name, dateText, m.calendar_name);
         
         return (
           <TouchableOpacity key={n.id} onPress={() => handlePress(n)} style={{
@@ -250,7 +255,11 @@ const AppointmentNotifications = ({ navigation, onRead }) => {
               {!n.is_read && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#22B573', marginRight: 8, marginTop: 4 }} />}
               <Text style={{ color: '#fff', fontSize: 13, fontWeight: n.is_read ? '400' : 'bold', flex: 1 }}>{title}</Text>
             </View>
-            {!!m.calendar_name && <Text style={{ color: '#849495', fontSize: 12, marginTop: 4, marginLeft: n.is_read ? 0 : 16 }}>👨‍⚕️ {m.calendar_name}</Text>}
+            {!!m.calendar_name && (
+              <View style={{ backgroundColor: 'rgba(34,181,115,0.1)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 99, alignSelf: 'flex-start', marginTop: 6, marginLeft: n.is_read ? 0 : 16 }}>
+                <Text style={{ color: '#22B573', fontSize: 11, fontWeight: '500' }}>{m.calendar_name}</Text>
+              </View>
+            )}
             {!!m.customer_request_raw && <Text style={{ color: '#849495', fontSize: 12, marginTop: 2, marginLeft: n.is_read ? 0 : 16 }}>📝 {m.customer_request_raw}</Text>}
           </TouchableOpacity>
         );
@@ -958,15 +967,7 @@ export default function DashboardScreen({ navigation }) {
                 ) : (
                   <Text style={styles.financeValueText}>{formatCurrency(financeStats.income)} </Text>
                 )}
-                <View style={styles.barChartContainer}>
-                  {[30, 50, 45, 75, 65, 90, 100].map((h, i) => (
-                    <View key={i} style={[
-                      styles.barChartBar,
-                      { height: `${h}%`, backgroundColor: i === 6 ? COLORS.tertiary : `rgba(34, 181, 115, ${0.15 + (i * 0.1)})` },
-                      i === 6 ? { shadowColor: COLORS.tertiary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 5 } : null
-                    ]} />
-                  ))}
-                </View>
+
               </CustomGlassCard>
 
               <CustomGlassCard style={styles.financeCard}>
@@ -981,15 +982,7 @@ export default function DashboardScreen({ navigation }) {
                 ) : (
                   <Text style={styles.financeValueText}>{formatCurrency(financeStats.expense)} </Text>
                 )}
-                <View style={styles.barChartContainer}>
-                  {[70, 50, 85, 30, 60, 40, 50].map((h, i) => (
-                    <View key={i} style={[
-                      styles.barChartBar,
-                      { height: `${h}%`, backgroundColor: i === 6 ? COLORS.error : `rgba(255, 180, 171, ${0.2 + (i * 0.1)})` },
-                      i === 6 ? { shadowColor: COLORS.error, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 5 } : null
-                    ]} />
-                  ))}
-                </View>
+
               </CustomGlassCard>
             </View>
 
