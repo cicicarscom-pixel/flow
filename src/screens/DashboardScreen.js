@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import CustomButton from '../shared/ui/CustomButton';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
