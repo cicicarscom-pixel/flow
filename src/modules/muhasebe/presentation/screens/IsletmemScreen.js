@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { todayInTimezone, monthRangeYmd } from '../../../../lib/dates';
 
 const formatCurrency = (amount) => {
-  return Number(amount || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return Number(amount || 0).toLocaleString('tr-TR', { maximumFractionDigits: 0 });
 };
 
 const getBadge = (status, t) => {
@@ -20,7 +20,7 @@ const getBadge = (status, t) => {
 };
 
 export default function IsletmemScreen({ navigation }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const [documents, setDocuments] = useState([]);
   const [months, setMonths] = useState([]);
@@ -28,6 +28,18 @@ export default function IsletmemScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('Gelirler');
   const [insight, setInsight] = useState('');
   const [isInsightLoading, setIsInsightLoading] = useState(false);
+
+
+  const getDisplayMonth = (yyyy_mm) => {
+    try {
+      if (!yyyy_mm) return '';
+      const [y, m] = yyyy_mm.split('-');
+      const d = new Date(Date.UTC(parseInt(y), parseInt(m) - 1, 1));
+      return d.toLocaleDateString(i18n.language || 'tr-TR', { month: 'long', year: 'numeric' });
+    } catch {
+      return yyyy_mm;
+    }
+  };
 
   useEffect(() => {
     const fetchPastDocuments = async () => {
@@ -42,19 +54,19 @@ export default function IsletmemScreen({ navigation }) {
           }
         }
         const todayStr = todayInTimezone(tz);
-        const { data: calendarData } = await supabase.rpc('get_payment_calendar', { p_from: '2020-01-01', p_to: todayStr });
+        const { to: p_to } = monthRangeYmd(todayStr);
+        const { data: calendarData } = await supabase.rpc('get_payment_calendar', { p_from: '2020-01-01', p_to });
         
         const rawDocs = calendarData || [];
 
         // Group by Month Year
         const grouped = rawDocs.reduce((acc, doc) => {
           if (!doc.day) return acc;
-          const dDate = new Date(doc.day);
-          const monthYear = dDate.toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
-          if (!acc[monthYear]) {
-            acc[monthYear] = [];
+          const yyyy_mm = doc.day.slice(0, 7);
+          if (!acc[yyyy_mm]) {
+            acc[yyyy_mm] = [];
           }
-          acc[monthYear].push({
+          acc[yyyy_mm].push({
              ...doc,
              unifiedDate: doc.day,
              unifiedAmount: doc.amount_minor / 100,
@@ -63,7 +75,7 @@ export default function IsletmemScreen({ navigation }) {
           return acc;
         }, {});
 
-        const currentMonthStr = new Date().toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
+        const currentMonthStr = todayStr.slice(0, 7);
         let monthKeys = Object.keys(grouped);
         
         if (!monthKeys.includes(currentMonthStr)) {
@@ -72,15 +84,7 @@ export default function IsletmemScreen({ navigation }) {
         }
 
         // Sort months descending
-        monthKeys.sort((a, b) => {
-          const parseMY = (str) => {
-             const parts = str.split(' ');
-             const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-             const mIndex = monthNames.indexOf(parts[0]);
-             return new Date(parseInt(parts[1] || "2000"), Math.max(0, mIndex), 1).getTime();
-          };
-          return parseMY(b) - parseMY(a);
-        });
+        monthKeys.sort((a, b) => b.localeCompare(a));
 
         setMonths(monthKeys);
         if (monthKeys.length > 0 && !selectedMonth) {
@@ -108,13 +112,7 @@ export default function IsletmemScreen({ navigation }) {
 
     const fetchSummary = async () => {
       try {
-        const parts = selectedMonth.split(' ');
-        const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-        const mIndex = monthNames.indexOf(parts[0]);
-        const y = parseInt(parts[1] || "2000");
-
-        const mm = String(mIndex + 1).padStart(2, '0');
-        const { from: p_from, to: p_to } = monthRangeYmd(`${y}-${mm}-01`);
+        const { from: p_from, to: p_to } = monthRangeYmd(selectedMonth + "-01");
 
         const { data: summaryData } = await supabase.rpc('get_finance_summary', { p_from, p_to });
         if (summaryData && summaryData.status === 'SUCCESS') {
@@ -139,6 +137,15 @@ export default function IsletmemScreen({ navigation }) {
 
   const getMonthData = (monthStr) => {
     if (!monthStr) return { income: 0, expense: 0, balance: 0, docs: [] };
+    const mDocs = documents.filter(doc => doc.unifiedDate.slice(0, 7) === monthStr);
+    const summary = monthSummaries[monthStr] || { income: 0, expense: 0, balance: 0 };
+    return { ...summary, docs: mDocs };
+  };
+
+  const currentData = getMonthData(selectedMonth);
+  const currentMonthIndex = months.indexOf(selectedMonth);
+  const prevMonthStr = currentMonthIndex >= 0 && currentMonthIndex + 1 < months.length ? months[currentMonthIndex + 1] : null;
+  const prevData = getMonthData(prevMonthStr);
     const mDocs = documents.filter(doc => {
       const dDate = new Date(doc.unifiedDate);
       return dDate.toLocaleString('tr-TR', { month: 'long', year: 'numeric' }) === monthStr;
@@ -217,7 +224,7 @@ export default function IsletmemScreen({ navigation }) {
               onPress={() => setSelectedMonth(m)}
               className={`flex-shrink-0 px-4 py-1.5 rounded-xl flex-row items-center gap-2 ${selectedMonth === m ? 'bg-[#22B573]' : 'bg-[#2A2631]'}`}
             >
-              <Text className={`text-sm font-medium ${selectedMonth === m ? 'text-[#1C3327]' : 'text-[#A79E96]'}`}>{m}</Text>
+              <Text className={`text-sm font-medium ${selectedMonth === m ? 'text-[#1C3327]' : 'text-[#A79E96]'}`}>{getDisplayMonth(m)}</Text>
               {selectedMonth === m && <MaterialIcons name="expand-more" size={16} color="#1C3327" />}
             </TouchableOpacity>
           ))}
@@ -342,6 +349,4 @@ const styles = StyleSheet.create({
   tabButton: { paddingBottom: 8 },
   activeTab: { borderBottomWidth: 2, borderBottomColor: '#22B573' }
 });
-
-
 
