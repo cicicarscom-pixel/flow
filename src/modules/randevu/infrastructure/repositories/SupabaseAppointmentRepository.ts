@@ -171,9 +171,19 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
       .select('appointment_id, service_id')
       .in('appointment_id', appointmentIds);
 
-    const { data: services } = await supabase
-      .from('business_services')
-      .select('id, name');
+    const serviceIds = new Set<string>();
+    appointments.forEach((a: any) => { if (a.service_id) serviceIds.add(a.service_id); });
+    (links || []).forEach((l: any) => { if (l.service_id) serviceIds.add(l.service_id); });
+
+    let services: any[] | null = null;
+    if (serviceIds.size > 0 && user?.user?.id) {
+      const { data } = await supabase
+        .from('business_services')
+        .select('id, name')
+        .eq('merchant_id', user.user.id)
+        .in('id', Array.from(serviceIds));
+      services = data;
+    }
 
     const serviceNameById = new Map((services || []).map((s: any) => [s.id, s.name]));
     const servicesByAppointment = new Map<string, string[]>();

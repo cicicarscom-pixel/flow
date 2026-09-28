@@ -166,7 +166,7 @@ export class SupabasePersonaRepository {
         
       if (orgError) {
         console.error('Error saving to organization_ai_settings:', orgError);
-        // Continue anyway to preserve legacy save
+        throw orgError;
       }
 
       // 2. bot_settings kayıt işlemi — SADECE kanal aç/kapa anahtarları.
