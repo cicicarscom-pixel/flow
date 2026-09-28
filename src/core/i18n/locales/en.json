@@ -704,7 +704,7 @@
       "liveAnalysis": "LIVE ANALYTICS"
     },
     "invoiceScanner": {
-      "header": "INVOICE SCANNER · LATEST INVOICE",
+      "header": "Invoice scanner · Latest invoice",
       "supplier": "Supplier",
       "date": "Date",
       "vat": "VAT",
@@ -713,7 +713,10 @@
       "noInvoice": "No invoices scanned yet"
     },
     "appointmentNotifications": {
-      "title": "Appointment Notifications"
+      "title": "Appointment Notifications",
+      "unknownCustomer": "A customer",
+      "sentence": "{{name}} booked an appointment on {{when}}",
+      "sentenceWithResource": "{{name}} booked an appointment with {{resource}} on {{when}}"
     }
   },
   "notifications": {

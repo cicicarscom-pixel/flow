@@ -162,12 +162,7 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
     }
   };
 
-  useEffect(() => {
-    // Automatically mark all as read when they are loaded and displayed
-    if (notifications.length > 0 && notifications.some(n => !n.is_read)) {
-      markAllAsRead(notifications);
-    }
-  }, [notifications]);
+
 
   const deleteNotification = async (id) => {
     Alert.alert(t('bildirimlerScreen.alerts.deleteTitle'), t('bildirimlerScreen.alerts.deleteMessage'), [
@@ -236,7 +231,7 @@ export default function BildirimlerScreen({ navigation, isTab = false }) {
           title={t('bildirimlerScreen.title')}
           onBack={() => navigation.goBack()}
           rightIcon={notifications.some(n => !n.is_read) ? "checkmark-done" : undefined}
-          onRightPress={markAllAsRead}
+          onRightPress={() => markAllAsRead()}
         />
       )}
       

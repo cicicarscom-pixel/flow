@@ -239,10 +239,16 @@ const AppointmentNotifications = ({ navigation, onRead }) => {
         const lang = i18n.language?.startsWith('en') ? 'en' : (i18n.language?.startsWith('de') ? 'de' : 'tr');
         const localeStr = lang === 'en' ? 'en-US' : (lang === 'de' ? 'de-DE' : 'tr-TR');
         const dateText = m.starts_at ? new Date(m.starts_at).toLocaleString(localeStr, { timeZone: m.timezone || 'Europe/Istanbul', weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : '';
-        const name = m.customer_name || t('dashboardScreen.appointmentNotifications.unknownCustomer', "İsimsiz");
-        const title = lang === 'en' ? `Appointment booked for ${name} on ${dateText}` :
-                      lang === 'de' ? `Termin für ${name} am ${dateText} erstellt` :
-                      appointmentSentence(name, dateText, m.calendar_name);
+        const name = m.customer_name || t('dashboardScreen.appointmentNotifications.unknownCustomer');
+        
+        let title = '';
+        if (lang === 'tr') {
+            title = appointmentSentence(name, dateText, m.calendar_name);
+        } else {
+            title = m.calendar_name
+              ? t('dashboardScreen.appointmentNotifications.sentenceWithResource', { name, when: dateText, resource: m.calendar_name })
+              : t('dashboardScreen.appointmentNotifications.sentence', { name, when: dateText });
+        }
         
         return (
           <TouchableOpacity key={n.id} onPress={() => handlePress(n)} style={{

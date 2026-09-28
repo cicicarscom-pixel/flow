@@ -704,7 +704,7 @@
       "liveAnalysis": "CANLI ANALİZ"
     },
     "invoiceScanner": {
-      "header": "FATURA TARAYICI · SON FATURA",
+      "header": "Fatura tarayıcı · Son fatura",
       "supplier": "Tedarikçi",
       "date": "Tarih",
       "vat": "KDV",
@@ -713,7 +713,8 @@
       "noInvoice": "Henüz fatura taranmadı"
     },
     "appointmentNotifications": {
-      "title": "Randevu Bildirimleri"
+      "title": "Randevu Bildirimleri",
+      "unknownCustomer": "Bir müşteri"
     }
   }
 }

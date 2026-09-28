@@ -704,7 +704,7 @@
       "liveAnalysis": "LIVE-ANALYSE"
     },
     "invoiceScanner": {
-      "header": "RECHNUNGSSCANNER · LETZTE RECHNUNG",
+      "header": "Rechnungsscanner · Letzte Rechnung",
       "supplier": "Lieferant",
       "date": "Datum",
       "vat": "MwSt.",
@@ -713,7 +713,10 @@
       "noInvoice": "Noch keine Rechnungen gescannt"
     },
     "appointmentNotifications": {
-      "title": "Terminbenachrichtigungen"
+      "title": "Terminbenachrichtigungen",
+      "unknownCustomer": "Ein Kunde",
+      "sentence": "{{name}} hat einen Termin am {{when}} gebucht",
+      "sentenceWithResource": "{{name}} hat einen Termin bei {{resource}} am {{when}} gebucht"
     }
   },
   "notifications": {
