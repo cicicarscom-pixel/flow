@@ -273,6 +273,8 @@ export default function DashboardScreen({ navigation }) {
   const [financeStats, setFinanceStats] = useState({ income: 0, expense: 0 });
   const [upcomingPayments, setUpcomingPayments] = useState([]);
   const [socialStats, setSocialStats] = useState({ followers: 0, trend: 0 });
+  const [latestInvoice, setLatestInvoice] = useState(null);
+  const [hasSocialAccounts, setHasSocialAccounts] = useState(true);
   const [recentActivities, setRecentActivities] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [totalAppointments, setTotalAppointments] = useState(0);
@@ -437,6 +439,7 @@ export default function DashboardScreen({ navigation }) {
           });
         }
 
+        
         // Fetch finance_documents
         let orgId = null;
         if (session) {
@@ -445,6 +448,15 @@ export default function DashboardScreen({ navigation }) {
         }
 
         if (orgId) {
+          const { data: latestDoc } = await supabase.from('finance_documents')
+            .select('*')
+            .eq('organization_id', orgId)
+            .is('archived_at', null)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          setLatestInvoice(latestDoc);
+
           const { data: docs } = await supabase.from('finance_documents').select('*').eq('organization_id', orgId);
           if (docs) {
             docs.forEach(d => {
@@ -495,6 +507,9 @@ export default function DashboardScreen({ navigation }) {
            : (actualFollow.trend || actualFollow.growthPercentage || actualFollow.totalGrowth || 0);
 
         setSocialStats(prev => ({ ...prev, followers: totalFollowers, trend: finalTrend }));
+          const hasAccounts = Array.isArray(actualFollow.accounts) && actualFollow.accounts.length > 0;
+          setHasSocialAccounts(hasAccounts);
+
 
         // 4. Recent Activities (Messages & Comments)
         const [{ data: msgs }, { data: comments }] = await Promise.all([
@@ -975,88 +990,100 @@ export default function DashboardScreen({ navigation }) {
             )}
 
             {/* Tüm Hesaplar — sosyal özet */}
-            <CustomGlassCard style={styles.socialCard}>
-              <View style={styles.socialHeader}>
-                <View style={styles.socialProfile}>
-                  <View style={styles.socialAvatar}>
-                    <MaterialIcons name="groups" size={18} color={COLORS.primaryFixedDim} />
+            <CustomGlassCard style={styles.socialCard} glowColor="#A5B4FC">
+              <View style={[styles.socialHeader, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+                <Text style={{ fontSize: 11, color: COLORS.onSurfaceVariant, fontWeight: '600' }}>{t('dashboardScreen.social.header')}</Text>
+                {hasSocialAccounts && (
+                  <View style={{ backgroundColor: 'rgba(34,197,94,0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                    <Text style={{ color: '#22C55E', fontSize: 9, fontWeight: '700', letterSpacing: 0.5 }}>CANLI ANALİZ</Text>
                   </View>
-                  <Text style={styles.socialUsername}>{t('dashboardScreen.social.allAccounts')}</Text>
-                </View>
-                <View style={styles.liveBadge}>
-                  <Text style={styles.liveBadgeText}>{t('dashboardScreen.social.live')}</Text>
-                </View>
+                )}
               </View>
-              <View style={styles.socialStatsRow}>
-                <View>
-                  <Text style={styles.statsLabelText}>{t('dashboardScreen.social.totalFollowers')}</Text>
-                  <View style={styles.followerRow}>
+
+              {hasSocialAccounts ? (
+                <View style={[styles.socialMainRow, { marginTop: 12, flexDirection: 'row', alignItems: 'center' }]}>
+                  <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.05)', justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
+                    <MaterialIcons name="people" size={20} color="#A5B4FC" />
+                  </View>
+                  <View style={styles.socialStatsWrapper}>
                     {isLoading ? (
                       <Skeleton width={70} height={26} />
                     ) : (
                       <>
-                        <Text style={styles.followerValue}>{socialStats.followers.toLocaleString('tr-TR')}</Text>
-                        <View style={styles.followerTrend}>
-  {socialStats.trend > 0 ? (
-    <MaterialIcons name="arrow-upward" size={13} color={COLORS.tertiaryFixed} />
-  ) : socialStats.trend < 0 ? (
-    <MaterialIcons name="arrow-downward" size={13} color="#EF4444" />
-  ) : (
-    <MaterialIcons name="remove" size={13} color={COLORS.onSurfaceVariant} />
-  )}
-  <Text style={[styles.followerTrendText, { color: socialStats.trend > 0 ? COLORS.tertiaryFixed : socialStats.trend < 0 ? "#EF4444" : COLORS.onSurfaceVariant }]}>
-    {socialStats.trend !== 0 ? ` ${Math.abs(socialStats.trend)}%` : ''}
-  </Text>
-</View>
+                        <Text style={{ fontSize: 24, fontWeight: '800', color: COLORS.onBackground }}>{socialStats.followers.toLocaleString('tr-TR')}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          {socialStats.trend > 0 ? (
+                            <MaterialIcons name="arrow-upward" size={13} color={COLORS.tertiaryFixed} />
+                          ) : socialStats.trend < 0 ? (
+                            <MaterialIcons name="arrow-downward" size={13} color="#EF4444" />
+                          ) : (
+                            <MaterialIcons name="remove" size={13} color={COLORS.onSurfaceVariant} />
+                          )}
+                          <Text style={{ fontSize: 11, fontWeight: '700', color: socialStats.trend > 0 ? COLORS.tertiaryFixed : socialStats.trend < 0 ? "#EF4444" : COLORS.onSurfaceVariant }}>
+                            {socialStats.trend !== 0 ? ` ${Math.abs(socialStats.trend)}%` : ''}
+                          </Text>
+                        </View>
                       </>
                     )}
                   </View>
                 </View>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={styles.statsLabelText}>{t('dashboardScreen.social.engagement')}</Text>
-                  <View style={styles.trendBarBg}>
-                    <LinearGradient
-                      colors={[COLORS.primary, COLORS.primaryContainer, COLORS.secondary]}
-                      start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                      style={[styles.trendBarFill, { width: '82%' }]}
-                    />
-                  </View>
+              ) : (
+                <View style={{ paddingVertical: 10, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13, textAlign: 'center' }}>Henüz sosyal medya hesabı bağlanmadı</Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('Sosyal Medya')} style={{ marginTop: 10 }}>
+                    <Text style={{ color: '#00F2FE', fontSize: 13, fontWeight: '500' }}>Hesap Bağla</Text>
+                  </TouchableOpacity>
                 </View>
-              </View>
+              )}
             </CustomGlassCard>
 
             {/* Fatura Tarayıcı */}
             <CustomGlassCard style={styles.invoiceCard} glowColor="#F59E0B">
               <Text style={styles.invoiceCardHeader}>{t('dashboardScreen.invoiceScanner.header')}</Text>
-              <View style={styles.invoiceContentRow}>
-                <View style={styles.invoiceImageWrapper}>
-                  <Image
-                    source={{ uri: "https://images.unsplash.com/photo-1648500847390-7792256bb95a?w=80&h=100&fit=crop&auto=format" }}
-                    style={styles.invoiceImage}
-                  />
+              {latestInvoice ? (
+                <View style={styles.invoiceContentRow}>
+                  <View style={[styles.invoiceImageWrapper, { justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(245,158,11,0.05)' }]}>
+                    {latestInvoice.image_url ? (
+                      <Image
+                        source={{ uri: latestInvoice.image_url }}
+                        style={styles.invoiceImage}
+                      />
+                    ) : (
+                      <Ionicons name="document-text-outline" size={32} color="rgba(245,158,11,0.6)" />
+                    )}
+                  </View>
+                  <View style={styles.invoiceDetails}>
+                    <View style={styles.invoiceDetailRow}>
+                      <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.supplier')}</Text>
+                      <Text style={styles.invoiceDetailValue}>{latestInvoice.counterparty_name || latestInvoice.title || "-"}</Text>
+                    </View>
+                    <View style={styles.invoiceDetailRow}>
+                      <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.date')}</Text>
+                      <Text style={styles.invoiceDetailValue}>{latestInvoice.due_date || latestInvoice.created_at ? new Intl.DateTimeFormat('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(latestInvoice.due_date || latestInvoice.created_at)) : "-"}</Text>
+                    </View>
+                    {latestInvoice.tax_details && latestInvoice.tax_details.rate != null && (
+                      <View style={styles.invoiceDetailRow}>
+                        <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.vat')}</Text>
+                        <Text style={styles.invoiceDetailValue}>%{latestInvoice.tax_details.rate}</Text>
+                      </View>
+                    )}
+                    <View style={styles.invoiceDetailRow}>
+                      <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.total')}</Text>
+                      <Text style={styles.invoiceDetailValue}>{new Intl.NumberFormat('tr-TR', { style: 'currency', currency: latestInvoice.currency_code || 'TRY' }).format(Number(latestInvoice.amount_minor)/100)}</Text>
+                    </View>
+                  </View>
                 </View>
-                <View style={styles.invoiceDetails}>
-                  <View style={styles.invoiceDetailRow}>
-                    <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.supplier')}</Text>
-                    <Text style={styles.invoiceDetailValue}>Ofis Dünyası A.Ş.</Text>
-                  </View>
-                  <View style={styles.invoiceDetailRow}>
-                    <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.date')}</Text>
-                    <Text style={styles.invoiceDetailValue}>03.02.2026</Text>
-                  </View>
-                  <View style={styles.invoiceDetailRow}>
-                    <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.vat')}</Text>
-                    <Text style={styles.invoiceDetailValue}>%20</Text>
-                  </View>
-                  <View style={styles.invoiceDetailRow}>
-                    <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.total')}</Text>
-                    <Text style={styles.invoiceDetailValue}>₺4,820.00</Text>
-                  </View>
+              ) : (
+                <View style={{ paddingVertical: 20, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13 }}>Henüz fatura taranmadı</Text>
                 </View>
-              </View>
-              <TouchableOpacity style={styles.invoiceBtn}>
-                <Text style={styles.invoiceBtnText}>{t('dashboardScreen.invoiceScanner.scanButton')}</Text>
-              </TouchableOpacity>
+              )}
+              <CustomButton
+                title={t('dashboardScreen.invoiceScanner.newInvoiceBtn')}
+                onPress={() => navigation.navigate('Muhasebe', { screen: 'VeriGirisi' })}
+                style={{ marginTop: 14, backgroundColor: 'rgba(245,158,11,0.12)', borderColor: 'rgba(245,158,11,0.25)', borderWidth: 1, borderRadius: 12 }}
+                textStyle={{ color: '#F59E0B', fontSize: 13, fontWeight: '700' }}
+              />
             </CustomGlassCard>
 
             {/* Son Aktiviteler */}
