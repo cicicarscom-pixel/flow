@@ -90,9 +90,7 @@ const formatDayMonth = (dateStr, t) => {
   return `${d.getDate()} ${months[d.getMonth()]}`;
 };
 
-const formatCurrency = (amount) => {
-  return Number(amount).toLocaleString('tr-TR');
-};
+const formatCurrency = (amount) => { return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(amount); };
 
 // --- Subcomponents ---
 
@@ -868,7 +866,7 @@ export default function DashboardScreen({ navigation }) {
                 {isLoading ? (
                   <Skeleton width="80%" height={26} style={{ marginBottom: 12 }} />
                 ) : (
-                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.income)} <Text style={styles.financeValueCurrency}>TL</Text></Text>
+                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.income)} </Text>
                 )}
                 <View style={styles.barChartContainer}>
                   {[30, 50, 45, 75, 65, 90, 100].map((h, i) => (
@@ -891,7 +889,7 @@ export default function DashboardScreen({ navigation }) {
                 {isLoading ? (
                   <Skeleton width="80%" height={26} style={{ marginBottom: 12 }} />
                 ) : (
-                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.expense)} <Text style={styles.financeValueCurrency}>TL</Text></Text>
+                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.expense)} </Text>
                 )}
                 <View style={styles.barChartContainer}>
                   {[70, 50, 85, 30, 60, 40, 50].map((h, i) => (
@@ -925,7 +923,7 @@ export default function DashboardScreen({ navigation }) {
                         <Text style={styles.apptListTitle} numberOfLines={1}>{a.customerName}</Text>
                         {(a.calendarName || a.serviceName || a.note) ? (
                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
-                             {a.calendarName ? <Text style={{ color: '#00F2FE', fontSize: 11, fontWeight: '500' }}>👨‍⚕️ Dr. {a.calendarName}</Text> : null}
+                             {a.calendarName ? <Text style={{ color: '#00F2FE', fontSize: 11, fontWeight: '500' }}>{a.calendarName}</Text> : null}
                              {a.serviceName ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11 }}>🏷️ {a.serviceName}</Text> : null}
                              {a.note ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11, fontStyle: 'italic' }}>📝 {a.note}</Text> : null}
                            </View>
@@ -958,7 +956,7 @@ export default function DashboardScreen({ navigation }) {
                         <Text style={styles.apptListTitle} numberOfLines={1}>{a.customerName}</Text>
                         {(a.calendarName || a.serviceName || a.note) ? (
                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
-                             {a.calendarName ? <Text style={{ color: '#00F2FE', fontSize: 11, fontWeight: '500' }}>👨‍⚕️ Dr. {a.calendarName}</Text> : null}
+                             {a.calendarName ? <Text style={{ color: '#00F2FE', fontSize: 11, fontWeight: '500' }}>{a.calendarName}</Text> : null}
                              {a.serviceName ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11 }}>🏷️ {a.serviceName}</Text> : null}
                              {a.note ? <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 11, fontStyle: 'italic' }}>📝 {a.note}</Text> : null}
                            </View>
@@ -999,9 +997,17 @@ export default function DashboardScreen({ navigation }) {
                       <>
                         <Text style={styles.followerValue}>{socialStats.followers.toLocaleString('tr-TR')}</Text>
                         <View style={styles.followerTrend}>
-                          <MaterialIcons name="arrow-upward" size={13} color={COLORS.tertiaryFixed} />
-                          <Text style={styles.followerTrendText}> {socialStats.trend}%</Text>
-                        </View>
+  {socialStats.trend > 0 ? (
+    <MaterialIcons name="arrow-upward" size={13} color={COLORS.tertiaryFixed} />
+  ) : socialStats.trend < 0 ? (
+    <MaterialIcons name="arrow-downward" size={13} color="#EF4444" />
+  ) : (
+    <MaterialIcons name="remove" size={13} color={COLORS.onSurfaceVariant} />
+  )}
+  <Text style={[styles.followerTrendText, { color: socialStats.trend > 0 ? COLORS.tertiaryFixed : socialStats.trend < 0 ? "#EF4444" : COLORS.onSurfaceVariant }]}>
+    {socialStats.trend !== 0 ? ` ${Math.abs(socialStats.trend)}%` : ''}
+  </Text>
+</View>
                       </>
                     )}
                   </View>
@@ -1120,7 +1126,7 @@ export default function DashboardScreen({ navigation }) {
                       </View>
                       <Text style={styles.paymentTitle} numberOfLines={1}>{payment.description || t('dashboardScreen.upcomingPayments.defaultTitle')}</Text>
                       <View style={styles.paymentBottomRow}>
-                        <Text style={styles.paymentAmount}>{formatCurrency(payment.amount)} <Text style={styles.paymentCurrency}>TL</Text></Text>
+                        <Text style={styles.paymentAmount}>{formatCurrency(payment.amount)} </Text>
                         <TouchableOpacity style={styles.paymentMoreBtn}>
                           <MaterialIcons name="more-horiz" size={18} color={COLORS.onSurfaceVariant} />
                         </TouchableOpacity>
