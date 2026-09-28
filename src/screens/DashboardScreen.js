@@ -872,56 +872,6 @@ export default function DashboardScreen({ navigation }) {
           </View>
 
           <View style={styles.body}>
-
-            {/* Gelir / Gider */}
-            <View style={styles.financeGrid}>
-              <CustomGlassCard style={styles.financeCard}>
-                <View style={styles.financeHeaderRow}>
-                  <View style={[styles.financeBadge, { backgroundColor: 'rgba(34, 181, 115, 0.12)', borderColor: 'rgba(34, 181, 115, 0.25)' }]}>
-                    <Text style={[styles.financeBadgeText, { color: COLORS.tertiaryFixed }]}>{t('dashboardScreen.finance.income')}</Text>
-                  </View>
-                  <MaterialIcons name="trending-up" size={18} color={COLORS.tertiary} />
-                </View>
-                {isLoading ? (
-                  <Skeleton width="80%" height={26} style={{ marginBottom: 12 }} />
-                ) : (
-                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.income)} </Text>
-                )}
-                <View style={styles.barChartContainer}>
-                  {[30, 50, 45, 75, 65, 90, 100].map((h, i) => (
-                    <View key={i} style={[
-                      styles.barChartBar,
-                      { height: `${h}%`, backgroundColor: i === 6 ? COLORS.tertiary : `rgba(34, 181, 115, ${0.15 + (i * 0.1)})` },
-                      i === 6 ? { shadowColor: COLORS.tertiary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 5 } : null
-                    ]} />
-                  ))}
-                </View>
-              </CustomGlassCard>
-
-              <CustomGlassCard style={styles.financeCard}>
-                <View style={styles.financeHeaderRow}>
-                  <View style={[styles.financeBadge, { backgroundColor: 'rgba(255, 180, 171, 0.1)', borderColor: 'rgba(255, 180, 171, 0.2)' }]}>
-                    <Text style={[styles.financeBadgeText, { color: COLORS.error }]}>{t('dashboardScreen.finance.expense')}</Text>
-                  </View>
-                  <MaterialIcons name="trending-down" size={18} color={COLORS.error} />
-                </View>
-                {isLoading ? (
-                  <Skeleton width="80%" height={26} style={{ marginBottom: 12 }} />
-                ) : (
-                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.expense)} </Text>
-                )}
-                <View style={styles.barChartContainer}>
-                  {[70, 50, 85, 30, 60, 40, 50].map((h, i) => (
-                    <View key={i} style={[
-                      styles.barChartBar,
-                      { height: `${h}%`, backgroundColor: i === 6 ? COLORS.error : `rgba(255, 180, 171, ${0.2 + (i * 0.1)})` },
-                      i === 6 ? { shadowColor: COLORS.error, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 5 } : null
-                    ]} />
-                  ))}
-                </View>
-              </CustomGlassCard>
-            </View>
-
             {/* Bugünkü Randevu/Rezervasyonlar — dikey liste */}
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>{t('dashboardScreen.appointments.todayTitle', 'Bugünkü Randevular')}</Text>
@@ -993,53 +943,55 @@ export default function DashboardScreen({ navigation }) {
               <Text style={styles.emptyText}>{t('dashboardScreen.appointments.empty', 'Yaklaşan randevu veya rezervasyon bulunmuyor.')}</Text>
             )}
 
-            {/* Tüm Hesaplar — sosyal özet */}
-            <CustomGlassCard style={styles.socialCard} glowColor="#A5B4FC">
-              <View style={[styles.socialHeader, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-                <Text style={{ fontSize: 11, color: COLORS.onSurfaceVariant, fontWeight: '600' }}>{t('dashboardScreen.social.allAccounts')}</Text>
-                {hasSocialAccounts && (
-                  <View style={{ backgroundColor: 'rgba(34,197,94,0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
-                    <Text style={{ color: '#22C55E', fontSize: 9, fontWeight: '700', letterSpacing: 0.5 }}>{t('dashboardScreen.social.liveAnalysis')}</Text>
-                  </View>
-                )}
-              </View>
 
-              {hasSocialAccounts ? (
-                <View style={[styles.socialMainRow, { marginTop: 12, flexDirection: 'row', alignItems: 'center' }]}>
-                  <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.05)', justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
-                    <MaterialIcons name="people" size={20} color="#A5B4FC" />
+            {/* Gelir / Gider */}
+            <View style={styles.financeGrid}>
+              <CustomGlassCard style={styles.financeCard}>
+                <View style={styles.financeHeaderRow}>
+                  <View style={[styles.financeBadge, { backgroundColor: 'rgba(34, 181, 115, 0.12)', borderColor: 'rgba(34, 181, 115, 0.25)' }]}>
+                    <Text style={[styles.financeBadgeText, { color: COLORS.tertiaryFixed }]}>{t('dashboardScreen.finance.income')}</Text>
                   </View>
-                  <View style={styles.socialStatsWrapper}>
-                    {isLoading ? (
-                      <Skeleton width={70} height={26} />
-                    ) : (
-                      <>
-                        <Text style={{ fontSize: 24, fontWeight: '800', color: COLORS.onBackground }}>{socialStats.followers.toLocaleString('tr-TR')}</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          {socialStats.trend > 0 ? (
-                            <MaterialIcons name="arrow-upward" size={13} color={COLORS.tertiaryFixed} />
-                          ) : socialStats.trend < 0 ? (
-                            <MaterialIcons name="arrow-downward" size={13} color="#EF4444" />
-                          ) : (
-                            <MaterialIcons name="remove" size={13} color={COLORS.onSurfaceVariant} />
-                          )}
-                          <Text style={{ fontSize: 11, fontWeight: '700', color: socialStats.trend > 0 ? COLORS.tertiaryFixed : socialStats.trend < 0 ? "#EF4444" : COLORS.onSurfaceVariant }}>
-                            {socialStats.trend !== 0 ? ` ${Math.abs(socialStats.trend)}%` : ''}
-                          </Text>
-                        </View>
-                      </>
-                    )}
+                  <MaterialIcons name="trending-up" size={18} color={COLORS.tertiary} />
+                </View>
+                {isLoading ? (
+                  <Skeleton width="80%" height={26} style={{ marginBottom: 12 }} />
+                ) : (
+                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.income)} </Text>
+                )}
+                <View style={styles.barChartContainer}>
+                  {[30, 50, 45, 75, 65, 90, 100].map((h, i) => (
+                    <View key={i} style={[
+                      styles.barChartBar,
+                      { height: `${h}%`, backgroundColor: i === 6 ? COLORS.tertiary : `rgba(34, 181, 115, ${0.15 + (i * 0.1)})` },
+                      i === 6 ? { shadowColor: COLORS.tertiary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 5 } : null
+                    ]} />
+                  ))}
+                </View>
+              </CustomGlassCard>
+
+              <CustomGlassCard style={styles.financeCard}>
+                <View style={styles.financeHeaderRow}>
+                  <View style={[styles.financeBadge, { backgroundColor: 'rgba(255, 180, 171, 0.1)', borderColor: 'rgba(255, 180, 171, 0.2)' }]}>
+                    <Text style={[styles.financeBadgeText, { color: COLORS.error }]}>{t('dashboardScreen.finance.expense')}</Text>
                   </View>
+                  <MaterialIcons name="trending-down" size={18} color={COLORS.error} />
                 </View>
-              ) : (
-                <View style={{ paddingVertical: 10, alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13, textAlign: 'center' }}>{t('dashboardScreen.social.noAccounts')}</Text>
-                  <TouchableOpacity onPress={() => navigation.navigate('Sosyal Medya')} style={{ marginTop: 10 }}>
-                    <Text style={{ color: '#00F2FE', fontSize: 13, fontWeight: '500' }}>{t('dashboardScreen.social.connectAccount')}</Text>
-                  </TouchableOpacity>
+                {isLoading ? (
+                  <Skeleton width="80%" height={26} style={{ marginBottom: 12 }} />
+                ) : (
+                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.expense)} </Text>
+                )}
+                <View style={styles.barChartContainer}>
+                  {[70, 50, 85, 30, 60, 40, 50].map((h, i) => (
+                    <View key={i} style={[
+                      styles.barChartBar,
+                      { height: `${h}%`, backgroundColor: i === 6 ? COLORS.error : `rgba(255, 180, 171, ${0.2 + (i * 0.1)})` },
+                      i === 6 ? { shadowColor: COLORS.error, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 5 } : null
+                    ]} />
+                  ))}
                 </View>
-              )}
-            </CustomGlassCard>
+              </CustomGlassCard>
+            </View>
 
             {/* Fatura Tarayıcı */}
             <CustomGlassCard style={styles.invoiceCard} glowColor="#F59E0B">
@@ -1090,6 +1042,56 @@ export default function DashboardScreen({ navigation }) {
               />
             </CustomGlassCard>
 
+            {/* Tüm Hesaplar — sosyal özet */}
+            <CustomGlassCard style={styles.socialCard} glowColor="#A5B4FC">
+              <View style={[styles.socialHeader, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+                <Text style={{ fontSize: 11, color: COLORS.onSurfaceVariant, fontWeight: '600' }}>{t('dashboardScreen.social.allAccounts')}</Text>
+                {hasSocialAccounts && (
+                  <View style={{ backgroundColor: 'rgba(34,197,94,0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                    <Text style={{ color: '#22C55E', fontSize: 9, fontWeight: '700', letterSpacing: 0.5 }}>{t('dashboardScreen.social.liveAnalysis')}</Text>
+                  </View>
+                )}
+              </View>
+
+              {hasSocialAccounts ? (
+                <View style={[styles.socialMainRow, { marginTop: 12, flexDirection: 'row', alignItems: 'center' }]}>
+                  <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.05)', justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
+                    <MaterialIcons name="people" size={20} color="#A5B4FC" />
+                  </View>
+                  <View style={styles.socialStatsWrapper}>
+                    {isLoading ? (
+                      <Skeleton width={70} height={26} />
+                    ) : (
+                      <>
+                        <Text style={{ fontSize: 24, fontWeight: '800', color: COLORS.onBackground }}>{socialStats.followers.toLocaleString('tr-TR')}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          {socialStats.trend > 0 ? (
+                            <MaterialIcons name="arrow-upward" size={13} color={COLORS.tertiaryFixed} />
+                          ) : socialStats.trend < 0 ? (
+                            <MaterialIcons name="arrow-downward" size={13} color="#EF4444" />
+                          ) : (
+                            <MaterialIcons name="remove" size={13} color={COLORS.onSurfaceVariant} />
+                          )}
+                          <Text style={{ fontSize: 11, fontWeight: '700', color: socialStats.trend > 0 ? COLORS.tertiaryFixed : socialStats.trend < 0 ? "#EF4444" : COLORS.onSurfaceVariant }}>
+                            {socialStats.trend !== 0 ? ` ${Math.abs(socialStats.trend)}%` : ''}
+                          </Text>
+                        </View>
+                      </>
+                    )}
+                  </View>
+                </View>
+              ) : (
+                <View style={{ paddingVertical: 10, alignItems: 'center' }}>
+                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13, textAlign: 'center' }}>{t('dashboardScreen.social.noAccounts')}</Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('Sosyal Medya')} style={{ marginTop: 10 }}>
+                    <Text style={{ color: '#00F2FE', fontSize: 13, fontWeight: '500' }}>{t('dashboardScreen.social.connectAccount')}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </CustomGlassCard>
+
+            {recentActivities.length > 0 && (
+            <>
             {/* Son Aktiviteler */}
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>{t('dashboardScreen.recentActivity.title')}</Text>
@@ -1134,7 +1136,9 @@ export default function DashboardScreen({ navigation }) {
                 <Text style={styles.emptyText}>{t('dashboardScreen.recentActivity.empty')}</Text>
               )}
             </View>
+            </>
 
+            )}
             {/* Yaklaşan Ödemeler */}
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>{t('dashboardScreen.upcomingPayments.title')}</Text>
