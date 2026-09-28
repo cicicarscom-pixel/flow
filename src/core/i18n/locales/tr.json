@@ -698,7 +698,10 @@
       "allAccounts": "Tüm Hesaplar",
       "live": "CANLI",
       "totalFollowers": "Toplam takipçi",
-      "engagement": "Etkileşim"
+      "engagement": "Etkileşim",
+      "noAccounts": "Henüz sosyal medya hesabı bağlanmadı",
+      "connectAccount": "Hesap Bağla",
+      "liveAnalysis": "CANLI ANALİZ"
     },
     "invoiceScanner": {
       "header": "FATURA TARAYICI · SON FATURA",
@@ -706,7 +709,8 @@
       "date": "Tarih",
       "vat": "KDV",
       "total": "Toplam",
-      "scanButton": "+ Yeni Fatura Tara"
+      "scanButton": "+ Yeni Fatura Tara",
+      "noInvoice": "Henüz fatura taranmadı"
     },
     "appointmentNotifications": {
       "title": "Randevu Bildirimleri"

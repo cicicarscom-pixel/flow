@@ -698,7 +698,10 @@
       "allAccounts": "Alle Konten",
       "live": "LIVE",
       "totalFollowers": "Follower insgesamt",
-      "engagement": "Interaktion"
+      "engagement": "Interaktion",
+      "noAccounts": "Noch keine Social-Media-Konten verbunden",
+      "connectAccount": "Konto verbinden",
+      "liveAnalysis": "LIVE-ANALYSE"
     },
     "invoiceScanner": {
       "header": "RECHNUNGSSCANNER · LETZTE RECHNUNG",
@@ -706,7 +709,8 @@
       "date": "Datum",
       "vat": "MwSt.",
       "total": "Gesamt",
-      "scanButton": "+ Neue Rechnung scannen"
+      "scanButton": "+ Neue Rechnung scannen",
+      "noInvoice": "Noch keine Rechnungen gescannt"
     },
     "appointmentNotifications": {
       "title": "Terminbenachrichtigungen"

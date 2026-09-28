@@ -996,10 +996,10 @@ export default function DashboardScreen({ navigation }) {
             {/* Tüm Hesaplar — sosyal özet */}
             <CustomGlassCard style={styles.socialCard} glowColor="#A5B4FC">
               <View style={[styles.socialHeader, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-                <Text style={{ fontSize: 11, color: COLORS.onSurfaceVariant, fontWeight: '600' }}>{t('dashboardScreen.social.header')}</Text>
+                <Text style={{ fontSize: 11, color: COLORS.onSurfaceVariant, fontWeight: '600' }}>{t('dashboardScreen.social.allAccounts')}</Text>
                 {hasSocialAccounts && (
                   <View style={{ backgroundColor: 'rgba(34,197,94,0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
-                    <Text style={{ color: '#22C55E', fontSize: 9, fontWeight: '700', letterSpacing: 0.5 }}>CANLI ANALİZ</Text>
+                    <Text style={{ color: '#22C55E', fontSize: 9, fontWeight: '700', letterSpacing: 0.5 }}>{t('dashboardScreen.social.liveAnalysis')}</Text>
                   </View>
                 )}
               </View>
@@ -1033,9 +1033,9 @@ export default function DashboardScreen({ navigation }) {
                 </View>
               ) : (
                 <View style={{ paddingVertical: 10, alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13, textAlign: 'center' }}>Henüz sosyal medya hesabı bağlanmadı</Text>
+                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13, textAlign: 'center' }}>{t('dashboardScreen.social.noAccounts')}</Text>
                   <TouchableOpacity onPress={() => navigation.navigate('Sosyal Medya')} style={{ marginTop: 10 }}>
-                    <Text style={{ color: '#00F2FE', fontSize: 13, fontWeight: '500' }}>Hesap Bağla</Text>
+                    <Text style={{ color: '#00F2FE', fontSize: 13, fontWeight: '500' }}>{t('dashboardScreen.social.connectAccount')}</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -1079,11 +1079,11 @@ export default function DashboardScreen({ navigation }) {
                 </View>
               ) : (
                 <View style={{ paddingVertical: 20, alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13 }}>Henüz fatura taranmadı</Text>
+                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13 }}>{t('dashboardScreen.invoiceScanner.noInvoice')}</Text>
                 </View>
               )}
               <CustomButton
-                title={t('dashboardScreen.invoiceScanner.newInvoiceBtn')}
+                title={t('dashboardScreen.invoiceScanner.scanButton')}
                 onPress={() => navigation.navigate('Muhasebe', { screen: 'VeriGirisi' })}
                 style={{ marginTop: 14, backgroundColor: 'rgba(245,158,11,0.12)', borderColor: 'rgba(245,158,11,0.25)', borderWidth: 1, borderRadius: 12 }}
                 textStyle={{ color: '#F59E0B', fontSize: 13, fontWeight: '700' }}

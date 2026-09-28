@@ -698,7 +698,10 @@
       "allAccounts": "All Accounts",
       "live": "LIVE",
       "totalFollowers": "Total followers",
-      "engagement": "Engagement"
+      "engagement": "Engagement",
+      "noAccounts": "No social media accounts connected yet",
+      "connectAccount": "Connect account",
+      "liveAnalysis": "LIVE ANALYTICS"
     },
     "invoiceScanner": {
       "header": "INVOICE SCANNER · LATEST INVOICE",
@@ -706,7 +709,8 @@
       "date": "Date",
       "vat": "VAT",
       "total": "Total",
-      "scanButton": "+ Scan New Invoice"
+      "scanButton": "+ Scan New Invoice",
+      "noInvoice": "No invoices scanned yet"
     },
     "appointmentNotifications": {
       "title": "Appointment Notifications"
