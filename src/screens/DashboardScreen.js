@@ -1,4 +1,4 @@
-﻿import { formatMoney } from '../lib/money';
+import { formatMoney } from '../lib/money';
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -276,7 +276,7 @@ const AppointmentNotifications = ({ navigation, onRead }) => {
 };
 
 export default function DashboardScreen({ navigation }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
 

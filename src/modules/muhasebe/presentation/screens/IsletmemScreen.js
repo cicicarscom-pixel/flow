@@ -1,4 +1,4 @@
-import { formatAmount } from '../../../../lib/money';
+﻿import { formatAmount } from '../../../../lib/money';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,7 +7,7 @@ import { supabase } from '../../../../shared';
 import { useTranslation } from 'react-i18next';
 import { todayInTimezone, monthRangeYmd } from '../../../../lib/dates';
 
-const formatCurrency = (amount) => formatAmount(amount, locale);
+const formatCurrency = (amount, locale = 'tr-TR') => formatAmount(amount, locale);
 
 const getBadge = (status, t) => {
   switch (status) {

@@ -37,6 +37,7 @@ const formatCurrency = (amount, locale = 'tr-TR') => formatAmount(amount, locale
 const AnimatedNumber = ({ value, isLoading, style, suffix = ' ₺' }) => {
   const [animValue] = useState(() => new Animated.Value(0));
   const [displayValue, setDisplayValue] = useState(0);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     if (isLoading) return;
@@ -46,7 +47,7 @@ const AnimatedNumber = ({ value, isLoading, style, suffix = ' ₺' }) => {
     return () => animValue.removeListener(listenerId);
   }, [value, isLoading]);
 
-  return <Text style={style}>{formatCurrency(Math.round(displayValue), i18n.language)}{suffix}</Text>;
+  return <Text style={style}>{formatCurrency(Math.round(displayValue * 100) / 100, i18n.language)}{suffix}</Text>;
 };
 
 const getDaysLeft = (dateStr) => {
