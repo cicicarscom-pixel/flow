@@ -1,243 +1,181 @@
 import React, { useState } from 'react';
-import {
-  View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Modal, Platform
-} from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, FlatList, ActivityIndicator, Alert, Modal } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useCustomers } from '../hooks/useCustomers';
-import { AppointmentStatus } from '../../../randevu/domain/enums/AppointmentStatus';
+import { useTranslation } from 'react-i18next';
 
-export function MusterilerScreen() {
-  const { t } = useTranslation();
-  const navigation = useNavigation();
+export default function MusterilerScreen({ navigation }) {
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { customers, loading, error } = useCustomers();
+  const { customers, loading, refetch, repo } = useCustomers();
+  const [search, setSearch] = useState('');
+  
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [addName, setAddName] = useState('');
+  const [addPhone, setAddPhone] = useState('');
+  const [addError, setAddError] = useState('');
 
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const filtered = customers.filter(c => {
+    if (!search) return true;
+    const s = search.toLowerCase();
+    const pDigits = c.phone_display?.replace(/\D/g, '') || '';
+    const sDigits = search.replace(/\D/g, '');
+    return (c.name || '').toLowerCase().includes(s) || (sDigits && pDigits.includes(sDigits));
+  });
 
-  const scrollPaddingBottom = Math.max(insets.bottom + 80, 100);
+  const getAvatarColor = (id) => {
+    let hash = 0;
+    for (let i = 0; i < (id || '').length; i++) hash = (id || '').charCodeAt(i) + ((hash << 5) - hash);
+    return `hsl(${Math.abs(hash) % 360}, 60%, 40%)`;
+  };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Approved':
-      case AppointmentStatus.Approved:
-        return '#10b981'; // Green
-      case 'Cancelled':
-      case AppointmentStatus.Cancelled:
-        return '#ef4444'; // Red
-      case 'Pending':
-      case AppointmentStatus.Pending:
-      default:
-        return '#f59e0b'; // Yellow
+  const getInitials = (name) => {
+    if (!name) return '??';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  };
+
+  const formatDate = (isoStr, tz) => {
+    if (!isoStr) return '-';
+    try {
+      const d = new Date(isoStr);
+      return new Intl.DateTimeFormat(i18n.language || 'tr-TR', { 
+        timeZone: tz || 'Europe/Istanbul', 
+        day: 'numeric', month: 'short', weekday: 'short', hour: '2-digit', minute: '2-digit' 
+      }).format(d);
+    } catch(e) {
+      return new Date(isoStr).toLocaleString(i18n.language || 'tr-TR');
     }
   };
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '—';
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    const hours = String(d.getHours()).padStart(2, '0');
-    const mins = String(d.getMinutes()).padStart(2, '0');
-    return `${day}.${month}.${year} ${hours}:${mins}`;
+  const handleAdd = async () => {
+    setAddError('');
+    if (!addName.trim()) { setAddError(t('musteriler.nameRequired', { defaultValue: 'İsim gerekli' })); return; }
+    if (!addPhone.trim()) { setAddError(t('musteriler.phoneRequired', { defaultValue: 'Telefon gerekli' })); return; }
+    
+    const res = await repo.create(addName, addPhone);
+    if (res.status === 'SUCCESS' || res.status === 'ALREADY_EXISTS') {
+      setIsAddOpen(false);
+      setAddName('');
+      setAddPhone('');
+      refetch();
+      if (res.id) navigation.navigate('MusteriDetay', { customerId: res.id });
+    } else if (res.status === 'INVALID_PHONE') {
+      setAddError(t('musteriler.invalidPhone', { defaultValue: 'Geçersiz telefon formatı' }));
+    } else {
+      setAddError(t('musteriler.error', { defaultValue: 'Bir hata oluştu' }));
+    }
   };
 
-  if (loading) {
-    return (
-      <SafeAreaView style={[styles.safeArea, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color="#22B573" />
-      </SafeAreaView>
-    );
-  }
+  const renderItem = ({ item }) => (
+    <TouchableOpacity 
+      onPress={() => navigation.navigate('MusteriDetay', { customerId: item.id })}
+      style={{
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+        borderRadius: 12, padding: 16, marginBottom: 12
+      }}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: getAvatarColor(item.id), justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>{getInitials(item.name)}</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 2 }}>{item.name}</Text>
+          <Text style={{ color: '#A79E96', fontSize: 12, fontFamily: 'JetBrains Mono' }}>{item.phone_display}</Text>
+        </View>
+        <View style={{ backgroundColor: item.source === 'whatsapp' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(59, 130, 246, 0.1)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
+          <Text style={{ color: item.source === 'whatsapp' ? '#22c55e' : '#3b82f6', fontSize: 10, fontWeight: '600' }}>{item.source === 'whatsapp' ? 'WhatsApp' : 'Elle eklendi'}</Text>
+        </View>
+      </View>
+      
+      <View style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 8, padding: 12 }}>
+        {item.next_starts_at ? (
+          <View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+              <Text style={{ color: '#FF7A59', fontFamily: 'JetBrains Mono', fontSize: 12, fontWeight: '600' }}>{formatDate(item.next_starts_at)}</Text>
+              <Text style={{ color: '#A79E96', fontSize: 11 }}>{item.total} {t('musteriler.randevu', { defaultValue: 'randevu' })}</Text>
+            </View>
+            <Text numberOfLines={1} style={{ color: '#E5E1E4', fontSize: 13 }}>"{item.next_request}"</Text>
+            {item.next_doctor && <Text style={{ color: '#7ddba8', fontSize: 11, marginTop: 4 }}>{item.next_doctor}</Text>}
+          </View>
+        ) : (
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: '#A79E96', fontSize: 12 }}>{t('musteriler.noUpcoming', { defaultValue: 'Yaklaşan randevu yok' })}</Text>
+            <Text style={{ color: '#A79E96', fontSize: 11 }}>{item.total} {t('musteriler.randevu', { defaultValue: 'randevu' })}</Text>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#131315' }} edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerLeft} onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={20} color="#22B573" />
-          <Text style={styles.headerTitle}>{t('musteriler.title') || 'Müşteriler'}</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 10, paddingBottom: 16 }}>
+        <Text style={{ fontSize: 28, fontWeight: 'bold', color: '#fff' }}>{t('header.titles.customers', { defaultValue: 'Müşteriler' })}</Text>
+        <TouchableOpacity onPress={() => setIsAddOpen(true)} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#FF7A59', justifyContent: 'center', alignItems: 'center' }}>
+          <MaterialIcons name="add" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: scrollPaddingBottom }]}
-      >
-        {error && (
-          <Text style={{ color: '#ef4444', textAlign: 'center', margin: 10 }}>{error}</Text>
-        )}
+      {/* Search */}
+      <View style={{ paddingHorizontal: 20, paddingBottom: 16 }}>
+        <View style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, height: 48, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
+          <MaterialIcons name="search" size={20} color="#A79E96" />
+          <TextInput
+            placeholder={t('musteriler.search', { defaultValue: 'İsim veya telefon ara...' })}
+            placeholderTextColor="#A79E96"
+            style={{ flex: 1, color: '#fff', marginLeft: 8, fontSize: 15 }}
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
+      </View>
 
-        {customers.length === 0 && !error ? (
-          <View style={styles.emptyContainer}>
-            <Ionicons name="people-outline" size={48} color="#A79E96" />
-            <Text style={styles.emptyText}>{t('musteriler.empty') || 'Henüz müşteri bulunmuyor.'}</Text>
-          </View>
-        ) : (
-          customers.map((customer) => (
-            <TouchableOpacity
-              key={customer.id}
-              style={styles.card}
-              onPress={() => setSelectedCustomer(customer)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.cardTopRow}>
-                <Text style={styles.cardName}>{customer.name || customer.phone}</Text>
-                <Text style={styles.cardPhone}>{customer.name ? customer.phone : ''}</Text>
-              </View>
-              <View style={styles.cardBottomRow}>
-                <View style={styles.badgeWrap}>
-                  <Ionicons name="calendar-outline" size={12} color="#A79E96" />
-                  <Text style={styles.badgeText}>{customer.totalAppointments} {t('musteriler.appointments') || 'Randevu'}</Text>
-                </View>
-                <View style={styles.badgeWrap}>
-                  <Ionicons name="time-outline" size={12} color="#A79E96" />
-                  <Text style={styles.badgeText}>
-                    {t('musteriler.lastVisit') || 'Son'}: {formatDate(customer.lastVisit)}
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))
-        )}
-      </ScrollView>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color="#FF7A59" /></View>
+      ) : (
+        <FlatList
+          data={filtered}
+          keyExtractor={item => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 80 }}
+          ListEmptyComponent={<Text style={{ color: '#A79E96', textAlign: 'center', marginTop: 40 }}>{t('musteriler.empty', { defaultValue: 'Müşteri bulunamadı.' })}</Text>}
+        />
+      )}
 
-      {/* Customer Detail Modal */}
-      <Modal
-        visible={!!selectedCustomer}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setSelectedCustomer(null)}
-      >
-        <SafeAreaView style={styles.modalArea}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{selectedCustomer?.name || selectedCustomer?.phone}</Text>
-            <TouchableOpacity onPress={() => setSelectedCustomer(null)} style={styles.closeBtn}>
-              <Ionicons name="close" size={24} color="#F6F1EC" />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.modalInfoBar}>
-            <Text style={styles.modalPhone}>{selectedCustomer?.name ? selectedCustomer.phone : ''}</Text>
-            {selectedCustomer?.notes && (
-              <Text style={styles.modalNotes}>{selectedCustomer.notes}</Text>
-            )}
-          </View>
-
-          <ScrollView contentContainerStyle={styles.historyScroll}>
-            <Text style={styles.historyTitle}>{t('musteriler.history') || 'Geçmiş Randevular'}</Text>
+      {/* Add Modal */}
+      <Modal visible={isAddOpen} transparent animationType="slide">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' }}>
+          <View style={{ backgroundColor: '#1c1b1d', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: insets.bottom + 24 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{t('musteriler.addCustomer', { defaultValue: 'Yeni Müşteri Ekle' })}</Text>
+              <TouchableOpacity onPress={() => setIsAddOpen(false)}><MaterialIcons name="close" size={24} color="#A79E96" /></TouchableOpacity>
+            </View>
             
-            {(selectedCustomer?.history || []).length === 0 ? (
-              <Text style={styles.emptyHistory}>{t('musteriler.noHistory') || 'Geçmiş randevu yok.'}</Text>
-            ) : (
-              selectedCustomer.history.map((appt) => (
-                <View key={appt.id} style={styles.historyCard}>
-                  <View style={styles.historyTop}>
-                    <Text style={styles.historyServices}>
-                      {appt.services?.length > 0 ? appt.services.join(' + ') : '—'}
-                    </Text>
-                    <View style={[styles.statusDot, { backgroundColor: getStatusColor(appt.status) }]} />
-                  </View>
-                  <Text style={styles.historyDate}>{formatDate(appt.date)}</Text>
-                </View>
-              ))
-            )}
-          </ScrollView>
-        </SafeAreaView>
+            <Text style={{ color: '#A79E96', fontSize: 12, marginBottom: 8 }}>İsim Soyisim</Text>
+            <TextInput 
+              value={addName} onChangeText={setAddName} 
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, color: '#fff', padding: 16, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }} 
+            />
+            
+            <Text style={{ color: '#A79E96', fontSize: 12, marginBottom: 8 }}>Telefon (+90 5XX ...)</Text>
+            <TextInput 
+              value={addPhone} onChangeText={setAddPhone} keyboardType="phone-pad"
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, color: '#fff', padding: 16, marginBottom: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }} 
+            />
+            
+            {addError ? <Text style={{ color: '#ef4444', fontSize: 12, marginBottom: 16 }}>{addError}</Text> : null}
+            
+            <TouchableOpacity onPress={handleAdd} style={{ backgroundColor: '#3b82f6', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8 }}>
+              <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>{t('musteriler.add', { defaultValue: 'Ekle' })}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </Modal>
-
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#201D24' },
-  modalArea: { flex: 1, backgroundColor: '#201D24' },
-
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(60,74,66,0.15)',
-    backgroundColor: 'rgba(32,31,34,0.5)',
-  },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#22B573' },
-
-  scrollContent: { padding: 14, gap: 10 },
-  
-  emptyContainer: {
-    paddingVertical: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12
-  },
-  emptyText: {
-    color: '#A79E96',
-    fontSize: 14,
-  },
-
-  /* Card */
-  card: {
-    backgroundColor: 'rgba(32,31,34,0.4)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 16, padding: 14,
-  },
-  cardTopRow: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10
-  },
-  cardName: { fontSize: 16, fontWeight: '600', color: '#F6F1EC' },
-  cardPhone: { fontSize: 12, color: '#A79E96' },
-  
-  cardBottomRow: {
-    flexDirection: 'row', gap: 12, alignItems: 'center'
-  },
-  badgeWrap: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6
-  },
-  badgeText: { fontSize: 11, color: '#A79E96' },
-
-  /* Modal */
-  modalHeader: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 16, paddingVertical: 16,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)'
-  },
-  modalTitle: { fontSize: 18, fontWeight: '700', color: '#F6F1EC' },
-  closeBtn: {
-    width: 32, height: 32, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 16
-  },
-  modalInfoBar: {
-    paddingHorizontal: 16, paddingVertical: 12,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)'
-  },
-  modalPhone: { fontSize: 14, color: '#22B573', marginBottom: 4 },
-  modalNotes: { fontSize: 13, color: '#A79E96', fontStyle: 'italic' },
-  
-  historyScroll: { padding: 16 },
-  historyTitle: { fontSize: 15, fontWeight: '600', color: '#F6F1EC', marginBottom: 12 },
-  emptyHistory: { fontSize: 13, color: '#A79E96', fontStyle: 'italic' },
-  
-  historyCard: {
-    backgroundColor: 'rgba(32,31,34,0.3)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 12, padding: 12, marginBottom: 8,
-  },
-  historyTop: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6
-  },
-  historyServices: { fontSize: 14, fontWeight: '500', color: '#F6F1EC' },
-  statusDot: { width: 10, height: 10, borderRadius: 5 },
-  historyDate: { fontSize: 12, color: '#A79E96' },
-});

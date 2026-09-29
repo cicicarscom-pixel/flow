@@ -1,3 +1,4 @@
+﻿import MusteriDetayScreen from '../../modules/musteriler/presentation/screens/MusteriDetayScreen';
 import React, { useState, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -116,6 +117,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Gönderiler" component={PostsScreen} />
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="PostCommentsScreen" component={PostCommentsScreen} />
+      <Stack.Screen name="MusteriDetay" component={MusteriDetayScreen} />
     </Stack.Navigator>
   );
 }

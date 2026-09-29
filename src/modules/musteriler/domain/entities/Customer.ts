@@ -1,43 +1,18 @@
-export class Customer {
+﻿export class Customer {
   id: string;
-  organizationId: string;
+  name: string;
   phone: string;
-  name: string | null;
-  notes: string | null;
-  createdAt: string;
-  history?: Array<{
-    id: string;
-    date: string;
-    status: string;
-    services: string[];
-  }>;
-  totalAppointments?: number;
-  lastVisit?: string | null;
-
-  constructor(data: {
-    id: string;
-    organizationId: string;
-    phone: string;
-    name?: string | null;
-    notes?: string | null;
-    createdAt?: string;
-    history?: Array<{
-      id: string;
-      date: string;
-      status: string;
-      services: string[];
-    }>;
-    totalAppointments?: number;
-    lastVisit?: string | null;
-  }) {
-    this.id = data.id;
-    this.organizationId = data.organizationId;
-    this.phone = data.phone;
-    this.name = data.name || null;
-    this.notes = data.notes || null;
-    this.createdAt = data.createdAt || new Date().toISOString();
-    this.history = data.history;
-    this.totalAppointments = data.totalAppointments;
-    this.lastVisit = data.lastVisit;
-  }
+  phone_display: string;
+  notes: string;
+  source: string;
+  total: number;
+  upcoming: number;
+  past: number;
+  cancelled: number;
+  next_starts_at: string | null;
+  next_doctor: string | null;
+  next_request: string | null;
+  last_visit_at: string | null;
+  last_request: string | null;
+  created_at: string;
 }
