@@ -1,1 +1,1 @@
-export { MusterilerScreen } from './presentation/screens/MusterilerScreen';
+﻿export { default as MusterilerScreen } from './presentation/screens/MusterilerScreen';
