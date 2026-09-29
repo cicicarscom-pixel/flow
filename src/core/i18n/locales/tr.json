@@ -753,6 +753,9 @@
       "Approved": "Onaylandı",
       "Cancelled": "İptal",
       "Expired": "Süresi Doldu"
-    }
+    },
+    "notes": "Notlar",
+    "saved": "Kaydedildi",
+    "notesPlaceholder": "Müşteri için not ekleyin..."
   }
 }

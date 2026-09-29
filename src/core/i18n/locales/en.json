@@ -761,6 +761,9 @@
       "Approved": "Approved",
       "Cancelled": "Cancelled",
       "Expired": "Expired"
-    }
+    },
+    "notes": "Notes",
+    "saved": "Saved",
+    "notesPlaceholder": "Add a note for this customer..."
   }
 }

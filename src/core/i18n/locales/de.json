@@ -759,8 +759,11 @@
     "status": {
       "Pending": "Ausstehend",
       "Approved": "Genehmigt",
-      "Cancelled": "Abgebrochen",
+      "Cancelled": "Storniert",
       "Expired": "Abgelaufen"
-    }
+    },
+    "notes": "Notizen",
+    "saved": "Gespeichert",
+    "notesPlaceholder": "Notiz zum Kunden hinzufügen..."
   }
 }
