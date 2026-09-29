@@ -52,20 +52,26 @@ export default function MusterilerScreen({ navigation }) {
 
   const handleAdd = async () => {
     setAddError('');
-    if (!addName.trim()) { setAddError(t('musteriler.nameRequired', { defaultValue: 'İsim gerekli' })); return; }
-    if (!addPhone.trim()) { setAddError(t('musteriler.phoneRequired', { defaultValue: 'Telefon gerekli' })); return; }
+    if (!addName.trim()) { setAddError(t('musteriler.nameRequired')); return; }
+    if (!addPhone.trim()) { setAddError(t('musteriler.phoneRequired')); return; }
     
     const res = await repo.create(addName, addPhone);
-    if (res.status === 'SUCCESS' || res.status === 'ALREADY_EXISTS') {
+    if (res.status === 'SUCCESS') {
       setIsAddOpen(false);
       setAddName('');
       setAddPhone('');
       refetch();
       if (res.id) navigation.navigate('MusteriDetay', { customerId: res.id });
+    } else if (res.status === 'ALREADY_EXISTS') {
+      Alert.alert('', t('musteriler.alreadyExists'));
+      setIsAddOpen(false);
+      setAddName('');
+      setAddPhone('');
+      if (res.id) navigation.navigate('MusteriDetay', { customerId: res.id });
     } else if (res.status === 'INVALID_PHONE') {
-      setAddError(t('musteriler.invalidPhone', { defaultValue: 'Geçersiz telefon formatı' }));
+      setAddError(t('musteriler.invalidPhone'));
     } else {
-      setAddError(t('musteriler.error', { defaultValue: 'Bir hata oluştu' }));
+      setAddError(t('musteriler.error'));
     }
   };
 

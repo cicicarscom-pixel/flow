@@ -738,21 +738,23 @@
     }
   },
   "header": {
-    "titles": {}
+    "titles": {
+      "customers": "Kunden"
+    }
   },
   "musteriler": {
-    "phoneRequired": "Telefon ist erforderlich",
-    "nameRequired": "Name ist erforderlich",
+    "search": "Name oder Telefon suchen",
+    "addCustomer": "Kunde hinzufügen",
+    "add": "Hinzufügen",
     "customerCount": "{{count}} Kunden",
-    "error": "Ein Fehler ist aufgetreten",
+    "openCard": "Karte öffnen",
     "noUpcoming": "Kein bevorstehender Termin",
     "randevu": "Termine",
-    "openCard": "Karte öffnen",
-    "empty": "Keine Kunden gefunden.",
-    "addCustomer": "Kunde hinzufügen",
-    "search": "Name oder Telefon suchen",
+    "nameRequired": "Name ist erforderlich",
+    "phoneRequired": "Telefon ist erforderlich",
     "invalidPhone": "Ungültige Telefonnummer",
-    "add": "Hinzufügen",
-    "alreadyExists": "Diese Nummer ist bereits registriert"
+    "alreadyExists": "Diese Nummer ist bereits registriert",
+    "error": "Ein Fehler ist aufgetreten",
+    "empty": "Keine Kunden gefunden."
   }
 }

@@ -730,21 +730,23 @@
     }
   },
   "header": {
-    "titles": {}
+    "titles": {
+      "customers": "Müşteriler"
+    }
   },
   "musteriler": {
-    "phoneRequired": "Telefon gerekli",
-    "nameRequired": "Ad gerekli",
+    "search": "İsim veya telefon ara",
+    "addCustomer": "Müşteri ekle",
+    "add": "Ekle",
     "customerCount": "{{count}} müşteri",
-    "error": "Bir hata oluştu",
+    "openCard": "Kartı aç",
     "noUpcoming": "Yaklaşan randevu yok",
     "randevu": "randevu",
-    "openCard": "Kartı aç",
-    "empty": "Müşteri bulunamadı.",
-    "addCustomer": "Müşteri ekle",
-    "search": "İsim veya telefon ara",
+    "nameRequired": "Ad gerekli",
+    "phoneRequired": "Telefon gerekli",
     "invalidPhone": "Geçersiz telefon numarası",
-    "add": "Ekle",
-    "alreadyExists": "Bu numara zaten kayıtlı"
+    "alreadyExists": "Bu numara zaten kayıtlı",
+    "error": "Bir hata oluştu",
+    "empty": "Müşteri bulunamadı."
   }
 }

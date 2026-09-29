@@ -738,21 +738,23 @@
     }
   },
   "header": {
-    "titles": {}
+    "titles": {
+      "customers": "Customers"
+    }
   },
   "musteriler": {
-    "phoneRequired": "Phone is required",
-    "nameRequired": "Name is required",
+    "search": "Search name or phone",
+    "addCustomer": "Add customer",
+    "add": "Add",
     "customerCount": "{{count}} customers",
-    "error": "Something went wrong",
+    "openCard": "Open card",
     "noUpcoming": "No upcoming appointment",
     "randevu": "appointments",
-    "openCard": "Open card",
-    "empty": "No customers found.",
-    "addCustomer": "Add customer",
-    "search": "Search name or phone",
+    "nameRequired": "Name is required",
+    "phoneRequired": "Phone is required",
     "invalidPhone": "Invalid phone number",
-    "add": "Add",
-    "alreadyExists": "This number is already registered"
+    "alreadyExists": "This number is already registered",
+    "error": "Something went wrong",
+    "empty": "No customers found."
   }
 }

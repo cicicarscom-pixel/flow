@@ -109,7 +109,7 @@ export default function MusteriDetayScreen({ route, navigation }) {
             <TouchableOpacity onPress={() => Linking.openURL(`tel:+${cleanPhone}`)} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', paddingVertical: 12, borderRadius: 12, alignItems: 'center' }}>
               <Text style={{ color: '#fff', fontWeight: 'bold' }}>Ara</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('RandevuMain')} style={{ flex: 1, backgroundColor: '#3b82f6', paddingVertical: 12, borderRadius: 12, alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => navigation.navigate('MainTabs', { screen: 'Ai Asistan', params: { screen: 'RandevuMain' } })} style={{ flex: 1, backgroundColor: '#3b82f6', paddingVertical: 12, borderRadius: 12, alignItems: 'center' }}>
               <Text style={{ color: '#fff', fontWeight: 'bold' }}>Randevu</Text>
             </TouchableOpacity>
           </View>
