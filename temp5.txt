@@ -1,0 +1,9 @@
+        return (
+          <TouchableOpacity key={n.id} onPress={() => handlePress(n)} style={{
+            backgroundColor: 'rgba(255,255,255,0.03)',
+            padding: 12, borderRadius: 12, borderWidth: 1, borderColor: n.is_read ? 'transparent' : 'rgba(0, 242, 254, 0.3)'
+          }}>
+            <Text style={{ color: '#fff', fontSize: 13, fontWeight: n.is_read ? '400' : '600' }}>{title}</Text>
+            {!!m.calendar_name && <Text style={{ color: '#849495', fontSize: 12, marginTop: 4 }}>👨‍⚕️ {m.calendar_name}</Text>}
+            {!!m.customer_request_raw && <Text style={{ color: '#849495', fontSize: 12, marginTop: 2 }}>📝 {m.customer_request_raw}</Text>}
+          </TouchableOpacity>

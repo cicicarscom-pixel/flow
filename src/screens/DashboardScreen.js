@@ -1,3 +1,4 @@
+﻿import { formatMoney } from '../lib/money';
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -91,7 +92,7 @@ const formatDayMonth = (dateStr, t) => {
   return `${d.getDate()} ${months[d.getMonth()]}`;
 };
 
-const formatCurrency = (amount) => { return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(amount); };
+const formatCurrency = (amount, locale = 'tr-TR') => formatMoney(amount, locale);
 
 // --- Subcomponents ---
 
@@ -956,7 +957,7 @@ export default function DashboardScreen({ navigation }) {
                 {isLoading ? (
                   <Skeleton width="80%" height={26} style={{ marginBottom: 12 }} />
                 ) : (
-                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.income)} </Text>
+                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.income, i18n.language)} </Text>
                 )}
 
               </CustomGlassCard>
@@ -971,7 +972,7 @@ export default function DashboardScreen({ navigation }) {
                 {isLoading ? (
                   <Skeleton width="80%" height={26} style={{ marginBottom: 12 }} />
                 ) : (
-                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.expense)} </Text>
+                  <Text style={styles.financeValueText}>{formatCurrency(financeStats.expense, i18n.language)} </Text>
                 )}
 
               </CustomGlassCard>
@@ -1150,7 +1151,7 @@ export default function DashboardScreen({ navigation }) {
                       </View>
                       <Text style={styles.paymentTitle} numberOfLines={1}>{payment.description || t('dashboardScreen.upcomingPayments.defaultTitle')}</Text>
                       <View style={styles.paymentBottomRow}>
-                        <Text style={styles.paymentAmount}>{formatCurrency(payment.amount)} </Text>
+                        <Text style={styles.paymentAmount}>{formatCurrency(payment.amount, i18n.language)} </Text>
                         <TouchableOpacity style={styles.paymentMoreBtn}>
                           <MaterialIcons name="more-horiz" size={18} color={COLORS.onSurfaceVariant} />
                         </TouchableOpacity>

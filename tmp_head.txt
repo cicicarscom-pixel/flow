@@ -1,0 +1,100 @@
+
+  const handleCardOptions = (appt) => {
+    const isCancelled = appt.status === 'Cancelled' || appt.status === 'İptal Edildi' || appt.status === AppointmentStatus.Cancelled;
+    const options = isCancelled 
+      ? [t('randevu.randevuScreen.actions.delete'), t('randevu.randevuScreen.actions.back')] 
+      : [t('randevu.randevuScreen.actions.cancel'), t('randevu.randevuScreen.actions.delete'), t('randevu.randevuScreen.actions.back')];
+    const destructiveIndex = isCancelled ? 0 : 1;
+    const cancelIndex = isCancelled ? 1 : 2;
+
+    showActionSheetWithOptions({
+      options,
+      cancelButtonIndex: cancelIndex,
+      destructiveButtonIndex: destructiveIndex,
+    }, (btnIndex) => {
+      if (btnIndex === (isCancelled ? 0 : 1)) {
+        Alert.alert(t('randevu.randevuScreen.actions.deleteTitle'), t('randevu.randevuScreen.actions.deleteWarning'), [
+          { text: t('randevu.randevuScreen.actions.back'), style: 'cancel' },
+          { text: t('randevu.randevuScreen.actions.delete'), style: 'destructive', onPress: async () => {
+            try {
+              if (appointmentRepo.delete) await appointmentRepo.delete(appt.id);
+              loadData();
+            } catch (err) {
+              Alert.alert(t('randevu.randevuScreen.actions.genericError'), err.message);
+            }
+          }}
+        ]);
+      } else if (!isCancelled && btnIndex === 0) {
+        setPromptConfig({
+          visible: true,
+          title: t('randevu.randevuScreen.actions.cancelTitle'),
+          placeholder: t('randevu.randevuScreen.actions.reasonLabel'),
+          value: '',
+          onSave: async (reason) => {
+            try {
+              if (appointmentRepo.cancel) await appointmentRepo.cancel(appt.id, reason);
+              loadData();
+            } catch (err) {
+              Alert.alert(t('randevu.randevuScreen.actions.genericError'), err.message);
+            }
+          }
+        });
+      }
+    });
+  };
+/* eslint-disable i18next/no-literal-string, no-unused-vars */
+import React, { useState, useRef, useMemo } from 'react';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { View, Text, ScrollView, TouchableOpacity, Alert,
+  StyleSheet, Animated, ActivityIndicator, Modal, TextInput, KeyboardAvoidingView, Platform
+} from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useAppointments, extractTime } from '../hooks/useAppointments';
+import { useCalendars } from '../hooks/useCalendars';
+import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
+import { supabase } from '../../../../shared';
+
+// Generate 30-min slots from 08:00 to 00:00
+const TIME_SLOTS = (() => {
+  const slots = [];
+  const fullSlots = new Set(['09:00', '09:30', '11:00', '13:00', '13:30', '16:00']);
+  for (let h = 8; h < 24; h++) {
+    ['00', '30'].forEach(m => {
+      const time = `${String(h).padStart(2, '0')}:${m}`;
+      slots.push({ time, full: fullSlots.has(time) });
+    });
+  }
+  slots.push({ time: '00:00', full: false });
+  return slots;
+})();
+
+// Renk paleti — randevu index'ine göre döngüsel
+const CARD_COLORS = [
+  { color: '#22B573', border: 'rgba(34, 181, 115,0.35)', icon: 'cut-outline' },
+  { color: '#F59E0B', border: 'rgba(245, 158, 11,0.35)',  icon: 'color-wand-outline' },
+  { color: '#F4D9B8', border: 'rgba(192,193,255,0.25)', icon: 'leaf-outline' },
+  { color: '#22B573', border: 'rgba(34, 181, 115,0.25)',  icon: 'brush-outline' },
+];
+
+export default function RandevuScreen() {
+  const { showActionSheetWithOptions } = useActionSheet();
+  const { t, i18n } = useTranslation();
+  const navigation = useNavigation();
+  const route = useRoute();
+  const insets = useSafeAreaInsets();
+  const [pulseAnim] = useState(() => new Animated.Value(1));
+
+  // -- Dynamic Date State --
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const calendarScrollRef = useRef(null);
+
+  React.useEffect(() => {
+    const index = dynamicDays.findIndex(d => d.fullDate === selectedDate);
+    if (index !== -1 && calendarScrollRef.current) {

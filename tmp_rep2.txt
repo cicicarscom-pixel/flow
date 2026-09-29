@@ -1,0 +1,26 @@
+
+      return AppointmentMapper.toDomain(data);
+    }
+  
+>   async getDayAppointmentsForCalendar(date: string, calendarId?: string): Promise<{starts_at: string | null, ends_at: string | null, timezone: string | null, status: string}[]> {
+      const nextDayStr = addDaysYmd(date, 1);
+      let query = supabase.from("appointments").select("starts_at, ends_at, timezone, status").gte("date", `${date}T00:00:00`).lt("date", `${nextDayStr}T00:00:00`);
+      if (calendarId) query = query.eq("calendar_id", calendarId);
+      const { data, error } = await query;
+      if (error) throw new NetworkError(`Müsaitlik çekilemedi: ${error.message}`);
+      return data || [];
+    }
+  
+    async getAppointmentsByDate(date: string, calendarId?: string): Promise<Appointment[]> {
+      const nextDayStr = addDaysYmd(date, 1);
+      let query = supabase.from("appointments").select("*").gte("date", `${date}T00:00:00`).lt("date", `${nextDayStr}T00:00:00`).in("status", [AppointmentStatus.Pending, AppointmentStatus.Approved]).order("created_at", { ascending: true });
+      if (calendarId) query = query.eq("calendar_id", calendarId);
+      const { data: appointments, error } = await query;
+  
+      if (error) {
+        throw new NetworkError(`Randevular cekilemedi: ${error.message}`);
+      }
+  
+      return this.enrichWithServices(appointments || []);
+    }
+

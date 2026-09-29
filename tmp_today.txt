@@ -1,0 +1,21 @@
+
+  
+              {/* Bugünkü Randevu/Rezervasyonlar — dikey liste */}
+              <View style={styles.sectionHeaderRow}>
+>               <Text style={styles.sectionTitle}>{t('dashboardScreen.appointments.todayTitle', 'Bugünkü Randevular')}</Text>
+              </View>
+              {isLoading ? (
+                <View style={styles.apptList}><Skeleton width="100%" height={44} borderRadius={14} /><Skeleton width="100%" height={44} borderRadius={14} /></View>
+              ) : todayAppointments.length > 0 ? (
+                <View style={styles.apptList}>
+                  {todayAppointments.map(a => {
+                    const targetDate = a.dateText ? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date(a.dateText)) : null;
+                    return (
+                    <TouchableOpacity key={a.id} style={styles.apptListRow} onPress={() => {
+                      if (targetDate) navigation.navigate('Ai Asistan', { screen: 'RandevuMain', params: { date: targetDate } });
+                    }}>
+                      <View style={[styles.apptListDot, { backgroundColor: a.color }]} />
+                      <Text style={styles.apptListTime}>{a.time}</Text>
+                      <Text style={styles.apptListTitle} numberOfLines={1}>{a.title}</Text>
+                    </TouchableOpacity>
+

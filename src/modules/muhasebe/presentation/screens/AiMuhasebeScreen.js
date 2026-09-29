@@ -1,3 +1,4 @@
+﻿import { formatAmount } from '../../../../lib/money';
 /* eslint-disable react-hooks/refs */
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, StyleSheet, Animated, Easing } from 'react-native';
@@ -30,9 +31,7 @@ const Skeleton = ({ width, height, style, borderRadius = 8 }) => {
   );
 };
 
-const formatCurrency = (amount) => {
-  return Number(amount).toLocaleString('tr-TR');
-};
+const formatCurrency = (amount, locale = 'tr-TR') => formatAmount(amount, locale);
 
 // Sayı sayarak artan (count-up) değer gösterimi — sadece görsel.
 const AnimatedNumber = ({ value, isLoading, style, suffix = ' ₺' }) => {
@@ -47,7 +46,7 @@ const AnimatedNumber = ({ value, isLoading, style, suffix = ' ₺' }) => {
     return () => animValue.removeListener(listenerId);
   }, [value, isLoading]);
 
-  return <Text style={style}>{formatCurrency(Math.round(displayValue))}{suffix}</Text>;
+  return <Text style={style}>{formatCurrency(Math.round(displayValue), i18n.language)}{suffix}</Text>;
 };
 
 const getDaysLeft = (dateStr) => {
@@ -283,7 +282,7 @@ export default function AiMuhasebeScreen({ navigation }) {
               {isLoading ? (
                 <Skeleton width={60} height={14} />
               ) : (
-                <Text style={styles.miniStatValue}>{formatCurrency(financeData.receivable)} {t('currencySymbol', { defaultValue: '₺' })}</Text>
+                <Text style={styles.miniStatValue}>{formatCurrency(financeData.receivable, i18n.language)} {t('currencySymbol', { defaultValue: '₺' })}</Text>
               )}
             </View>
             <View style={styles.miniStatDivider} />
@@ -293,7 +292,7 @@ export default function AiMuhasebeScreen({ navigation }) {
               {isLoading ? (
                 <Skeleton width={60} height={14} />
               ) : (
-                <Text style={styles.miniStatValue}>{formatCurrency(financeData.payable)} {t('currencySymbol', { defaultValue: '₺' })}</Text>
+                <Text style={styles.miniStatValue}>{formatCurrency(financeData.payable, i18n.language)} {t('currencySymbol', { defaultValue: '₺' })}</Text>
               )}
             </View>
           </View>

@@ -1,3 +1,4 @@
+import { formatAmount } from '../../../../lib/money';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,9 +7,7 @@ import { supabase } from '../../../../shared';
 import { useTranslation } from 'react-i18next';
 import { todayInTimezone, monthRangeYmd } from '../../../../lib/dates';
 
-const formatCurrency = (amount) => {
-  return Number(amount || 0).toLocaleString('tr-TR', { maximumFractionDigits: 0 });
-};
+const formatCurrency = (amount) => formatAmount(amount, locale);
 
 const getBadge = (status, t) => {
   switch (status) {
@@ -35,7 +34,7 @@ export default function IsletmemScreen({ navigation }) {
       if (!yyyy_mm) return '';
       const [y, m] = yyyy_mm.split('-');
       const d = new Date(Date.UTC(parseInt(y), parseInt(m) - 1, 1));
-      return d.toLocaleDateString(i18n.language || 'tr-TR', { month: 'long', year: 'numeric' });
+      return d.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' });
     } catch {
       return yyyy_mm;
     }
@@ -146,18 +145,7 @@ export default function IsletmemScreen({ navigation }) {
   const currentMonthIndex = months.indexOf(selectedMonth);
   const prevMonthStr = currentMonthIndex >= 0 && currentMonthIndex + 1 < months.length ? months[currentMonthIndex + 1] : null;
   const prevData = getMonthData(prevMonthStr);
-    const mDocs = documents.filter(doc => {
-      const dDate = new Date(doc.unifiedDate);
-      return dDate.toLocaleString('tr-TR', { month: 'long', year: 'numeric' }) === monthStr;
-    });
-    const summary = monthSummaries[monthStr] || { income: 0, expense: 0, balance: 0 };
-    return { ...summary, docs: mDocs };
-  };
 
-  const currentData = getMonthData(selectedMonth);
-  const currentMonthIndex = months.indexOf(selectedMonth);
-  const prevMonthStr = currentMonthIndex >= 0 && currentMonthIndex + 1 < months.length ? months[currentMonthIndex + 1] : null;
-  const prevData = getMonthData(prevMonthStr);
 
   useEffect(() => {
     if (!selectedMonth) return;
@@ -240,7 +228,7 @@ export default function IsletmemScreen({ navigation }) {
         <View className="flex-row flex-wrap justify-between mb-5 gap-y-3">
           <View className="w-full bg-[#2A2631] rounded-xl p-4 relative overflow-hidden" style={styles.glowBorder}>
             <Text className="text-[#A79E96] text-[10px] uppercase tracking-widest mb-1 font-['JetBrainsMono-Medium']">{t('isletmemScreen.summary.totalBalance')}</Text>
-            <Text className="text-[#22B573] text-4xl font-bold font-['HankenGrotesk-Bold'] tracking-tighter">₺{formatCurrency(currentData.balance)}</Text>
+            <Text className="text-[#22B573] text-4xl font-bold font-['HankenGrotesk-Bold'] tracking-tighter">₺{formatCurrency(currentData.balance, i18n.language)}</Text>
             {prevMonthStr && (
               <View className="mt-2 flex-row items-center gap-1.5">
                 <MaterialIcons name={trend >= 0 ? "trending-up" : "trending-down"} size={14} color={trend >= 0 ? "#22B573" : "#EF4444"} />
@@ -255,12 +243,12 @@ export default function IsletmemScreen({ navigation }) {
 
           <View className="w-[48%] bg-[#2A2631] rounded-xl p-3 border border-[#3A3540]/30">
             <Text className="text-[#A79E96] text-[10px] mb-1 font-['JetBrainsMono-Medium']">{t('isletmemScreen.summary.income')}</Text>
-            <Text className="text-[#22B573] text-xl font-semibold font-['HankenGrotesk-SemiBold']">₺{formatCurrency(currentData.income)}</Text>
+            <Text className="text-[#22B573] text-xl font-semibold font-['HankenGrotesk-SemiBold']">₺{formatCurrency(currentData.income, i18n.language)}</Text>
           </View>
 
           <View className="w-[48%] bg-[#2A2631] rounded-xl p-3 border border-[#3A3540]/30">
             <Text className="text-[#A79E96] text-[10px] mb-1 font-['JetBrainsMono-Medium']">{t('isletmemScreen.summary.expense')}</Text>
-            <Text className="text-[#EF4444] text-xl font-semibold font-['HankenGrotesk-SemiBold']">₺{formatCurrency(currentData.expense)}</Text>
+            <Text className="text-[#EF4444] text-xl font-semibold font-['HankenGrotesk-SemiBold']">₺{formatCurrency(currentData.expense, i18n.language)}</Text>
           </View>
         </View>
 
@@ -282,7 +270,7 @@ export default function IsletmemScreen({ navigation }) {
           ) : (
             displayDocs.slice(0, 5).map((item, idx) => {
               const amount = item.unifiedAmount;
-              const dateStr = new Date(item.unifiedDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
+              const dateStr = new Date(item.unifiedDate).toLocaleDateString((i18n.language), { day: 'numeric', month: 'short', year: 'numeric' });
               const badge = getBadge(item.flow_payment_status, t);
 
               return (
@@ -303,7 +291,7 @@ export default function IsletmemScreen({ navigation }) {
                   </View>
                   <View className="items-end">
                     <Text className={`text-xs font-medium font-['JetBrainsMono-Medium'] ${item.type === 'income' || item.type === 'sales' ? 'text-[#22B573]' : 'text-[#EF4444]'}`}>
-                      {item.type === 'income' || item.type === 'sales' ? '+' : '-'} ₺{formatCurrency(amount)}
+                      {item.type === 'income' || item.type === 'sales' ? '+' : '-'} ₺{formatCurrency(amount, i18n.language)}
                     </Text>
                     <MaterialIcons name="chevron-right" size={14} color="#A79E96" style={{ marginTop: 2 }} />
                   </View>
@@ -349,4 +337,3 @@ const styles = StyleSheet.create({
   tabButton: { paddingBottom: 8 },
   activeTab: { borderBottomWidth: 2, borderBottomColor: '#22B573' }
 });
-

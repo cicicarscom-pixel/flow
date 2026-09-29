@@ -1,3 +1,4 @@
+﻿import { formatMoney } from '../../../../lib/money';
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TouchableOpacity, ScrollView, ImageBackground, StyleSheet, FlatList, ActivityIndicator, Dimensions } from 'react-native';
@@ -85,9 +86,7 @@ export default function OdemeTakvimiScreen({ navigation }) {
   });
   const summaryNet = summaryInc - summaryExp;
 
-  const formatCurrency = (minor) => {
-    return (minor / 100).toLocaleString(i18n.language, { style: 'currency', currency: 'TRY' });
-  };
+  const formatCurrency = (minor) => formatMoney(minor / 100, i18n.language);
 
   const renderStatus = (tx) => {
     if (tx.payment_status === "paid") return <Text className="px-1.5 py-0.5 rounded bg-[#3ccf8e]/10 text-[#3ccf8e] text-[10px] uppercase border border-[#3ccf8e]/20 overflow-hidden">{t("muhasebe.odemeTakvimi.statusPaid", "Ödendi")}</Text>;
