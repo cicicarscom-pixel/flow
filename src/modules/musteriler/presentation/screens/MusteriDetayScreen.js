@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ActivityIndicator, Linking, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -109,7 +109,7 @@ export default function MusteriDetayScreen({ route, navigation }) {
             <TouchableOpacity onPress={() => Linking.openURL(`tel:+${cleanPhone}`)} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', paddingVertical: 12, borderRadius: 12, alignItems: 'center' }}>
               <Text style={{ color: '#fff', fontWeight: 'bold' }}>Ara</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => alert('Mevcut randevu akışına yönlendirilecek')} style={{ flex: 1, backgroundColor: '#3b82f6', paddingVertical: 12, borderRadius: 12, alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => navigation.navigate('RandevuMain')} style={{ flex: 1, backgroundColor: '#3b82f6', paddingVertical: 12, borderRadius: 12, alignItems: 'center' }}>
               <Text style={{ color: '#fff', fontWeight: 'bold' }}>Randevu</Text>
             </TouchableOpacity>
           </View>

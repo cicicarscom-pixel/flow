@@ -304,14 +304,6 @@
       }
     }
   },
-  "musteriler": {
-    "title": "Customers",
-    "empty": "No customers found yet.",
-    "appointments": "Appointments",
-    "lastVisit": "Last Visit",
-    "history": "Appointment History",
-    "noHistory": "No past appointments."
-  },
   "personas": {
     "title": "AI Personality",
     "businessRole": "👔 Business Role",
@@ -744,5 +736,23 @@
       "appointment": "{customer} booked an appointment with {doctor} on {when}",
       "appointmentNoDoctor": "{customer} booked an appointment on {when}"
     }
+  },
+  "header": {
+    "titles": {}
+  },
+  "musteriler": {
+    "phoneRequired": "Phone is required",
+    "nameRequired": "Name is required",
+    "customerCount": "{{count}} customers",
+    "error": "Something went wrong",
+    "noUpcoming": "No upcoming appointment",
+    "randevu": "appointments",
+    "openCard": "Open card",
+    "empty": "No customers found.",
+    "addCustomer": "Add customer",
+    "search": "Search name or phone",
+    "invalidPhone": "Invalid phone number",
+    "add": "Add",
+    "alreadyExists": "This number is already registered"
   }
 }

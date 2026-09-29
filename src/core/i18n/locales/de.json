@@ -304,14 +304,6 @@
       }
     }
   },
-  "musteriler": {
-    "title": "Kunden",
-    "empty": "Noch keine Kunden gefunden.",
-    "appointments": "Termine",
-    "lastVisit": "Letzter Besuch",
-    "history": "Terminhistorie",
-    "noHistory": "Keine vergangenen Termine."
-  },
   "personas": {
     "title": "KI-Persönlichkeit",
     "businessRole": "👔 Geschäftsrolle",
@@ -744,5 +736,23 @@
       "appointment": "{customer} hat einen Termin bei {doctor} am {when} gebucht",
       "appointmentNoDoctor": "{customer} hat einen Termin am {when} gebucht"
     }
+  },
+  "header": {
+    "titles": {}
+  },
+  "musteriler": {
+    "phoneRequired": "Telefon ist erforderlich",
+    "nameRequired": "Name ist erforderlich",
+    "customerCount": "{{count}} Kunden",
+    "error": "Ein Fehler ist aufgetreten",
+    "noUpcoming": "Kein bevorstehender Termin",
+    "randevu": "Termine",
+    "openCard": "Karte öffnen",
+    "empty": "Keine Kunden gefunden.",
+    "addCustomer": "Kunde hinzufügen",
+    "search": "Name oder Telefon suchen",
+    "invalidPhone": "Ungültige Telefonnummer",
+    "add": "Hinzufügen",
+    "alreadyExists": "Diese Nummer ist bereits registriert"
   }
 }

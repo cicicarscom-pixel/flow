@@ -304,14 +304,6 @@
       }
     }
   },
-  "musteriler": {
-    "title": "Müşteriler",
-    "empty": "Henüz müşteri bulunmuyor.",
-    "appointments": "Randevu",
-    "lastVisit": "Son",
-    "history": "Geçmiş Randevular",
-    "noHistory": "Geçmiş randevu yok."
-  },
   "personas": {
     "title": "AI Kişiliği",
     "businessRole": "👔 İşletme Rolü",
@@ -736,5 +728,23 @@
       "title": "Randevu Bildirimleri",
       "unknownCustomer": "Bir müşteri"
     }
+  },
+  "header": {
+    "titles": {}
+  },
+  "musteriler": {
+    "phoneRequired": "Telefon gerekli",
+    "nameRequired": "Ad gerekli",
+    "customerCount": "{{count}} müşteri",
+    "error": "Bir hata oluştu",
+    "noUpcoming": "Yaklaşan randevu yok",
+    "randevu": "randevu",
+    "openCard": "Kartı aç",
+    "empty": "Müşteri bulunamadı.",
+    "addCustomer": "Müşteri ekle",
+    "search": "İsim veya telefon ara",
+    "invalidPhone": "Geçersiz telefon numarası",
+    "add": "Ekle",
+    "alreadyExists": "Bu numara zaten kayıtlı"
   }
 }
