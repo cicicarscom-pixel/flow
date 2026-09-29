@@ -158,7 +158,7 @@ export default function MusteriDetayScreen({ route, navigation }) {
                 <View key={appt.id} style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: 16, borderRadius: 12, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: appt.status === 'Approved' ? '#22c55e' : appt.status === 'Pending' ? '#eab308' : '#6b7280' }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
                     <Text style={{ color: '#FF7A59', fontFamily: 'JetBrains Mono', fontSize: 13, fontWeight: 'bold' }}>{formatDate(appt.starts_at, appt.timezone)}</Text>
-                    <Text style={{ color: appt.status === 'Approved' ? '#22c55e' : appt.status === 'Pending' ? '#eab308' : '#9ca3af', fontSize: 12, fontWeight: '600' }}>{appt.status}</Text>
+                    <Text style={{ color: appt.status === 'Approved' ? '#22c55e' : appt.status === 'Pending' ? '#eab308' : '#9ca3af', fontSize: 12, fontWeight: '600' }}>{t('musteriler.status.' + appt.status, { defaultValue: appt.status })}</Text>
                   </View>
                   <Text numberOfLines={1} style={{ color: '#fff', fontSize: 14, marginBottom: 4 }}>"{appt.request}"</Text>
                   <Text style={{ color: '#7ddba8', fontSize: 12 }}>{appt.doctor}</Text>

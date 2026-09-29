@@ -755,6 +755,12 @@
     "invalidPhone": "Ungültige Telefonnummer",
     "alreadyExists": "Diese Nummer ist bereits registriert",
     "error": "Ein Fehler ist aufgetreten",
-    "empty": "Keine Kunden gefunden."
+    "empty": "Keine Kunden gefunden.",
+    "status": {
+      "Pending": "Ausstehend",
+      "Approved": "Genehmigt",
+      "Cancelled": "Abgebrochen",
+      "Expired": "Abgelaufen"
+    }
   }
 }

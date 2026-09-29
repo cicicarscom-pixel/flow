@@ -747,6 +747,12 @@
     "invalidPhone": "Geçersiz telefon numarası",
     "alreadyExists": "Bu numara zaten kayıtlı",
     "error": "Bir hata oluştu",
-    "empty": "Müşteri bulunamadı."
+    "empty": "Müşteri bulunamadı.",
+    "status": {
+      "Pending": "Bekliyor",
+      "Approved": "Onaylandı",
+      "Cancelled": "İptal",
+      "Expired": "Süresi Doldu"
+    }
   }
 }
