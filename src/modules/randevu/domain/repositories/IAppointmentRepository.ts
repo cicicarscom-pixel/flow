@@ -10,4 +10,7 @@ export interface IAppointmentRepository {
   getAppointmentsByDate(date: string, calendarId?: string): Promise<Appointment[]>;
   getUpcomingAppointments(limit: number): Promise<Appointment[]>;
   subscribeToAppointments(date: string, calendarId: string | undefined, callback: (appointments: Appointment[]) => void): () => void;
+  getDaySchedule(dateYmd: string, calendarId?: string): Promise<any[]>;
+  createCalendarBlock(calendarId: string | null, startLocal: string, endLocal: string, reason: string, note?: string): Promise<any>;
+  deleteCalendarBlock(blockId: string): Promise<any>;
 }
