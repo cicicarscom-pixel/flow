@@ -322,7 +322,8 @@
       "statusFree": "frei",
       "statusBooked": "belegt",
       "statusBlocked": "reserviert",
-      "confirmRemove": "Diese Reservierung entfernen?"
+      "confirmRemove": "Diese Reservierung entfernen?",
+      "alreadyBlocked": "Diese Zeit ist bereits reserviert"
     }
   },
   "personas": {

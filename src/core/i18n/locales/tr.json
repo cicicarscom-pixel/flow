@@ -322,7 +322,8 @@
       "statusFree": "boş",
       "statusBooked": "dolu",
       "statusBlocked": "rezerve",
-      "confirmRemove": "Bu rezervasyon kaldırılsın mı?"
+      "confirmRemove": "Bu rezervasyon kaldırılsın mı?",
+      "alreadyBlocked": "Bu saat zaten rezerve"
     }
   },
   "personas": {
