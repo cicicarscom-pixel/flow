@@ -10,7 +10,7 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
 
   async getDaySchedule(dateYmd: string, calendarId?: string): Promise<any[]> {
     const { data, error } = await supabase.rpc('get_day_schedule', {
-      p_date_ymd: dateYmd,
+      p_date: dateYmd,
       p_calendar_id: calendarId || null
     });
     if (error) {
@@ -23,8 +23,8 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
   async createCalendarBlock(calendarId: string | null, startLocal: string, endLocal: string, reason: string, note?: string): Promise<any> {
     const { data, error } = await supabase.rpc('create_calendar_block', {
       p_calendar_id: calendarId,
-      p_start_local: startLocal,
-      p_end_local: endLocal,
+      p_local_start: startLocal,
+      p_local_end: endLocal,
       p_reason: reason,
       p_note: note || null
     });
