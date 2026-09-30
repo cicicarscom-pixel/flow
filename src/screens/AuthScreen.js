@@ -163,7 +163,7 @@ export default function AuthScreen({ onSignUpSuccess }) {
           <View className="items-center mb-6">
           <View style={styles.logoContainer}>
             <Image 
-              source={require('../../image/logo2.png')} 
+              source={require('../../assets/images/logo2.png')} 
               style={styles.logoImage} 
               resizeMode="contain"
             />

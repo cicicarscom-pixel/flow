@@ -168,19 +168,19 @@ const BreathingIcon = ({ active, children }) => {
   );
 };
 const BAR_IMAGES = [
-  require('../../image/bar_image/bar1.jpg'),
-  require('../../image/bar_image/bar2.jpg'),
-  require('../../image/bar_image/bar3.jpg'),
-  require('../../image/bar_image/bar4.jpg'),
-  require('../../image/bar_image/bar5.jpg'),
-  require('../../image/bar_image/bar6.jpg'),
-  require('../../image/bar_image/bar7.jpg'),
-  require('../../image/bar_image/bar8.jpg'),
-  require('../../image/bar_image/bar9.jpg'),
-  require('../../image/bar_image/bar10.jpg'),
-  require('../../image/bar_image/bar11.jpg'),
-  require('../../image/bar_image/bar12.jpg'),
-  require('../../image/bar_image/bar14.jpg'),
+  require('../../assets/images/dashboard/bar1.jpg'),
+  require('../../assets/images/dashboard/bar2.jpg'),
+  require('../../assets/images/dashboard/bar3.jpg'),
+  require('../../assets/images/dashboard/bar4.jpg'),
+  require('../../assets/images/dashboard/bar5.jpg'),
+  require('../../assets/images/dashboard/bar6.jpg'),
+  require('../../assets/images/dashboard/bar7.jpg'),
+  require('../../assets/images/dashboard/bar8.jpg'),
+  require('../../assets/images/dashboard/bar9.jpg'),
+  require('../../assets/images/dashboard/bar10.jpg'),
+  require('../../assets/images/dashboard/bar11.jpg'),
+  require('../../assets/images/dashboard/bar12.jpg'),
+  require('../../assets/images/dashboard/bar14.jpg'),
 ];
 const { width: screenWidth } = Dimensions.get('window');
 const innerWidth = screenWidth - 2; // Compensate for left/right borders (1px each)
@@ -839,7 +839,7 @@ export default function DashboardScreen({ navigation }) {
                 <View style={styles.heroAiIconWrapper}>
                   {isFocused && (
                     <Image
-                      source={require('../../image/robot1.gif')}
+                      source={require('../../assets/images/robot1.gif')}
                       style={{ width: '100%', height: '100%' }}
                       resizeMode="cover"
                     />
