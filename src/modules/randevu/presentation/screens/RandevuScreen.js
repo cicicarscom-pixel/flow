@@ -467,7 +467,7 @@ export default function RandevuScreen() {
 
                       let bg = "rgba(255,255,255,0.03)", border = "1px solid rgba(255,255,255,0.06)", color = "#A79E96", opacity = 1;
                       if (status === 'booked') { bg = "#22B573"; border = "rgba(34, 181, 115, 0.3)"; color = "#17151A"; }
-                      else if (status === 'blocked') { bg = "rgba(100,100,100,0.5)"; border = "1px solid #999"; color = "#fff"; }
+                      else if (status === 'blocked') { bg = "rgba(255,255,255,0.05)"; border = "1px dashed rgba(255,255,255,0.3)"; color = "#A79E96"; }
                       else if (status === 'past') { opacity = 0.3; }
 
                       return (
