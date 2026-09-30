@@ -302,6 +302,27 @@
         "cancelSuccess": "Randevu başarıyla iptal edildi.",
         "deleteSuccess": "Randevu başarıyla silindi."
       }
+    },
+    "block": {
+      "reserve": "Rezerve et",
+      "createAppointment": "Randevu oluştur",
+      "removeReservation": "Rezervasyonu kaldır",
+      "title": "Saati rezerve et",
+      "scopeClinic": "Tüm klinik",
+      "singleSlot": "Tek slot",
+      "range": "Başlangıç-bitiş",
+      "reasonMeeting": "Toplantı",
+      "reasonLeave": "İzin",
+      "reasonBreak": "Mola",
+      "reasonOther": "Diğer",
+      "note": "Not (isteğe bağlı)",
+      "save": "Kaydet",
+      "conflicts": "Bu aralıkta randevular var. Önce taşıyın ya da iptal edin:",
+      "invalidRange": "Bitiş saati başlangıçtan sonra olmalı",
+      "statusFree": "boş",
+      "statusBooked": "dolu",
+      "statusBlocked": "rezerve",
+      "confirmRemove": "Bu rezervasyon kaldırılsın mı?"
     }
   },
   "personas": {

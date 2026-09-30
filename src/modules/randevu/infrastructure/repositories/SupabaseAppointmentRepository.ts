@@ -7,6 +7,39 @@ import { NetworkError } from '../../../../shared/errors/NetworkError';
 import { todayInTimezone, addDaysYmd } from '../../../../lib/dates';
 
 export class SupabaseAppointmentRepository implements IAppointmentRepository {
+
+  async getDaySchedule(dateYmd: string, calendarId?: string): Promise<any[]> {
+    const { data, error } = await supabase.rpc('get_day_schedule', {
+      p_date_ymd: dateYmd,
+      p_calendar_id: calendarId || null
+    });
+    if (error) {
+      console.error("getDaySchedule error:", error);
+      return [];
+    }
+    return data || [];
+  }
+
+  async createCalendarBlock(calendarId: string | null, startLocal: string, endLocal: string, reason: string, note?: string): Promise<any> {
+    const { data, error } = await supabase.rpc('create_calendar_block', {
+      p_calendar_id: calendarId,
+      p_start_local: startLocal,
+      p_end_local: endLocal,
+      p_reason: reason,
+      p_note: note || null
+    });
+    if (error) return { error: error.message };
+    return { data };
+  }
+
+  async deleteCalendarBlock(blockId: string): Promise<any> {
+    const { data, error } = await supabase.rpc('delete_calendar_block', {
+      p_block_id: blockId
+    });
+    if (error) return { error: error.message };
+    return { data };
+  }
+
   async create(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Appointment> {
     const { data, error } = await supabase.rpc('create_manual_appointment', {
       p_local_start: appointmentData.date.substring(0, 16),

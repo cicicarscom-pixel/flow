@@ -302,6 +302,27 @@
         "cancelSuccess": "Termin erfolgreich abgesagt.",
         "deleteSuccess": "Termin erfolgreich gelöscht."
       }
+    },
+    "block": {
+      "reserve": "Reservieren",
+      "createAppointment": "Termin erstellen",
+      "removeReservation": "Reservierung entfernen",
+      "title": "Zeit reservieren",
+      "scopeClinic": "Gesamte Praxis",
+      "singleSlot": "Einzelner Slot",
+      "range": "Beginn-Ende",
+      "reasonMeeting": "Besprechung",
+      "reasonLeave": "Urlaub",
+      "reasonBreak": "Pause",
+      "reasonOther": "Sonstiges",
+      "note": "Notiz (optional)",
+      "save": "Speichern",
+      "conflicts": "In diesem Zeitraum gibt es Termine. Bitte zuerst verschieben oder stornieren:",
+      "invalidRange": "Endzeit muss nach der Startzeit liegen",
+      "statusFree": "frei",
+      "statusBooked": "belegt",
+      "statusBlocked": "reserviert",
+      "confirmRemove": "Diese Reservierung entfernen?"
     }
   },
   "personas": {

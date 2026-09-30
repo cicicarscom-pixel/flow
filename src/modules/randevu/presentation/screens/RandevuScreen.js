@@ -45,6 +45,22 @@ export default function RandevuScreen() {
   const insets = useSafeAreaInsets();
   const [pulseAnim] = useState(() => new Animated.Value(1));
 
+  const [reserveModal, setReserveModal] = useState({ visible: false, time: '', endTime: '' });
+  const [reserveScope, setReserveScope] = useState('doctor');
+  const [reserveDurationType, setReserveDurationType] = useState('single');
+  const [reserveReason, setReserveReason] = useState('meeting');
+  const [reserveNote, setReserveNote] = useState('');
+  const [reserveError, setReserveError] = useState('');
+  const [reserveConflicts, setReserveConflicts] = useState([]);
+
+  const add30Mins = (t) => {
+    if (!t) return '';
+    const [h, m] = t.split(':').map(Number);
+    const d = new Date(); d.setHours(h, m + 30, 0);
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  };
+
+
   const handleCardOptions = (appt) => {
     const isCancelled = appt.status === AppointmentStatus.Cancelled;
     const options = isCancelled 
@@ -152,7 +168,7 @@ export default function RandevuScreen() {
 
   const { calendars, multiCalendarEnabled, activeCalendarId, setActiveCalendarId, createCalendar, updateCalendar, deleteCalendar } = useCalendars();
 
-  const { appointments, loading, isSlotBusy, selectedDate, setSelectedDate, addAppointment, cancelAppointment, deleteAppointment } = useAppointments(route.params?.date || todayStr, activeCalendarId); // MODIFIED
+  const { appointments, loading, daySchedule, refreshDaySchedule, createCalendarBlock, deleteCalendarBlock, selectedDate, setSelectedDate, addAppointment, cancelAppointment, deleteAppointment } = useAppointments(route.params?.date || todayStr, activeCalendarId); // MODIFIED
   
   
   React.useEffect(() => {

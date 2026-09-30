@@ -4,7 +4,7 @@ import { container } from "../../../../core/container";
 import { SupabaseAppointmentRepository } from "@infrastructure/repositories/SupabaseAppointmentRepository";
 import { Appointment } from "@domain/entities/Appointment";
 import { AppointmentStatus } from "@domain/enums/AppointmentStatus";
-import { isSlotBusy as coreIsSlotBusy } from "../../../../lib/slotBusy";
+
 
 export function extractTime(dateStr: string): string {
   if (!dateStr) return "";
@@ -18,6 +18,10 @@ function toDateString(date: Date): string {
 }
 
 export interface UseAppointmentsResult {
+  daySchedule: any[];
+  refreshDaySchedule: (calId?: string) => Promise<void>;
+  createCalendarBlock: (calId: string | null, start: string, end: string, reason: string, note?: string) => Promise<any>;
+  deleteCalendarBlock: (id: string) => Promise<any>;
   appointments: Appointment[];
   loading: boolean;
   error: string | null;
@@ -130,6 +134,29 @@ export function useAppointments(initialDate?: string, activeCalendarId?: string 
     }
   };
 
-  return { appointments, loading, error, selectedDate, setSelectedDate, isSlotBusy, addAppointment, cancelAppointment, deleteAppointment };
+  
+  const refreshDaySchedule = async (calId?: string) => {
+    // @ts-ignore
+    const data = await repo.getDaySchedule(selectedDate, calId);
+    setDaySchedule(data);
+  };
+  const createCalendarBlock = async (calId: string | null, start: string, end: string, reason: string, note?: string) => {
+    // @ts-ignore
+    return repo.createCalendarBlock(calId, start, end, reason, note);
+  };
+  const deleteCalendarBlock = async (id: string) => {
+    // @ts-ignore
+    return repo.deleteCalendarBlock(id);
+  };
+
+  useEffect(() => {
+    refreshDaySchedule();
+  }, [selectedDate, appointments]);
+
+  return {
+    daySchedule,
+    refreshDaySchedule,
+    createCalendarBlock,
+    deleteCalendarBlock, appointments, loading, error, selectedDate, setSelectedDate, isSlotBusy, addAppointment, cancelAppointment, deleteAppointment };
 }
 

@@ -302,6 +302,27 @@
         "cancelSuccess": "Appointment cancelled successfully.",
         "deleteSuccess": "Appointment deleted successfully."
       }
+    },
+    "block": {
+      "reserve": "Reserve",
+      "createAppointment": "Create appointment",
+      "removeReservation": "Remove reservation",
+      "title": "Reserve time",
+      "scopeClinic": "Whole clinic",
+      "singleSlot": "Single slot",
+      "range": "Start-end",
+      "reasonMeeting": "Meeting",
+      "reasonLeave": "Leave",
+      "reasonBreak": "Break",
+      "reasonOther": "Other",
+      "note": "Note (optional)",
+      "save": "Save",
+      "conflicts": "There are appointments in this range. Move or cancel them first:",
+      "invalidRange": "End time must be after start time",
+      "statusFree": "free",
+      "statusBooked": "booked",
+      "statusBlocked": "reserved",
+      "confirmRemove": "Remove this reservation?"
     }
   },
   "personas": {
