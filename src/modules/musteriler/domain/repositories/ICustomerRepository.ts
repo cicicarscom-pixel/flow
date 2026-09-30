@@ -1,4 +1,4 @@
-﻿export interface ICustomerRepository {
+export interface ICustomerRepository {
   getAll(): Promise<any[]>;
   getAppointments(id: string): Promise<any[]>;
   updateNotes(id: string, notes: string): Promise<any>;

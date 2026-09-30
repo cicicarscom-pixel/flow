@@ -1,4 +1,4 @@
-﻿/* eslint-disable i18next/no-literal-string, no-unused-vars */
+/* eslint-disable i18next/no-literal-string, no-unused-vars */
 import React, { useState, useRef, useMemo } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { View, Text, ScrollView, TouchableOpacity, Alert,

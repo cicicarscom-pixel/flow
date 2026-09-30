@@ -1,4 +1,4 @@
-﻿import { formatMoney } from '../../../../lib/money';
+import { formatMoney } from '../../../../lib/money';
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TouchableOpacity, ScrollView, ImageBackground, StyleSheet, FlatList, ActivityIndicator, Dimensions } from 'react-native';

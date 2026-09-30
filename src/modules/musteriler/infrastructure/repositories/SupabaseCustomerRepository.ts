@@ -1,4 +1,4 @@
-﻿import { ICustomerRepository } from '../../domain/repositories/ICustomerRepository';
+import { ICustomerRepository } from '../../domain/repositories/ICustomerRepository';
 import { supabase } from '../../../../shared';
 
 export class SupabaseCustomerRepository implements ICustomerRepository {

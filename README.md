@@ -1,4 +1,4 @@
-﻿## 🔄 AKTARIM NOTU (HANDOVER) - 30 EYLÜL 2026 (Rezervasyon ve Müsaitlik Çekirdeği Eşitlemesi)
+## 🔄 AKTARIM NOTU (HANDOVER) - 30 EYLÜL 2026 (Rezervasyon ve Müsaitlik Çekirdeği Eşitlemesi)
 
 **Şu Anki Durum:**
 Faz kapsamında, AI Asistan Randevu modülündeki rezerve edilen saatlerin (calendar_blocks) yönetimi, web (FlowWeb) ve mobil (Flow) uygulamalarında ortak veritabanı kurallarına göre senkronize edildi.

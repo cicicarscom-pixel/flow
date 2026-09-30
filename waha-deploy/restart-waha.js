@@ -1,4 +1,4 @@
-﻿const { Client } = require('ssh2');
+const { Client } = require('ssh2');
 const conn = new Client();
 
 conn.on('ready', () => {

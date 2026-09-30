@@ -1,4 +1,4 @@
-﻿/** Kuruş varsa 2 hane, yoksa hiç (",00" gizlenir); asla yuvarlamaz. */
+/** Kuruş varsa 2 hane, yoksa hiç (",00" gizlenir); asla yuvarlamaz. */
 function fractionDigits(n: number): number {
   return Math.round(Math.abs(n) * 100) % 100 !== 0 ? 2 : 0;
 }

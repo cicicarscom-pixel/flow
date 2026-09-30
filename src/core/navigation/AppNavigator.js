@@ -1,4 +1,4 @@
-﻿import MusteriDetayScreen from '../../modules/musteriler/presentation/screens/MusteriDetayScreen';
+import MusteriDetayScreen from '../../modules/musteriler/presentation/screens/MusteriDetayScreen';
 import React, { useState, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 

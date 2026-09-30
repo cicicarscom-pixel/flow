@@ -1,4 +1,4 @@
-﻿import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import { container } from "../../../../core/container";
 import { Calendar } from "../../domain/entities/Calendar";

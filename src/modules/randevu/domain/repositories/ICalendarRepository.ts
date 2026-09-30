@@ -1,4 +1,4 @@
-﻿import { Calendar } from "../entities/Calendar";
+import { Calendar } from "../entities/Calendar";
 
 export interface ICalendarRepository {
   getCalendars(): Promise<Calendar[]>;

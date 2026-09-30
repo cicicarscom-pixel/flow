@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { container } from '../../../../core/container';
 import { ICustomerRepository } from '../../domain/repositories/ICustomerRepository';
 

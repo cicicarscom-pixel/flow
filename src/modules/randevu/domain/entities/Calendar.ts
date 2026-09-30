@@ -1,4 +1,4 @@
-﻿export class Calendar {
+export class Calendar {
   private readonly _id: string;
   private readonly _name: string;
   private readonly _isActive: boolean;

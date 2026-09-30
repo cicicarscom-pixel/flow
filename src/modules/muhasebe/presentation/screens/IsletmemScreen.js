@@ -1,4 +1,4 @@
-﻿import { formatAmount } from '../../../../lib/money';
+import { formatAmount } from '../../../../lib/money';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

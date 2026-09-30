@@ -1,4 +1,4 @@
-﻿## ğŸ“ 8. AdÄ±m: WAHA Plus (WhatsApp HTTP API) Mimarisi ve Kurulumu
+## ğŸ“ 8. AdÄ±m: WAHA Plus (WhatsApp HTTP API) Mimarisi ve Kurulumu
 
 Projenin WhatsApp botu altyapÄ±sÄ±, resmi Meta API kÄ±sÄ±tlamalarÄ±nÄ± (24 saat penceresi vb.) aÅŸmak ve esnaflarÄ±n kendi numaralarÄ±nÄ± saniyeler iÃ§inde baÄŸlayabilmesini saÄŸlamak iÃ§in **WAHA (WhatsApp HTTP API) Plus** Ã¼zerine kurulmuÅŸtur.
 
