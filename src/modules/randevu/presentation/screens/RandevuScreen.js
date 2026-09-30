@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string, no-unused-vars */
+﻿/* eslint-disable i18next/no-literal-string, no-unused-vars */
 import React, { useState, useRef, useMemo } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { View, Text, ScrollView, TouchableOpacity, Alert,
@@ -15,19 +15,6 @@ import { useCalendars } from '../hooks/useCalendars';
 import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
 import { supabase } from '../../../../shared';
 
-// Generate 30-min slots from 08:00 to 00:00
-const TIME_SLOTS = (() => {
-  const slots = [];
-  const fullSlots = new Set(['09:00', '09:30', '11:00', '13:00', '13:30', '16:00']);
-  for (let h = 8; h < 24; h++) {
-    ['00', '30'].forEach(m => {
-      const time = `${String(h).padStart(2, '0')}:${m}`;
-      slots.push({ time, full: fullSlots.has(time) });
-    });
-  }
-  slots.push({ time: '00:00', full: false });
-  return slots;
-})();
 
 // Renk paleti — randevu index'ine göre döngüsel
 const CARD_COLORS = [
@@ -215,13 +202,10 @@ export default function RandevuScreen() {
   React.useEffect(() => {
     if (isModalVisible) {
       const fetchHours = async () => {
-        const repo = require("../../../../core/container").container.resolve("AppointmentRepository");
-        const { isSlotBusy } = require("../../../../lib/slotBusy");
         try {
-          const dayAppts = await repo.getDayAppointmentsForCalendar(selectedDate, newApptCalendarId || undefined);
-          const allHours = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
-          const hours = allHours.filter(hour => !isSlotBusy(hour, selectedDate, dayAppts));
-          setAvailableModalHours(hours);
+          const { data, error } = await supabase.rpc('get_available_slots', { p_date: selectedDate, p_service_id: newApptService || null, p_calendar_id: newApptCalendarId || null });
+          if (error) throw error;
+          setAvailableModalHours(data || []);
         } catch (e) {
           Alert.alert("Hata", e.message || "Saatler cekilemedi");
         }
@@ -447,26 +431,95 @@ export default function RandevuScreen() {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.heatmapGrid}
               >
-                {/* Column-per-slot: 11 columns × 3 rows */}
-                {Array.from({ length: 11 }).map((_, col) => (
+                
+              {/* Heatmap Grid implementation using daySchedule */}
+              {(() => {
+                const uniqueTimes = Array.from(new Set(daySchedule.map(s => s.local_time))).sort();
+                const columns = Math.ceil(uniqueTimes.length / 3) || 11;
+                return Array.from({ length: columns }).map((_, col) => (
                   <View key={col} style={styles.heatmapCol}>
                     {[0, 1, 2].map(row => {
-                      const slot = TIME_SLOTS[row * 11 + col];
-                      if (!slot) return <View key={row} style={styles.heatCell} />;
-                      const busy = isSlotBusy(slot.time);
+                      const index = row * columns + col;
+                      const slotTime = uniqueTimes[index];
+                      if (!slotTime) return <View key={row} style={[styles.heatCell, { backgroundColor: 'transparent', borderWidth: 0 }]} />;
+                      
+                      const slots = daySchedule.filter(s => s.local_time === slotTime);
+                      let status = 'free';
+                      let badge = null;
+                      let bId = '', bReason = '', bNote = '';
+
+                      if (activeCalendarId) {
+                        status = slots[0]?.status || 'free';
+                        bId = slots[0]?.block_id; bReason = slots[0]?.block_reason; bNote = slots[0]?.block_note;
+                      } else {
+                        if (slots.every(s => s.status === 'blocked')) status = 'blocked';
+                        else if (slots.some(s => s.status === 'free')) {
+                          status = 'free';
+                          badge = `${slots.filter(s => s.status === 'free').length}/${slots.length}`;
+                        }
+                        else if (slots.every(s => s.status === 'past')) status = 'past';
+                        else status = 'booked';
+                        
+                        const blockedSlot = slots.find(s => s.status === 'blocked');
+                        if (blockedSlot) { bId = blockedSlot.block_id; bReason = blockedSlot.block_reason; bNote = blockedSlot.block_note; }
+                      }
+
+                      let bg = "rgba(255,255,255,0.03)", border = "1px solid rgba(255,255,255,0.06)", color = "#A79E96", opacity = 1;
+                      if (status === 'booked') { bg = "#22B573"; border = "rgba(34, 181, 115, 0.3)"; color = "#17151A"; }
+                      else if (status === 'blocked') { bg = "rgba(100,100,100,0.5)"; border = "1px solid #999"; color = "#fff"; }
+                      else if (status === 'past') { opacity = 0.3; }
+
                       return (
                         <TouchableOpacity
                           key={row}
-                          style={[styles.heatCell, busy && styles.heatCellFull]}
+                          onPress={() => {
+                            if (status === 'free') {
+                              showActionSheetWithOptions({
+                                options: [t('randevu.block.createAppointment'), t('randevu.block.reserve'), t('common.cancel')],
+                                cancelButtonIndex: 2
+                              }, (idx) => {
+                                if (idx === 0) {
+                                  setNewApptTime(slotTime);
+                                  setIsModalVisible(true);
+                                } else if (idx === 1) {
+                                  setReserveModal({ visible: true, time: slotTime, endTime: add30Mins(slotTime) });
+                                  setReserveError('');
+                                  setReserveConflicts([]);
+                                  setReserveDurationType('single');
+                                  setReserveScope(activeCalendarId ? 'doctor' : 'clinic');
+                                }
+                              });
+                            } else if (status === 'blocked') {
+                              showActionSheetWithOptions({
+                                options: [t('randevu.block.removeReservation'), t('common.cancel')],
+                                destructiveButtonIndex: 0,
+                                cancelButtonIndex: 1,
+                                title: `${bReason}${bNote ? ' - ' + bNote : ''} (${slotTime})`
+                              }, async (idx) => {
+                                if (idx === 0) {
+                                  const res = await deleteCalendarBlock(bId);
+                                  if (res.error) Alert.alert('Hata', t('musteriler.error'));
+                                  else refreshDaySchedule(activeCalendarId || undefined);
+                                }
+                              });
+                            }
+                          }}
+                          style={[styles.heatCell, { backgroundColor: bg, borderColor: border, opacity, minWidth: 44, minHeight: 32 }]}
                         >
-                          <Text style={[styles.heatLabel, busy && styles.heatLabelFull]}>
-                            {slot.time}
+                          <Text style={[styles.heatLabel, { color, fontWeight: status !== 'free' ? '800' : '500' }]}>
+                            {slotTime}
                           </Text>
+                          {badge && (
+                            <View style={{ position: 'absolute', top: -4, right: -4, backgroundColor: '#22B573', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 4 }}>
+                              <Text style={{ color: '#fff', fontSize: 8 }}>{badge}</Text>
+                            </View>
+                          )}
                         </TouchableOpacity>
                       );
                     })}
                   </View>
-                ))}
+                ));
+              })()}
               </ScrollView>
             </View>
           </View>
