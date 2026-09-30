@@ -432,15 +432,18 @@ export default function RandevuScreen() {
                 contentContainerStyle={styles.heatmapGrid}
               >
                 
-              {/* Heatmap Grid implementation using daySchedule */}
+              {/* Heatmap Grid implementation using semantic rows */}
               {(() => {
                 const uniqueTimes = Array.from(new Set(daySchedule.map(s => s.local_time))).sort();
-                const columns = Math.ceil(uniqueTimes.length / 3) || 11;
-                return Array.from({ length: columns }).map((_, col) => (
+                const morningSlots = uniqueTimes.filter(t => t < '13:00' && t >= '00:01');
+                const noonSlots = uniqueTimes.filter(t => t >= '13:00' && t < '18:30');
+                const eveningSlots = uniqueTimes.filter(t => t >= '18:30' || t === '00:00');
+                const maxCols = Math.max(morningSlots.length, noonSlots.length, eveningSlots.length);
+                
+                return Array.from({ length: maxCols }).map((_, col) => (
                   <View key={col} style={styles.heatmapCol}>
                     {[0, 1, 2].map(row => {
-                      const index = row * columns + col;
-                      const slotTime = uniqueTimes[index];
+                      const slotTime = row === 0 ? morningSlots[col] : row === 1 ? noonSlots[col] : eveningSlots[col];
                       if (!slotTime) return <View key={row} style={[styles.heatCell, { backgroundColor: 'transparent', borderWidth: 0 }]} />;
                       
                       const slots = daySchedule.filter(s => s.local_time === slotTime);
@@ -504,7 +507,7 @@ export default function RandevuScreen() {
                               });
                             }
                           }}
-                          style={[styles.heatCell, { backgroundColor: bg, borderColor: border, opacity, minWidth: 44, minHeight: 32 }]}
+                          style={[styles.heatCell, { backgroundColor: bg, borderColor: border, opacity, minWidth: 46, minHeight: 32 }]}
                         >
                           <Text style={[styles.heatLabel, { color, fontWeight: status !== 'free' ? '800' : '500' }]}>
                             {slotTime}
