@@ -458,7 +458,7 @@ export default function RandevuScreen() {
                         if (slots.every(s => s.status === 'blocked')) status = 'blocked';
                         else if (slots.some(s => s.status === 'free')) {
                           status = 'free';
-                          badge = `${slots.filter(s => s.status === 'free').length}/${slots.length}`;
+                          
                         }
                         else if (slots.every(s => s.status === 'past')) status = 'past';
                         else status = 'booked';
