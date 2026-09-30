@@ -507,9 +507,9 @@ export default function RandevuScreen() {
                           }}
                           style={[styles.heatCell, { backgroundColor: bg, borderColor: border, opacity, minWidth: 46, minHeight: 32 }]}
                         >
-                          <Text style={[styles.heatLabel, { color, fontWeight: status !== 'free' ? '800' : '500' }]}>
-                            {slotTime}
-                          </Text>
+                          <Text style={[styles.heatLabel, { color, fontWeight: status !== 'free' ? '800' : '500', fontSize: status === 'blocked' ? 8 : 9, textAlign: 'center' }]} numberOfLines={1}>
+                              {status === 'blocked' ? (bReason === 'meeting' ? 'Toplantı' : bReason === 'leave' ? 'İzinli' : bReason === 'break' ? 'Mola' : 'Diğer') : slotTime}
+                            </Text>
                           {badge && (
                             <View style={{ position: 'absolute', top: -4, right: -4, backgroundColor: '#22B573', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 4 }}>
                               <Text style={{ color: '#fff', fontSize: 8 }}>{badge}</Text>
