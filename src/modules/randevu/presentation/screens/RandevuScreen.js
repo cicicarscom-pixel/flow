@@ -505,17 +505,17 @@ export default function RandevuScreen() {
                               });
                             }
                           }}
-                          style={[styles.heatCell, { backgroundColor: bg, borderColor: border, opacity, minWidth: 46, minHeight: 32 }]}
+                          style={[styles.heatCell, { backgroundColor: bg, borderColor: border, opacity, minWidth: 46, minHeight: 40 }]}
                         >
                           {status === 'blocked' ? (
                               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                                <Text style={[styles.heatLabel, { color, fontWeight: '800', fontSize: 9 }]}>{slotTime}</Text>
-                                <Text style={{ color, fontWeight: '500', fontSize: 7, marginTop: 1 }} numberOfLines={1}>
-                                  {bReason === 'meeting' ? 'Toplantı' : bReason === 'leave' ? 'İzinli' : bReason === 'break' ? 'Mola' : 'Diğer'}
+                                <Text style={[styles.heatLabel, { color, fontWeight: '800', fontSize: 12 }]}>{slotTime}</Text>
+                                <Text style={{ color, fontWeight: '500', fontSize: 10, marginTop: 1 }} numberOfLines={1}>
+                                  {bReason === 'meeting' ? t('randevu.block.reasonMeeting') : bReason === 'leave' ? t('randevu.block.reasonLeave') : bReason === 'break' ? t('randevu.block.reasonBreak') : t('randevu.block.reasonOther')}
                                 </Text>
                               </View>
                             ) : (
-                              <Text style={[styles.heatLabel, { color, fontWeight: status !== 'free' ? '800' : '500', fontSize: 9, textAlign: 'center' }]} numberOfLines={1}>
+                              <Text style={[styles.heatLabel, { color, fontWeight: status !== 'free' ? '800' : '500', fontSize: 12, textAlign: 'center' }]} numberOfLines={1}>
                                 {slotTime}
                               </Text>
                             )}
