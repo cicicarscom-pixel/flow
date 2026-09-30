@@ -1,4 +1,21 @@
-﻿## 🔄 AKTARIM NOTU (HANDOVER) - 29 EYLÜL 2026 (Finans Özetleri, Tarih & Para Formatı Optimizasyonları Tamamlandı)
+﻿## 🔄 AKTARIM NOTU (HANDOVER) - 30 EYLÜL 2026 (Rezervasyon ve Müsaitlik Çekirdeği Eşitlemesi)
+
+**Şu Anki Durum:**
+Faz kapsamında, AI Asistan Randevu modülündeki rezerve edilen saatlerin (calendar_blocks) yönetimi, web (FlowWeb) ve mobil (Flow) uygulamalarında ortak veritabanı kurallarına göre senkronize edildi.
+
+**Web & Mobil (Ortak) Durumu:**
+- **Kapsam (Scope) Düğmesi Güncellemesi:** Randevu alma modalında yer alan "Seçili doktor" ibaresi dinamik hale getirildi. Kullanıcının `activeCalendarId` seçimine göre doğrudan ilgili doktorun adı (örn. Dr. Mehmet YALÇIN) gösteriliyor.
+- **Isı Haritası (Heatmap) Rezerve Hücre UI İyileştirmesi:** Saat (örn. 10:00) hücrenin üst kısmında daha büyük (12px) ve vurgulu, randevu sebebi (Toplantı, İzinli vb.) ise alt kısımda (10px) yer alacak şekilde dikey (flex-col / View) yerleşime geçirildi. Hücre yükseklikleri (minHeight/height) 40px yapılarak metin kesilmeleri (clipping) önlendi.
+- **Çeviri ve Yerelleştirme (i18n):** Mobil ve web platformlarında randevu notu (noteLabel, notePlaceholder) ile hata mesajları (`randevu.block.alreadyBlocked`) {tr, en, de} dillerinde eklendi. Sabit Türkçe bırakılan engel/sebep mesajları tamamen yerelleştirildi.
+
+**Mobil (Flow) Durumu:**
+- **Liste Sıralaması:** "Gün randevu listesi" (`appointments`), kronolojik takibi kolaylaştırmak adına `starts_at` ve `date` değerleri baz alınarak artan şekilde (09:00, 10:00, 11:00) sıralandı.
+- **RPC Parametreleri Uyumsuzluğu Giderildi:** `SupabaseAppointmentRepository.ts` içerisinde Supabase RPC fonksiyonlarının beklediği parametre adları (`p_date`, `p_local_start`) tam uyumlu hale getirildi.
+
+**Ledger (Backend / DB) Durumu:**
+- **Çift Kayıt (Duplicate Calendar Blocks) Engeli:** Aynı saat diliminde üst üste blok kaydı oluşturulmasını engelleyen ve `ALREADY_BLOCKED` dönen Supabase `create_calendar_block` fonksiyonu yaması (`ledger-kayit-esitleme.patch`) başarıyla uygulandı. Çift kayıt oluşumu veritabanı seviyesinde önlendi.
+
+## 🔄 AKTARIM NOTU (HANDOVER) - 29 EYLÜL 2026 (Finans Özetleri, Tarih & Para Formatı Optimizasyonları Tamamlandı)
 
 **Şu Anki Durum:**
 M4/Faz 4 kapsamında, AI Muhasebe, İşletmem ve Ödeme Takvimi modüllerinde tarih, zaman dilimi (timezone) ve para birimi formatlaması baştan aşağı yenilenmiş, web ve mobil sürümlerde tam senkronizasyon sağlanmıştır.
