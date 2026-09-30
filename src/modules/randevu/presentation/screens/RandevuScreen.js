@@ -965,11 +965,8 @@ const styles = StyleSheet.create({
 
   /* Heatmap grid */
   heatmapWrap: { flexDirection: 'row', alignItems: 'stretch', gap: 6 },
-  rowLabels: { justifyContent: 'space-around', paddingVertical: 2, gap: 5 },
-  rowLabel: {
-    fontSize: 8, fontWeight: '700', color: '#A79E96',
-    letterSpacing: 0.5, textAlign: 'right', width: 36,
-  },
+  rowLabels: { justifyContent: 'flex-start', paddingVertical: 2, gap: 5 },
+  rowLabel: { fontSize: 8, fontWeight: '700', color: '#A79E96', letterSpacing: 0.5, textAlign: 'right', width: 36, height: 28, lineHeight: 28 },
   heatmapGrid: { flexDirection: 'row', gap: 4, paddingVertical: 2 },
   heatmapCol: { flexDirection: 'column', gap: 5 },
   heatCell: {
