@@ -507,9 +507,18 @@ export default function RandevuScreen() {
                           }}
                           style={[styles.heatCell, { backgroundColor: bg, borderColor: border, opacity, minWidth: 46, minHeight: 32 }]}
                         >
-                          <Text style={[styles.heatLabel, { color, fontWeight: status !== 'free' ? '800' : '500', fontSize: status === 'blocked' ? 8 : 9, textAlign: 'center' }]} numberOfLines={1}>
-                              {status === 'blocked' ? (bReason === 'meeting' ? 'Toplantı' : bReason === 'leave' ? 'İzinli' : bReason === 'break' ? 'Mola' : 'Diğer') : slotTime}
-                            </Text>
+                          {status === 'blocked' ? (
+                              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <Text style={[styles.heatLabel, { color, fontWeight: '800', fontSize: 9 }]}>{slotTime}</Text>
+                                <Text style={{ color, fontWeight: '500', fontSize: 7, marginTop: 1 }} numberOfLines={1}>
+                                  {bReason === 'meeting' ? 'Toplantı' : bReason === 'leave' ? 'İzinli' : bReason === 'break' ? 'Mola' : 'Diğer'}
+                                </Text>
+                              </View>
+                            ) : (
+                              <Text style={[styles.heatLabel, { color, fontWeight: status !== 'free' ? '800' : '500', fontSize: 9, textAlign: 'center' }]} numberOfLines={1}>
+                                {slotTime}
+                              </Text>
+                            )}
                           {badge && (
                             <View style={{ position: 'absolute', top: -4, right: -4, backgroundColor: '#22B573', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 4 }}>
                               <Text style={{ color: '#fff', fontSize: 8 }}>{badge}</Text>
@@ -536,7 +545,11 @@ export default function RandevuScreen() {
               <Text style={styles.emptyText}>{t('randevu.randevuScreen.noAppointments')}</Text>
             </View>
           ) : (
-            appointments.map((appt, index) => {
+            [...appointments].sort((a, b) => {
+                const dateA = new Date(a.startsAt || a.date).getTime();
+                const dateB = new Date(b.startsAt || b.date).getTime();
+                return dateA - dateB;
+              }).map((appt, index) => {
               const palette = CARD_COLORS[index % CARD_COLORS.length];
               const apptTime = appt.startsAt ? new Date(appt.startsAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: appt.timezone ?? 'Europe/Istanbul' }) : extractTime(appt.date);
               return (
@@ -903,7 +916,7 @@ export default function RandevuScreen() {
                 <Text style={styles.modalLabel}>{t('randevu.block.scope', { defaultValue: 'Kapsam' })}</Text>
                 <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
                   <TouchableOpacity onPress={() => setReserveScope('doctor')} style={[styles.chip, reserveScope === 'doctor' && styles.chipActive, { flex: 1 }]}>
-                    <Text style={[styles.chipText, reserveScope === 'doctor' && styles.chipTextActive, { textAlign: 'center' }]}>{t('randevu.block.selectedDoctor', { defaultValue: 'Seçili doktor' })}</Text>
+                    <Text style={[styles.chipText, reserveScope === 'doctor' && styles.chipTextActive, { textAlign: 'center' }]}>{activeCalendarId ? calendars.find(c => c.id === activeCalendarId)?.name || t('randevu.block.selectedDoctor', { defaultValue: 'Seçili doktor' }) : t('randevu.block.selectedDoctor', { defaultValue: 'Seçili doktor' })}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => setReserveScope('clinic')} style={[styles.chip, reserveScope === 'clinic' && styles.chipActive, { flex: 1 }]}>
                     <Text style={[styles.chipText, reserveScope === 'clinic' && styles.chipTextActive, { textAlign: 'center' }]}>{t('randevu.block.entireClinic', { defaultValue: 'Tüm klinik' })}</Text>

@@ -323,7 +323,9 @@
       "statusBooked": "booked",
       "statusBlocked": "reserved",
       "confirmRemove": "Remove this reservation?",
-      "alreadyBlocked": "This time is already reserved"
+      "alreadyBlocked": "This time is already reserved",
+      "noteLabel": "Note (optional)",
+      "notePlaceholder": "Write a short note…"
     }
   },
   "personas": {

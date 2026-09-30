@@ -323,7 +323,9 @@
       "statusBooked": "dolu",
       "statusBlocked": "rezerve",
       "confirmRemove": "Bu rezervasyon kaldırılsın mı?",
-      "alreadyBlocked": "Bu saat zaten rezerve"
+      "alreadyBlocked": "Bu saat zaten rezerve",
+      "noteLabel": "Not (isteğe bağlı)",
+      "notePlaceholder": "Kısa bir not yazın…"
     }
   },
   "personas": {
