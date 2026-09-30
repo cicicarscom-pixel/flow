@@ -1,10 +1,10 @@
-﻿const { Client } = require('ssh2');
+const { Client } = require('ssh2');
 const conn = new Client();
 
 conn.on('ready', () => {
   console.log('Deploying WAHA PLUS with Webhook Env Vars...');
   
-  const cmd = `docker stop waha; docker rm waha; docker run -it -d --name waha --restart unless-stopped -p 3000:3000 -e WAHA_API_KEY=${process.env.WAHA_API_KEY} -e WAHA_DASHBOARD_USERNAME=admin -e WAHA_DASHBOARD_PASSWORD=workigom -e WAHA_WEBHOOK_URL=https://qybzidylewzsnmlofjul.supabase.co/functions/v1/waha-webhook -e WAHA_WEBHOOK_EVENTS=message devlikeapro/waha-plus`;
+  const cmd = `docker stop waha; docker rm waha; docker run -it -d --name waha --restart unless-stopped -p 3000:3000 -e WAHA_API_KEY=${process.env.WAHA_API_KEY} -e WAHA_DASHBOARD_USERNAME=admin -e WAHA_DASHBOARD_PASSWORD=${process.env.WAHA_DASHBOARD_PASSWORD} -e WAHA_WEBHOOK_URL=https://qybzidylewzsnmlofjul.supabase.co/functions/v1/waha-webhook -e WAHA_WEBHOOK_EVENTS=message devlikeapro/waha-plus`;
   
   conn.exec(cmd, (err, stream) => {
     if (err) throw err;
