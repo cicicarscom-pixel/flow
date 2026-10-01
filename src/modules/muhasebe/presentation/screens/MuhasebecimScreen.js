@@ -78,12 +78,12 @@ export default function MuhasebecimScreen({ navigation }) {
           setFirm({ name: data.firm_name });
           setStep('verified');
         } else if (data?.status === 'CODE_NOT_FOUND') {
-          Alert.alert('Hata', t('muhasebecimScreen.codeNotFound'));
+          Alert.alert('', t('muhasebecimScreen.codeNotFound'));
         } else {
-          Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+          Alert.alert('', t('muhasebecimScreen.actionError'));
         }
       } catch (err) {
-        Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+        Alert.alert('', t('muhasebecimScreen.actionError'));
       } finally {
         setIsLoading(false);
       }
@@ -102,15 +102,15 @@ export default function MuhasebecimScreen({ navigation }) {
       if (data?.status === 'SUCCESS' || data?.status === 'REQUEST_PENDING') {
         setStep('pending_confirmation');
       } else if (data?.status === 'ALREADY_CONNECTED') {
-        Alert.alert('Bilgi', t('muhasebecimScreen.alreadyConnected'));
+        Alert.alert('', t('muhasebecimScreen.alreadyConnected'));
         checkConnection();
       } else if (data?.status === 'CODE_NOT_FOUND') {
-        Alert.alert('Hata', t('muhasebecimScreen.codeNotFound'));
+        Alert.alert('', t('muhasebecimScreen.codeNotFound'));
       } else {
-        Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+        Alert.alert('', t('muhasebecimScreen.actionError'));
       }
     } catch (err) {
-      Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+      Alert.alert('', t('muhasebecimScreen.actionError'));
     } finally {
       setIsLoading(false);
     }
@@ -124,7 +124,7 @@ export default function MuhasebecimScreen({ navigation }) {
       if (error) throw error;
       checkConnection();
     } catch (err) {
-      Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+      Alert.alert('', t('muhasebecimScreen.actionError'));
       setIsLoading(false);
     }
   };
@@ -134,7 +134,7 @@ export default function MuhasebecimScreen({ navigation }) {
       t('muhasebecimScreen.disconnect'),
       t('muhasebecimScreen.disconnectConfirm', { firm: firm?.name }),
       [
-        { text: 'İptal', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         { 
           text: t('muhasebecimScreen.disconnect'), 
           style: 'destructive',
@@ -146,7 +146,7 @@ export default function MuhasebecimScreen({ navigation }) {
               if (error) throw error;
               checkConnection();
             } catch (err) {
-              Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+              Alert.alert('', t('muhasebecimScreen.actionError'));
               setIsLoading(false);
             }
           }
