@@ -533,7 +533,16 @@
       "viewDocuments": "Belgeleri Gör",
       "disconnect": "Bağlantıyı Kes"
     },
-    "screenTitle": "Muhasebecim"
+    "screenTitle": "Muhasebecim",
+    "pendingTitle": "Bağlantı isteğiniz gönderildi",
+    "pendingDescription": "{{firm}} onayladığında bağlantınız aktif olacak.",
+    "cancelRequest": "İsteği geri çek",
+    "disconnect": "Bağlantıyı kes",
+    "disconnectConfirm": "{{firm}} ile bağlantınız kesilecek. Müşaviriniz belgelerinize artık erişemeyecek. Emin misiniz?",
+    "connectedSince": "Bağlantı tarihi: {{date}}",
+    "codeNotFound": "Bu koda ait müşavir bulunamadı.",
+    "alreadyConnected": "Bu müşavirle zaten bağlısınız.",
+    "actionError": "Bir hata oluştu, lütfen tekrar deneyin."
   },
   "authScreen": {
     "errors": {

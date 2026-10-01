@@ -34,14 +34,11 @@ export default function MuhasebecimScreen({ navigation }) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   // State for toggling between steps
-  const [step, setStep] = useState('initial'); // 'initial' | 'verified' | 'connected'
+  const [step, setStep] = useState('initial');
   const [accountantCode, setAccountantCode] = useState('');
   const [firm, setFirm] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const myCode = 'WG-73492';
-  
-  // Real DB connection fetch
   React.useEffect(() => {
     checkConnection();
   }, []);
@@ -49,40 +46,18 @@ export default function MuhasebecimScreen({ navigation }) {
   const checkConnection = async () => {
     try {
       const { supabase } = require('../../../../shared');
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const { data: orgMember } = await supabase
-        .from('organization_members')
-        .select('organization_id')
-        .eq('user_id', session.user.id)
-        .maybeSingle();
-
-      if (orgMember?.organization_id) {
-        const { data: link } = await supabase
-          .from('accountant_taxpayer_links')
-          .select('accounting_firm_id')
-          .eq('taxpayer_organization_id', orgMember.organization_id)
-          .eq('status', 'active')
-          .maybeSingle();
-
-        if (link?.accounting_firm_id) {
-          const { data: firmInfo } = await supabase
-            .from('accounting_firms')
-            .select('firm_name')
-            .eq('id', link.accounting_firm_id)
-            .maybeSingle();
-
-          if (firmInfo) {
-            setFirm({
-              name: firmInfo.firm_name,
-              location: '-',
-              rating: 5.0,
-              activeTaxpayers: 'Çok sayıda'
-            });
-            setStep('connected');
-          }
-        }
+      const { data, error } = await supabase.rpc('get_my_accountant_connection');
+      if (error) throw error;
+      
+      if (data?.status === 'active') {
+        setFirm({ name: data.firm_name, connected_at: data.connected_at });
+        setStep('connected');
+      } else if (data?.status === 'pending_confirmation') {
+        setFirm({ name: data.firm_name, requested_at: data.requested_at });
+        setStep('pending_confirmation');
+      } else {
+        setFirm(null);
+        setStep('initial');
       }
     } catch (err) {
       console.error('Error checking connection:', err);
@@ -91,139 +66,339 @@ export default function MuhasebecimScreen({ navigation }) {
     }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (accountantCode.trim().length > 0) {
       setIsLoading(true);
-      // Simulate API GET /api/flow-connections/verify
-      setTimeout(() => {
-        setFirm({
-          name: 'Akbulut Mali Müşavirlik',
-          location: 'İstanbul / Başakşehir',
-          rating: 4.9,
-          activeTaxpayers: 120
-        });
+      try {
+        const { supabase } = require('../../../../shared');
+        const { data, error } = await supabase.rpc('resolve_accountant_code', { input_code: accountantCode.trim() });
+        
+        if (error) throw error;
+        if (data?.status === 'SUCCESS') {
+          setFirm({ name: data.firm_name });
+          setStep('verified');
+        } else if (data?.status === 'CODE_NOT_FOUND') {
+          Alert.alert('Hata', t('muhasebecimScreen.codeNotFound'));
+        } else {
+          Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+        }
+      } catch (err) {
+        Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+      } finally {
         setIsLoading(false);
-        setStep('verified');
-      }, 800);
+      }
     } else {
       Alert.alert(t('muhasebecimScreen.alerts.invalidCodeTitle'), t('muhasebecimScreen.alerts.invalidCodeMessage'));
     }
   };
 
-  const handleConnectFinal = () => {
+  const handleConnectFinal = async () => {
     setIsLoading(true);
-    // Simulate API POST /api/flow-connections/link
-    setTimeout(() => {
+    try {
+      const { supabase } = require('../../../../shared');
+      const { data, error } = await supabase.rpc('request_accountant_connection', { p_code: accountantCode.trim() });
+      if (error) throw error;
+
+      if (data?.status === 'SUCCESS' || data?.status === 'REQUEST_PENDING') {
+        setStep('pending_confirmation');
+      } else if (data?.status === 'ALREADY_CONNECTED') {
+        Alert.alert('Bilgi', t('muhasebecimScreen.alreadyConnected'));
+        checkConnection();
+      } else if (data?.status === 'CODE_NOT_FOUND') {
+        Alert.alert('Hata', t('muhasebecimScreen.codeNotFound'));
+      } else {
+        Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+      }
+    } catch (err) {
+      Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+    } finally {
       setIsLoading(false);
-      setStep('connected');
-    }, 1000);
+    }
   };
 
-  const handleCopy = () => {
-    Alert.alert(t('muhasebecimScreen.alerts.copiedTitle'), t('muhasebecimScreen.alerts.copiedMessage'));
+  const handleCancelRequest = async () => {
+    setIsLoading(true);
+    try {
+      const { supabase } = require('../../../../shared');
+      const { data, error } = await supabase.rpc('cancel_accountant_request');
+      if (error) throw error;
+      checkConnection();
+    } catch (err) {
+      Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+      setIsLoading(false);
+    }
   };
 
-  const renderUnconnectedState = () => (
-    <View style={styles.stateContainer}>
-      <Text style={styles.headerTitle}>{t('muhasebecimScreen.unconnected.title')}</Text>
-      <Text style={styles.headerSubtitle}>
-        {t('muhasebecimScreen.unconnected.subtitle')}
-      </Text>
+  const handleDisconnect = () => {
+    Alert.alert(
+      t('muhasebecimScreen.disconnect'),
+      t('muhasebecimScreen.disconnectConfirm', { firm: firm?.name }),
+      [
+        { text: 'İptal', style: 'cancel' },
+        { 
+          text: t('muhasebecimScreen.disconnect'), 
+          style: 'destructive',
+          onPress: async () => {
+            setIsLoading(true);
+            try {
+              const { supabase } = require('../../../../shared');
+              const { error } = await supabase.rpc('disconnect_current_accountant', { p_reason: 'User request' });
+              if (error) throw error;
+              checkConnection();
+            } catch (err) {
+              Alert.alert('Hata', t('muhasebecimScreen.actionError'));
+              setIsLoading(false);
+            }
+          }
+        }
+      ]
+    );
+  };
 
-      {/* Option 1: Enter Code */}
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <MaterialIcons name="vpn-key" size={20} color={COLORS.accent} />
-          <Text style={styles.cardTitle}>{t('muhasebecimScreen.unconnected.enterCode.cardTitle')}</Text>
-        </View>
-        <Text style={styles.cardDesc}>
-          {t('muhasebecimScreen.unconnected.enterCode.cardDesc')}
-        </Text>
-        <View style={styles.inputRow}>
-          <TextInput
-            style={[styles.input, step === 'verified' && { opacity: 0.5 }]}
-            placeholder={t('muhasebecimScreen.unconnected.enterCode.placeholder')}
-            placeholderTextColor={COLORS.textSecondary}
-            value={accountantCode}
-            onChangeText={setAccountantCode}
-            autoCapitalize="characters"
-            editable={step === 'initial'}
-          />
-          {step === 'initial' && (
-            <TouchableOpacity style={styles.primaryButton} onPress={handleVerify} disabled={isLoading}>
-              <Text style={styles.primaryButtonText}>{isLoading ? t('muhasebecimScreen.unconnected.enterCode.verifying') : t('muhasebecimScreen.unconnected.enterCode.verify')}</Text>
+  const renderUnconnectedState = () => {
+    if (step === 'pending_confirmation') {
+      return (
+        <View style={styles.stateContainer}>
+          <View style={[styles.card, { alignItems: 'center', paddingVertical: 40 }]}>
+            <MaterialIcons name="hourglass-empty" size={48} color={COLORS.warning} style={{ marginBottom: 16 }} />
+            <Text style={[styles.headerTitle, { textAlign: 'center' }]}>{t('muhasebecimScreen.pendingTitle')}</Text>
+            <Text style={[styles.headerSubtitle, { textAlign: 'center', marginTop: 8 }]}>
+              {t('muhasebecimScreen.pendingDescription', { firm: firm?.name })}
+            </Text>
+            <TouchableOpacity style={[styles.primaryButton, { marginTop: 24, backgroundColor: 'transparent', borderWidth: 1, borderColor: COLORS.error }]} onPress={handleCancelRequest} disabled={isLoading}>
+              <Text style={[styles.primaryButtonText, { color: COLORS.error }]}>{isLoading ? '...' : t('muhasebecimScreen.cancelRequest')}</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.stateContainer}>
+        <Text style={styles.headerTitle}>{t('muhasebecimScreen.unconnected.title')}</Text>
+        <Text style={styles.headerSubtitle}>
+          {t('muhasebecimScreen.unconnected.subtitle')}
+        </Text>
+  
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <MaterialIcons name="vpn-key" size={20} color={COLORS.accent} />
+            <Text style={styles.cardTitle}>{t('muhasebecimScreen.unconnected.enterCode.cardTitle')}</Text>
+          </View>
+          <Text style={styles.cardDesc}>
+            {t('muhasebecimScreen.unconnected.enterCode.cardDesc')}
+          </Text>
+          <View style={styles.inputRow}>
+            <TextInput
+              style={[styles.input, step === 'verified' && { opacity: 0.5 }]}
+              placeholder={t('muhasebecimScreen.unconnected.enterCode.placeholder')}
+              placeholderTextColor={COLORS.textSecondary}
+              value={accountantCode}
+              onChangeText={setAccountantCode}
+              autoCapitalize="characters"
+              editable={step === 'initial'}
+            />
+            {step === 'initial' && (
+              <TouchableOpacity style={styles.primaryButton} onPress={handleVerify} disabled={isLoading}>
+                <Text style={styles.primaryButtonText}>{isLoading ? t('muhasebecimScreen.unconnected.enterCode.verifying') : t('muhasebecimScreen.unconnected.enterCode.verify')}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+  
+          {step === 'verified' && firm && (
+            <View style={styles.previewContainer}>
+              <View style={styles.firmCard}>
+                <View style={styles.firmHeader}>
+                  <MaterialIcons name="check-circle" size={20} color={COLORS.success} />
+                  <Text style={styles.firmVerifiedText}>{t('muhasebecimScreen.unconnected.preview.verifiedBadge')}</Text>
+                </View>
+  
+                <Text style={styles.firmName}>{firm.name}</Text>
+  
+                <View style={styles.divider} />
+  
+                <Text style={styles.featuresTitle}>{t('muhasebecimScreen.unconnected.preview.featuresTitle')}</Text>
+                <View style={styles.featureItem}>
+                  <MaterialIcons name="check" size={16} color={COLORS.success} />
+                  <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature1')}</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <MaterialIcons name="check" size={16} color={COLORS.success} />
+                  <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature2')}</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <MaterialIcons name="check" size={16} color={COLORS.success} />
+                  <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature3')}</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <MaterialIcons name="check" size={16} color={COLORS.success} />
+                  <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature4')}</Text>
+                </View>
+  
+                <TouchableOpacity style={styles.connectFinalBtn} onPress={handleConnectFinal} disabled={isLoading}>
+                  <Text style={styles.connectFinalBtnText}>{isLoading ? t('muhasebecimScreen.unconnected.preview.connecting') : t('muhasebecimScreen.unconnected.preview.connect')}</Text>
+                </TouchableOpacity>
+              </View>
+  
+              <Text style={styles.legalText}>
+                {t('muhasebecimScreen.unconnected.preview.legalText')}
+              </Text>
+            </View>
           )}
         </View>
+      </View>
+    );
+  };
 
-        {step === 'verified' && firm && (
-          <View style={styles.previewContainer}>
-            <View style={styles.firmCard}>
-              <View style={styles.firmHeader}>
-                <MaterialIcons name="check-circle" size={20} color={COLORS.success} />
-                <Text style={styles.firmVerifiedText}>{t('muhasebecimScreen.unconnected.preview.verifiedBadge')}</Text>
-              </View>
-
-              <Text style={styles.firmName}>{firm.name}</Text>
-              <Text style={styles.firmLocation}>{firm.location}</Text>
-
-              <View style={styles.firmStats}>
-                <View style={styles.ratingBadge}>
-                  <Text style={styles.ratingStars}>★★★★☆</Text>
-                  <Text style={styles.ratingValue}>{firm.rating}</Text>
-                </View>
-                <Text style={styles.taxpayersText}>{t('muhasebecimScreen.unconnected.preview.taxpayersSuffix', { value: firm.activeTaxpayers })}</Text>
-              </View>
-
-              <View style={styles.divider} />
-
-              <Text style={styles.featuresTitle}>{t('muhasebecimScreen.unconnected.preview.featuresTitle')}</Text>
-              <View style={styles.featureItem}>
-                <MaterialIcons name="check" size={16} color={COLORS.success} />
-                <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature1')}</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <MaterialIcons name="check" size={16} color={COLORS.success} />
-                <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature2')}</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <MaterialIcons name="check" size={16} color={COLORS.success} />
-                <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature3')}</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <MaterialIcons name="check" size={16} color={COLORS.success} />
-                <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature4')}</Text>
-              </View>
-
-              <TouchableOpacity style={styles.connectFinalBtn} onPress={handleConnectFinal} disabled={isLoading}>
-                <Text style={styles.connectFinalBtnText}>{isLoading ? t('muhasebecimScreen.unconnected.preview.connecting') : t('muhasebecimScreen.unconnected.preview.connect')}</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.legalText}>
-              {t('muhasebecimScreen.unconnected.preview.legalText')}
-            </Text>
+  const renderConnectedState = () => {
+    // import dates from shared if needed or just display raw date
+    const dateStr = firm?.connected_at ? new Date(firm.connected_at).toLocaleDateString() : '';
+    return (
+    <View style={styles.stateContainer}>
+      <Text style={styles.headerTitle}>{t('muhasebecimScreen.connected.title')}</Text>
+      
+      <View style={styles.profileCard}>
+        <View style={styles.profileRow}>
+          <View style={styles.avatarPlaceholder}>
+            <MaterialIcons name="business" size={28} color={COLORS.accent} />
           </View>
-        )}
+          <View style={styles.profileInfo}>
+            <Text style={styles.profileName}>{firm?.name}</Text>
+            <View style={styles.statusRow}>
+              <View style={styles.statusDot} />
+              <Text style={styles.statusText}>{t('muhasebecimScreen.connectedSince', { date: dateStr })}</Text>
+            </View>
+          </View>
+        </View>
       </View>
 
-      {/* Option 2: Share Code */}
-      <View style={[styles.card, { marginTop: 24 }]}>
-        <View style={styles.cardHeader}>
-          <MaterialIcons name="share" size={20} color={COLORS.accent} />
-          <Text style={styles.cardTitle}>{t('muhasebecimScreen.unconnected.shareCode.cardTitle')}</Text>
-        </View>
-        <Text style={styles.cardDesc}>
-          {t('muhasebecimScreen.unconnected.shareCode.cardDesc')}
-        </Text>
+      <Text style={styles.sectionTitle}>{t('muhasebecimScreen.connected.actionsTitle')}</Text>
+      <View style={styles.quickActionsGrid}>
+        <TouchableOpacity style={styles.quickActionBtn}>
+          <View style={styles.quickActionIcon}>
+            <MaterialIcons name="receipt" size={24} color={COLORS.textPrimary} />
+          </View>
+          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.actionInvoices')}</Text>
+        </TouchableOpacity>
         
-        <TouchableOpacity style={styles.copyCodeContainer} onPress={handleCopy} activeOpacity={0.7}>
-          <Text style={styles.copyCodeText}>{myCode}</Text>
-          <MaterialIcons name="content-copy" size={20} color={COLORS.textPrimary} />
+        <TouchableOpacity style={styles.quickActionBtn}>
+          <View style={styles.quickActionIcon}>
+            <MaterialIcons name="description" size={24} color={COLORS.textPrimary} />
+          </View>
+          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.actionDocuments')}</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.quickActionBtn}>
+          <View style={styles.quickActionIcon}>
+            <MaterialIcons name="chat" size={24} color={COLORS.textPrimary} />
+          </View>
+          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.actionMessage')}</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.quickActionBtn} onPress={handleDisconnect} disabled={isLoading}>
+          <View style={[styles.quickActionIcon, { borderColor: 'rgba(252, 165, 165, 0.2)' }]}>
+            <MaterialIcons name="link-off" size={24} color={COLORS.error} />
+          </View>
+          <Text style={[styles.quickActionText, { color: COLORS.error }]}>{t('muhasebecimScreen.disconnect')}</Text>
         </TouchableOpacity>
       </View>
+      
     </View>
   );
+  };
+
+  return (
+        <View style={styles.stateContainer}>
+          <View style={[styles.card, { alignItems: 'center', paddingVertical: 40 }]}>
+            <MaterialIcons name="hourglass-empty" size={48} color={COLORS.warning} style={{ marginBottom: 16 }} />
+            <Text style={[styles.headerTitle, { textAlign: 'center' }]}>{t('muhasebecimScreen.pendingTitle')}</Text>
+            <Text style={[styles.headerSubtitle, { textAlign: 'center', marginTop: 8 }]}>
+              {t('muhasebecimScreen.pendingDescription', { firm: firm?.name })}
+            </Text>
+            <TouchableOpacity style={[styles.primaryButton, { marginTop: 24, backgroundColor: 'transparent', borderWidth: 1, borderColor: COLORS.error }]} onPress={handleCancelRequest} disabled={isLoading}>
+              <Text style={[styles.primaryButtonText, { color: COLORS.error }]}>{isLoading ? '...' : t('muhasebecimScreen.cancelRequest')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.stateContainer}>
+        <Text style={styles.headerTitle}>{t('muhasebecimScreen.unconnected.title')}</Text>
+        <Text style={styles.headerSubtitle}>
+          {t('muhasebecimScreen.unconnected.subtitle')}
+        </Text>
+  
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <MaterialIcons name="vpn-key" size={20} color={COLORS.accent} />
+            <Text style={styles.cardTitle}>{t('muhasebecimScreen.unconnected.enterCode.cardTitle')}</Text>
+          </View>
+          <Text style={styles.cardDesc}>
+            {t('muhasebecimScreen.unconnected.enterCode.cardDesc')}
+          </Text>
+          <View style={styles.inputRow}>
+            <TextInput
+              style={[styles.input, step === 'verified' && { opacity: 0.5 }]}
+              placeholder={t('muhasebecimScreen.unconnected.enterCode.placeholder')}
+              placeholderTextColor={COLORS.textSecondary}
+              value={accountantCode}
+              onChangeText={setAccountantCode}
+              autoCapitalize="characters"
+              editable={step === 'initial'}
+            />
+            {step === 'initial' && (
+              <TouchableOpacity style={styles.primaryButton} onPress={handleVerify} disabled={isLoading}>
+                <Text style={styles.primaryButtonText}>{isLoading ? t('muhasebecimScreen.unconnected.enterCode.verifying') : t('muhasebecimScreen.unconnected.enterCode.verify')}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+  
+          {step === 'verified' && firm && (
+            <View style={styles.previewContainer}>
+              <View style={styles.firmCard}>
+                <View style={styles.firmHeader}>
+                  <MaterialIcons name="check-circle" size={20} color={COLORS.success} />
+                  <Text style={styles.firmVerifiedText}>{t('muhasebecimScreen.unconnected.preview.verifiedBadge')}</Text>
+                </View>
+  
+                <Text style={styles.firmName}>{firm.name}</Text>
+  
+                <View style={styles.divider} />
+  
+                <Text style={styles.featuresTitle}>{t('muhasebecimScreen.unconnected.preview.featuresTitle')}</Text>
+                <View style={styles.featureItem}>
+                  <MaterialIcons name="check" size={16} color={COLORS.success} />
+                  <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature1')}</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <MaterialIcons name="check" size={16} color={COLORS.success} />
+                  <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature2')}</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <MaterialIcons name="check" size={16} color={COLORS.success} />
+                  <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature3')}</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <MaterialIcons name="check" size={16} color={COLORS.success} />
+                  <Text style={styles.featureText}>{t('muhasebecimScreen.unconnected.preview.feature4')}</Text>
+                </View>
+  
+                <TouchableOpacity style={styles.connectFinalBtn} onPress={handleConnectFinal} disabled={isLoading}>
+                  <Text style={styles.connectFinalBtnText}>{isLoading ? t('muhasebecimScreen.unconnected.preview.connecting') : t('muhasebecimScreen.unconnected.preview.connect')}</Text>
+                </TouchableOpacity>
+              </View>
+  
+              <Text style={styles.legalText}>
+                {t('muhasebecimScreen.unconnected.preview.legalText')}
+              </Text>
+            </View>
+          )}
+        </View>
+      </View>
+    );
+  };
 
   const renderConnectedState = () => (
     <View style={styles.stateContainer}>
