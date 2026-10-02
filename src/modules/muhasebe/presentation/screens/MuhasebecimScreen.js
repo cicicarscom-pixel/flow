@@ -41,6 +41,18 @@ export default function MuhasebecimScreen({ navigation }) {
 
   React.useEffect(() => {
     checkConnection();
+    // Müşavir isteği kabul/ret ettiğinde ya da bağlantıyı kestiğinde ekran kendiliğinden güncellenir.
+    // RLS: işletme yalnız kendi bağlantı olaylarını alır.
+    const { supabase } = require('../../../../shared');
+    const channel = supabase
+      .channel('my-accountant-connection')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'accountant_taxpayer_links' }, () => {
+        checkConnection();
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const checkConnection = async () => {
