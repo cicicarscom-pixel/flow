@@ -135,7 +135,6 @@ export default function FlowAiHost({ navigationRef }) {
         label={t('flowAi.orbLabel')}
         accessibilityLabel={t('flowAi.open')}
         onPress={() => setOpen(true)}
-        style={{ position: 'absolute', right: 16, bottom: 96 + insets.bottom / 2 }}
       />
     );
   }
