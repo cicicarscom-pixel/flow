@@ -812,6 +812,18 @@
     "reject": "Ablehnen",
     "approved": "Bestätigt und ausgeführt.",
     "rejected": "Abgelehnt, es wurde nichts getan.",
-    "notApplied": "Die Aktion konnte nicht ausgeführt werden (abgelaufen oder geändert)."
+    "notApplied": "Die Aktion konnte nicht ausgeführt werden (abgelaufen oder geändert).",
+    "guide": {
+      "title": "Anleitung · Schritt {{step}}/{{total}}",
+      "skip": "Überspringen",
+      "cancel": "Anleitung beenden",
+      "finish": "Fertig",
+      "media": "1) Wähle das Foto oder Video, das du teilen möchtest. Tippe auf den markierten Bereich.",
+      "platform": "2) Wähle jetzt die Plattformen zum Teilen. Tippe auf die Konten im markierten Bereich.",
+      "caption": "3) Lass den Beitragstext schreiben oder schreibe ihn selbst. Nutze den markierten Bereich.",
+      "share": "4) Wenn du bereit bist, drücke selbst auf Teilen. Ich poste nicht für dich.",
+      "done": "Anleitung beendet. Brauchst du Hilfe bei etwas anderem?",
+      "cancelled": "Ich habe die Anleitung beendet. Du kannst sie jederzeit neu starten."
+    }
   }
 }

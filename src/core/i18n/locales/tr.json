@@ -804,6 +804,18 @@
     "reject": "Reddet",
     "approved": "Onaylandı ve uygulandı.",
     "rejected": "Reddedildi, hiçbir şey yapılmadı.",
-    "notApplied": "İşlem uygulanamadı (süresi dolmuş ya da değişmiş olabilir)."
+    "notApplied": "İşlem uygulanamadı (süresi dolmuş ya da değişmiş olabilir).",
+    "guide": {
+      "title": "Rehber · Adım {{step}}/{{total}}",
+      "skip": "Atla",
+      "cancel": "Rehberi bitir",
+      "finish": "Bitir",
+      "media": "1) Paylaşmak istediğin fotoğraf veya videoyu seç. Vurgulanan alana dokun.",
+      "platform": "2) Şimdi paylaşacağın platformları seç. Vurgulanan alandaki hesaplara dokun.",
+      "caption": "3) Gönderi metnini yazdır veya kendin yaz. Vurgulanan alanı kullan.",
+      "share": "4) Hazırsan Paylaş düğmesine kendin bas. Paylaşımı senin yerine ben yapmam.",
+      "done": "Rehber bitti. Başka bir konuda yardım ister misin?",
+      "cancelled": "Rehberi bitirdim. İstediğin zaman tekrar başlatabilirsin."
+    }
   }
 }

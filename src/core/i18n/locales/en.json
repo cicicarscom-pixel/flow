@@ -812,6 +812,18 @@
     "reject": "Reject",
     "approved": "Approved and applied.",
     "rejected": "Rejected, nothing was done.",
-    "notApplied": "The action could not be applied (it may have expired or changed)."
+    "notApplied": "The action could not be applied (it may have expired or changed).",
+    "guide": {
+      "title": "Guide · Step {{step}}/{{total}}",
+      "skip": "Skip",
+      "cancel": "End guide",
+      "finish": "Finish",
+      "media": "1) Pick the photo or video you want to share. Tap the highlighted area.",
+      "platform": "2) Now choose the platforms to share on. Tap the accounts in the highlighted area.",
+      "caption": "3) Have the post text written for you, or write it yourself. Use the highlighted area.",
+      "share": "4) When you're ready, press the Share button yourself. I won't post for you.",
+      "done": "Guide finished. Want help with something else?",
+      "cancelled": "I ended the guide. You can start it again anytime."
+    }
   }
 }

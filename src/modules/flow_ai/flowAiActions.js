@@ -1,3 +1,6 @@
+import { requestGuideStart } from './flowAiEvents';
+import { FLOW_GUIDES } from './flowAiGuides';
+
 // Flow AI eylem dağıtıcısı. Sunucu (flow-ai-agent) yalnız izin listesindeki anahtarları gönderir; burada İKİNCİ kez,
 // istemcinin kendi izin listesiyle doğrulanır. Bilinmeyen eylem/ekran/hedef sessizce yok sayılır.
 
@@ -57,6 +60,15 @@ export function dispatchClientAction(action, navigationRef) {
       try { fn({ screen: action.screen, targetId: action.targetId }); } catch (e) { console.warn('[FlowAI] highlight dinleyici hatası:', e?.message); }
     });
     return highlightListeners.size > 0;
+  }
+
+  if (action.type === 'start_guide') {
+    const guide = Object.prototype.hasOwnProperty.call(FLOW_GUIDES, action.guide) ? FLOW_GUIDES[action.guide] : null;
+    if (!guide) return false;
+    dispatchClientAction({ type: 'navigate', screen: guide.screen }, navigationRef);
+    // Ekranın açılıp bileşenlerin bağlanması için kısa bir gecikmeyle rehberi başlat.
+    setTimeout(() => requestGuideStart(action.guide), 400);
+    return true;
   }
 
   return false;

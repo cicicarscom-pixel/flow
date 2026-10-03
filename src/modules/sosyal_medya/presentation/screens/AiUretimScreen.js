@@ -31,6 +31,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { supabase , GlobalAppBar } from '../../../../shared';
 import { CustomButton } from '../../../../shared';
 import { PLATFORM_MEDIA_RULES } from '../../domain/platformRules';
+import { FlowHighlight, useAiUretimFlowEvents } from '../../../flow_ai';
 
 
 const { width } = Dimensions.get('window');
@@ -699,6 +700,15 @@ export default function AiUretimScreen({ route, navigation }) {
     }
   };
 
+  // Flow AI rehberi: akış olayları ve otomatik kaydırma (ekran mantığına dokunmaz)
+  const scrollRef = useRef(null);
+  const scrollYRef = useRef(0);
+  useAiUretimFlowEvents({
+    hasMedia: !!localImage,
+    platformCount: Object.values(selectedPlatforms).filter(Boolean).length,
+    hasCaption: !!(localText && localText.trim()),
+  });
+
   const handlePlatformToggle = (platformName) => {
     const isCurrentlySelected = selectedPlatforms[platformName];
     
@@ -742,7 +752,7 @@ export default function AiUretimScreen({ route, navigation }) {
         style={{ flex: 1 }} 
         behavior={Platform.OS === 'ios' ? 'padding' : (Platform.Version < 30 ? 'padding' : undefined)}
       >
-        <ScrollView className="flex-1 px-5 pt-6" contentContainerStyle={{ paddingBottom: 130 }} keyboardShouldPersistTaps="handled">
+        <ScrollView ref={scrollRef} onScroll={(e) => { scrollYRef.current = e.nativeEvent.contentOffset.y; }} scrollEventThrottle={16} className="flex-1 px-5 pt-6" contentContainerStyle={{ paddingBottom: 130 }} keyboardShouldPersistTaps="handled">
         
         {/* Input Section */}
         <View className="mb-6">
@@ -760,6 +770,7 @@ export default function AiUretimScreen({ route, navigation }) {
 
         {/* Central Feature: Image Container */}
         <View className="items-center w-full mb-6 relative">
+          <FlowHighlight screen="ai_uretim" id="media_picker" scrollRef={scrollRef} scrollYRef={scrollYRef} style={{ width: '100%', alignItems: 'center' }}>
           <AnimatedBorderCard 
             style={{ width: '100%', aspectRatio: 1, maxWidth: 350 }} 
             colors={['#22B573', '#ffffff']} 
@@ -806,9 +817,11 @@ export default function AiUretimScreen({ route, navigation }) {
               )}
             </View>
           </AnimatedBorderCard>
+          </FlowHighlight>
         </View>
 
         {/* Caption Editor */}
+        <FlowHighlight screen="ai_uretim" id="caption_input" scrollRef={scrollRef} scrollYRef={scrollYRef}>
         <AnimatedBorderCard 
             style={{ width: '100%' }} 
             colors={['#C2478D', '#ffffff']} 
@@ -917,9 +930,11 @@ export default function AiUretimScreen({ route, navigation }) {
             )}
           </View>
         </AnimatedBorderCard>
+        </FlowHighlight>
 
         {/* Platforms Section */}
-        <View className="mb-6 mt-6">
+        <FlowHighlight screen="ai_uretim" id="platform_selector" scrollRef={scrollRef} scrollYRef={scrollYRef} style={{ marginTop: 24, marginBottom: 24 }}>
+        <View>
           <Text className="text-[#A79E96] text-xs font-medium mb-3">Bağlantılı Hesaplar (Platformlar)</Text>
           
           {zernioAccounts.length === 0 ? (
@@ -973,6 +988,7 @@ export default function AiUretimScreen({ route, navigation }) {
             </View>
           )}
         </View>
+        </FlowHighlight>
 
         {/* --- YOUTUBE SETTINGS --- */}
         {selectedPlatforms['youtube'] && (
@@ -1624,6 +1640,7 @@ export default function AiUretimScreen({ route, navigation }) {
           className="w-full px-5 pt-4 bg-[#17151A] border-t border-white/5"
           style={{ paddingBottom: Math.max(insets.bottom + 16, 24) }}
         >
+          <FlowHighlight screen="ai_uretim" id="share_button">
           <TouchableOpacity 
             className="w-full" 
             onPress={handleShare}
@@ -1653,6 +1670,7 @@ export default function AiUretimScreen({ route, navigation }) {
               )}
             </View>
           </TouchableOpacity>
+          </FlowHighlight>
         </View>
         )}
       </KeyboardAvoidingView>

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { Colors } from '../../core/theme/designSystem';
 import { FlowAiService } from './FlowAiService';
 import { dispatchClientAction } from './flowAiActions';
+import { subscribeFlowEvents, subscribeGuideStart } from './flowAiEvents';
+import { FLOW_GUIDES } from './flowAiGuides';
 
 // Uygulama kökünde (NavigationContainer içinde) durur: ekran değişince panel ve konuşma KAPANMAZ.
 // Panel, Modal değil kaplamadır; üstündeki alan dokunmayı alttaki ekrana geçirir.
@@ -22,6 +24,7 @@ export default function FlowAiHost({ navigationRef }) {
   const conversationId = useRef(null);
   const listRef = useRef(null);
   const seq = useRef(0);
+  const [guide, setGuide] = useState(null); // {key, step} — rehber modu
 
   const push = useCallback((role, text) => {
     setMessages((m) => [...m, { id: String(++seq.current), role, text }]);
@@ -59,6 +62,69 @@ export default function FlowAiHost({ navigationRef }) {
       setBusy(false);
     }
   }, [push, t]);
+
+  // --- Rehber modu: adım adım "birlikte yapalım" ---
+  const finishGuide = useCallback((completed) => {
+    setGuide(null);
+    push('assistant', t(completed ? 'flowAi.guide.done' : 'flowAi.guide.cancelled'));
+    setOpen(true);
+  }, [push, t]);
+
+  const advanceGuide = useCallback(() => {
+    setGuide((g) => {
+      if (!g) return g;
+      const steps = FLOW_GUIDES[g.key].steps;
+      return g.step + 1 < steps.length ? { ...g, step: g.step + 1 } : g;
+    });
+  }, []);
+
+  useEffect(() => subscribeGuideStart((key) => {
+    if (!FLOW_GUIDES[key]) return;
+    setOpen(false);
+    setGuide({ key, step: 0 });
+  }), []);
+
+  useEffect(() => subscribeFlowEvents((name) => {
+    setGuide((g) => {
+      if (!g) return g;
+      const steps = FLOW_GUIDES[g.key].steps;
+      const cur = steps[g.step];
+      return cur?.event === name && g.step + 1 < steps.length ? { ...g, step: g.step + 1 } : g;
+    });
+  }), []);
+
+  useEffect(() => {
+    if (!guide) return undefined;
+    const def = FLOW_GUIDES[guide.key];
+    const timer = setTimeout(() => dispatchClientAction({ type: 'highlight', screen: def.screen, targetId: def.steps[guide.step].target }, navigationRef), 350);
+    return () => clearTimeout(timer);
+  }, [guide, navigationRef]);
+
+  if (guide) {
+    const def = FLOW_GUIDES[guide.key];
+    const isLast = guide.step === def.steps.length - 1;
+    return (
+      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
+        <View testID="flow_ai_guide" style={{ position: 'absolute', top: insets.top + 8, left: 12, right: 12, backgroundColor: Colors.surface ?? '#201D24', borderRadius: 16, padding: 12, borderWidth: 1, borderColor: '#FF7A59', elevation: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+            <Ionicons name="sparkles" size={16} color="#FF7A59" />
+            <Text style={{ color: '#FF7A59', fontWeight: '700', marginLeft: 6, flex: 1 }}>{t('flowAi.guide.title', { step: guide.step + 1, total: def.steps.length })}</Text>
+          </View>
+          <Text style={{ color: '#fff' }}>{t(def.steps[guide.step].textKey)}</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 }}>
+            {!isLast && (
+              <TouchableOpacity onPress={advanceGuide} style={{ paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10, backgroundColor: '#4A4553', marginRight: 8 }}>
+                <Text style={{ color: '#fff', fontWeight: '600' }}>{t('flowAi.guide.skip')}</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity onPress={() => finishGuide(isLast)} style={{ paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10, backgroundColor: '#FF7A59' }}>
+              <Text style={{ color: '#fff', fontWeight: '700' }}>{t(isLast ? 'flowAi.guide.finish' : 'flowAi.guide.cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   if (!open) {
     return (
