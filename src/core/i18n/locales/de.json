@@ -802,6 +802,11 @@
   },
   "flowAi": {
     "title": "Flow AI",
+    "orbLabel": "Flow Ai",
+    "online": "● Online",
+    "chipAppointments": "Meine Termine heute",
+    "chipPost": "Ich möchte einen Beitrag teilen",
+    "chipAccounts": "Meine verbundenen Konten",
     "open": "Flow AI öffnen",
     "close": "Schließen",
     "placeholder": "Frag Flow AI oder bitte um etwas...",

@@ -794,6 +794,11 @@
   },
   "flowAi": {
     "title": "Flow AI",
+    "orbLabel": "Flow Ai",
+    "online": "● Çevrimiçi",
+    "chipAppointments": "Bugünkü randevularım",
+    "chipPost": "Post paylaşmak istiyorum",
+    "chipAccounts": "Bağlı hesaplarım",
     "open": "Flow AI'yi aç",
     "close": "Kapat",
     "placeholder": "Flow AI'a sor veya bir şey iste...",

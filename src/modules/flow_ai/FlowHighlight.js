@@ -46,7 +46,7 @@ export default function FlowHighlight({ screen, id, children, style, scrollRef, 
     return () => loop.stop();
   }, [active, pulse]);
 
-  const borderColor = pulse.interpolate({ inputRange: [0, 1], outputRange: ['rgba(255,122,89,0.35)', 'rgba(255,122,89,1)'] });
+  const borderColor = pulse.interpolate({ inputRange: [0, 1], outputRange: ['rgba(0,162,255,0.35)', 'rgba(0,243,255,1)'] });
 
   return (
     <View ref={viewRef} collapsable={false} testID={id} style={style}>

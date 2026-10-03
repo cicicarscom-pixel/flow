@@ -5,7 +5,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Colors } from '../../core/theme/designSystem';
+import { LinearGradient } from 'expo-linear-gradient';
+import FlowAiOrb from './FlowAiOrb';
 import { FlowAiService } from './FlowAiService';
 import { dispatchClientAction } from './flowAiActions';
 import { subscribeFlowEvents, subscribeGuideStart } from './flowAiEvents';
@@ -30,8 +31,8 @@ export default function FlowAiHost({ navigationRef }) {
     setMessages((m) => [...m, { id: String(++seq.current), role, text }]);
   }, []);
 
-  const send = useCallback(async () => {
-    const text = input.trim();
+  const send = useCallback(async (override) => {
+    const text = (typeof override === 'string' ? override : input).trim();
     if (!text || busy) return;
     setInput('');
     push('user', text);
@@ -107,19 +108,19 @@ export default function FlowAiHost({ navigationRef }) {
     const isLast = guide.step === def.steps.length - 1;
     return (
       <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
-        <View testID="flow_ai_guide" style={{ position: 'absolute', top: insets.top + 8, left: 12, right: 12, backgroundColor: Colors.surface ?? '#201D24', borderRadius: 16, padding: 12, borderWidth: 1, borderColor: '#FF7A59', elevation: 8 }}>
+        <View testID="flow_ai_guide" style={{ position: 'absolute', top: insets.top + 8, left: 12, right: 12, backgroundColor: '#12151C', borderRadius: 18, padding: 12, borderWidth: 1, borderColor: 'rgba(0,162,255,0.55)', shadowColor: '#00a2ff', shadowOpacity: 0.45, shadowRadius: 12, elevation: 10 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-            <Ionicons name="sparkles" size={16} color="#FF7A59" />
-            <Text style={{ color: '#FF7A59', fontWeight: '700', marginLeft: 6, flex: 1 }}>{t('flowAi.guide.title', { step: guide.step + 1, total: def.steps.length })}</Text>
+            <Ionicons name="sparkles" size={16} color="#00DAF3" />
+            <Text style={{ color: '#00DAF3', fontWeight: '700', marginLeft: 6, flex: 1 }}>{t('flowAi.guide.title', { step: guide.step + 1, total: def.steps.length })}</Text>
           </View>
           <Text style={{ color: '#fff' }}>{t(def.steps[guide.step].textKey)}</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 }}>
             {!isLast && (
-              <TouchableOpacity onPress={advanceGuide} style={{ paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10, backgroundColor: '#4A4553', marginRight: 8 }}>
+              <TouchableOpacity onPress={advanceGuide} style={{ paddingVertical: 8, paddingHorizontal: 14, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.06)', marginRight: 8 }}>
                 <Text style={{ color: '#fff', fontWeight: '600' }}>{t('flowAi.guide.skip')}</Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity onPress={() => finishGuide(isLast)} style={{ paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10, backgroundColor: '#FF7A59' }}>
+            <TouchableOpacity onPress={() => finishGuide(isLast)} style={{ paddingVertical: 8, paddingHorizontal: 14, borderRadius: 12, backgroundColor: '#3B82F6' }}>
               <Text style={{ color: '#fff', fontWeight: '700' }}>{t(isLast ? 'flowAi.guide.finish' : 'flowAi.guide.cancel')}</Text>
             </TouchableOpacity>
           </View>
@@ -130,18 +131,12 @@ export default function FlowAiHost({ navigationRef }) {
 
   if (!open) {
     return (
-      <TouchableOpacity
-        testID="flow_ai_fab"
+      <FlowAiOrb
+        label={t('flowAi.orbLabel')}
         accessibilityLabel={t('flowAi.open')}
         onPress={() => setOpen(true)}
-        style={{
-          position: 'absolute', right: 16, bottom: 96 + insets.bottom / 2, width: 52, height: 52, borderRadius: 26,
-          backgroundColor: Colors.surfaceElevated ?? '#2A2631', alignItems: 'center', justifyContent: 'center',
-          borderWidth: 1, borderColor: '#FF7A59', elevation: 6, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 6,
-        }}
-      >
-        <Ionicons name="sparkles" size={24} color="#FF7A59" />
-      </TouchableOpacity>
+        style={{ position: 'absolute', right: 16, bottom: 96 + insets.bottom / 2 }}
+      />
     );
   }
 
@@ -154,15 +149,22 @@ export default function FlowAiHost({ navigationRef }) {
       <View
         testID="flow_ai_panel"
         style={{
-          maxHeight: '55%', minHeight: 260, backgroundColor: Colors.surface ?? '#201D24', borderTopLeftRadius: 20, borderTopRightRadius: 20,
-          borderWidth: 1, borderColor: '#34303C', paddingBottom: insets.bottom,
+          maxHeight: '55%', minHeight: 280, backgroundColor: 'rgba(18,21,28,0.97)', borderTopLeftRadius: 18, borderTopRightRadius: 18,
+          borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)', paddingBottom: insets.bottom,
+          shadowColor: '#000', shadowOpacity: 0.55, shadowRadius: 24, elevation: 16,
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', padding: 12 }}>
-          <Ionicons name="sparkles" size={18} color="#FF7A59" />
-          <Text style={{ color: '#fff', fontWeight: '700', marginLeft: 8, flex: 1 }}>{t('flowAi.title')}</Text>
-          <TouchableOpacity onPress={() => setOpen(false)} accessibilityLabel={t('flowAi.close')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="close" size={22} color="#fff" />
+        {/* Başlık: Ledger AI ile aynı düzen (degrade avatar + çevrimiçi) */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}>
+          <LinearGradient colors={['#3B82F6', '#9D5CFF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="sparkles" size={18} color="#fff" />
+          </LinearGradient>
+          <View style={{ marginLeft: 12, flex: 1 }}>
+            <Text style={{ color: '#fff', fontWeight: '600', fontSize: 14 }}>{t('flowAi.title')}</Text>
+            <Text style={{ color: '#3FB950', fontSize: 12 }}>{t('flowAi.online')}</Text>
+          </View>
+          <TouchableOpacity onPress={() => setOpen(false)} accessibilityLabel={t('flowAi.close')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ padding: 6 }}>
+            <Ionicons name="close" size={20} color="#8B949E" />
           </TouchableOpacity>
         </View>
 
@@ -171,45 +173,70 @@ export default function FlowAiHost({ navigationRef }) {
           data={messages}
           keyExtractor={(m) => m.id}
           onContentSizeChange={() => listRef.current?.scrollToEnd?.({ animated: true })}
-          contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 8 }}
-          ListEmptyComponent={<Text style={{ color: '#9A94A5', textAlign: 'center', marginTop: 24 }}>{t('flowAi.empty')}</Text>}
-          renderItem={({ item }) => (
-            <View style={{ alignSelf: item.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '85%', marginVertical: 3, padding: 10, borderRadius: 14,
-              backgroundColor: item.role === 'user' ? '#FF7A59' : item.role === 'error' ? '#4A2128' : '#2A2631' }}>
-              <Text style={{ color: '#fff' }}>{item.text}</Text>
+          contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 10 }}
+          ListEmptyComponent={
+            <View>
+              <Text style={{ color: '#8B949E', textAlign: 'center', marginVertical: 14 }}>{t('flowAi.empty')}</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+                {['chipAppointments', 'chipPost', 'chipAccounts'].map((k) => (
+                  <TouchableOpacity key={k} onPress={() => send(t(`flowAi.${k}`))} style={{ margin: 4, paddingVertical: 7, paddingHorizontal: 12, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)', backgroundColor: 'rgba(255,255,255,0.03)' }}>
+                    <Text style={{ color: '#8B949E', fontSize: 12 }}>{t(`flowAi.${k}`)}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
-          )}
+          }
+          renderItem={({ item }) => {
+            const mine = item.role === 'user';
+            const bubble = { maxWidth: '85%', marginVertical: 4, borderRadius: 18, overflow: 'hidden' };
+            if (mine) {
+              return (
+                <View style={[bubble, { alignSelf: 'flex-end', borderTopRightRadius: 6 }]}>
+                  <LinearGradient colors={['#3B82F6', '#9D5CFF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ padding: 11 }}>
+                    <Text style={{ color: '#fff', fontSize: 14 }}>{item.text}</Text>
+                  </LinearGradient>
+                </View>
+              );
+            }
+            return (
+              <View style={[bubble, { alignSelf: 'flex-start', borderTopLeftRadius: 6, padding: 11, borderWidth: 1, borderColor: item.role === 'error' ? 'rgba(248,81,73,0.35)' : 'rgba(255,255,255,0.05)', backgroundColor: item.role === 'error' ? 'rgba(248,81,73,0.10)' : 'rgba(255,255,255,0.04)' }]}>
+                <Text style={{ color: '#D7DEE7', fontSize: 14 }}>{item.text}</Text>
+              </View>
+            );
+          }}
         />
 
         {pending.map((p) => (
-          <View key={p.id} style={{ marginHorizontal: 12, marginBottom: 6, padding: 10, borderRadius: 12, backgroundColor: '#34303C' }}>
-            <Text style={{ color: '#fff', fontWeight: '600' }}>{t('flowAi.pendingTitle')}</Text>
-            <Text style={{ color: '#CFCAD8', marginTop: 2 }} numberOfLines={3}>{p.preview?.description || p.toolName}</Text>
+          <View key={p.id} style={{ marginHorizontal: 12, marginBottom: 6, padding: 10, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(0,218,243,0.15)' }}>
+            <Text style={{ color: '#00DAF3', fontWeight: '600', fontSize: 12 }}>{t('flowAi.pendingTitle')}</Text>
+            <Text style={{ color: '#D7DEE7', marginTop: 2 }} numberOfLines={3}>{p.preview?.description || p.toolName}</Text>
             <View style={{ flexDirection: 'row', marginTop: 8 }}>
-              <TouchableOpacity disabled={busy} onPress={() => decide(p, true)} style={{ flex: 1, backgroundColor: '#22B573', paddingVertical: 10, borderRadius: 10, alignItems: 'center', marginRight: 6 }}>
+              <TouchableOpacity disabled={busy} onPress={() => decide(p, true)} style={{ flex: 1, backgroundColor: '#238636', paddingVertical: 10, borderRadius: 12, alignItems: 'center', marginRight: 6 }}>
                 <Text style={{ color: '#fff', fontWeight: '700' }}>{t('flowAi.approve')}</Text>
               </TouchableOpacity>
-              <TouchableOpacity disabled={busy} onPress={() => decide(p, false)} style={{ flex: 1, backgroundColor: '#4A4553', paddingVertical: 10, borderRadius: 10, alignItems: 'center' }}>
+              <TouchableOpacity disabled={busy} onPress={() => decide(p, false)} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 10, borderRadius: 12, alignItems: 'center' }}>
                 <Text style={{ color: '#fff', fontWeight: '700' }}>{t('flowAi.reject')}</Text>
               </TouchableOpacity>
             </View>
           </View>
         ))}
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 4, paddingBottom: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)' }}>
           <TextInput
             testID="flow_ai_input"
             value={input}
             onChangeText={setInput}
-            onSubmitEditing={send}
+            onSubmitEditing={() => send()}
             editable={!busy}
             placeholder={t('flowAi.placeholder')}
-            placeholderTextColor="#7C7686"
+            placeholderTextColor="#65707D"
             maxLength={4000}
-            style={{ flex: 1, color: '#fff', backgroundColor: '#2A2631', borderRadius: 18, paddingHorizontal: 14, paddingVertical: 10 }}
+            style={{ flex: 1, color: '#fff', backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}
           />
-          <TouchableOpacity testID="flow_ai_send" onPress={send} disabled={busy || !input.trim()} style={{ marginLeft: 8, width: 42, height: 42, borderRadius: 21, backgroundColor: '#FF7A59', alignItems: 'center', justifyContent: 'center', opacity: busy || !input.trim() ? 0.5 : 1 }}>
-            {busy ? <ActivityIndicator color="#fff" /> : <Ionicons name="send" size={18} color="#fff" />}
+          <TouchableOpacity testID="flow_ai_send" onPress={() => send()} disabled={busy || !input.trim()} style={{ marginLeft: 8, opacity: busy || !input.trim() ? 0.5 : 1 }}>
+            <LinearGradient colors={['#3B82F6', '#9D5CFF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}>
+              {busy ? <ActivityIndicator color="#fff" /> : <Ionicons name="send" size={17} color="#fff" />}
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </View>
