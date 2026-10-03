@@ -807,6 +807,7 @@
     "empty": "Hallo! Ich helfe dir bei der Nutzung der App: Frag nach deinen Terminen, verbundenen Konten oder wie ein Bildschirm funktioniert.",
     "error": "Ich konnte gerade nicht antworten. Bitte versuche es gleich noch einmal.",
     "dailyLimit": "Du hast das heutige Nachrichtenlimit von Flow AI erreicht ({{limit}}). Versuche es morgen erneut.",
+    "captionLimit": "Du hast das heutige Limit für Beitragstexte erreicht. Versuche es morgen erneut.",
     "pendingTitle": "Wartet auf deine Bestätigung",
     "approve": "Bestätigen",
     "reject": "Ablehnen",

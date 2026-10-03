@@ -807,6 +807,7 @@
     "empty": "Hi! I can help you use the app: ask about your appointments, connected accounts, or how a screen works.",
     "error": "I couldn't answer right now. Please try again shortly.",
     "dailyLimit": "You've reached today's Flow AI message limit ({{limit}}). Try again tomorrow.",
+    "captionLimit": "You've reached today's caption generation limit. Try again tomorrow.",
     "pendingTitle": "Waiting for your approval",
     "approve": "Approve",
     "reject": "Reject",

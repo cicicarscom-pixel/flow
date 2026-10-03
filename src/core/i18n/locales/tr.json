@@ -799,6 +799,7 @@
     "empty": "Merhaba! Uygulamayı kullanmana yardım edebilirim: randevuların, bağlı hesapların ya da bir ekranın nasıl kullanıldığı hakkında sor.",
     "error": "Şu an yanıt veremedim. Biraz sonra tekrar dene.",
     "dailyLimit": "Bugünlük Flow AI mesaj sınırına ulaştın ({{limit}}). Yarın tekrar dene.",
+    "captionLimit": "Bugünlük gönderi metni üretim sınırına ulaştın. Yarın tekrar dene.",
     "pendingTitle": "Onayını bekliyor",
     "approve": "Onayla",
     "reject": "Reddet",
