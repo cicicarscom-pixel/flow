@@ -308,6 +308,8 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 - **Eylem dağıtıcısı** (`flowAiActions.js`): sunucudan gelen `navigate`/`highlight` talimatları istemcinin kendi izin listesiyle doğrulanır (16 ekran). Vurgu hedefleri (`media_picker` vb.) FA2-2'de `testID` olarak eklenecek.
 - **Onay kapısı:** dış etkili işlemler (yayınlama vb.) sunucuda "bekleyen işlem" olur; panelde Onayla/Reddet kartı çıkar. Şu an dış etkili araç yok.
 - Çeviriler `flowAi.*` anahtarlarıyla tr/en/de eklendi.
+- **FA2-2 (03.10.2026):** AI Üretim ekranında 4 öğe `FlowHighlight` ile sarıldı (`media_picker`, `platform_selector`, `caption_input`, `share_button`); akış olayları (`media_selected`, `platforms_selected`, `caption_ready`) ve **rehber modu** ("birlikte yapalım": adım adım vurgu, üstte küçük kart).
+- **FA3-3 (03.10.2026):** Flow AI'ın hazırladığı gönderi taslağı (`flow_ai_post_drafts`) `open_post_draft` eylemiyle AI Üretim'de açılır: metin ve istenen platformlar doldurulur. Taslak yayınlanmaz; Paylaş düğmesine kullanıcı basar.
 
 ## 🆕 Son Güncellemeler (Haziran 2026 - UX/UI & Bug Fixes)
 

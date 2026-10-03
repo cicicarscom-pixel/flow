@@ -42,6 +42,8 @@ export default function FlowAiHost({ navigationRef }) {
       push('assistant', res.reply);
       setPending(res.pendingActions || []);
       (res.clientActions || []).forEach((a) => dispatchClientAction(a, navigationRef));
+      // Taslak açıldıysa panel kapanır; kullanıcı doldurulan ekranı görür ve Paylaş'a kendisi basar.
+      if ((res.clientActions || []).some((a) => a?.type === 'open_post_draft')) setOpen(false);
     } catch (e) {
       push('error', e.code === 'DAILY_LIMIT' ? t('flowAi.dailyLimit', { limit: e.limit ?? '' }) : t('flowAi.error'));
     } finally {

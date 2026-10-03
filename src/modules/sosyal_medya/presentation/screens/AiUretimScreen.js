@@ -312,6 +312,16 @@ export default function AiUretimScreen({ route, navigation }) {
     }
   }, [route?.params]);
 
+  // Flow AI taslağı: istenen platformlar bağlı hesaplar arasında seçilir (taslak yayınlanmaz, kullanıcı Paylaş'a basar)
+  React.useEffect(() => {
+    const wanted = route?.params?.draftPlatforms;
+    if (!Array.isArray(wanted) || wanted.length === 0 || zernioAccounts.length === 0) return;
+    const wantedSet = new Set(wanted.map((p) => String(p).toLowerCase()));
+    const next = {};
+    zernioAccounts.forEach((acc) => { next[acc.platform] = wantedSet.has(String(acc.platform).toLowerCase()); });
+    setSelectedPlatforms(next);
+  }, [route?.params?.draftId, zernioAccounts]);
+
   const generateCaption = async () => {
     if (!aiPrompt.trim()) return;
     setIsGeneratingText(true);

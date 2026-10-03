@@ -1,5 +1,6 @@
 import { requestGuideStart } from './flowAiEvents';
 import { FLOW_GUIDES } from './flowAiGuides';
+import { openPostDraft } from './openPostDraft';
 
 // Flow AI eylem dağıtıcısı. Sunucu (flow-ai-agent) yalnız izin listesindeki anahtarları gönderir; burada İKİNCİ kez,
 // istemcinin kendi izin listesiyle doğrulanır. Bilinmeyen eylem/ekran/hedef sessizce yok sayılır.
@@ -60,6 +61,12 @@ export function dispatchClientAction(action, navigationRef) {
       try { fn({ screen: action.screen, targetId: action.targetId }); } catch (e) { console.warn('[FlowAI] highlight dinleyici hatası:', e?.message); }
     });
     return highlightListeners.size > 0;
+  }
+
+  if (action.type === 'open_post_draft') {
+    // Asenkron: taslak okunup AI Üretim açılır. Hata olursa sessizce düşer.
+    openPostDraft(action.draftId, navigationRef);
+    return true;
   }
 
   if (action.type === 'start_guide') {
