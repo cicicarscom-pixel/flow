@@ -808,6 +808,7 @@
     "error": "I couldn't answer right now. Please try again shortly.",
     "dailyLimit": "You've reached today's Flow AI message limit ({{limit}}). Try again tomorrow.",
     "captionLimit": "You've reached today's caption generation limit. Try again tomorrow.",
+    "captionVideoHint": "The video is too large for me to read its content. Describe its topic in a few sentences and I'll write the caption from that.",
     "pendingTitle": "Waiting for your approval",
     "approve": "Approve",
     "reject": "Reject",

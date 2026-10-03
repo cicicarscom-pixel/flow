@@ -110,6 +110,10 @@ const TIMEZONES = [
   "Pacific/Auckland (GMT+12)"
 ];
 
+// Metin üretimi için videonun sunucuya gönderilebileceği en büyük boyut (flow-caption sınırı ~10 MB)
+const MAX_VIDEO_BYTES_FOR_CAPTION = 10 * 1024 * 1024;
+const VIDEO_MIME_BY_EXT = { mp4: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm', '3gp': 'video/3gpp', m4v: 'video/mp4' };
+
 let persistedImage = null;
 let persistedText = null;
 let persistedMediaType = 'text';
@@ -327,17 +331,40 @@ export default function AiUretimScreen({ route, navigation }) {
     setIsGeneratingText(true);
     try {
       const isBase64 = localImage?.startsWith('data:image');
-      const base64Data = isBase64 ? localImage.split(',')[1] : undefined;
-      const mimeType = isBase64 ? localImage.match(/data:(.*?);/)[1] : undefined;
-      
+      let mediaData = isBase64 ? localImage.split(',')[1] : undefined;
+      let mimeType = isBase64 ? localImage.match(/data:(.*?);/)[1] : undefined;
+
+      // Video: kısa videolar (≤ 10 MB) base64 olarak gönderilir; sunucu ses ve görüntüden içerik çıkarır.
+      let videoNotSent = false;
+      if (!isBase64 && mediaType === 'video' && localImage) {
+        try {
+          const info = await FileSystem.getInfoAsync(localImage);
+          if (info.exists && info.size && info.size <= MAX_VIDEO_BYTES_FOR_CAPTION) {
+            mediaData = await FileSystem.readAsStringAsync(localImage, { encoding: 'base64' });
+            const ext = (localImage.split('?')[0].split('.').pop() || '').toLowerCase();
+            mimeType = VIDEO_MIME_BY_EXT[ext] || 'video/mp4';
+          } else {
+            videoNotSent = true;
+          }
+        } catch (e) {
+          console.warn('Video okunamadı:', e?.message);
+          videoNotSent = true;
+        }
+        // Video gönderilemedi ve talimat kısaysa: içerik bilinmez, kullanıcıdan konuyu yazmasını iste.
+        if (videoNotSent && aiPrompt.trim().length < 30) {
+          Alert.alert(t('sosyalMedya.alerts.error'), t('flowAi.captionVideoHint'));
+          return;
+        }
+      }
+
       // Tek metin servisi (flow-caption, JWT'li): persona tonu + platform kuralları + günlük sınır sunucuda uygulanır.
       const selectedNames = Object.keys(selectedPlatforms).filter((p) => selectedPlatforms[p]);
       const { data, error } = await supabase.functions.invoke('flow-caption', {
         body: {
           brief: aiPrompt,
           platforms: selectedNames,
-          image: isBase64 ? base64Data : undefined,
-          mimeType: isBase64 ? mimeType : undefined
+          media: mediaData,
+          mimeType: mediaData ? mimeType : undefined
         }
       });
 

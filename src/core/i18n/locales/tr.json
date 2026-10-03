@@ -800,6 +800,7 @@
     "error": "Şu an yanıt veremedim. Biraz sonra tekrar dene.",
     "dailyLimit": "Bugünlük Flow AI mesaj sınırına ulaştın ({{limit}}). Yarın tekrar dene.",
     "captionLimit": "Bugünlük gönderi metni üretim sınırına ulaştın. Yarın tekrar dene.",
+    "captionVideoHint": "Video çok büyük olduğu için içeriğini okuyamadım. Videonun konusunu birkaç cümleyle yazarsan ona göre metin hazırlarım.",
     "pendingTitle": "Onayını bekliyor",
     "approve": "Onayla",
     "reject": "Reddet",
