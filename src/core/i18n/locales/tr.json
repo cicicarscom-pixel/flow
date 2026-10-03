@@ -136,6 +136,7 @@
       "contentPlaceholder": "İçerik metnini buraya yazın...",
       "contentEmpty": "Yapay zeka tarafından oluşturulan içerik metni burada görünecek. Gelişmiş dil modelleri ile hedef kitlenize uygun, etkileşimi yüksek metinler hazırlanıyor...",
       "aiChatPlaceholder": "Görsele uygun bir metin üret...",
+      "aiCaptionNote": "ℹ️ AI ile içerik metni yalnızca ürün fotoğrafları ve reklam gönderileri için kullanılabilir. Videolarda çalışmaz; video gönderilerinde metni kendin yaz.",
       "tagSummer": "#yaz",
       "tagNewSeason": "#yenisezon",
       "addTag": "Ekle",

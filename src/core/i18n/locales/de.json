@@ -136,6 +136,7 @@
       "contentPlaceholder": "Inhaltstext hier eingeben...",
       "contentEmpty": "Der von der KI erstellte Inhaltstext wird hier angezeigt. Mit fortschrittlichen Sprachmodellen werden ansprechende Texte für Ihre Zielgruppe vorbereitet...",
       "aiChatPlaceholder": "Einen zum Bild passenden Text generieren...",
+      "aiCaptionNote": "ℹ️ Der KI-Beitragstext funktioniert nur für Produktfotos und Werbebeiträge. Bei Videos funktioniert er nicht; schreibe den Text bei Videobeiträgen selbst.",
       "tagSummer": "#sommer",
       "tagNewSeason": "#neuesaison",
       "addTag": "Hinzufügen",

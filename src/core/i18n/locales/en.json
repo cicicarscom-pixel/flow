@@ -136,6 +136,7 @@
       "contentPlaceholder": "Type content text here...",
       "contentEmpty": "AI-generated content will appear here. Highly engaging texts suitable for your target audience are prepared with advanced language models...",
       "aiChatPlaceholder": "Generate a text matching the image...",
+      "aiCaptionNote": "ℹ️ AI-written post text works only for product photos and advertising posts. It does not work for videos; write the text yourself for video posts.",
       "tagSummer": "#summer",
       "tagNewSeason": "#newseason",
       "addTag": "Add",

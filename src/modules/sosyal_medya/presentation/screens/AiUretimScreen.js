@@ -931,6 +931,13 @@ export default function AiUretimScreen({ route, navigation }) {
               )}
             </TouchableOpacity>
           </View>
+          <Text
+            testID="ai_caption_note"
+            className="text-[11px] leading-4 mb-4"
+            style={{ color: mediaType === 'video' && localImage ? '#F5A524' : 'rgba(167,158,150,0.8)', fontWeight: mediaType === 'video' && localImage ? '600' : '400' }}
+          >
+            {t('sosyalMedya.generate.aiCaptionNote')}
+          </Text>
           
           <View className="flex-row flex-wrap gap-2">
             {tags.map(tag => (
