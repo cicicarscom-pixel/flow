@@ -790,5 +790,20 @@
     "notes": "Notlar",
     "saved": "Kaydedildi",
     "notesPlaceholder": "Müşteri için not ekleyin..."
+  },
+  "flowAi": {
+    "title": "Flow AI",
+    "open": "Flow AI'yi aç",
+    "close": "Kapat",
+    "placeholder": "Flow AI'a sor veya bir şey iste...",
+    "empty": "Merhaba! Uygulamayı kullanmana yardım edebilirim: randevuların, bağlı hesapların ya da bir ekranın nasıl kullanıldığı hakkında sor.",
+    "error": "Şu an yanıt veremedim. Biraz sonra tekrar dene.",
+    "dailyLimit": "Bugünlük Flow AI mesaj sınırına ulaştın ({{limit}}). Yarın tekrar dene.",
+    "pendingTitle": "Onayını bekliyor",
+    "approve": "Onayla",
+    "reject": "Reddet",
+    "approved": "Onaylandı ve uygulandı.",
+    "rejected": "Reddedildi, hiçbir şey yapılmadı.",
+    "notApplied": "İşlem uygulanamadı (süresi dolmuş ya da değişmiş olabilir)."
   }
 }

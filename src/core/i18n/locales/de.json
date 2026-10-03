@@ -798,5 +798,20 @@
     "notes": "Notizen",
     "saved": "Gespeichert",
     "notesPlaceholder": "Notiz zum Kunden hinzufügen..."
+  },
+  "flowAi": {
+    "title": "Flow AI",
+    "open": "Flow AI öffnen",
+    "close": "Schließen",
+    "placeholder": "Frag Flow AI oder bitte um etwas...",
+    "empty": "Hallo! Ich helfe dir bei der Nutzung der App: Frag nach deinen Terminen, verbundenen Konten oder wie ein Bildschirm funktioniert.",
+    "error": "Ich konnte gerade nicht antworten. Bitte versuche es gleich noch einmal.",
+    "dailyLimit": "Du hast das heutige Nachrichtenlimit von Flow AI erreicht ({{limit}}). Versuche es morgen erneut.",
+    "pendingTitle": "Wartet auf deine Bestätigung",
+    "approve": "Bestätigen",
+    "reject": "Ablehnen",
+    "approved": "Bestätigt und ausgeführt.",
+    "rejected": "Abgelehnt, es wurde nichts getan.",
+    "notApplied": "Die Aktion konnte nicht ausgeführt werden (abgelaufen oder geändert)."
   }
 }

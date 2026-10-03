@@ -301,6 +301,14 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (03.10.2026 - Flow AI Paneli, FA2-1)
+
+- **Flow AI yüzen düğmesi + paneli** (`src/modules/flow_ai/`): uygulama kökünde (NavigationContainer içinde) durur, ekran değişince açık kalır. Onboarding/E-posta doğrulama ekranlarında gizlenir.
+- **Sunucu:** `flow-ai-agent` Edge Function (ledger; `verify_jwt` açık). İstemci org/kullanıcı kimliği göndermez; kimlik JWT'den çözülür. Günlük sınır işletme başına 100 mesaj.
+- **Eylem dağıtıcısı** (`flowAiActions.js`): sunucudan gelen `navigate`/`highlight` talimatları istemcinin kendi izin listesiyle doğrulanır (16 ekran). Vurgu hedefleri (`media_picker` vb.) FA2-2'de `testID` olarak eklenecek.
+- **Onay kapısı:** dış etkili işlemler (yayınlama vb.) sunucuda "bekleyen işlem" olur; panelde Onayla/Reddet kartı çıkar. Şu an dış etkili araç yok.
+- Çeviriler `flowAi.*` anahtarlarıyla tr/en/de eklendi.
+
 ## 🆕 Son Güncellemeler (Haziran 2026 - UX/UI & Bug Fixes)
 
 1. **Yüzen Kapsül Mesaj Kutusu (Floating Pill Input):** Uygulamanın tüm mesajlaşma alanlarındaki (AI Muhasebe, Chat, Asistan) mesaj kutuları baştan tasarlandı. Ekranın bir ucundan diğer ucuna uzanan eski düz dikdörtgen yapı yerine, alt navigasyon menüsüyle (TabNavigator) %100 uyumlu **yüzen kapsül** (Floating Pill) tasarımına geçildi.

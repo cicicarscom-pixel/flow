@@ -2,8 +2,9 @@ import './src/core/container';
 import './src/core/i18n';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { AppNavigator } from './src/core';
+import { FlowAiHost } from './src/modules/flow_ai';
 import AuthScreen from './src/screens/AuthScreen';
 import VerifyEmailScreen from './src/screens/VerifyEmailScreen';
 import { supabase } from './src/shared';
@@ -16,6 +17,8 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 export default function App() {
   const [session, setSession] = useState(null);
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState(null);
+  const navigationRef = useNavigationContainerRef();
+  const [routeName, setRouteName] = useState(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -32,10 +35,17 @@ export default function App() {
   return (
     <ActionSheetProvider>
       <SafeAreaProvider>
-        <NavigationContainer>
+        <NavigationContainer
+          ref={navigationRef}
+          onReady={() => setRouteName(navigationRef.getCurrentRoute()?.name ?? null)}
+          onStateChange={() => setRouteName(navigationRef.getCurrentRoute()?.name ?? null)}
+        >
           <StatusBar style="light" />
           {session && session.user ? (
-            <AppNavigator />
+            <>
+              <AppNavigator />
+              {routeName !== 'Onboarding' && routeName !== 'VerifyEmail' && <FlowAiHost navigationRef={navigationRef} />}
+            </>
           ) : pendingVerificationEmail ? (
             <VerifyEmailScreen emailFromProps={pendingVerificationEmail} onClear={() => setPendingVerificationEmail(null)} />
           ) : (
