@@ -2,7 +2,6 @@ import { supabase } from '../../../../shared';
 import { getCurrentOrgId } from '../../../../lib/org';
 import { IWahaService, IServiceResponse } from '@domain/interfaces/IWahaService';
 
-const WAHA_BASE_URL = 'http://31.97.37.208:3000';
 
 export class WahaService implements IWahaService {
   /**
@@ -105,157 +104,42 @@ export class WahaService implements IWahaService {
     }
   }
 
-  /**
-   * WAHA ï¿½zerinde yeni bir oturum baï¿½latï¿½r.
-   */
-  async startSession(merchantId: string | number): Promise<IServiceResponse<any>> {
-    if (!merchantId) {
-      console.error('merchantId bulunamadï¿½');
-      return { data: null, error: new Error('merchantId bulunamadï¿½') };
-    }
-
+  // --- WAHA işlemleri: sunucu tarafındaki `waha-session` Edge Function'ı üzerinden ---
+  // WAHA adresi ve yönetici anahtarı uygulamada TUTULMAZ. Oturum adı sunucuda JWT'den (kullanıcı kimliği) çözülür;
+  // `merchantId` parametresi arayüz uyumu için durur ama gönderilmez.
+  private async callWaha(body: Record<string, unknown>): Promise<IServiceResponse<any>> {
     try {
-      const requestBody = {
-        name: String(merchantId),
-        config: {
-          webhooks: [
-            {
-              url: "https://qybzidylewzsnmlofjul.supabase.co/functions/v1/waha-webhook",
-              events: ["message", "session.status"]
-            }
-          ]
-        },
-        engine: "NOWEB"
-      };
-
-      const response = await fetch(`${WAHA_BASE_URL}/api/sessions/start`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */,
-        },
-        body: JSON.stringify(requestBody),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        
-        if (response.status === 422 && errorData.message && errorData.message.includes('already started')) {
-          console.log('Oturum yenileniyor (Auto-Heal)...');
-          
-          await fetch(`${WAHA_BASE_URL}/api/sessions/stop`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */ },
-            body: JSON.stringify({ name: String(merchantId), logout: true })
-          });
-          
-          const retryResponse = await fetch(`${WAHA_BASE_URL}/api/sessions/start`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */ },
-            body: JSON.stringify(requestBody)
-          });
-          
-          if (!retryResponse.ok) {
-            throw new Error('Oto-onarï¿½m sonrasï¿½ oturum baï¿½latï¿½lamadï¿½.');
-          }
-          
-          await new Promise(resolve => setTimeout(resolve, 4000));
-
-          const retryData = await retryResponse.json();
-          return { data: retryData, error: null };
-        }
-
-        console.error('StartSession API Error Detail:', errorData);
-        throw new Error(`Failed to start session: ${response.statusText} - ${JSON.stringify(errorData)}`);
+      const { data, error } = await supabase.functions.invoke('waha-session', { body });
+      if (error) {
+        let code = 'WAHA_ERROR';
+        try { code = (await (error as any).context?.json?.())?.error || code; } catch (_) { /* gövde okunamadı */ }
+        throw new Error(code);
       }
-      
-      const data = await response.json();
-      return { data, error: null };
+      if (data && data.success === false) throw new Error(data.error || 'WAHA_ERROR');
+      return { data: data?.data ?? null, error: null };
     } catch (error) {
-      console.error('startSession Error:', error);
+      console.error('waha-session Error:', (error as Error)?.message);
       return { data: null, error };
     }
   }
 
-  /**
-   * Baï¿½latï¿½lan oturumun QR kodunu getirir.
-   */
-  async getQrCode(merchantId: string | number): Promise<IServiceResponse<any>> {
-    try {
-      const response = await fetch(`${WAHA_BASE_URL}/api/${merchantId}/auth/qr`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */,
-        },
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('getQrCode API Error Detail:', errorData);
-        throw new Error(`Failed to get QR code: ${response.statusText} - ${JSON.stringify(errorData)}`);
-      }
-      
-      const data = await response.json();
-      return { data, error: null };
-    } catch (error) {
-      console.error('getQrCode Error:', error);
-      return { data: null, error };
-    }
+  /** Oturumu başlatır (hesap etkin değilse sunucu ACCOUNT_NOT_ACTIVE ile reddeder). */
+  async startSession(_merchantId: string | number): Promise<IServiceResponse<any>> {
+    return this.callWaha({ action: 'start' });
   }
 
-  /**
-   * Numara eï¿½leï¿½tirme (Pairing Code) iï¿½in kod alï¿½r.
-   */
-  async getPairingCode(merchantId: string | number, phoneNumber: string): Promise<IServiceResponse<any>> {
-    try {
-      const response = await fetch(`${WAHA_BASE_URL}/api/${merchantId}/auth/request-code`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */,
-        },
-        body: JSON.stringify({ phoneNumber }),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to request pairing code: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      return { data, error: null };
-    } catch (error) {
-      console.error('getPairingCode Error:', error);
-      return { data: null, error };
-    }
+  /** QR kodunu getirir. */
+  async getQrCode(_merchantId: string | number): Promise<IServiceResponse<any>> {
+    return this.callWaha({ action: 'qr' });
   }
 
-  /**
-   * WAHA ï¿½zerinden mevcut oturumun durumunu getirir.
-   */
-  async getSessionStatus(merchantId: string | number): Promise<IServiceResponse<any>> {
-    try {
-      const response = await fetch(`${WAHA_BASE_URL}/api/sessions?all=true`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'X-Api-Key': process.env.EXPO_PUBLIC_WAHA_API_KEY /* GEÇİCİ: Bu uç nokta ve yetki doğrudan mobil cihazdan çağrılmamalıdır. Bir Edge Function'a taşınacak. */,
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to get sessions: ${response.statusText}`);
-      }
-      
-      const sessions = await response.json();
-      const session = sessions.find((s: any) => s.name === String(merchantId));
-      
-      return { data: session || null, error: null };
-    } catch (error) {
-      console.error('getSessionStatus Error:', error);
-      return { data: null, error };
-    }
+  /** Numara eşleştirme (pairing) kodu alır. */
+  async getPairingCode(_merchantId: string | number, phoneNumber: string): Promise<IServiceResponse<any>> {
+    return this.callWaha({ action: 'pairing-code', phoneNumber });
+  }
+
+  /** Mevcut oturumun durumunu getirir (yalnız kullanıcının kendi oturumu). */
+  async getSessionStatus(_merchantId: string | number): Promise<IServiceResponse<any>> {
+    return this.callWaha({ action: 'status' });
   }
 }
-
