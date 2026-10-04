@@ -827,6 +827,33 @@
       "used": "Bu taslak zaten kullanılmış.",
       "past": "Zamanlama geçmişte kaldı; yeniden isteyin."
     },
+    "suggest": {
+      "header": "Sana önerilerim",
+      "dismiss": "Kapat",
+      "connect_account": {
+        "title": "Sosyal medya hesabını bağla",
+        "body": "Gönderi paylaşmak ve performansı görmek için bir hesap bağla.",
+        "cta": "Hesap bağla"
+      },
+      "free_slots": {
+        "title": "{{day}} günü {{free}} boş randevu saati var",
+        "body": "Boş saatleri doldurmak için kısa bir kampanya paylaşabilirsin.",
+        "cta": "Kampanya metni yaz",
+        "prompt": "{{day}} günü {{free}} boş randevu saatim var. Bu saatleri doldurmak için kısa bir kampanya metni yaz."
+      },
+      "best_time": {
+        "title": "En iyi paylaşım zamanı: {{day}} {{hour}}",
+        "body": "Geçmiş {{postCount}} gönderine göre bu saat en yüksek etkileşimi aldı.",
+        "cta": "Bu saate planla",
+        "prompt": "Bir gönderiyi {{day}} günü {{hour}} için planlamama yardım et."
+      },
+      "growth": {
+        "title": "{{platform}} takipçi değişimi: {{change}}",
+        "body": "Son {{days}} günlük değişim.",
+        "cta": "Yorumla",
+        "prompt": "Son {{days}} günde {{platform}} takipçi sayım {{change}} değişti. Bunu yorumla ve ne yapmam gerektiğini söyle."
+      }
+    },
     "guide": {
       "title": "Rehber · Adım {{step}}/{{total}}",
       "skip": "Atla",

@@ -20,4 +20,6 @@ export const FlowAiService = {
   chat: (message, conversationId) => call({ action: 'chat', message, conversationId: conversationId || undefined }),
   approve: (actionId, payloadHash) => call({ action: 'approve', actionId, payloadHash }),
   reject: (actionId) => call({ action: 'reject', actionId }),
+  /** FA6: salt-okunur proaktif öneri kartları. @returns {{cards:Array<{id:string,kind:string,params:object,cta:object}>}} */
+  suggestions: () => call({ action: 'suggestions' }),
 };

@@ -835,6 +835,33 @@
       "used": "This draft was already used.",
       "past": "The scheduled time has passed; please ask again."
     },
+    "suggest": {
+      "header": "My suggestions for you",
+      "dismiss": "Dismiss",
+      "connect_account": {
+        "title": "Connect a social account",
+        "body": "Connect an account to share posts and see performance.",
+        "cta": "Connect account"
+      },
+      "free_slots": {
+        "title": "{{free}} open appointment slots on {{day}}",
+        "body": "Share a short promotion to fill the open slots.",
+        "cta": "Write promo text",
+        "prompt": "I have {{free}} open appointment slots on {{day}}. Write a short promotional post to fill them."
+      },
+      "best_time": {
+        "title": "Best time to post: {{day}} {{hour}}",
+        "body": "Based on your past {{postCount}} posts, this slot got the highest engagement.",
+        "cta": "Schedule for then",
+        "prompt": "Help me schedule a post for {{day}} at {{hour}}."
+      },
+      "growth": {
+        "title": "{{platform}} follower change: {{change}}",
+        "body": "Change over the last {{days}} days.",
+        "cta": "Explain",
+        "prompt": "My {{platform}} followers changed by {{change}} in the last {{days}} days. Explain it and tell me what to do."
+      }
+    },
     "guide": {
       "title": "Guide · Step {{step}}/{{total}}",
       "skip": "Skip",

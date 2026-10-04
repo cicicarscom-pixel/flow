@@ -835,6 +835,33 @@
       "used": "Dieser Entwurf wurde bereits verwendet.",
       "past": "Der geplante Zeitpunkt liegt in der Vergangenheit; bitte erneut anfragen."
     },
+    "suggest": {
+      "header": "Meine Vorschläge für dich",
+      "dismiss": "Schließen",
+      "connect_account": {
+        "title": "Social-Media-Konto verbinden",
+        "body": "Verbinde ein Konto, um Beiträge zu teilen und die Leistung zu sehen.",
+        "cta": "Konto verbinden"
+      },
+      "free_slots": {
+        "title": "{{free}} freie Termine am {{day}}",
+        "body": "Teile eine kurze Aktion, um die freien Zeiten zu füllen.",
+        "cta": "Aktionstext schreiben",
+        "prompt": "Ich habe am {{day}} {{free}} freie Termine. Schreibe einen kurzen Aktionsbeitrag, um sie zu füllen."
+      },
+      "best_time": {
+        "title": "Beste Zeit zum Posten: {{day}} {{hour}}",
+        "body": "Nach deinen letzten {{postCount}} Beiträgen hatte dieser Zeitpunkt das höchste Engagement.",
+        "cta": "Dafür planen",
+        "prompt": "Hilf mir, einen Beitrag für {{day}} um {{hour}} zu planen."
+      },
+      "growth": {
+        "title": "{{platform}} Follower-Änderung: {{change}}",
+        "body": "Änderung der letzten {{days}} Tage.",
+        "cta": "Erklären",
+        "prompt": "Meine {{platform}}-Follower haben sich in den letzten {{days}} Tagen um {{change}} geändert. Erkläre das und sag mir, was ich tun soll."
+      }
+    },
     "guide": {
       "title": "Anleitung · Schritt {{step}}/{{total}}",
       "skip": "Überspringen",

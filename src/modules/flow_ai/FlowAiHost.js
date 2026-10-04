@@ -6,6 +6,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import FlowAiSuggestions from './FlowAiSuggestions';
 import { LinearGradient } from 'expo-linear-gradient';
 import FlowAiOrb from './FlowAiOrb';
 import { FlowAiService } from './FlowAiService';
@@ -40,6 +41,8 @@ export default function FlowAiHost({ navigationRef }) {
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState([]); // {id, role:'user'|'assistant'|'error', text}
   const [pending, setPending] = useState([]);   // onay bekleyen eylemler
+  const [cards, setCards] = useState([]);         // FA6: proaktif öneri kartları
+  const cardsAt = useRef(0);
   const conversationId = useRef(null);
   const listRef = useRef(null);
   const seq = useRef(0);
@@ -104,6 +107,25 @@ export default function FlowAiHost({ navigationRef }) {
       setBusy(false);
     }
   }, [push, t]);
+
+  // FA6: panel açılınca (en fazla dakikada bir) öneri kartlarını yükle. Hata sessizdir: kart yoksa panel normal çalışır.
+  useEffect(() => {
+    if (!open || Date.now() - cardsAt.current < 60000) return;
+    cardsAt.current = Date.now();
+    let alive = true;
+    FlowAiService.suggestions()
+      .then((r) => { if (alive) setCards(Array.isArray(r?.cards) ? r.cards : []); })
+      .catch(() => { cardsAt.current = 0; });
+    return () => { alive = false; };
+  }, [open]);
+
+  const dismissCard = useCallback((id) => setCards((c) => c.filter((x) => x.id !== id)), []);
+  const cardPrompt = useCallback((text, id) => { dismissCard(id); send(text); }, [dismissCard, send]);
+  const cardNavigate = useCallback((screen, id) => {
+    dismissCard(id);
+    dispatchClientAction({ type: 'navigate', screen }, navigationRef);
+    setOpen(false);
+  }, [dismissCard, navigationRef]);
 
   // --- Rehber modu: adım adım "birlikte yapalım" ---
   const finishGuide = useCallback((completed) => {
@@ -251,6 +273,10 @@ export default function FlowAiHost({ navigationRef }) {
             );
           }}
         />
+
+        {messages.length === 0 && pending.length === 0 && (
+          <FlowAiSuggestions cards={cards} onPrompt={cardPrompt} onNavigate={cardNavigate} onDismiss={dismissCard} />
+        )}
 
         {pending.map((p) => {
           const isPublish = p.toolName === 'publish_post' && p.preview?.text;

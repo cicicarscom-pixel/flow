@@ -301,6 +301,11 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (04.10.2026 - Flow AI Proaktif Öneri Kartları, FA6)
+
+- **Öneri kartları** (`src/modules/flow_ai/FlowAiSuggestions.js`): Flow AI paneli boşken (henüz mesaj yok) en fazla 3 kart gösterir: sosyal hesap bağlama, boş randevu saatleri için kampanya, en iyi paylaşım zamanı, takipçi değişimi. Kartlar kendiliğinden hiçbir şey yapmaz; yalnız kullanıcı düğmeye dokununca sohbete bir mesaj gönderilir ya da bir ekran açılır.
+- Kartlar sunucuda (`flow-ai-agent` → `suggestions`) işletmenin verisinden belirleyici kurallarla üretilir (yapay zekâ yok, uydurma yok); veri yoksa kart gösterilmez. Metinler TR/EN/DE (`flowAi.suggest.*`).
+
 ## 🆕 Son Güncellemeler (04.10.2026 - Flow AI Onaylı Yayınlama, FA5)
 
 - **Yayın onay kartı** (`src/modules/flow_ai/FlowAiHost.js`): Flow AI bir taslağı yayınlamayı/zamanlamayı önerdiğinde panelde metin, platformlar ve zaman gösteren kart çıkar; yalnız "Yayınla / Zamanla" düğmesine basınca yayın yapılır, "Vazgeç" hiçbir şey yapmaz.
