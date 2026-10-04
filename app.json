@@ -8,7 +8,8 @@
     "scheme": "workigomflow",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.workigom.flow"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +20,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "usesCleartextTraffic": true,
-      "package": "com.anonymous.flow"
+      "package": "com.workigom.flow"
     },
     "web": {
       "output": "single",
