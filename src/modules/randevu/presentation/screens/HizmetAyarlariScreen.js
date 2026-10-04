@@ -114,6 +114,12 @@ export default function HizmetAyarlariScreen() {
     setServices([...services, { name: '', price: '', unit: 'seans', duration_minutes: 30 }]);
   };
 
+  // Liste boşken tek dokunuşla ekleme: düzenleme moduna geçer ve ilk boş satırı açar.
+  const startAddingFirst = () => {
+    setIsEditing(true);
+    setServices([{ name: '', price: '', unit: 'seans', duration_minutes: 30 }]);
+  };
+
   const removeService = (index) => {
     setServices(services.filter((_, i) => i !== index));
   };
@@ -215,6 +221,19 @@ export default function HizmetAyarlariScreen() {
               )}
             </View>
           ))}
+
+          {/* Boş durum: hizmet yokken ekleme yolunu göster */}
+          {!isEditing && services.length === 0 && (
+            <View style={{ alignItems: 'center', paddingVertical: 36 }}>
+              <Ionicons name="pricetags-outline" size={34} color="#22B573" />
+              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700', marginTop: 12 }}>{t('randevu.hizmetAyarlari.emptyTitle')}</Text>
+              <Text style={{ color: '#9AA3AE', fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 16, paddingHorizontal: 20 }}>{t('randevu.hizmetAyarlari.emptyHint')}</Text>
+              <TouchableOpacity testID="hizmet_add_first" style={styles.addBtn} onPress={startAddingFirst}>
+                <Ionicons name="add-circle-outline" size={18} color="#22B573" />
+                <Text style={styles.addBtnText}>{t('randevu.hizmetAyarlari.addService', { current: 0, max: 10 })}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* Add button — only in edit mode */}
           {isEditing && services.length < 10 && (

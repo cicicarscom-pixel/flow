@@ -275,7 +275,9 @@
       "addService": "Hizmet Ekle ({{current}}/{{max}})",
       "edit": "Düzenle",
       "save": "Kaydet",
-      "noName": "Hizmet adı girilmedi"
+      "noName": "Hizmet adı girilmedi",
+      "emptyTitle": "Henüz hizmet eklemedin",
+      "emptyHint": "Müşterilerin randevu alırken seçeceği hizmetleri ekle."
     },
     "randevuScreen": {
       "monthYear": "Kasım, 2025",

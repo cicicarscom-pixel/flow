@@ -275,7 +275,9 @@
       "addService": "Add Service ({{current}}/{{max}})",
       "edit": "Edit",
       "save": "Save",
-      "noName": "No service name entered"
+      "noName": "No service name entered",
+      "emptyTitle": "You haven't added any services yet",
+      "emptyHint": "Add the services your customers can choose when booking."
     },
     "randevuScreen": {
       "monthYear": "November, 2025",

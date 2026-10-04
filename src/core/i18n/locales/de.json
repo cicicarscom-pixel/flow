@@ -275,7 +275,9 @@
       "addService": "Dienst hinzufügen ({{current}}/{{max}})",
       "edit": "Bearbeiten",
       "save": "Speichern",
-      "noName": "Kein Dienstname eingegeben"
+      "noName": "Kein Dienstname eingegeben",
+      "emptyTitle": "Du hast noch keine Leistungen hinzugefügt",
+      "emptyHint": "Füge die Leistungen hinzu, die Kunden bei der Buchung wählen können."
     },
     "randevuScreen": {
       "monthYear": "November, 2025",

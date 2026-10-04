@@ -303,6 +303,8 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ## 🆕 Son Güncellemeler (04.10.2026 - Faz F4-2: İstemci kimlik göndermiyor + Zorunlu güncelleme kapısı, sürüm 1.1.0)
 
+- **Hizmet Ayarları boş durumu:** hizmet yokken ekranda "Henüz hizmet eklemedin" ve doğrudan **"+ Hizmet Ekle"** düğmesi gösterilir (düzenleme moduna geçer, ilk satırı açar). Daha önce ekleme düğmesi yalnız "Düzenle" sonrası görünüyordu. Çeviriler `randevu.hizmetAyarlari.emptyTitle/emptyHint` (tr/en/de).
+
 - **Düzeltme (randevu canlı güncelleme):** takvim ekleyince `cannot add postgres_changes callbacks ... after subscribe()` hatası çıkıyordu. Gerçek zamanlı kanal adı yalnız tarihe bağlıydı; yeniden abonelikte eski kanal geri veriliyordu. Her aboneliğe benzersiz kanal adı verildi; effect temizlenmişse abonelik kurulmaz (`SupabaseAppointmentRepository.ts`, `useAppointments.ts`).
 
 - **Kimlik artık istemciden gitmiyor:** bot ayarları, AI ayarları, hizmetler, randevu hizmet listesi, gelen kutusu günlükleri ve anasayfa bot durumunda `merchant_id` filtre/yazmaları kaldırıldı. İşletme kimliği veritabanında çözülür (RLS + `org_id DEFAULT current_org_id()`); filtre gereken güncellemelerde `src/lib/org.js` → `getCurrentOrgId()` (RPC `current_org_id`).
