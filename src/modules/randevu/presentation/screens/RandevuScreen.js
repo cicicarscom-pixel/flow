@@ -184,7 +184,7 @@ export default function RandevuScreen() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const { data } = await supabase.from('business_services').select('*').eq('merchant_id', user.id);
+          const { data } = await supabase.from('business_services').select('*');
           if (data && data.length > 0) {
             setServices(data);
             setNewApptService(data[0].id);

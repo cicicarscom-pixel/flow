@@ -32,6 +32,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { decode } from 'base64-arraybuffer';
+import { getCurrentOrgId } from '../lib/org';
 
 const PLATFORM_ICONS = {
   WHATSAPP: { name: 'logo-whatsapp', color: '#25D366' },
@@ -418,14 +419,10 @@ export default function DashboardScreen({ navigation }) {
           });
 
           // Bot Status
-          // NOT: bot_settings ham auth kullanıcı ID'si (merchant_id) ile anahtarlanır —
-          // organizasyon fallback'i YOK (RLS: auth.uid() = merchant_id). Web (page.tsx) ve
-          // SosyalMedyaScreen.js ile aynı davranış için burada organizasyon-çözümlü
-          // merchantId DEĞİL, ham session.user.id kullanılmalı.
+          // İşletme kimliği istemciden gönderilmez: RLS (org_id = current_org_id()) satırı kapsar.
           const { data: botDataArr } = await supabase
             .from('bot_settings')
             .select('is_active')
-            .eq('merchant_id', session.user.id)
             .limit(1);
           const botData = botDataArr?.[0];
           if (botData) setAiActive(botData.is_active);
@@ -715,13 +712,12 @@ export default function DashboardScreen({ navigation }) {
     setAiActive(val);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        // bot_settings ham merchant_id (session.user.id) ile anahtarlanır, organizasyon
-        // fallback'i YOK — bkz. fetchData() içindeki Bot Status okuma notu.
+      const orgId = session ? await getCurrentOrgId(supabase) : null;
+      if (orgId) {
         await supabase
           .from('bot_settings')
           .update({ is_active: val })
-          .eq('merchant_id', session.user.id);
+          .eq('org_id', orgId);
       }
     } catch (e) {
       console.warn('Could not save bot status', e);

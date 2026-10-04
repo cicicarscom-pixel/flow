@@ -27,6 +27,7 @@ import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 
 import { CustomButton } from '../../../../shared';
+import { getCurrentOrgId } from '../../../../lib/org';
 const { width } = Dimensions.get('window');
 
 // "Asistan çalışıyor" hissi — sadece görsel, diğer ekranlarla aynı desen.
@@ -144,7 +145,6 @@ export default function SosyalMedyaScreen({ navigation }) {
       const { data: botSettings } = await supabase
         .from('bot_settings')
         .select('social_bot_active, is_active')
-        .eq('merchant_id', userId)
         .maybeSingle();
       
       if (botSettings) {
@@ -340,12 +340,12 @@ export default function SosyalMedyaScreen({ navigation }) {
     setIsUpdatingBot(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const userId = user?.id;
-      if (userId) {
+      const orgId = user ? await getCurrentOrgId(supabase) : null;
+      if (orgId) {
          const { error } = await supabase
            .from('bot_settings')
            .update({ social_bot_active: val })
-           .eq('merchant_id', userId);
+           .eq('org_id', orgId);
          
          if (error) throw error;
       }

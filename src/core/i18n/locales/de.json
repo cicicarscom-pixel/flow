@@ -800,6 +800,11 @@
     "saved": "Gespeichert",
     "notesPlaceholder": "Notiz zum Kunden hinzufügen..."
   },
+  "updateGate": {
+    "title": "Update erforderlich",
+    "body": "Diese App-Version wird nicht mehr unterstützt. Bitte aktualisiere Workigom Flow im Store, um fortzufahren.",
+    "button": "Aktualisieren"
+  },
   "flowAi": {
     "title": "Flow AI",
     "orbLabel": "Flow Ai",

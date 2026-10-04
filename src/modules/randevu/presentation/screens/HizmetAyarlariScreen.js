@@ -42,7 +42,6 @@ export default function HizmetAyarlariScreen() {
       const { data: srvData } = await supabase
         .from('business_services')
         .select('*')
-        .eq('merchant_id', userId)
         .order('created_at', { ascending: true });
         
       if (srvData) {
@@ -79,7 +78,6 @@ export default function HizmetAyarlariScreen() {
       const validServices = services.filter(s => s.name?.trim());
       for (const srv of validServices) {
         const payload = {
-          merchant_id: userId,
           name: srv.name,
           price: parseFloat(srv.price) || 0,
           currency: 'TL',

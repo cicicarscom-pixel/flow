@@ -27,6 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlobalAppBar, supabase, CustomButton, CustomInput } from '../../../../shared';
+import { getCurrentOrgId } from '../../../../lib/org';
 
 import {
   ROLES,
@@ -214,7 +215,6 @@ export default function BotYonetimiScreen() {
         const { data: orgAiSettings } = await supabase
           .from('organization_ai_settings')
           .select('timezone')
-          .eq('merchant_id', session.user.id)
           .maybeSingle();
 
         if (orgAiSettings?.timezone) setTimezone(orgAiSettings.timezone);
@@ -302,11 +302,12 @@ export default function BotYonetimiScreen() {
   const handleAutoSave = async (updates) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
+      const orgId = session ? await getCurrentOrgId(supabase) : null;
+      if (orgId) {
         await supabase
           .from('organization_ai_settings')
           .update(updates)
-          .eq('merchant_id', session.user.id);
+          .eq('org_id', orgId);
       }
     } catch (e) {
       console.warn('Auto save error', e);

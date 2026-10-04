@@ -792,6 +792,11 @@
     "saved": "Kaydedildi",
     "notesPlaceholder": "Müşteri için not ekleyin..."
   },
+  "updateGate": {
+    "title": "Güncelleme gerekli",
+    "body": "Uygulamanın bu sürümü artık desteklenmiyor. Devam etmek için lütfen Workigom Flow'u mağazadan güncelle.",
+    "button": "Güncelle"
+  },
   "flowAi": {
     "title": "Flow AI",
     "orbLabel": "Flow Ai",

@@ -301,6 +301,12 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (04.10.2026 - Faz F4-2: İstemci kimlik göndermiyor + Zorunlu güncelleme kapısı, sürüm 1.1.0)
+
+- **Kimlik artık istemciden gitmiyor:** bot ayarları, AI ayarları, hizmetler, randevu hizmet listesi, gelen kutusu günlükleri ve anasayfa bot durumunda `merchant_id` filtre/yazmaları kaldırıldı. İşletme kimliği veritabanında çözülür (RLS + `org_id DEFAULT current_org_id()`); filtre gereken güncellemelerde `src/lib/org.js` → `getCurrentOrgId()` (RPC `current_org_id`).
+- **Zorunlu güncelleme kapısı** (`src/modules/app_update/`): açılışta ve uygulama öne gelince veritabanındaki `app_version_policy` (platform başına `min_version`, `store_url`) okunur; uygulama sürümü asgarinin altındaysa tam ekran "Güncelleme gerekli" kilidi gösterilir. Ağ/okuma hatasında KİLİTLEMEZ (fail-open). Kapıyı yalnız veritabanındaki satır açar/kapatır; şu an her iki platformda `0.0.0` (kimse kilitlenmez).
+- `app.json` sürümü `1.0.0` → `1.1.0` (F5 öncesi eski sürümleri ayırt etmek için).
+
 ## 🆕 Son Güncellemeler (04.10.2026 - Flow AI Proaktif Öneri Kartları, FA6)
 
 - **Öneri kartları** (`src/modules/flow_ai/FlowAiSuggestions.js`): Flow AI paneli boşken (henüz mesaj yok) en fazla 3 kart gösterir: sosyal hesap bağlama, boş randevu saatleri için kampanya, en iyi paylaşım zamanı, takipçi değişimi. Kartlar kendiliğinden hiçbir şey yapmaz; yalnız kullanıcı düğmeye dokununca sohbete bir mesaj gönderilir ya da bir ekran açılır.

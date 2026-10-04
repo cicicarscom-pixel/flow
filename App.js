@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { AppNavigator } from './src/core';
 import { FlowAiHost } from './src/modules/flow_ai';
+import { ForceUpdateGate } from './src/modules/app_update';
 import AuthScreen from './src/screens/AuthScreen';
 import VerifyEmailScreen from './src/screens/VerifyEmailScreen';
 import { supabase } from './src/shared';
@@ -35,6 +36,7 @@ export default function App() {
   return (
     <ActionSheetProvider>
       <SafeAreaProvider>
+        <ForceUpdateGate>
         <NavigationContainer
           ref={navigationRef}
           onReady={() => setRouteName(navigationRef.getCurrentRoute()?.name ?? null)}
@@ -52,6 +54,7 @@ export default function App() {
             <AuthScreen onSignUpSuccess={(email) => setPendingVerificationEmail(email)} />
           )}
         </NavigationContainer>
+        </ForceUpdateGate>
       </SafeAreaProvider>
     </ActionSheetProvider>
   );

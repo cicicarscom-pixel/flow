@@ -800,6 +800,11 @@
     "saved": "Saved",
     "notesPlaceholder": "Add a note for this customer..."
   },
+  "updateGate": {
+    "title": "Update required",
+    "body": "This version of the app is no longer supported. Please update Workigom Flow from the store to continue.",
+    "button": "Update"
+  },
   "flowAi": {
     "title": "Flow AI",
     "orbLabel": "Flow Ai",
