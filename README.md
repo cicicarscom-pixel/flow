@@ -301,6 +301,13 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (04.10.2026 - Flow AI Onaylı Yayınlama, FA5)
+
+- **Yayın onay kartı** (`src/modules/flow_ai/FlowAiHost.js`): Flow AI bir taslağı yayınlamayı/zamanlamayı önerdiğinde panelde metin, platformlar ve zaman gösteren kart çıkar; yalnız "Yayınla / Zamanla" düğmesine basınca yayın yapılır, "Vazgeç" hiçbir şey yapmaz.
+- Yalnız metinle yayınlanabilen platformlar (Facebook, LinkedIn, X, Threads, Bluesky). Instagram/YouTube/TikTok için taslak AI Üretim ekranında açılır, Paylaş'a kullanıcı basar.
+- Yayın sonucu mesajları: yayınlandı / zamanlandı / başarısız / taslak değişti / zaten kullanıldı / zamanlama geçmişte (`flowAi.publish.*`, TR/EN/DE).
+- Sunucu tarafı (`flow-ai-agent`, ledger): `publish_post` aracı onay kapısından geçer; günlük yayın sınırı yoktur, her yayın ayrı onay ister.
+
 ## 🆕 Son Güncellemeler (03.10.2026 - Flow AI Paneli, FA2-1)
 
 - **Flow AI yüzen düğmesi + paneli** (`src/modules/flow_ai/`): uygulama kökünde (NavigationContainer içinde) durur, ekran değişince açık kalır. Onboarding/E-posta doğrulama ekranlarında gizlenir.

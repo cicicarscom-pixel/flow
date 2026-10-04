@@ -15,6 +15,23 @@ import { FLOW_GUIDES } from './flowAiGuides';
 
 // Uygulama kökünde (NavigationContainer içinde) durur: ekran değişince panel ve konuşma KAPANMAZ.
 // Panel, Modal değil kaplamadır; üstündeki alan dokunmayı alttaki ekrana geçirir.
+// publish_post onay sonrası hata kodları → çeviri anahtarı
+const PUBLISH_ERRORS = {
+  PUBLISH_FAILED: 'flowAi.publish.failed',
+  DRAFT_CHANGED: 'flowAi.publish.changed',
+  PAYLOAD_CHANGED: 'flowAi.publish.changed',
+  DRAFT_ALREADY_USED: 'flowAi.publish.used',
+  SCHEDULE_IN_PAST: 'flowAi.publish.past',
+};
+
+function formatWhen(preview) {
+  try {
+    return new Date(preview.scheduledFor).toLocaleString(undefined, { timeZone: preview.timezone, dateStyle: 'medium', timeStyle: 'short' });
+  } catch (e) {
+    return String(preview.scheduledFor || '');
+  }
+}
+
 export default function FlowAiHost({ navigationRef }) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -70,8 +87,16 @@ export default function FlowAiHost({ navigationRef }) {
     try {
       const res = approve ? await FlowAiService.approve(action.id, action.payloadHash) : await FlowAiService.reject(action.id);
       setPending((p) => p.filter((x) => x.id !== action.id));
-      const ok = res.status === 'EXECUTED' || res.status === 'REJECTED';
-      push(ok ? 'assistant' : 'error', t(ok ? (approve ? 'flowAi.approved' : 'flowAi.rejected') : 'flowAi.notApplied'));
+      if (approve && res.status === 'EXECUTED' && action.toolName === 'publish_post') {
+        push('assistant', t(res.result?.data?.scheduled ? 'flowAi.publish.scheduled' : 'flowAi.publish.published'));
+      } else if (approve && res.status !== 'EXECUTED') {
+        const code = res.result?.status || res.status;
+        const key = PUBLISH_ERRORS[code];
+        push('error', t(key || 'flowAi.notApplied'));
+      } else {
+        const ok = res.status === 'EXECUTED' || res.status === 'REJECTED';
+        push(ok ? 'assistant' : 'error', t(ok ? (approve ? 'flowAi.approved' : 'flowAi.rejected') : 'flowAi.notApplied'));
+      }
     } catch (e) {
       push('error', t('flowAi.error'));
     } finally {
@@ -226,20 +251,32 @@ export default function FlowAiHost({ navigationRef }) {
           }}
         />
 
-        {pending.map((p) => (
-          <View key={p.id} style={{ marginHorizontal: 12, marginBottom: 6, padding: 10, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(0,218,243,0.15)' }}>
-            <Text style={{ color: '#00DAF3', fontWeight: '600', fontSize: 12 }}>{t('flowAi.pendingTitle')}</Text>
-            <Text style={{ color: '#D7DEE7', marginTop: 2 }} numberOfLines={3}>{p.preview?.description || p.toolName}</Text>
-            <View style={{ flexDirection: 'row', marginTop: 8 }}>
-              <TouchableOpacity disabled={busy} onPress={() => decide(p, true)} style={{ flex: 1, backgroundColor: '#238636', paddingVertical: 10, borderRadius: 12, alignItems: 'center', marginRight: 6 }}>
-                <Text style={{ color: '#fff', fontWeight: '700' }}>{t('flowAi.approve')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity disabled={busy} onPress={() => decide(p, false)} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 10, borderRadius: 12, alignItems: 'center' }}>
-                <Text style={{ color: '#fff', fontWeight: '700' }}>{t('flowAi.reject')}</Text>
-              </TouchableOpacity>
+        {pending.map((p) => {
+          const isPublish = p.toolName === 'publish_post' && p.preview?.text;
+          return (
+            <View key={p.id} style={{ marginHorizontal: 12, marginBottom: 6, padding: 10, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(0,218,243,0.15)' }}>
+              <Text style={{ color: '#00DAF3', fontWeight: '600', fontSize: 12 }}>{t(isPublish ? 'flowAi.publish.title' : 'flowAi.pendingTitle')}</Text>
+              {isPublish ? (
+                <>
+                  <Text style={{ color: '#9FB0C3', marginTop: 4, fontSize: 12 }}>
+                    {(p.preview.platforms || []).join(', ')} · {p.preview.mode === 'schedule' ? t('flowAi.publish.at', { when: formatWhen(p.preview) }) : t('flowAi.publish.now')}
+                  </Text>
+                  <Text style={{ color: '#D7DEE7', marginTop: 6 }} numberOfLines={8}>{p.preview.text}</Text>
+                </>
+              ) : (
+                <Text style={{ color: '#D7DEE7', marginTop: 2 }} numberOfLines={3}>{p.preview?.description || p.toolName}</Text>
+              )}
+              <View style={{ flexDirection: 'row', marginTop: 8 }}>
+                <TouchableOpacity disabled={busy} onPress={() => decide(p, true)} style={{ flex: 1, backgroundColor: '#238636', paddingVertical: 10, borderRadius: 12, alignItems: 'center', marginRight: 6 }}>
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>{t(isPublish ? (p.preview.mode === 'schedule' ? 'flowAi.publish.approveSchedule' : 'flowAi.publish.approveNow') : 'flowAi.approve')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity disabled={busy} onPress={() => decide(p, false)} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 10, borderRadius: 12, alignItems: 'center' }}>
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>{t(isPublish ? 'flowAi.publish.cancel' : 'flowAi.reject')}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        ))}
+          );
+        })}
 
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)' }}>
           <TextInput

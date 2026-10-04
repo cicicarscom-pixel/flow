@@ -813,6 +813,20 @@
     "approved": "Onaylandı ve uygulandı.",
     "rejected": "Reddedildi, hiçbir şey yapılmadı.",
     "notApplied": "İşlem uygulanamadı (süresi dolmuş ya da değişmiş olabilir).",
+    "publish": {
+      "title": "Yayın onayı bekliyor",
+      "now": "hemen yayınlanacak",
+      "at": "{{when}} tarihinde yayınlanacak",
+      "approveNow": "Yayınla",
+      "approveSchedule": "Zamanla",
+      "cancel": "Vazgeç",
+      "published": "Yayınlandı.",
+      "scheduled": "Yayın zamanlandı.",
+      "failed": "Yayın başarısız oldu. Taslak korundu, tekrar deneyebilirsin.",
+      "changed": "Taslak onaydan sonra değişti; yayınlanmadı.",
+      "used": "Bu taslak zaten kullanılmış.",
+      "past": "Zamanlama geçmişte kaldı; yeniden isteyin."
+    },
     "guide": {
       "title": "Rehber · Adım {{step}}/{{total}}",
       "skip": "Atla",

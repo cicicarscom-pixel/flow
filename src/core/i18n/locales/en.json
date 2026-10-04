@@ -821,6 +821,20 @@
     "approved": "Approved and applied.",
     "rejected": "Rejected, nothing was done.",
     "notApplied": "The action could not be applied (it may have expired or changed).",
+    "publish": {
+      "title": "Waiting for publish approval",
+      "now": "will be published now",
+      "at": "will be published on {{when}}",
+      "approveNow": "Publish",
+      "approveSchedule": "Schedule",
+      "cancel": "Cancel",
+      "published": "Published.",
+      "scheduled": "Post scheduled.",
+      "failed": "Publishing failed. The draft is kept, you can try again.",
+      "changed": "The draft changed after approval; nothing was published.",
+      "used": "This draft was already used.",
+      "past": "The scheduled time has passed; please ask again."
+    },
     "guide": {
       "title": "Guide · Step {{step}}/{{total}}",
       "skip": "Skip",

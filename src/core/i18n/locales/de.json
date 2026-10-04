@@ -821,6 +821,20 @@
     "approved": "Bestätigt und ausgeführt.",
     "rejected": "Abgelehnt, es wurde nichts getan.",
     "notApplied": "Die Aktion konnte nicht ausgeführt werden (abgelaufen oder geändert).",
+    "publish": {
+      "title": "Wartet auf Veröffentlichungsfreigabe",
+      "now": "wird sofort veröffentlicht",
+      "at": "wird am {{when}} veröffentlicht",
+      "approveNow": "Veröffentlichen",
+      "approveSchedule": "Planen",
+      "cancel": "Abbrechen",
+      "published": "Veröffentlicht.",
+      "scheduled": "Beitrag geplant.",
+      "failed": "Veröffentlichung fehlgeschlagen. Der Entwurf bleibt erhalten, du kannst es erneut versuchen.",
+      "changed": "Der Entwurf wurde nach der Freigabe geändert; nichts wurde veröffentlicht.",
+      "used": "Dieser Entwurf wurde bereits verwendet.",
+      "past": "Der geplante Zeitpunkt liegt in der Vergangenheit; bitte erneut anfragen."
+    },
     "guide": {
       "title": "Anleitung · Schritt {{step}}/{{total}}",
       "skip": "Überspringen",
