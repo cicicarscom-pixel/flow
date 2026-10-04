@@ -614,7 +614,7 @@ export default function BotYonetimiScreen() {
                        <Ionicons name="logo-whatsapp" size={20} color={isWhatsAppConnected ? "#25D366" : "#A79E96"} />
                        <View>
                          <Text className="text-xs font-semibold text-white">WhatsApp</Text>
-                         <Text className="text-[10px] text-gray-400">{isWhatsAppConnected ? '🟢 Asistan aktif' : '🔴 Bağlı değil'}</Text>
+                         <Text className="text-[10px] text-gray-400">{isWhatsAppConnected ? '🟢 WhatsApp bağlı' : '🔴 Bağlı değil'}</Text>
                        </View>
                      </View>
                      <TouchableOpacity onPress={() => { setWhatsappModalVisible(true); if(!isWhatsAppConnected) handleRefreshQr(); }} className="bg-white/10 px-4 py-1.5 rounded-full">
