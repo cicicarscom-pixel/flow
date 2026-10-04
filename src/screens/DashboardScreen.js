@@ -276,6 +276,15 @@ const AppointmentNotifications = ({ navigation, onRead }) => {
   );
 };
 
+// zernio-client yanıtı {success, data: <gövde>}; gövde {accounts,...} (önbellekten ya da canlı). Eski sürümler bir kat daha sarmalıyordu.
+const pickFollowStats = (res) => {
+  const b = res && res.data;
+  if (b && Array.isArray(b.accounts)) return b;
+  if (b && b.data && Array.isArray(b.data.accounts)) return b.data;
+  if (b && b.data && b.data.data && Array.isArray(b.data.data.accounts)) return b.data.data;
+  return {};
+};
+
 export default function DashboardScreen({ navigation }) {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -489,7 +498,7 @@ export default function DashboardScreen({ navigation }) {
         let totalTrend = 0;
         let accountsWithTrend = 0;
 
-        const actualFollow = followRes?.data?.data?.data || followRes?.data?.data || {};
+        const actualFollow = pickFollowStats(followRes);
         if (actualFollow.accounts) {
            totalFollowers = actualFollow.accounts.reduce((sum, a) => sum + (a.currentFollowers || a.followers || 0), 0);
            actualFollow.accounts.forEach(a => {
@@ -976,7 +985,7 @@ export default function DashboardScreen({ navigation }) {
 
             {/* Fatura Tarayıcı */}
             <CustomGlassCard style={styles.invoiceCard} glowColor="#F59E0B">
-              <Text style={styles.sectionTitle}>{t('dashboardScreen.invoiceScanner.header')}</Text>
+              <Text style={[styles.sectionTitle, { marginBottom: 12 }]}>{t('dashboardScreen.invoiceScanner.header')}</Text>
               {latestInvoice ? (
                 <View style={styles.invoiceContentRow}>
                   <View style={[styles.invoiceImageWrapper, { justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(245,158,11,0.05)' }]}>
@@ -992,7 +1001,7 @@ export default function DashboardScreen({ navigation }) {
                   <View style={styles.invoiceDetails}>
                     <View style={styles.invoiceDetailRow}>
                       <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.supplier')}</Text>
-                      <Text style={styles.invoiceDetailValue}>{latestInvoice.counterparty_name || latestInvoice.title || "-"}</Text>
+                      <Text style={styles.invoiceDetailValue} numberOfLines={2}>{latestInvoice.counterparty_name || latestInvoice.title || "-"}</Text>
                     </View>
                     <View style={styles.invoiceDetailRow}>
                       <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.date')}</Text>
@@ -1536,21 +1545,28 @@ const styles = StyleSheet.create({
   },
   invoiceDetails: {
     flex: 1,
+    minWidth: 0,
     justifyContent: 'space-between',
   },
   invoiceDetailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 4,
   },
   invoiceDetailLabel: {
     color: COLORS.onSurfaceVariant,
     fontSize: 12,
+    flexShrink: 0,
+    marginRight: 8,
   },
   invoiceDetailValue: {
     color: COLORS.onSurface,
     fontSize: 12,
     fontWeight: '700',
+    flex: 1,
+    minWidth: 0,
+    textAlign: 'right',
   },
   invoiceBtn: {
     backgroundColor: 'rgba(245, 158, 11, 0.12)',

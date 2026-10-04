@@ -301,6 +301,10 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - Anasayfa düzeltmeleri)
+- "Tüm Hesaplar" kartı bağlı hesapları göstermiyordu (takipçi istatistiği yanıtı bir kat az sarmalı geliyordu; artık her iki biçim de okunuyor).
+- Son fatura kartında uzun tedarikçi adı taşıyordu; değer artık en çok 2 satıra sarılıyor ve başlıkla çakışma giderildi.
+
 ## 🆕 Son Güncellemeler (04.10.2026 - Faz F4-2: İstemci kimlik göndermiyor + Zorunlu güncelleme kapısı, sürüm 1.1.0)
 
 - **Düzeltme (WhatsApp bağlı görünmüyordu):** Bot Yönetimi bağlantı durumunu boş olan `waha_sessions` tablosundan okuyordu; bağlı hesap bile "Bağlı değil" çıkıyordu. Durum artık WAHA'nın canlı durumundan (`waha-session` → status) okunur (`ManageBotUseCase.getSessionStatus`). Sunucu ayrıca zaten bağlı (WORKING) bir oturumu `start` ile yeniden başlatıp çıkış yaptırmaz.
