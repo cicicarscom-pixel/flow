@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View,
+  Animated, PanResponder,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,6 +26,18 @@ export default function FlowAiHost({ navigationRef }) {
   const conversationId = useRef(null);
   const listRef = useRef(null);
   const seq = useRef(0);
+  const pan = useRef(new Animated.ValueXY()).current;
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5,
+      onPanResponderGrant: () => {
+        pan.setOffset({ x: pan.x._value, y: pan.y._value });
+        pan.setValue({ x: 0, y: 0 });
+      },
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], { useNativeDriver: false }),
+      onPanResponderRelease: () => pan.flattenOffset(),
+    })
+  ).current;
   const [guide, setGuide] = useState(null); // {key, step} — rehber modu
 
   const push = useCallback((role, text) => {
@@ -131,11 +144,19 @@ export default function FlowAiHost({ navigationRef }) {
 
   if (!open) {
     return (
-      <FlowAiOrb
-        label={t('flowAi.orbLabel')}
-        accessibilityLabel={t('flowAi.open')}
-        onPress={() => setOpen(true)}
-      />
+      <Animated.View
+        {...panResponder.panHandlers}
+        style={[
+          { position: 'absolute', right: 16, bottom: 96 + insets.bottom / 2 },
+          { transform: [{ translateX: pan.x }, { translateY: pan.y }] }
+        ]}
+      >
+        <FlowAiOrb
+          label={t('flowAi.orbLabel')}
+          accessibilityLabel={t('flowAi.open')}
+          onPress={() => setOpen(true)}
+        />
+      </Animated.View>
     );
   }
 
