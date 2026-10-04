@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - Anasayfa fatura kartı)
+- Son fatura kartı yeniden tasarlandı (`src/shared/ui/InvoiceSummaryCard.js`): belge önizlemesi `finance-receipt-url` ile imzalı adresten gelir ve dokununca büyür; tutar vurgulu, ödeme/taslak rozeti, KDV ve fatura no, son ödemeye kalan gün.
+
 ## 🆕 Son Güncellemeler (05.10.2026 - Anasayfa düzeltmeleri)
 - "Tüm Hesaplar" kartı bağlı hesapları göstermiyordu (takipçi istatistiği yanıtı bir kat az sarmalı geliyordu; artık her iki biçim de okunuyor).
 - Son fatura kartında uzun tedarikçi adı taşıyordu; değer artık en çok 2 satıra sarılıyor ve başlıkla çakışma giderildi.

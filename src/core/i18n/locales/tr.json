@@ -758,7 +758,22 @@
       "vat": "KDV",
       "total": "Toplam",
       "scanButton": "+ Yeni Fatura Tara",
-      "noInvoice": "Henüz fatura taranmadı"
+      "noInvoice": "Henüz fatura taranmadı",
+      "card": {
+        "invoiceNo": "Fatura no",
+        "vatAmount": "KDV tutarı",
+        "dueDate": "Son ödeme",
+        "paid": "Ödendi",
+        "unpaid": "Ödenmedi",
+        "draft": "Taslak",
+        "dueToday": "Bugün son gün",
+        "dueIn": "{{n}} gün kaldı",
+        "overdue": "{{n}} gün gecikti",
+        "viewReceipt": "Belgeyi görüntüle",
+        "close": "Kapat",
+        "noPreview": "Önizleme yok",
+        "latest": "SON FATURA"
+      }
     },
     "appointmentNotifications": {
       "title": "Randevu Bildirimleri",

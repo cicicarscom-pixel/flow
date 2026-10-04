@@ -33,6 +33,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { decode } from 'base64-arraybuffer';
 import { getCurrentOrgId } from '../lib/org';
+import InvoiceSummaryCard from '../shared/ui/InvoiceSummaryCard';
 
 const PLATFORM_ICONS = {
   WHATSAPP: { name: 'logo-whatsapp', color: '#25D366' },
@@ -301,6 +302,7 @@ export default function DashboardScreen({ navigation }) {
   const [upcomingPayments, setUpcomingPayments] = useState([]);
   const [socialStats, setSocialStats] = useState({ followers: 0, trend: 0 });
   const [latestInvoice, setLatestInvoice] = useState(null);
+  const [orgTz, setOrgTz] = useState('Europe/Istanbul');
   const [hasSocialAccounts, setHasSocialAccounts] = useState(true);
   const [recentActivities, setRecentActivities] = useState([]);
   const [appointments, setAppointments] = useState([]);
@@ -448,6 +450,7 @@ export default function DashboardScreen({ navigation }) {
         if (orgId) {
           const { data: orgData } = await supabase.from('organizations').select('timezone').eq('id', orgId).single();
           if (orgData?.timezone) tz = orgData.timezone;
+          setOrgTz(tz);
         }
 
         const today = new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date());
@@ -985,50 +988,10 @@ export default function DashboardScreen({ navigation }) {
 
             {/* Fatura Tarayıcı */}
             <CustomGlassCard style={styles.invoiceCard} glowColor="#F59E0B">
-              <Text style={[styles.sectionTitle, { marginBottom: 12 }]}>{t('dashboardScreen.invoiceScanner.header')}</Text>
-              {latestInvoice ? (
-                <View style={styles.invoiceContentRow}>
-                  <View style={[styles.invoiceImageWrapper, { justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(245,158,11,0.05)' }]}>
-                    {latestInvoice.image_url ? (
-                      <Image
-                        source={{ uri: latestInvoice.image_url }}
-                        style={styles.invoiceImage}
-                      />
-                    ) : (
-                      <Ionicons name="document-text-outline" size={32} color="rgba(245,158,11,0.6)" />
-                    )}
-                  </View>
-                  <View style={styles.invoiceDetails}>
-                    <View style={styles.invoiceDetailRow}>
-                      <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.supplier')}</Text>
-                      <Text style={styles.invoiceDetailValue} numberOfLines={2}>{latestInvoice.counterparty_name || latestInvoice.title || "-"}</Text>
-                    </View>
-                    <View style={styles.invoiceDetailRow}>
-                      <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.date')}</Text>
-                      <Text style={styles.invoiceDetailValue}>{latestInvoice.due_date || latestInvoice.created_at ? new Intl.DateTimeFormat('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(latestInvoice.due_date || latestInvoice.created_at)) : "-"}</Text>
-                    </View>
-                    {latestInvoice.tax_details && latestInvoice.tax_details.rate != null && (
-                      <View style={styles.invoiceDetailRow}>
-                        <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.vat')}</Text>
-                        <Text style={styles.invoiceDetailValue}>%{latestInvoice.tax_details.rate}</Text>
-                      </View>
-                    )}
-                    <View style={styles.invoiceDetailRow}>
-                      <Text style={styles.invoiceDetailLabel}>{t('dashboardScreen.invoiceScanner.total')}</Text>
-                      <Text style={styles.invoiceDetailValue}>{new Intl.NumberFormat('tr-TR', { style: 'currency', currency: latestInvoice.currency_code || 'TRY' }).format(Number(latestInvoice.amount_minor)/100)}</Text>
-                    </View>
-                  </View>
-                </View>
-              ) : (
-                <View style={{ paddingVertical: 20, alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13 }}>{t('dashboardScreen.invoiceScanner.noInvoice')}</Text>
-                </View>
-              )}
-              <CustomButton
-                title={t('dashboardScreen.invoiceScanner.scanButton')}
-                onPress={() => navigation.navigate('Muhasebe', { screen: 'VeriGirisi' })}
-                style={{ marginTop: 14, backgroundColor: 'rgba(245,158,11,0.12)', borderColor: 'rgba(245,158,11,0.25)', borderWidth: 1, borderRadius: 12 }}
-                textStyle={{ color: '#F59E0B', fontSize: 13, fontWeight: '700' }}
+              <InvoiceSummaryCard
+                invoice={latestInvoice}
+                todayYmd={todayInTimezone(orgTz)}
+                onScan={() => navigation.navigate('Muhasebe', { screen: 'VeriGirisi' })}
               />
             </CustomGlassCard>
 
