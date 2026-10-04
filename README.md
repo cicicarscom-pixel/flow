@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - AI Üretim)
+- "Ne paylaşalım?" kutusu kaldırıldı (içerik yalnız metin alanından yazılır / AI ile üretilir). Kullanılmayan `sosyalMedya.generate.whatToShare` ve `promptPlaceholder` çevirileri silindi.
+
 ## 🆕 Son Güncellemeler (05.10.2026 - Anasayfa fatura kartı)
 - Son fatura kartı yeniden tasarlandı (`src/shared/ui/InvoiceSummaryCard.js`): belge önizlemesi `finance-receipt-url` ile imzalı adresten gelir ve dokununca büyür; tutar vurgulu, ödeme/taslak rozeti, KDV ve fatura no, son ödemeye kalan gün.
 

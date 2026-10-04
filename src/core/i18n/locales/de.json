@@ -128,8 +128,6 @@
     },
     "generate": {
       "title": "KI-Freigabe",
-      "whatToShare": "Was sollen wir teilen?",
-      "promptPlaceholder": "z. B. Ein energiegeladener Beitrag für die neue Sommerkollektion...",
       "selectOrGenerate": "Bild & Video auswählen oder nur Bild generieren",
       "imageHint": "Zum Hinzufügen aus der Galerie tippen oder warten, bis die KI hier ein Bild generiert",
       "contentTitle": "Inhaltstext",

@@ -128,8 +128,6 @@
     },
     "generate": {
       "title": "AI Sharing",
-      "whatToShare": "What should we share?",
-      "promptPlaceholder": "e.g. An energetic post for the new summer collection...",
       "selectOrGenerate": "Select or Generate Image",
       "imageHint": "Tap to add from gallery or wait for AI to generate an image here",
       "contentTitle": "Content Text",

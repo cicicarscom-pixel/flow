@@ -121,7 +121,6 @@ let persistedMediaType = 'text';
 export default function AiUretimScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const [prompt, setPrompt] = useState('');
   const [localImage, setLocalImage] = useState(persistedImage);
   const [localText, setLocalText] = useState(persistedText);
   const [mediaType, setMediaType] = useState(persistedMediaType);
@@ -401,7 +400,7 @@ export default function AiUretimScreen({ route, navigation }) {
       return;
     }
 
-    let contentToShare = localText || prompt || t('sosyalMedya.generate.fallbackContent');
+    let contentToShare = localText || t('sosyalMedya.generate.fallbackContent');
     if (tags.length > 0) {
       contentToShare += "\n\n" + tags.map(t => `#${t}`).join(" ");
     }
@@ -802,20 +801,6 @@ export default function AiUretimScreen({ route, navigation }) {
       >
         <ScrollView ref={scrollRef} onScroll={(e) => { scrollYRef.current = e.nativeEvent.contentOffset.y; }} scrollEventThrottle={16} className="flex-1 px-5 pt-6" contentContainerStyle={{ paddingBottom: 130 }} keyboardShouldPersistTaps="handled">
         
-        {/* Input Section */}
-        <View className="mb-6">
-          <Text className="text-[#A79E96] text-xs font-medium uppercase tracking-wider mb-2 ml-1">{t('sosyalMedya.generate.whatToShare')}</Text>
-          <TextInput
-            value={prompt}
-            onChangeText={setPrompt}
-            placeholder={t('sosyalMedya.generate.promptPlaceholder')}
-            placeholderTextColor="rgba(185, 202, 203, 0.5)"
-            className="w-full bg-[#2A2631]/50 rounded-lg border border-white/10 text-[#F6F1EC] text-base p-3 min-h-[100px]"
-            multiline={true}
-            textAlignVertical="top"
-          />
-        </View>
-
         {/* Central Feature: Image Container */}
         <View className="items-center w-full mb-6 relative">
           <FlowHighlight screen="ai_uretim" id="media_picker" scrollRef={scrollRef} scrollYRef={scrollYRef} style={{ width: '100%', alignItems: 'center' }}>
