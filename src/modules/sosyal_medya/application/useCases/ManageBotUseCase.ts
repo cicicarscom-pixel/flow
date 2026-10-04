@@ -40,20 +40,18 @@ export class ManageBotUseCase {
     return await this.wahaService.getPairingCode(merchantId, phoneNumber);
   }
 
+  /**
+   * Bağlantı durumunun tek doğru kaynağı WAHA'nın canlı durumudur (sunucudaki `waha-session` → status).
+   * Eskiden `waha_sessions` tablosundan okunuyordu; o tablo boş olduğu için bağlı hesap bile "Bağlı değil" görünüyordu.
+   */
   async getSessionStatus(merchantId: string | number): Promise<IServiceResponse<any>> {
     try {
-      const response = await this.wahaService.getWahaSession(merchantId);
-      if (response && response.data) {
-        // Return in the format expected by the UI (similar to Waha API format)
-        if (response.data.status === 'WORKING') {
-           // waha_sessions stores session_data
-           return { data: { status: 'WORKING', me: response.data.session_data?.me }, error: null };
-        }
-        return { data: { status: response.data.status }, error: null };
-      }
-      return { data: null, error: null };
+      const response = await this.wahaService.getSessionStatus(merchantId);
+      const s = response?.data;
+      if (!s) return { data: null, error: response?.error ?? null };
+      return { data: { status: s.status, me: s.me ?? undefined }, error: null };
     } catch (e) {
-      console.warn("Could not get session status from DB:", e);
+      console.warn("Could not get WhatsApp session status:", e);
       return { data: null, error: null };
     }
   }

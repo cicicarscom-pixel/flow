@@ -303,6 +303,8 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ## 🆕 Son Güncellemeler (04.10.2026 - Faz F4-2: İstemci kimlik göndermiyor + Zorunlu güncelleme kapısı, sürüm 1.1.0)
 
+- **Düzeltme (WhatsApp bağlı görünmüyordu):** Bot Yönetimi bağlantı durumunu boş olan `waha_sessions` tablosundan okuyordu; bağlı hesap bile "Bağlı değil" çıkıyordu. Durum artık WAHA'nın canlı durumundan (`waha-session` → status) okunur (`ManageBotUseCase.getSessionStatus`). Sunucu ayrıca zaten bağlı (WORKING) bir oturumu `start` ile yeniden başlatıp çıkış yaptırmaz.
+
 - **Hizmet Ayarları boş durumu:** hizmet yokken ekranda "Henüz hizmet eklemedin" ve doğrudan **"+ Hizmet Ekle"** düğmesi gösterilir (düzenleme moduna geçer, ilk satırı açar). Daha önce ekleme düğmesi yalnız "Düzenle" sonrası görünüyordu. Çeviriler `randevu.hizmetAyarlari.emptyTitle/emptyHint` (tr/en/de).
 
 - **Düzeltme (randevu canlı güncelleme):** takvim ekleyince `cannot add postgres_changes callbacks ... after subscribe()` hatası çıkıyordu. Gerçek zamanlı kanal adı yalnız tarihe bağlıydı; yeniden abonelikte eski kanal geri veriliyordu. Her aboneliğe benzersiz kanal adı verildi; effect temizlenmişse abonelik kurulmaz (`SupabaseAppointmentRepository.ts`, `useAppointments.ts`).
