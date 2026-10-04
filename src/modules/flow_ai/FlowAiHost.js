@@ -325,7 +325,7 @@ export default function FlowAiHost({ navigationRef }) {
           />
           <TouchableOpacity testID="flow_ai_send" onPress={() => send()} disabled={busy || !input.trim()} style={{ marginLeft: 8, opacity: busy || !input.trim() ? 0.5 : 1 }}>
             <LinearGradient colors={['#3B82F6', '#9D5CFF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}>
-              {busy ? <TypingDots size={5} gap={4} /> : <Ionicons name="send" size={17} color="#fff" />}
+              <Ionicons name="send" size={17} color="#fff" />
             </LinearGradient>
           </TouchableOpacity>
         </View>

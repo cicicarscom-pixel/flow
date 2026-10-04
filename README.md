@@ -305,7 +305,7 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 - **Öneri kartları** (`src/modules/flow_ai/FlowAiSuggestions.js`): Flow AI paneli boşken (henüz mesaj yok) en fazla 3 kart gösterir: sosyal hesap bağlama, boş randevu saatleri için kampanya, en iyi paylaşım zamanı, takipçi değişimi. Kartlar kendiliğinden hiçbir şey yapmaz; yalnız kullanıcı düğmeye dokununca sohbete bir mesaj gönderilir ya da bir ekran açılır.
 - Kartlar sunucuda (`flow-ai-agent` → `suggestions`) işletmenin verisinden belirleyici kurallarla üretilir (yapay zekâ yok, uydurma yok); veri yoksa kart gösterilmez. Metinler TR/EN/DE (`flowAi.suggest.*`).
-- **"Düşünüyor" animasyonu** (`src/modules/flow_ai/TypingDots.js`): Flow AI cevap hazırlanırken gönder düğmesindeki dönen çark yerine üç nokta animasyonu gösterilir; sohbet listesinde de asistan tarafında üç noktalı bir balon belirir.
+- **"Düşünüyor" animasyonu** (`src/modules/flow_ai/TypingDots.js`): Flow AI cevap hazırlanırken yalnız sohbet listesinde, asistan tarafında üç noktalı bir balon belirir (gönder düğmesinde animasyon yoktur; cevap beklenirken düğme sönük ve pasif kalır).
 
 ## 🆕 Son Güncellemeler (04.10.2026 - Flow AI Onaylı Yayınlama, FA5)
 
