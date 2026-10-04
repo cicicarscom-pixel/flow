@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View,
+  FlatList, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View,
   Animated, PanResponder,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import FlowAiSuggestions from './FlowAiSuggestions';
+import TypingDots from './TypingDots';
 import { LinearGradient } from 'expo-linear-gradient';
 import FlowAiOrb from './FlowAiOrb';
 import { FlowAiService } from './FlowAiService';
@@ -254,6 +255,11 @@ export default function FlowAiHost({ navigationRef }) {
               </View>
             </View>
           }
+          ListFooterComponent={busy && messages.length > 0 ? (
+            <View testID="flow_ai_typing" style={{ alignSelf: 'flex-start', marginVertical: 4, borderRadius: 18, borderTopLeftRadius: 6, paddingVertical: 12, paddingHorizontal: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', backgroundColor: 'rgba(255,255,255,0.04)' }}>
+              <TypingDots color="#9D5CFF" size={7} />
+            </View>
+          ) : null}
           renderItem={({ item }) => {
             const mine = item.role === 'user';
             const bubble = { maxWidth: '85%', marginVertical: 4, borderRadius: 18, overflow: 'hidden' };
@@ -319,7 +325,7 @@ export default function FlowAiHost({ navigationRef }) {
           />
           <TouchableOpacity testID="flow_ai_send" onPress={() => send()} disabled={busy || !input.trim()} style={{ marginLeft: 8, opacity: busy || !input.trim() ? 0.5 : 1 }}>
             <LinearGradient colors={['#3B82F6', '#9D5CFF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}>
-              {busy ? <ActivityIndicator color="#fff" /> : <Ionicons name="send" size={17} color="#fff" />}
+              {busy ? <TypingDots size={5} gap={4} /> : <Ionicons name="send" size={17} color="#fff" />}
             </LinearGradient>
           </TouchableOpacity>
         </View>
