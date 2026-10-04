@@ -6,6 +6,8 @@ import { supabase } from '../../../../shared';
 import { NetworkError } from '../../../../shared/errors/NetworkError';
 import { todayInTimezone, addDaysYmd } from '../../../../lib/dates';
 
+let channelSeq = 0;
+
 export class SupabaseAppointmentRepository implements IAppointmentRepository {
 
   async getDaySchedule(dateYmd: string, calendarId?: string): Promise<any[]> {
@@ -241,8 +243,12 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     calendarId: string | undefined,
     callback: (appointments: Appointment[]) => void
   ): () => void {
+    // Her abonelik BENZERSİZ bir kanal adı alır. Aynı adlı kanal Supabase'de yeniden kullanılır; takvim eklenince
+    // ekran yeniden abone olurken eski kanal henüz kaldırılmadan `.on()` eklemek
+    // "cannot add postgres_changes callbacks ... after subscribe()" hatası verirdi.
+    const channelName = `appointments-${date}-${calendarId ?? 'all'}-${Date.now().toString(36)}-${++channelSeq}`;
     const channel = supabase
-      .channel(`appointments-date-${date}`)
+      .channel(channelName)
       .on(
         'postgres_changes' as any,
         {

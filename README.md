@@ -303,6 +303,8 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ## 🆕 Son Güncellemeler (04.10.2026 - Faz F4-2: İstemci kimlik göndermiyor + Zorunlu güncelleme kapısı, sürüm 1.1.0)
 
+- **Düzeltme (randevu canlı güncelleme):** takvim ekleyince `cannot add postgres_changes callbacks ... after subscribe()` hatası çıkıyordu. Gerçek zamanlı kanal adı yalnız tarihe bağlıydı; yeniden abonelikte eski kanal geri veriliyordu. Her aboneliğe benzersiz kanal adı verildi; effect temizlenmişse abonelik kurulmaz (`SupabaseAppointmentRepository.ts`, `useAppointments.ts`).
+
 - **Kimlik artık istemciden gitmiyor:** bot ayarları, AI ayarları, hizmetler, randevu hizmet listesi, gelen kutusu günlükleri ve anasayfa bot durumunda `merchant_id` filtre/yazmaları kaldırıldı. İşletme kimliği veritabanında çözülür (RLS + `org_id DEFAULT current_org_id()`); filtre gereken güncellemelerde `src/lib/org.js` → `getCurrentOrgId()` (RPC `current_org_id`).
 - Aynı temizlik `.ts` katmanında da yapıldı: `SupabasePersonaRepository`, `SupabaseCalendarRepository`, `SupabaseAppointmentRepository`, `WahaService` (yalnız veritabanı sorguları), `useCommunicationLogs`.
 - **WAHA artık sunucuda (güvenlik borcu kapandı):** `WahaService.ts` WAHA'ya doğrudan bağlanmaz; `waha-session` Edge Function'ını çağırır (durum, başlat, QR, eşleştirme). Uygulamada WAHA adresi ve `EXPO_PUBLIC_WAHA_API_KEY` yok. Askıda/banlı hesap oturum açamaz. `usesCleartextTraffic` kaldırıldı (artık http bağlantı yok).

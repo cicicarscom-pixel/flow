@@ -57,6 +57,8 @@ export function useAppointments(initialDate?: string, activeCalendarId?: string 
         if (!cancelled) setLoading(false);
       }
 
+      // Effect bu arada temizlendiyse (tarih/takvim değişti) abonelik KURULMAZ; aksi halde kimse kaldırmayan bir kanal kalırdı.
+      if (cancelled) return;
       unsubscribe = repo.subscribeToAppointments(selectedDate, activeCalendarId || undefined, (fresh) => {
         if (!cancelled) setAppointments(fresh);
       });
