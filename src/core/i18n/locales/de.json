@@ -372,6 +372,14 @@
       "dedikoducu": "Tratschsüchtig",
       "huysuz": "Mürrisch",
       "sinirli": "Reizbar"
+    },
+    "addRole": {
+      "card": "Hinzufügen",
+      "placeholder": "Rolle eingeben (z. B. Oppositionelle Nachrichtenseite)",
+      "save": "Hinzufügen",
+      "cancel": "Abbrechen",
+      "remove": "Rolle löschen",
+      "error": "Rolle konnte nicht hinzugefügt werden (maximal 20)."
     }
   },
   "common": {

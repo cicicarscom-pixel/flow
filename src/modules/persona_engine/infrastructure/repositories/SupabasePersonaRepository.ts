@@ -148,7 +148,7 @@ export class SupabasePersonaRepository {
         persona_id: personaId,
         business_role: config?.roleId === 'custom' ? config?.customRoleText : config?.roleId,
         tone: config?.moodId,
-        custom_instruction: config?.customRoleText,
+        custom_instruction: config?.customInstruction || null,
         assistant_enabled: isActive,
         // Faz 2: Karakter Ayarları kadranları — web'in saveAiPersonaSettings'i
         // gibi, tanımlıysa doğrudan kullanıcının ayarladığı değeri yazar.

@@ -372,6 +372,14 @@
       "dedikoducu": "Gossipy",
       "huysuz": "Grumpy",
       "sinirli": "Irritable"
+    },
+    "addRole": {
+      "card": "Add",
+      "placeholder": "Type your role (e.g. Opposition news page)",
+      "save": "Add",
+      "cancel": "Cancel",
+      "remove": "Delete role",
+      "error": "Could not add the role (up to 20 roles)."
     }
   },
   "common": {

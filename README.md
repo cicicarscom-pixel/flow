@@ -301,6 +301,10 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - Özel işletme rolü kartları)
+- Bot Yönetimi > İşletme Rolü: listenin başına "Ekle" kartı; rol yazılır, kart olarak eklenir ve seçilir (uzun basarak silinir). Web ile aynı `custom_business_roles` tablosunu kullanır.
+- Asistan talimatı artık rol metninden ayrı tutuluyor (`custom_instruction`); eskiden aynı alan ikisini birden yazıyordu.
+
 ## 🆕 Son Güncellemeler (05.10.2026 - AI Üretim)
 - "Ne paylaşalım?" kutusu kaldırıldı (içerik yalnız metin alanından yazılır / AI ile üretilir). Kullanılmayan `sosyalMedya.generate.whatToShare` ve `promptPlaceholder` çevirileri silindi.
 

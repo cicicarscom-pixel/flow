@@ -372,6 +372,14 @@
       "dedikoducu": "Dedikoducu",
       "huysuz": "Huysuz",
       "sinirli": "Sinirli"
+    },
+    "addRole": {
+      "card": "Ekle",
+      "placeholder": "Rolünü yaz (ör. Muhalif haber sayfası)",
+      "save": "Ekle",
+      "cancel": "Vazgeç",
+      "remove": "Rolü sil",
+      "error": "Rol eklenemedi (en fazla 20 rol eklenebilir)."
     }
   },
   "common": {

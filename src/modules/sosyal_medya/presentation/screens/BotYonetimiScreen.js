@@ -84,6 +84,18 @@ const BreathingDot = ({ active, children }) => {
 
 export default function BotYonetimiScreen() {
   const { t } = useTranslation();
+
+  // Kullanıcının eklediği işletme rolleri (custom_business_roles; kimlik RLS ile çözülür, istemci göndermez)
+  const [customRoles, setCustomRoles] = useState([]);
+  const [addRoleOpen, setAddRoleOpen] = useState(false);
+  const [newRoleText, setNewRoleText] = useState('');
+  useEffect(() => {
+    let alive = true;
+    supabase.from('custom_business_roles').select('id, label').order('created_at', { ascending: true })
+      .then(({ data }) => { if (alive && Array.isArray(data)) setCustomRoles(data); });
+    return () => { alive = false; };
+  }, []);
+
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
 
@@ -127,6 +139,7 @@ export default function BotYonetimiScreen() {
     config: promptConfig,
     setRole,
     setCustomRole,
+    setCustomInstruction,
     setPersona,
     setMood,
     resetConfig
@@ -248,6 +261,7 @@ export default function BotYonetimiScreen() {
               setCustomRole(restoredConfig.businessRole);
             }
           }
+          if (restoredConfig.customInstruction) setCustomInstruction(restoredConfig.customInstruction);
           if (restoredConfig.tone) setMood(restoredConfig.tone);
           if (restoredConfig.personaSlug) setPersona(restoredConfig.personaSlug);
           // Faz 2: kayıtlı kadran değerlerini geri yükle.
@@ -575,9 +589,9 @@ export default function BotYonetimiScreen() {
                 <Text className="text-white text-sm font-bold mb-2">Asistan Talimatı Oluştur</Text>
                 <View className="bg-black/20 border border-white/5 rounded-xl p-3">
                   <TextInput
-                    value={promptConfig.roleId === 'custom' ? promptConfig.customRoleText : ''}
+                    value={promptConfig.customInstruction || ''}
                     onChangeText={(text) => { 
-                      setCustomRole(text); 
+                      setCustomInstruction(text); 
                       setIsSaveBtnActive(true); 
                     }}
                     placeholder="Örn: Sen bir berber dükkanı asistanısın, fiyat bilgisi verip randevu alırsın..."
@@ -660,6 +674,39 @@ export default function BotYonetimiScreen() {
                   <View className="mb-4">
                     <Text className="text-white/40 text-[9px] font-bold uppercase tracking-wider mb-1.5">{t('personas.businessRole')}</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                      <PersonaAvatarCard
+                        label={t('personas.addRole.card')}
+                        icon="➕"
+                        accentColor="#22B573"
+                        selected={addRoleOpen}
+                        onPress={() => setAddRoleOpen(v => !v)}
+                      />
+                      {(() => {
+                        const inList = customRoles.some(r => r.label === promptConfig.customRoleText);
+                        const orphan = promptConfig.roleId === 'custom' && promptConfig.customRoleText && !inList
+                          ? [{ id: '__current', label: promptConfig.customRoleText }] : [];
+                        return [...orphan, ...customRoles].map(r => (
+                          <PersonaAvatarCard
+                            key={r.id}
+                            label={r.label}
+                            icon="🏷️"
+                            accentColor="#FF7A59"
+                            selected={promptConfig.roleId === 'custom' && promptConfig.customRoleText === r.label}
+                            onPress={() => { setCustomRole(r.label); setIsSaveBtnActive(true); }}
+                            onLongPress={r.id === '__current' ? undefined : () => {
+                              Alert.alert(t('personas.addRole.remove'), r.label, [
+                                { text: t('personas.addRole.cancel'), style: 'cancel' },
+                                { text: t('personas.addRole.remove'), style: 'destructive', onPress: async () => {
+                                  const { error } = await supabase.from('custom_business_roles').delete().eq('id', r.id);
+                                  if (error) return;
+                                  setCustomRoles(list => list.filter(x => x.id !== r.id));
+                                  if (promptConfig.roleId === 'custom' && promptConfig.customRoleText === r.label) { setCustomRole(''); setIsSaveBtnActive(true); }
+                                } },
+                              ]);
+                            }}
+                          />
+                        ));
+                      })()}
                       {ROLES.map(role => (
                         <PersonaAvatarCard
                           key={role.id}
@@ -671,27 +718,44 @@ export default function BotYonetimiScreen() {
                           onPress={() => { setRole(role.id); setIsSaveBtnActive(true); }}
                         />
                       ))}
-                      {/* Diğer (Custom Role) kartı — görseli yok, sadece emoji */}
-                      <PersonaAvatarCard
-                        label={t('personas.otherRole')}
-                        icon="✨"
-                        accentColor="#FF7A59"
-                        selected={promptConfig.roleId === 'custom'}
-                        onPress={() => { setRole('custom'); setIsSaveBtnActive(true); }}
-                      />
                     </ScrollView>
                   </View>
 
-                  {/* Custom Role Input (Conditionally Rendered) */}
-                  {promptConfig.roleId === 'custom' && (
+                  {addRoleOpen && (
                     <View className="bg-black/40 border border-white/5 rounded-xl p-2 mb-4">
                       <TextInput
-                        value={promptConfig.customRoleText}
-                        onChangeText={(text) => { setCustomRole(text); setIsSaveBtnActive(true); }}
-                        placeholder={t('personas.customRolePlaceholder')}
+                        value={newRoleText}
+                        onChangeText={setNewRoleText}
+                        placeholder={t('personas.addRole.placeholder')}
                         placeholderTextColor="#A79E96"
+                        maxLength={60}
+                        autoFocus
                         style={{ color: '#F6F1EC', fontSize: 12, paddingVertical: 4, paddingHorizontal: 8 }}
                       />
+                      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 6 }}>
+                        <TouchableOpacity onPress={() => { setAddRoleOpen(false); setNewRoleText(''); }} style={{ paddingVertical: 8, paddingHorizontal: 14, marginRight: 8 }}>
+                          <Text style={{ color: '#A79E96', fontWeight: '600' }}>{t('personas.addRole.cancel')}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          disabled={!newRoleText.trim()}
+                          onPress={async () => {
+                            const label = newRoleText.replace(/\s+/g, ' ').trim().slice(0, 60);
+                            if (!label) return;
+                            const existing = customRoles.find(r => r.label.toLowerCase() === label.toLowerCase());
+                            if (existing) { setCustomRole(existing.label); setIsSaveBtnActive(true); setAddRoleOpen(false); setNewRoleText(''); return; }
+                            const { data, error } = await supabase.from('custom_business_roles').insert({ label }).select('id, label').single();
+                            if (error || !data) { Alert.alert(t('sosyalMedya.alerts.error'), t('personas.addRole.error')); return; }
+                            setCustomRoles(r => [...r, data]);
+                            setCustomRole(data.label);
+                            setIsSaveBtnActive(true);
+                            setAddRoleOpen(false);
+                            setNewRoleText('');
+                          }}
+                          style={{ paddingVertical: 8, paddingHorizontal: 16, borderRadius: 10, backgroundColor: '#22B573', opacity: newRoleText.trim() ? 1 : 0.5 }}
+                        >
+                          <Text style={{ color: '#fff', fontWeight: '800' }}>{t('personas.addRole.save')}</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   )}
 

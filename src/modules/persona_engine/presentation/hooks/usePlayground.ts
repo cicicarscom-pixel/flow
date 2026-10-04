@@ -10,6 +10,7 @@ export interface ChatMessage {
 export interface PlaygroundPromptConfig {
   roleId?: string;
   customRoleText?: string;
+  customInstruction?: string;
   personaId?: string;
   moodId?: string;
 }
@@ -83,7 +84,7 @@ export function usePlayground(promptConfig: PlaygroundPromptConfig, options: Pla
           personaSlug: promptConfig?.personaId || null,
           businessRole,
           tone: promptConfig?.moodId || null,
-          customInstruction: isCustomRole ? (promptConfig?.customRoleText || null) : null,
+          customInstruction: promptConfig?.customInstruction || null,
           appointmentModuleEnabled: options.appointmentModuleEnabled ?? true,
           personaIntensity: options.personaIntensity,
           humorLevel: options.humorLevel,

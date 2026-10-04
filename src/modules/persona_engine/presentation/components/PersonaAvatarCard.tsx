@@ -29,6 +29,7 @@ export interface PersonaAvatarCardProps {
   accentColor: string;
   selected: boolean;
   onPress: () => void;
+  onLongPress?: () => void;
   size?: number;
 }
 
@@ -39,11 +40,13 @@ export default function PersonaAvatarCard({
   accentColor,
   selected,
   onPress,
+  onLongPress,
   size = 56,
 }: PersonaAvatarCardProps) {
   return (
     <TouchableOpacity
       onPress={onPress}
+      onLongPress={onLongPress}
       activeOpacity={0.8}
       style={[
         styles.card,

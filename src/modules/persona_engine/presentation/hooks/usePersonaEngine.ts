@@ -17,6 +17,8 @@ import { useState, useCallback } from 'react';
 export interface UIConfig {
   roleId?: string;
   customRoleText?: string;
+  // Asistan talimatı (organization_ai_settings.custom_instruction). Rol metninden AYRI tutulur.
+  customInstruction?: string;
   personaId?: string;
   moodId?: string;
 }
@@ -41,6 +43,10 @@ export const usePersonaEngine = (initialConfig?: UIConfig) => {
     }));
   }, []);
 
+  const setCustomInstruction = useCallback((text: string) => {
+    setConfig(prev => ({ ...prev, customInstruction: text }));
+  }, []);
+
   const setPersona = useCallback((id: string) => {
     setConfig(prev => ({ ...prev, personaId: prev.personaId === id ? '' : id }));
   }, []);
@@ -57,6 +63,7 @@ export const usePersonaEngine = (initialConfig?: UIConfig) => {
     config,
     setRole,
     setCustomRole,
+    setCustomInstruction,
     setPersona,
     setMood,
     resetConfig
