@@ -1,4 +1,5 @@
 import { supabase } from '../../../../shared';
+import { getCurrentOrgId } from '../../../../lib/org';
 import { IWahaService, IServiceResponse } from '@domain/interfaces/IWahaService';
 
 const WAHA_BASE_URL = 'http://31.97.37.208:3000';
@@ -13,7 +14,6 @@ export class WahaService implements IWahaService {
       const { data, error } = await supabase
         .from('bot_settings')
         .select('*')
-        .eq('merchant_id', merchantId)
         .limit(1);
 
       if (error) {
@@ -41,11 +41,11 @@ export class WahaService implements IWahaService {
         response = await supabase
           .from('bot_settings')
           .update({ ...settingsData, updated_at: new Date().toISOString() })
-          .eq('merchant_id', merchantId);
+          .eq('org_id', (await getCurrentOrgId(supabase)) as string);
       } else {
         response = await supabase
           .from('bot_settings')
-          .insert([{ merchant_id: merchantId, ...settingsData, updated_at: new Date().toISOString() }]);
+          .insert([{ ...settingsData, updated_at: new Date().toISOString() }]);
       }
 
       if (response.error) throw response.error;
@@ -65,7 +65,6 @@ export class WahaService implements IWahaService {
       const { data, error } = await supabase
         .from('waha_sessions')
         .select('*')
-        .eq('merchant_id', merchantId)
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -91,11 +90,11 @@ export class WahaService implements IWahaService {
         response = await supabase
           .from('waha_sessions')
           .update({ ...sessionData, last_sync_at: new Date().toISOString() })
-          .eq('merchant_id', merchantId);
+          .eq('org_id', (await getCurrentOrgId(supabase)) as string);
       } else {
         response = await supabase
           .from('waha_sessions')
-          .insert([{ merchant_id: merchantId, ...sessionData, last_sync_at: new Date().toISOString() }]);
+          .insert([{ ...sessionData, last_sync_at: new Date().toISOString() }]);
       }
 
       if (response.error) throw response.error;

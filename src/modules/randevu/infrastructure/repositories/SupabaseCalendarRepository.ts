@@ -10,7 +10,6 @@ export class SupabaseCalendarRepository implements ICalendarRepository {
     const { data, error } = await supabase
       .from("calendars")
       .select("*")
-      .eq("merchant_id", session.user.id)
       .eq("is_active", true)
       .order("created_at", { ascending: true });
 
@@ -45,7 +44,7 @@ export class SupabaseCalendarRepository implements ICalendarRepository {
 
     const { data: insertResponse, error } = await supabase
       .from("calendars")
-      .insert([{ name, merchant_id: userData.user.id, is_active: true }])
+      .insert([{ name, is_active: true }])
       .select();
       
     const data = insertResponse?.[0];

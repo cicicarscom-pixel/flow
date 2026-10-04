@@ -81,7 +81,6 @@ export async function getPersonaConfig(userId: string): Promise<RestoredPersonaC
   const { data: settings, error } = await supabase
     .from('organization_ai_settings')
     .select('business_role, tone, custom_instruction, persona_id, appointment_module_enabled, persona_intensity, humor_level, modern_adaptation')
-    .eq('merchant_id', userId)
     .maybeSingle();
 
   if (error || !settings) return null;
@@ -146,7 +145,6 @@ export class SupabasePersonaRepository {
       }
 
       const orgSettingsPayload = {
-        merchant_id: userId,
         persona_id: personaId,
         business_role: config?.roleId === 'custom' ? config?.customRoleText : config?.roleId,
         tone: config?.moodId,
@@ -162,7 +160,7 @@ export class SupabasePersonaRepository {
 
       const { error: orgError } = await supabase
         .from('organization_ai_settings')
-        .upsert(orgSettingsPayload, { onConflict: 'merchant_id' });
+        .upsert(orgSettingsPayload, { onConflict: 'org_id' });
         
       if (orgError) {
         console.error('Error saving to organization_ai_settings:', orgError);
@@ -179,7 +177,6 @@ export class SupabasePersonaRepository {
       const { data: existingData, error: fetchError } = await supabase
         .from('bot_settings')
         .select('id')
-        .eq('merchant_id', userId)
         .limit(1);
 
       if (fetchError) throw fetchError;
@@ -197,12 +194,12 @@ export class SupabasePersonaRepository {
         response = await supabase
           .from('bot_settings')
           .update(payload)
-          .eq('merchant_id', userId);
+          .eq('id', existingData[0].id);
       } else {
         // Yeni kayıt
         response = await supabase
           .from('bot_settings')
-          .insert([{ merchant_id: userId, ...payload }]);
+          .insert([{ ...payload }]);
       }
 
       if (response.error) throw response.error;

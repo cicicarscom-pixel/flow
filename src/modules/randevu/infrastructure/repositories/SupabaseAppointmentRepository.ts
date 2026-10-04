@@ -191,7 +191,7 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
     const { data: user } = await supabase.auth.getUser();
     let calsMap = new Map<string, string>();
     if (user?.user?.id) {
-      const { data: cals } = await supabase.from('calendars').select('id, name').eq('merchant_id', user.user.id);
+      const { data: cals } = await supabase.from('calendars').select('id, name');
       if (cals) {
         cals.forEach((c: any) => calsMap.set(c.id, c.name));
       }
@@ -213,7 +213,6 @@ export class SupabaseAppointmentRepository implements IAppointmentRepository {
       const { data } = await supabase
         .from('business_services')
         .select('id, name')
-        .eq('merchant_id', user.user.id)
         .in('id', Array.from(serviceIds));
       services = data;
     }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../../../shared/lib/supabase';
+import { getCurrentOrgId } from '../../../../lib/org';
 
 export interface CommunicationLog {
   id: string;
@@ -27,11 +28,9 @@ export function useCommunicationLogs() {
       const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', merchantId).maybeSingle();
       const orgId = orgMember?.organization_id || merchantId;
       
-      // ai_communication_logs: ham merchantId ile anahtarlanır (organizasyon fallback'i YOK)
       const { data, error: fetchError } = await supabase
         .from('ai_communication_logs')
         .select('*')
-        .eq('merchant_id', merchantId)
         .order('created_at', { ascending: false })
         .limit(50);
       
@@ -68,8 +67,9 @@ export function useCommunicationLogs() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      // ai_communication_logs ham merchantId ile anahtarlanır
-      const { error: deleteError } = await supabase.from('ai_communication_logs').delete().eq('merchant_id', session.user.id);
+      const orgId = await getCurrentOrgId(supabase);
+      if (!orgId) return;
+      const { error: deleteError } = await supabase.from('ai_communication_logs').delete().eq('org_id', orgId);
       if (deleteError) throw deleteError;
       setLogs([]);
       setPlatformStats([]);
