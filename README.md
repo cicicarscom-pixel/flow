@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - Karakter Ayarları kaydırıcıları)
+- Mobilde Karakter Yoğunluğu / Mizah / Modern Uyarlama kaydırıcıları sürüklenmiyordu: parmak konumu en içteki görünüme göre okunuyor ve üstteki ScrollView hareketi çalıyordu. Artık ekran konumuna göre hesaplanıyor ve kaydırma çalmıyor. (Kaydırıcılar yalnız Standart dışında bir karakter seçiliyken görünür.)
+
 ## 🆕 Son Güncellemeler (05.10.2026 - Özel rol silme)
 - Özel rol kartının sağ üstüne × eklendi (uzun basma kaldırıldı); basınca "silmek istediğinden emin misin?" onayı çıkar.
 

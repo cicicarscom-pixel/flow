@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { View, Text, PanResponder, StyleSheet, GestureResponderEvent, PanResponderGestureState } from 'react-native';
 
 // ==============================================================================
@@ -24,24 +24,36 @@ export interface DialSliderProps {
 }
 
 export default function DialSlider({ label, value, onChange, accentColor = '#FF7A59' }: DialSliderProps) {
-  const [trackWidth, setTrackWidth] = useState(0);
+  const containerRef = useRef<View>(null);
+  // Parmağın EKRAN konumu (pageX) ile kapsayıcının ekran konumu karşılaştırılır. evt.nativeEvent.locationX
+  // dokunulan EN İÇ görünüme göre geldiği için (çubuk/dolgu), değer sıçrıyor ve sürükleme çalışmıyordu.
+  const geo = useRef({ left: 0, width: 0 });
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   const clamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
 
-  const updateFromLocationX = (locationX: number) => {
-    if (trackWidth <= 0) return;
-    onChange(clamp((locationX / trackWidth) * 100));
+  const apply = (pageX: number) => {
+    const { left, width } = geo.current;
+    if (width <= 0) return;
+    onChangeRef.current(clamp(((pageX - left) / width) * 100));
   };
 
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
+      // Üstteki ScrollView sürüklemeyi çalmasın (aksi halde kaydırıcı hareket etmiyor).
+      onPanResponderTerminationRequest: () => false,
       onPanResponderGrant: (evt: GestureResponderEvent) => {
-        updateFromLocationX(evt.nativeEvent.locationX);
+        const pageX = evt.nativeEvent.pageX;
+        containerRef.current?.measureInWindow((x: number, _y: number, w: number) => {
+          geo.current = { left: x, width: w };
+          apply(pageX);
+        });
       },
       onPanResponderMove: (evt: GestureResponderEvent, _gestureState: PanResponderGestureState) => {
-        updateFromLocationX(evt.nativeEvent.locationX);
+        apply(evt.nativeEvent.pageX);
       },
     })
   ).current;
@@ -56,11 +68,12 @@ export default function DialSlider({ label, value, onChange, accentColor = '#FF7
       </View>
 
       <View
-        onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+        ref={containerRef}
+        collapsable={false}
         {...panResponder.panHandlers}
         style={styles.touchArea}
       >
-        <View style={styles.trackBg}>
+        <View pointerEvents="none" style={styles.trackBg}>
           <View style={[styles.trackFill, { width: `${safeValue}%`, backgroundColor: accentColor }]} />
         </View>
         <View
