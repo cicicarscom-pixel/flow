@@ -21,7 +21,13 @@ export default function GlobalAppBar({
   const accentColor = ModuleAccent[module] ?? ModuleAccent.genel;
 
   const handleBack = () => {
-    if (onBackPress) onBackPress();
+    if (onBackPress) { onBackPress(); return; }
+    // Alt sekmelerin kök ekranlarında (Ai Asistan, Ai Muhasebe, Sosyal Medya, Analiz) geri gidilecek yığın yoktur ve
+    // canGoBack() yanıltıcı olabilir: düğme hiçbir şey yapmıyordu. Bu durumda Anasayfa sekmesine dönülür.
+    const state = navigation.getState?.();
+    const parentType = navigation.getParent?.()?.getState?.()?.type;
+    const isTabRoot = state?.type === 'tab' || (state?.type === 'stack' && state.index === 0 && parentType === 'tab');
+    if (isTabRoot) navigation.navigate('Anasayfa');
     else if (navigation.canGoBack()) navigation.goBack();
   };
 

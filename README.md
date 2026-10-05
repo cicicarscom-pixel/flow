@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - Geri tuşu)
+- Alt sekmelerin kök ekranlarında (Ai Asistan, Ai Muhasebe, Sosyal Medya, Analiz) üst çubuktaki geri oku hiçbir şey yapmıyordu; artık Anasayfa sekmesine döner (`GlobalAppBar`).
+
 ## 🆕 Son Güncellemeler (05.10.2026 - Karakter Ayarları kaydırıcıları)
 - Mobilde Karakter Yoğunluğu / Mizah / Modern Uyarlama kaydırıcıları sürüklenmiyordu: parmak konumu en içteki görünüme göre okunuyor ve üstteki ScrollView hareketi çalıyordu. Artık ekran konumuna göre hesaplanıyor ve kaydırma çalmıyor. (Kaydırıcılar yalnız Standart dışında bir karakter seçiliyken görünür.)
 
