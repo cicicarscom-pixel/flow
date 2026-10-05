@@ -17,7 +17,6 @@ export class Appointment {
   private readonly _calendarId: string | null;
   private readonly _customerRequestRaw: string | null;
   private _services?: string[];
-    calendarName?: string | null;
   private _calendarName?: string | null;
 
   constructor(data: {
@@ -37,7 +36,8 @@ export class Appointment {
     calendarId?: string | null;
     services?: string[];
     customerRequestRaw?: string | null;
-  cancelReason?: string | null;
+    calendarName?: string | null;
+    cancelReason?: string | null;
   }) {
     this._id = data.id;
     this._customerPhone = data.customerPhone;

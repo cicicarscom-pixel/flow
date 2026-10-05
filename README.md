@@ -301,6 +301,12 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - Yayın öncesi tarama)
+- `eas.json` eklendi (preview=APK, production=AAB + otomatik sürüm kodu, uzak sürüm kaynağı).
+- Kullanılmayan paketler kaldırıldı: `googleapis`, `@google/genai`, `@zernio/node`, `expo-media-library` (gereksiz depolama izni ve sunucu SDK'ları).
+- `.env.example`: Gemini/Zernio için `EXPO_PUBLIC_*` örnekleri kaldırıldı (EXPO_PUBLIC_* değerleri APK'ya gömülür).
+- `Appointment` varlığındaki yinelenen `calendarName` bildirimi temizlendi.
+
 ## 🆕 Son Güncellemeler (05.10.2026 - Kart çerçevesi)
 - Anasayfa'da "Son fatura" ve "Tüm Hesaplar" kartlarının etrafındaki kalın koyu kuşak kaldırıldı (Android'de elevation gölgesi yarı saydam arka planın altından görünüyordu); kartlar opak arka plan + ince renkli çerçeve kullanır.
 
