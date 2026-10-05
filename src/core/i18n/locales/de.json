@@ -756,7 +756,12 @@
       "engagement": "Interaktion",
       "noAccounts": "Noch keine Social-Media-Konten verbunden",
       "connectAccount": "Konto verbinden",
-      "liveAnalysis": "LIVE-ANALYSE"
+      "liveAnalysis": "LIVE-ANALYSE",
+      "accountsConnected": "{{n}} Konten verbunden",
+      "change": "Veränderung",
+      "noChange": "Keine Änderung",
+      "followersShort": "Follower",
+      "viewAnalysis": "Analyse ansehen"
     },
     "invoiceScanner": {
       "header": "Rechnungsscanner · Letzte Rechnung",

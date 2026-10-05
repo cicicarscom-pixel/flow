@@ -756,7 +756,12 @@
       "engagement": "Engagement",
       "noAccounts": "No social media accounts connected yet",
       "connectAccount": "Connect account",
-      "liveAnalysis": "LIVE ANALYTICS"
+      "liveAnalysis": "LIVE ANALYTICS",
+      "accountsConnected": "{{n}} accounts connected",
+      "change": "Change",
+      "noChange": "No change",
+      "followersShort": "followers",
+      "viewAnalysis": "View analytics"
     },
     "invoiceScanner": {
       "header": "Invoice scanner · Latest invoice",

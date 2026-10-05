@@ -34,6 +34,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { decode } from 'base64-arraybuffer';
 import { getCurrentOrgId } from '../lib/org';
 import InvoiceSummaryCard from '../shared/ui/InvoiceSummaryCard';
+import SocialSummaryCard from '../shared/ui/SocialSummaryCard';
 
 const PLATFORM_ICONS = {
   WHATSAPP: { name: 'logo-whatsapp', color: '#25D366' },
@@ -304,6 +305,7 @@ export default function DashboardScreen({ navigation }) {
   const [latestInvoice, setLatestInvoice] = useState(null);
   const [orgTz, setOrgTz] = useState('Europe/Istanbul');
   const [hasSocialAccounts, setHasSocialAccounts] = useState(true);
+  const [socialAccounts, setSocialAccounts] = useState([]);
   const [recentActivities, setRecentActivities] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [totalAppointments, setTotalAppointments] = useState(0);
@@ -520,6 +522,15 @@ export default function DashboardScreen({ navigation }) {
         setSocialStats(prev => ({ ...prev, followers: totalFollowers, trend: finalTrend }));
           const hasAccounts = Array.isArray(actualFollow.accounts) && actualFollow.accounts.length > 0;
           setHasSocialAccounts(hasAccounts);
+          setSocialAccounts(hasAccounts ? actualFollow.accounts.map(a => ({
+            id: a._id || a.id || a.accountId,
+            platform: a.platform,
+            name: a.displayName || a.username || '',
+            username: a.username || '',
+            picture: a.profilePicture || null,
+            followers: Number(a.currentFollowers || a.followers || 0),
+            growth: Number(a.growthPercentage || a.followerGrowthPercentage || a.growth || 0),
+          })) : []);
 
 
         // 4. Recent Activities (Messages & Comments)
@@ -997,45 +1008,18 @@ export default function DashboardScreen({ navigation }) {
 
             {/* Tüm Hesaplar — sosyal özet */}
             <CustomGlassCard style={styles.socialCard} glowColor="#A5B4FC">
-              <View style={[styles.socialHeader, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-                <Text style={styles.sectionTitle}>{t('dashboardScreen.social.allAccounts')}</Text>
-                {hasSocialAccounts && (
-                  <View style={{ backgroundColor: 'rgba(34,197,94,0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
-                    <Text style={{ color: '#22C55E', fontSize: 9, fontWeight: '700', letterSpacing: 0.5 }}>{t('dashboardScreen.social.liveAnalysis')}</Text>
-                  </View>
-                )}
-              </View>
-
               {hasSocialAccounts ? (
-                <View style={[styles.socialMainRow, { marginTop: 12, flexDirection: 'row', alignItems: 'center' }]}>
-                  <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.05)', justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
-                    <MaterialIcons name="people" size={20} color="#A5B4FC" />
-                  </View>
-                  <View style={styles.socialStatsWrapper}>
-                    {isLoading ? (
-                      <Skeleton width={70} height={26} />
-                    ) : (
-                      <>
-                        <Text style={{ fontSize: 24, fontWeight: '800', color: COLORS.onBackground }}>{socialStats.followers.toLocaleString('tr-TR')}</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          {socialStats.trend > 0 ? (
-                            <MaterialIcons name="arrow-upward" size={13} color={COLORS.tertiaryFixed} />
-                          ) : socialStats.trend < 0 ? (
-                            <MaterialIcons name="arrow-downward" size={13} color="#EF4444" />
-                          ) : (
-                            <MaterialIcons name="remove" size={13} color={COLORS.onSurfaceVariant} />
-                          )}
-                          <Text style={{ fontSize: 11, fontWeight: '700', color: socialStats.trend > 0 ? COLORS.tertiaryFixed : socialStats.trend < 0 ? "#EF4444" : COLORS.onSurfaceVariant }}>
-                            {socialStats.trend !== 0 ? ` ${Math.abs(socialStats.trend)}%` : ''}
-                          </Text>
-                        </View>
-                      </>
-                    )}
-                  </View>
-                </View>
+                <SocialSummaryCard
+                  accounts={socialAccounts}
+                  totalFollowers={socialStats.followers}
+                  trend={socialStats.trend}
+                  loading={isLoading}
+                  onViewAnalytics={() => navigation.navigate('Analiz')}
+                />
               ) : (
                 <View style={{ paddingVertical: 10, alignItems: 'center' }}>
-                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13, textAlign: 'center' }}>{t('dashboardScreen.social.noAccounts')}</Text>
+                  <Text style={styles.sectionTitle}>{t('dashboardScreen.social.allAccounts')}</Text>
+                  <Text style={{ color: COLORS.onSurfaceVariant, fontSize: 13, textAlign: 'center', marginTop: 8 }}>{t('dashboardScreen.social.noAccounts')}</Text>
                   <TouchableOpacity onPress={() => navigation.navigate('Sosyal Medya')} style={{ marginTop: 10 }}>
                     <Text style={{ color: '#00F2FE', fontSize: 13, fontWeight: '500' }}>{t('dashboardScreen.social.connectAccount')}</Text>
                   </TouchableOpacity>

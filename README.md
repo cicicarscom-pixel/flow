@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - Tüm Hesaplar kartı)
+- Anasayfa "Tüm Hesaplar" kartı yenilendi (`src/shared/ui/SocialSummaryCard.js`): toplam takipçi ve değişim, platform dağılım çubuğu, hesap başına takipçi/değişim satırları ve "Ayrıntılı analiz" düğmesi (Analiz sekmesine gider).
+
 ## 🆕 Son Güncellemeler (05.10.2026 - Geri tuşu)
 - Alt sekmelerin kök ekranlarında (Ai Asistan, Ai Muhasebe, Sosyal Medya, Analiz) üst çubuktaki geri oku hiçbir şey yapmıyordu; artık Anasayfa sekmesine döner (`GlobalAppBar`).
 

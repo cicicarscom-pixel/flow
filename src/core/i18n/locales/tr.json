@@ -756,7 +756,12 @@
       "engagement": "Etkileşim",
       "noAccounts": "Henüz sosyal medya hesabı bağlanmadı",
       "connectAccount": "Hesap Bağla",
-      "liveAnalysis": "CANLI ANALİZ"
+      "liveAnalysis": "CANLI ANALİZ",
+      "accountsConnected": "{{n}} hesap bağlı",
+      "change": "Değişim",
+      "noChange": "Değişim yok",
+      "followersShort": "takipçi",
+      "viewAnalysis": "Ayrıntılı analiz"
     },
     "invoiceScanner": {
       "header": "Fatura tarayıcı · Son fatura",
