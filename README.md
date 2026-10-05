@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - Kart çerçevesi)
+- Anasayfa'da "Son fatura" ve "Tüm Hesaplar" kartlarının etrafındaki kalın koyu kuşak kaldırıldı (Android'de elevation gölgesi yarı saydam arka planın altından görünüyordu); kartlar opak arka plan + ince renkli çerçeve kullanır.
+
 ## 🆕 Son Güncellemeler (05.10.2026 - Tüm Hesaplar kartı)
 - Anasayfa "Tüm Hesaplar" kartı yenilendi (`src/shared/ui/SocialSummaryCard.js`): toplam takipçi ve değişim, platform dağılım çubuğu, hesap başına takipçi/değişim satırları ve "Ayrıntılı analiz" düğmesi (Analiz sekmesine gider).
 

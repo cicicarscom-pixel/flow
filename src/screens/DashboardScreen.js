@@ -108,13 +108,14 @@ const GlowingText = ({ children, style, color = COLORS.primary }) => (
 const CustomGlassCard = ({ children, style, glowColor }) => (
   <View style={[
     styles.glassCard,
+    // Renkli çerçeveli kartlar: Android'de elevation gölgesi yarı saydam arka planın ALTINDAN görünüp kalın koyu
+    // bir kuşak oluşturuyordu. Gölge/elevation kaldırıldı, arka plan opak yapıldı; yalnız ince renkli çerçeve kalır.
     glowColor ? {
-      borderColor: `rgba(${hexToRgb(glowColor)}, 0.3)`,
-      shadowColor: glowColor,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.1,
-      shadowRadius: 15,
-      elevation: 5,
+      backgroundColor: '#24202A',
+      borderColor: `rgba(${hexToRgb(glowColor)}, 0.35)`,
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      elevation: 0,
     } : null,
     style
   ]}>
