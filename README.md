@@ -302,6 +302,7 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 ---
 
 ## 🆕 Son Güncellemeler (05.10.2026 - Hesap silme ve gizlilik)
+- Hesap silme sonrası yalnız yerel oturum kapatılır (`signOut({ scope: 'local' })`); silinen kullanıcı için global çıkış 403 veriyordu.
 - Profil ekranının altına "Hesabı sil" bölümü (e-posta ile onay + son uyarı; `delete-account` Edge Function'ı hesabı ve bütün veriyi kalıcı siler) ve Profil/Giriş ekranlarına Gizlilik Politikası bağlantısı (`https://flow.workigom.com/gizlilik`) eklendi. Google Play zorunluluğu.
 
 ## 🆕 Son Güncellemeler (05.10.2026 - Yayın öncesi tarama)
