@@ -585,7 +585,8 @@
     "loginButton": "Log In",
     "signupButton": "Sign Up",
     "noAccountText": "Don't have an account? ",
-    "hasAccountText": "Already have an account? "
+    "hasAccountText": "Already have an account? ",
+    "privacyLink": "Privacy Policy"
   },
   "aiAssistantScreen": {
     "initialMessages": {
@@ -908,5 +909,16 @@
       "done": "Guide finished. Want help with something else?",
       "cancelled": "I ended the guide. You can start it again anytime."
     }
+  },
+  "accountDelete": {
+    "title": "Delete account",
+    "warning": "Your account and all business data (appointments, customers, financial records, social media and WhatsApp connections, AI records) will be permanently deleted. This cannot be undone.",
+    "confirmLabel": "Type your email address to confirm:",
+    "button": "Delete my account",
+    "cancel": "Cancel",
+    "finalConfirm": "Your account and all your data will be permanently deleted. Are you sure?",
+    "adminBlocked": "Administrator accounts cannot be deleted here.",
+    "error": "Could not delete the account. Please try again.",
+    "privacy": "Privacy Policy"
   }
 }

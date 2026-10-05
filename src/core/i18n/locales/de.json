@@ -585,7 +585,8 @@
     "loginButton": "Anmelden",
     "signupButton": "Registrieren",
     "noAccountText": "Sie haben noch kein Konto? ",
-    "hasAccountText": "Sie haben bereits ein Konto? "
+    "hasAccountText": "Sie haben bereits ein Konto? ",
+    "privacyLink": "Datenschutzerklärung"
   },
   "aiAssistantScreen": {
     "initialMessages": {
@@ -908,5 +909,16 @@
       "done": "Anleitung beendet. Brauchst du Hilfe bei etwas anderem?",
       "cancelled": "Ich habe die Anleitung beendet. Du kannst sie jederzeit neu starten."
     }
+  },
+  "accountDelete": {
+    "title": "Konto löschen",
+    "warning": "Ihr Konto und alle Unternehmensdaten (Termine, Kunden, Finanzdaten, Social-Media- und WhatsApp-Verbindungen, KI-Daten) werden dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
+    "confirmLabel": "Geben Sie zur Bestätigung Ihre E-Mail-Adresse ein:",
+    "button": "Mein Konto löschen",
+    "cancel": "Abbrechen",
+    "finalConfirm": "Ihr Konto und alle Ihre Daten werden dauerhaft gelöscht. Sind Sie sicher?",
+    "adminBlocked": "Administratorkonten können hier nicht gelöscht werden.",
+    "error": "Das Konto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+    "privacy": "Datenschutzerklärung"
   }
 }

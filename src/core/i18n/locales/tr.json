@@ -585,7 +585,8 @@
     "loginButton": "Giriş Yap",
     "signupButton": "Kayıt Ol",
     "noAccountText": "Hesabınız yok mu? ",
-    "hasAccountText": "Zaten hesabınız var mı? "
+    "hasAccountText": "Zaten hesabınız var mı? ",
+    "privacyLink": "Gizlilik Politikası"
   },
   "aiAssistantScreen": {
     "initialMessages": {
@@ -900,5 +901,16 @@
       "done": "Rehber bitti. Başka bir konuda yardım ister misin?",
       "cancelled": "Rehberi bitirdim. İstediğin zaman tekrar başlatabilirsin."
     }
+  },
+  "accountDelete": {
+    "title": "Hesabı sil",
+    "warning": "Hesabınız ve işletmenize ait bütün veriler (randevular, müşteriler, finans kayıtları, sosyal medya ve WhatsApp bağlantıları, yapay zeka kayıtları) kalıcı olarak silinir. Bu işlem geri alınamaz.",
+    "confirmLabel": "Onaylamak için e-posta adresinizi yazın:",
+    "button": "Hesabımı sil",
+    "cancel": "Vazgeç",
+    "finalConfirm": "Hesabınız ve bütün verileriniz kalıcı olarak silinecek. Emin misiniz?",
+    "adminBlocked": "Yönetici hesapları buradan silinemez.",
+    "error": "Hesap silinemedi. Lütfen tekrar deneyin.",
+    "privacy": "Gizlilik Politikası"
   }
 }

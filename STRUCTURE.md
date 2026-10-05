@@ -28,6 +28,7 @@
 | `STRUCTURE.md` | Bu harita | Hayır (CI) | Talimatla |
 | `README.md` | Proje belgesi + "Son Güncellemeler" | Hayır | Serbest |
 | `README_SCREENS.md` | Ekran listesi belgesi | Hayır | Serbest |
+| `eas.json` | EAS Build/Submit profilleri (preview=APK, production=AAB) | Hayır | Talimatla |
 | `LICENSE` | Lisans | Hayır | Dokunma |
 | `.agents/` | UI karar günlüğü (`.agents/AGENTS.md`) ve Gemini beceri belgeleri. Kural kaynağı DEĞİL; çelişirse `AGENTS.md` geçerli | Hayır | Talimatla |
 | `.claude/` | Claude Code yerel ayarları | Hayır | Dokunma |

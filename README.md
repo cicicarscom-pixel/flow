@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - Hesap silme ve gizlilik)
+- Profil ekranının altına "Hesabı sil" bölümü (e-posta ile onay + son uyarı; `delete-account` Edge Function'ı hesabı ve bütün veriyi kalıcı siler) ve Profil/Giriş ekranlarına Gizlilik Politikası bağlantısı (`https://flow.workigom.com/gizlilik`) eklendi. Google Play zorunluluğu.
+
 ## 🆕 Son Güncellemeler (05.10.2026 - Yayın öncesi tarama)
 - `eas.json` eklendi (preview=APK, production=AAB + otomatik sürüm kodu, uzak sürüm kaynağı).
 - Kullanılmayan paketler kaldırıldı: `googleapis`, `@google/genai`, `@zernio/node`, `expo-media-library` (gereksiz depolama izni ve sunucu SDK'ları).

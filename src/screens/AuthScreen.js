@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { CustomButton, CustomInput } from '../shared';
 import * as WebBrowser from 'expo-web-browser';
+import { PRIVACY_POLICY_URL } from '../shared/lib/legalUrls';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as QueryParams from 'expo-auth-session/build/QueryParams';
 
@@ -253,6 +254,10 @@ export default function AuthScreen({ onSignUpSuccess }) {
                 {isLogin ? t('authScreen.signupButton') : t('authScreen.loginButton')}
               </Text>
             </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)} className="items-center mt-4">
+            <Text className="text-[#9CC2FF] text-xs">{t('authScreen.privacyLink')}</Text>
           </TouchableOpacity>
           
         </View>

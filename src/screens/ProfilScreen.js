@@ -12,6 +12,7 @@ import { GlobalAppBar , supabase } from '../shared';
 import { CustomButton } from '../shared';
 import { CustomInput } from '../shared';
 import AddressSelector from '../shared/ui/AddressSelector';
+import DeleteAccountSection from '../shared/ui/DeleteAccountSection';
 import { setAppLanguage, getSavedLanguageOverride } from '../core/i18n';
 
 const LANGUAGE_OPTIONS = [
@@ -458,6 +459,8 @@ const handleSave = async () => {
                 className="bg-[#EF4444]/10 border border-[#EF4444]"
                 textClassName="text-[#EF4444]"
               />
+
+              <DeleteAccountSection email={email} />
             </>
           )}
 
