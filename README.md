@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (05.10.2026 - Özel rol silme)
+- Özel rol kartının sağ üstüne × eklendi (uzun basma kaldırıldı); basınca "silmek istediğinden emin misin?" onayı çıkar.
+
 ## 🆕 Son Güncellemeler (05.10.2026 - Özel işletme rolü kartları)
 - Bot Yönetimi > İşletme Rolü: listenin başına "Ekle" kartı; rol yazılır, kart olarak eklenir ve seçilir (uzun basarak silinir). Web ile aynı `custom_business_roles` tablosunu kullanır.
 - Asistan talimatı artık rol metninden ayrı tutuluyor (`custom_instruction`); eskiden aynı alan ikisini birden yazıyordu.

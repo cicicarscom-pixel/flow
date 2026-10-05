@@ -379,7 +379,8 @@
       "save": "Add",
       "cancel": "Cancel",
       "remove": "Delete role",
-      "error": "Could not add the role (up to 20 roles)."
+      "error": "Could not add the role (up to 20 roles).",
+      "confirm": "Are you sure you want to delete the role \"{{name}}\"?"
     }
   },
   "common": {

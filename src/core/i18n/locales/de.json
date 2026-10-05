@@ -379,7 +379,8 @@
       "save": "Hinzufügen",
       "cancel": "Abbrechen",
       "remove": "Rolle löschen",
-      "error": "Rolle konnte nicht hinzugefügt werden (maximal 20)."
+      "error": "Rolle konnte nicht hinzugefügt werden (maximal 20).",
+      "confirm": "Möchtest du die Rolle \"{{name}}\" wirklich löschen?"
     }
   },
   "common": {

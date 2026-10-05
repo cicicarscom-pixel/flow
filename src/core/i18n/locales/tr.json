@@ -379,7 +379,8 @@
       "save": "Ekle",
       "cancel": "Vazgeç",
       "remove": "Rolü sil",
-      "error": "Rol eklenemedi (en fazla 20 rol eklenebilir)."
+      "error": "Rol eklenemedi (en fazla 20 rol eklenebilir).",
+      "confirm": "\"{{name}}\" rolünü silmek istediğinden emin misin?"
     }
   },
   "common": {

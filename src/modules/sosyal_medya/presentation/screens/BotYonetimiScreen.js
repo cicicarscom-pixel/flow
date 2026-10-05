@@ -685,26 +685,37 @@ export default function BotYonetimiScreen() {
                         const inList = customRoles.some(r => r.label === promptConfig.customRoleText);
                         const orphan = promptConfig.roleId === 'custom' && promptConfig.customRoleText && !inList
                           ? [{ id: '__current', label: promptConfig.customRoleText }] : [];
+                        const askRemove = (r) => {
+                          Alert.alert(t('personas.addRole.remove'), t('personas.addRole.confirm', { name: r.label }), [
+                            { text: t('personas.addRole.cancel'), style: 'cancel' },
+                            { text: t('personas.addRole.remove'), style: 'destructive', onPress: async () => {
+                              const { error } = await supabase.from('custom_business_roles').delete().eq('id', r.id);
+                              if (error) return;
+                              setCustomRoles(list => list.filter(x => x.id !== r.id));
+                              if (promptConfig.roleId === 'custom' && promptConfig.customRoleText === r.label) { setCustomRole(''); setIsSaveBtnActive(true); }
+                            } },
+                          ]);
+                        };
                         return [...orphan, ...customRoles].map(r => (
-                          <PersonaAvatarCard
-                            key={r.id}
-                            label={r.label}
-                            icon="🏷️"
-                            accentColor="#FF7A59"
-                            selected={promptConfig.roleId === 'custom' && promptConfig.customRoleText === r.label}
-                            onPress={() => { setCustomRole(r.label); setIsSaveBtnActive(true); }}
-                            onLongPress={r.id === '__current' ? undefined : () => {
-                              Alert.alert(t('personas.addRole.remove'), r.label, [
-                                { text: t('personas.addRole.cancel'), style: 'cancel' },
-                                { text: t('personas.addRole.remove'), style: 'destructive', onPress: async () => {
-                                  const { error } = await supabase.from('custom_business_roles').delete().eq('id', r.id);
-                                  if (error) return;
-                                  setCustomRoles(list => list.filter(x => x.id !== r.id));
-                                  if (promptConfig.roleId === 'custom' && promptConfig.customRoleText === r.label) { setCustomRole(''); setIsSaveBtnActive(true); }
-                                } },
-                              ]);
-                            }}
-                          />
+                          <View key={r.id} style={{ position: 'relative' }}>
+                            <PersonaAvatarCard
+                              label={r.label}
+                              icon="🏷️"
+                              accentColor="#FF7A59"
+                              selected={promptConfig.roleId === 'custom' && promptConfig.customRoleText === r.label}
+                              onPress={() => { setCustomRole(r.label); setIsSaveBtnActive(true); }}
+                            />
+                            {r.id !== '__current' ? (
+                              <TouchableOpacity
+                                onPress={() => askRemove(r)}
+                                accessibilityLabel={t('personas.addRole.remove')}
+                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                style={{ position: 'absolute', top: 2, right: 6, width: 22, height: 22, borderRadius: 11, backgroundColor: 'rgba(0,0,0,0.7)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)' }}
+                              >
+                                <Ionicons name="close" size={14} color="#fff" />
+                              </TouchableOpacity>
+                            ) : null}
+                          </View>
                         ));
                       })()}
                       {ROLES.map(role => (
