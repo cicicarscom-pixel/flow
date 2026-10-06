@@ -113,9 +113,17 @@ export class WahaService implements IWahaService {
       if (error) {
         let code = 'WAHA_ERROR';
         try { code = (await (error as any).context?.json?.())?.error || code; } catch (_) { /* gövde okunamadı */ }
+        if (code === 'BOT_NOT_SETUP' && body.action === 'status') {
+          return { data: null, error: null };
+        }
         throw new Error(code);
       }
-      if (data && data.success === false) throw new Error(data.error || 'WAHA_ERROR');
+      if (data && data.success === false) {
+        if (data.error === 'BOT_NOT_SETUP' && body.action === 'status') {
+          return { data: null, error: null };
+        }
+        throw new Error(data.error || 'WAHA_ERROR');
+      }
       return { data: data?.data ?? null, error: null };
     } catch (error) {
       console.error('waha-session Error:', (error as Error)?.message);

@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (06.10.2026 - WAHA Bot)
+- WhatsApp durum sorgusunda 'bot kurulmamış' durumu hata sayılmaz (yeni kullanıcı).
+
 ## 🆕 Son Güncellemeler (05.10.2026 - Hesap silme ve gizlilik)
 - Profil ekranının altına "Hesabı sil" bölümü (e-posta ile onay + son uyarı; `delete-account` Edge Function'ı hesabı ve bütün veriyi kalıcı siler) ve Profil/Giriş ekranlarına Gizlilik Politikası bağlantısı (`https://flow.workigom.com/gizlilik`) eklendi. Google Play zorunluluğu.
 
