@@ -144,7 +144,6 @@ export default function FlowAiHost({ navigationRef }) {
 
   const send = useCallback(async (override) => {
     voice.stopSpeaking();
-    if (typeof override === 'string') lastWasVoice.current = false;
     setPlatformPick(null);
     const text = (typeof override === 'string' ? override : input).trim();
     if (!text || busy) return;
