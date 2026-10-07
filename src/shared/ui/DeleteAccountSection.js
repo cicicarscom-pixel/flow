@@ -27,7 +27,8 @@ export default function DeleteAccountSection({ email }) {
         Alert.alert(t('accountDelete.title'), code === 'ADMIN_ACCOUNT' ? t('accountDelete.adminBlocked') : t('accountDelete.error'));
         return;
       }
-      await supabase.auth.signOut();
+      // Kullanıcı sunucuda artık yok: global çıkış 403 verir, yalnız yerel oturumu kapat.
+      await supabase.auth.signOut({ scope: 'local' });
     } catch (e) {
       Alert.alert(t('accountDelete.title'), t('accountDelete.error'));
     } finally {
