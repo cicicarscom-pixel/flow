@@ -321,6 +321,7 @@ export default function AiUretimScreen({ route, navigation }) {
           if (route.params.flowAiShare) {
             const job = flowAiShareHandoff.takeJob();
             if (job) {
+              flowShareRef.current = { platforms: (Array.isArray(job.platforms) ? job.platforms : []).map((p) => String(p).toLowerCase()) };
               const file = flowAiShareHandoff.getFile();
               if (file && file.durationSec) {
                 setMediaDurationMs(file.durationSec * 1000);
@@ -433,7 +434,10 @@ export default function AiUretimScreen({ route, navigation }) {
   };
 
   const publishPost = async (connectedAccounts, contentType) => {
-    let allowedPlatforms = connectedAccounts.filter(acc => selectedPlatforms[acc.platform]);
+    const jobPlatforms = flowShareRef.current ? flowShareRef.current.platforms : null;
+    let allowedPlatforms = jobPlatforms
+      ? connectedAccounts.filter((acc) => jobPlatforms.includes(String(acc.platform).toLowerCase()))
+      : connectedAccounts.filter(acc => selectedPlatforms[acc.platform]);
 
     if (allowedPlatforms.length === 0) {
       Alert.alert(t('sosyalMedya.alerts.info'), "Lütfen en az bir platform seçin.");
@@ -625,6 +629,7 @@ export default function AiUretimScreen({ route, navigation }) {
   };
 
   const handleShareRef = useRef(null);
+  const flowShareRef = useRef(null);
 
   useEffect(() => {
     handleShareRef.current = handleShare;
@@ -632,7 +637,8 @@ export default function AiUretimScreen({ route, navigation }) {
 
   useEffect(() => {
     if (route?.params?.flowAiShare) {
-      const ready = !!(localImage && localText && Object.values(selectedPlatforms).some(Boolean) && !isSharing);
+      const hasSelection = flowShareRef.current ? flowShareRef.current.platforms.length > 0 : Object.values(selectedPlatforms).some(Boolean);
+      const ready = !!(localImage && localText && hasSelection && !isSharing);
       flowAiShareHandoff.registerScreen({
         ready,
         share: () => {
@@ -675,6 +681,7 @@ export default function AiUretimScreen({ route, navigation }) {
         setIsSharing(false);
         setUploadProgress(0);
         shareError(t('sosyalMedya.alerts.noSession'));
+        flowShareRef.current = null;
         return;
       }
 
@@ -687,6 +694,7 @@ export default function AiUretimScreen({ route, navigation }) {
         setIsSharing(false);
         setUploadProgress(0);
         shareError(t('sosyalMedya.alerts.connectAccountFirst'));
+        flowShareRef.current = null;
         return;
       }
 
@@ -701,12 +709,14 @@ export default function AiUretimScreen({ route, navigation }) {
         setIsSharing(false);
         setUploadProgress(0);
         shareError(t('flowAi.share.failedShort'));
+        flowShareRef.current = null;
         return;
       }
 
       clearInterval(progressInterval);
       setUploadProgress(100);
       shareSuccess();
+      flowShareRef.current = null;
       setTimeout(() => {
         setIsSharing(false);
         setUploadProgress(0);
@@ -719,6 +729,7 @@ export default function AiUretimScreen({ route, navigation }) {
       console.error("Paylaşım istisnası:", err);
       // Zero UI gereği kullanıcıya hata fırlatma
       shareError(err?.message || "Hata");
+      flowShareRef.current = null;
     }
   };
 
