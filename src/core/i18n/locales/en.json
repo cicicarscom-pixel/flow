@@ -856,6 +856,17 @@
     "approved": "Approved and applied.",
     "rejected": "Rejected, nothing was done.",
     "notApplied": "The action could not be applied (it may have expired or changed).",
+    "share": {
+      "title": "New video share",
+      "unreadable": "Video could not be read or format is invalid.",
+      "confirm": "Confirm & Share",
+      "cancel": "Cancel",
+      "starting": "Starting share...",
+      "wait": "Filling information, please wait...",
+      "done": "Video shared successfully.",
+      "scheduled": "Video share scheduled.",
+      "failed": "Failed to start sharing: {{message}}"
+    },
     "publish": {
       "title": "Waiting for publish approval",
       "now": "will be published now",

@@ -848,6 +848,17 @@
     "approved": "Onaylandı ve uygulandı.",
     "rejected": "Reddedildi, hiçbir şey yapılmadı.",
     "notApplied": "İşlem uygulanamadı (süresi dolmuş ya da değişmiş olabilir).",
+    "share": {
+      "title": "Yeni video paylaşımı",
+      "unreadable": "Video okunamadı veya biçimi uygun değil.",
+      "confirm": "Onayla ve Paylaş",
+      "cancel": "Vazgeç",
+      "starting": "Paylaşım başlatılıyor...",
+      "wait": "Bilgiler dolduruluyor, lütfen bekleyin...",
+      "done": "Video başarıyla paylaşıldı.",
+      "scheduled": "Video paylaşımı planlandı.",
+      "failed": "Paylaşım başlatılamadı: {{message}}"
+    },
     "publish": {
       "title": "Yayın onayı bekliyor",
       "now": "hemen yayınlanacak",

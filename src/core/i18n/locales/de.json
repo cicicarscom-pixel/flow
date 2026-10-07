@@ -856,6 +856,17 @@
     "approved": "Bestätigt und ausgeführt.",
     "rejected": "Abgelehnt, es wurde nichts getan.",
     "notApplied": "Die Aktion konnte nicht ausgeführt werden (abgelaufen oder geändert).",
+    "share": {
+      "title": "Neues Video teilen",
+      "unreadable": "Video konnte nicht gelesen werden oder Format ungültig.",
+      "confirm": "Bestätigen & Teilen",
+      "cancel": "Abbrechen",
+      "starting": "Teilen wird gestartet...",
+      "wait": "Informationen werden ausgefüllt, bitte warten...",
+      "done": "Video erfolgreich geteilt.",
+      "scheduled": "Video zum Teilen geplant.",
+      "failed": "Teilen konnte nicht gestartet werden: {{message}}"
+    },
     "publish": {
       "title": "Wartet auf Veröffentlichungsfreigabe",
       "now": "wird sofort veröffentlicht",

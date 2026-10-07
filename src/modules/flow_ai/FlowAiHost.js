@@ -14,6 +14,9 @@ import { FlowAiService } from './FlowAiService';
 import { dispatchClientAction } from './flowAiActions';
 import { subscribeFlowEvents, subscribeGuideStart } from './flowAiEvents';
 import { FLOW_GUIDES } from './flowAiGuides';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+import { flowAiShareHandoff } from './flowAiShareHandoff';
 
 // Uygulama kökünde (NavigationContainer içinde) durur: ekran değişince panel ve konuşma KAPANMAZ.
 // Panel, Modal değil kaplamadır; üstündeki alan dokunmayı alttaki ekrana geçirir.
@@ -38,6 +41,9 @@ export default function FlowAiHost({ navigationRef }) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
+  const [attachmentMeta, setAttachmentMeta] = useState(null);
+  const [shareJobPending, setShareJobPending] = useState(null);
+  const [shareConfirmState, setShareConfirmState] = useState('IDLE');
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState([]); // {id, role:'user'|'assistant'|'error', text}
@@ -65,6 +71,57 @@ export default function FlowAiHost({ navigationRef }) {
     setMessages((m) => [...m, { id: String(++seq.current), role, text }]);
   }, []);
 
+  useEffect(() => {
+    const unSub = subscribeFlowEvents((e) => {
+      if (e.type === 'share-result') {
+        if (e.ok) {
+          push('assistant', shareJobPending?.scheduledLocal ? t('flowAi.share.scheduled') : t('flowAi.share.done'));
+        } else {
+          push('error', t('flowAi.share.failed', { message: e.message || '' }));
+        }
+        setShareJobPending(null);
+        setAttachmentMeta(null);
+        setShareConfirmState('IDLE');
+        flowAiShareHandoff.clear();
+      }
+    });
+    return unSub;
+  }, [push, shareJobPending, t]);
+
+  const handleAttach = async () => {
+    try {
+      const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['videos'], allowsEditing: false, quality: 1 });
+      if (!res.canceled && res.assets && res.assets.length > 0) {
+        const asset = res.assets[0];
+        if (!Number.isFinite(asset.duration) || asset.duration <= 0) {
+          push('error', t('flowAi.share.unreadable'));
+          return;
+        }
+        
+        let sizeBytes = asset.fileSize;
+        if (sizeBytes === undefined) {
+          const info = await FileSystem.getInfoAsync(asset.uri);
+          if (info.exists) sizeBytes = info.size;
+        }
+        
+        const meta = {
+          kind: 'video',
+          mimeType: asset.mimeType || 'video/mp4',
+          durationSec: asset.duration / 1000,
+          width: asset.width,
+          height: asset.height,
+          sizeBytes: sizeBytes || 0,
+          fileName: (asset.fileName || asset.uri.split('/').pop() || 'video.mp4').substring(0, 120),
+          uri: asset.uri
+        };
+        setAttachmentMeta(meta);
+        flowAiShareHandoff.attach(meta);
+      }
+    } catch (e) {
+      push('error', t('flowAi.share.unreadable'));
+    }
+  };
+
   const send = useCallback(async (override) => {
     const text = (typeof override === 'string' ? override : input).trim();
     if (!text || busy) return;
@@ -72,20 +129,31 @@ export default function FlowAiHost({ navigationRef }) {
     push('user', text);
     setBusy(true);
     try {
-      const res = await FlowAiService.chat(text, conversationId.current);
+      const res = await FlowAiService.chat(text, conversationId.current, attachmentMeta);
       conversationId.current = res.conversationId;
       push('assistant', res.reply);
       setPending(res.pendingActions || []);
-      (res.clientActions || []).forEach((a) => dispatchClientAction(a, navigationRef));
-      // Taslak açıldıysa panel kapanır; kullanıcı doldurulan ekranı görür ve Paylaş'a kendisi basar.
-      // Onay kartı bekliyorsa panel AÇIK kalır (kullanıcı kartı görmeli).
-      if ((res.clientActions || []).some((a) => a?.type === 'open_post_draft') && !(res.pendingActions || []).length) setOpen(false);
+      
+      const actions = res.clientActions || [];
+      actions.forEach((a) => {
+        if (a?.type === 'share_video') {
+          // It's dispatched via actions, we also intercept it here to set pending state
+          const { caption, platforms, skipped, scheduledLocal, timezone } = a;
+          const job = { caption, platforms, skipped: skipped || [], scheduledLocal: scheduledLocal || null, timezone };
+          setShareJobPending(job);
+        }
+        dispatchClientAction(a, navigationRef);
+      });
+
+      if (actions.some((a) => a?.type === 'open_post_draft') && !(res.pendingActions || []).length && !actions.some(a => a?.type === 'share_video')) {
+        setOpen(false);
+      }
     } catch (e) {
       push('error', e.code === 'DAILY_LIMIT' ? t('flowAi.dailyLimit', { limit: e.limit ?? '' }) : t('flowAi.error'));
     } finally {
       setBusy(false);
     }
-  }, [input, busy, navigationRef, push, t]);
+  }, [input, busy, navigationRef, push, t, attachmentMeta, shareJobPending]);
 
   const decide = useCallback(async (action, approve) => {
     setBusy(true);
@@ -311,7 +379,53 @@ export default function FlowAiHost({ navigationRef }) {
           );
         })}
 
+        {shareJobPending && (
+          <View style={{ marginHorizontal: 12, marginBottom: 6, padding: 10, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(0,218,243,0.15)' }}>
+            <Text style={{ color: '#00DAF3', fontWeight: '600', fontSize: 12 }}>{t('flowAi.share.title')}</Text>
+            <Text style={{ color: '#9FB0C3', marginTop: 4, fontSize: 12 }}>
+              {shareJobPending.platforms.join(', ')} · {shareJobPending.scheduledLocal ? shareJobPending.scheduledLocal : t('flowAi.publish.now')}
+            </Text>
+            <Text style={{ color: '#D7DEE7', marginTop: 6 }} numberOfLines={8}>{shareJobPending.caption}</Text>
+            
+            {shareConfirmState === 'STARTED' ? (
+              <Text style={{ color: '#3FB950', marginTop: 12, textAlign: 'center', fontWeight: '500' }}>{t('flowAi.share.starting')}</Text>
+            ) : shareConfirmState === 'NOT_READY' ? (
+              <Text style={{ color: '#E3B341', marginTop: 12, textAlign: 'center', fontWeight: '500' }}>{t('flowAi.share.wait')}</Text>
+            ) : null}
+
+            <View style={{ flexDirection: 'row', marginTop: 8 }}>
+              <TouchableOpacity disabled={busy || shareConfirmState === 'STARTED'} onPress={async () => {
+                const res = await flowAiShareHandoff.confirm();
+                setShareConfirmState(res);
+              }} style={{ flex: 1, backgroundColor: '#238636', paddingVertical: 10, borderRadius: 12, alignItems: 'center', marginRight: 6 }}>
+                <Text style={{ color: '#fff', fontWeight: '700' }}>{t('flowAi.share.confirm')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity disabled={busy || shareConfirmState === 'STARTED'} onPress={() => {
+                setShareJobPending(null);
+                flowAiShareHandoff.clear();
+                setAttachmentMeta(null);
+                setShareConfirmState('IDLE');
+              }} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 10, borderRadius: 12, alignItems: 'center' }}>
+                <Text style={{ color: '#fff', fontWeight: '700' }}>{t('flowAi.share.cancel')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {attachmentMeta && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 8, padding: 6, marginHorizontal: 12, marginBottom: 8, alignSelf: 'flex-start' }}>
+            <Ionicons name="videocam" size={14} color="#8B949E" />
+            <Text style={{ color: '#D7DEE7', fontSize: 12, marginLeft: 4 }}>{attachmentMeta.fileName} ({Math.round(attachmentMeta.durationSec)}s)</Text>
+            <TouchableOpacity onPress={() => { setAttachmentMeta(null); flowAiShareHandoff.clear(); }} style={{ marginLeft: 6, padding: 2 }}>
+              <Ionicons name="close-circle" size={14} color="#F85149" />
+            </TouchableOpacity>
+          </View>
+        )}
+
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)' }}>
+          <TouchableOpacity onPress={handleAttach} disabled={busy} style={{ marginRight: 8, padding: 4 }}>
+            <Ionicons name="add-circle-outline" size={24} color="#8B949E" />
+          </TouchableOpacity>
           <TextInput
             testID="flow_ai_input"
             value={input}

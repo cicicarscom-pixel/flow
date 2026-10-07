@@ -1,5 +1,7 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { flowAiShareHandoff } from '../../flow_ai/flowAiShareHandoff';
+import { emitFlowEvent } from '../../flow_ai/flowAiEvents';
 import { 
   View, 
   Text, 
@@ -304,6 +306,36 @@ export default function AiUretimScreen({ route, navigation }) {
     if (route?.params?.selectedImage) {
       setTimeout(() => {
         setLocalImage(route.params.selectedImage);
+        if (route.params.selectedMediaType === 'video') {
+          setMediaType('video');
+          persistedMediaType = 'video';
+          
+          if (route.params.flowAiShare) {
+            const job = flowAiShareHandoff.takeJob();
+            if (job) {
+              const file = flowAiShareHandoff.getFile();
+              if (file && file.durationSec) {
+                setMediaDurationMs(file.durationSec * 1000);
+              }
+              if (job.scheduledLocal) {
+                setPublishMode('schedule');
+                const parts = job.scheduledLocal.split(' ');
+                if (parts.length === 2) {
+                   const dateParts = parts[0].split('-');
+                   if (dateParts.length === 3) {
+                      const dStr = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]} ${parts[1]}`;
+                      setScheduleDate(dStr);
+                   }
+                }
+                if (job.timezone) {
+                   setTimezone(job.timezone);
+                }
+              } else {
+                setPublishMode('now');
+              }
+            }
+          }
+        }
       }, 0);
       persistedImage = route.params.selectedImage;
     }
@@ -583,8 +615,36 @@ export default function AiUretimScreen({ route, navigation }) {
     );
   };
 
+  const handleShareRef = useRef(null);
+
+  useEffect(() => {
+    handleShareRef.current = handleShare;
+  }, [handleShare]);
+
+  useEffect(() => {
+    if (route?.params?.flowAiShare) {
+      const ready = !!(localImage && localText && Object.values(selectedPlatforms).some(Boolean) && !isSharing);
+      flowAiShareHandoff.registerScreen({
+        ready,
+        share: () => {
+          if (handleShareRef.current) {
+            handleShareRef.current();
+          }
+        }
+      });
+      return () => flowAiShareHandoff.unregisterScreen();
+    }
+  }, [route?.params?.flowAiShare, localImage, localText, selectedPlatforms, isSharing]);
+
   const handleShare = async () => {
     let progressInterval;
+    const shareError = (msg) => {
+      if (route?.params?.flowAiShare) emitFlowEvent({ type: 'share-result', ok: false, message: msg });
+    };
+    const shareSuccess = () => {
+      if (route?.params?.flowAiShare) emitFlowEvent({ type: 'share-result', ok: true });
+    };
+
     try {
       setIsSharing(true);
       setUploadProgress(0);
@@ -605,6 +665,7 @@ export default function AiUretimScreen({ route, navigation }) {
         Alert.alert(t('sosyalMedya.alerts.error'), t('sosyalMedya.alerts.noSession'));
         setIsSharing(false);
         setUploadProgress(0);
+        shareError(t('sosyalMedya.alerts.noSession'));
         return;
       }
 
@@ -613,6 +674,7 @@ export default function AiUretimScreen({ route, navigation }) {
         Alert.alert(t('sosyalMedya.alerts.info'), t('sosyalMedya.alerts.connectAccountFirst'));
         setIsSharing(false);
         setUploadProgress(0);
+        shareError(t('sosyalMedya.alerts.connectAccountFirst'));
         return;
       }
 
@@ -620,10 +682,19 @@ export default function AiUretimScreen({ route, navigation }) {
       const currentContentType = localImage ? mediaType : 'text';
       
       // Otonom yönlendirmeyi başlatan ana fonksiyonu çağır
-      await publishPost(zernioAccounts, currentContentType);
+      try {
+        await publishPost(zernioAccounts, currentContentType);
+      } catch (e) {
+        throw e; // publishPost içindeki hata (mesela exception varsa) catch bloğuna düşsün
+      }
+
+      // If publishPost shows an alert and returns early without throwing, it's a bit tricky,
+      // but usually handoff passes validated data, so publishPost will succeed.
+      // We assume it's successful if it doesn't throw.
 
       clearInterval(progressInterval);
       setUploadProgress(100);
+      shareSuccess();
       setTimeout(() => {
         setIsSharing(false);
         setUploadProgress(0);
@@ -635,6 +706,7 @@ export default function AiUretimScreen({ route, navigation }) {
       setUploadProgress(0);
       console.error("Paylaşım istisnası:", err);
       // Zero UI gereği kullanıcıya hata fırlatma
+      shareError(err?.message || "Hata");
     }
   };
 

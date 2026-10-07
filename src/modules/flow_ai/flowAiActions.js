@@ -78,6 +78,43 @@ export function dispatchClientAction(action, navigationRef) {
     return true;
   }
 
+  if (action.type === 'share_video') {
+    const { flowAiShareHandoff } = require('./flowAiShareHandoff');
+    const att = flowAiShareHandoff.getFile();
+    if (!att) return false;
+
+    const isValidString = (s) => typeof s === 'string' && s.length <= 5000;
+    const isValidPlatformList = (arr) => Array.isArray(arr) && arr.length <= 10 && arr.every((x) => typeof x === 'string');
+    const isValidSkippedList = (arr) => Array.isArray(arr) && arr.length <= 10 && arr.every((x) => typeof x.platform === 'string' && typeof x.reason === 'string');
+
+    const { caption, platforms, skipped, scheduledLocal, timezone } = action;
+    if (!isValidString(caption) || !isValidPlatformList(platforms) || (skipped && !isValidSkippedList(skipped))) {
+      return false;
+    }
+    if (scheduledLocal && typeof scheduledLocal !== 'string') return false;
+    if (typeof timezone !== 'string') return false;
+
+    const job = { caption, platforms, skipped: skipped || [], scheduledLocal: scheduledLocal || null, timezone };
+    flowAiShareHandoff.setJob(job);
+
+    if (navigationRef?.isReady?.()) {
+      try {
+        navigationRef.navigate('AiUretim', { 
+          selectedImage: att.uri, 
+          selectedMediaType: 'video', 
+          selectedText: caption, 
+          draftPlatforms: platforms, 
+          flowAiShare: true 
+        });
+        return true;
+      } catch (e) {
+        console.warn('[FlowAI] navigate hatası (share_video):', e?.message);
+        return false;
+      }
+    }
+    return false;
+  }
+
   return false;
 }
 

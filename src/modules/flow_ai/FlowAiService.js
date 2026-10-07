@@ -17,7 +17,7 @@ async function call(body) {
 
 export const FlowAiService = {
   /** @returns {{conversationId:string, reply:string, pendingActions:Array, clientActions:Array, remainingToday:number}} */
-  chat: (message, conversationId) => call({ action: 'chat', message, conversationId: conversationId || undefined }),
+  chat: (message, conversationId, attachment) => call({ action: 'chat', message, conversationId: conversationId || undefined, attachment: attachment || undefined }),
   approve: (actionId, payloadHash) => call({ action: 'approve', actionId, payloadHash }),
   reject: (actionId) => call({ action: 'reject', actionId }),
   /** FA6: salt-okunur proaktif öneri kartları. @returns {{cards:Array<{id:string,kind:string,params:object,cta:object}>}} */
