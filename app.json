@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.workigom.flow"
+      "bundleIdentifier": "com.workigom.flow",
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "Flow AI'a sesli komut verebilmeniz için mikrofon kullanılır.",
+        "NSMicrophoneUsageDescription": "Flow AI'a sesli komut verebilmeniz için mikrofon kullanılır."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +23,10 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.workigom.flow"
+      "package": "com.workigom.flow",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "output": "single",
@@ -54,6 +61,11 @@
     "experiments": {
       "typedRoutes": false,
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3914afac-6620-4e3f-9000-4c003a57df58"
+      }
     }
   }
 }
