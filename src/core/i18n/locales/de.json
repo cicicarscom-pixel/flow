@@ -836,6 +836,13 @@
     "button": "Aktualisieren"
   },
   "flowAi": {
+    "voice": {
+      "listening": "Ich höre zu…",
+      "permissionDenied": "Mikrofonberechtigung wurde verweigert. Sie können sie in den Einstellungen erlauben.",
+      "repliesOn": "Sprachantworten an",
+      "repliesOff": "Sprachantworten aus",
+      "unsupported": "Spracherkennung ist auf diesem Gerät nicht verfügbar."
+    },
     "title": "Flow AI",
     "orbLabel": "Flow Ai",
     "online": "● Online",

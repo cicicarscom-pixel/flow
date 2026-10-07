@@ -828,6 +828,13 @@
     "button": "Güncelle"
   },
   "flowAi": {
+    "voice": {
+      "listening": "Dinliyorum…",
+      "permissionDenied": "Mikrofon izni verilmedi. Ayarlardan izin verebilirsiniz.",
+      "repliesOn": "Sesli yanıt açık",
+      "repliesOff": "Sesli yanıt kapalı",
+      "unsupported": "Bu cihazda ses tanıma kullanılamıyor."
+    },
     "title": "Flow AI",
     "orbLabel": "Flow Ai",
     "online": "● Çevrimiçi",

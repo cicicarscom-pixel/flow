@@ -618,16 +618,23 @@ export default function AiUretimScreen({ route, navigation }) {
       throw err;
     }
 
-    // Kullanıcı Deneyimi (Toast/Alert): Zero UI prensibi
-    const viaFlowAi = !!flowShareRef.current;
-    if (!viaFlowAi) {
-      Alert.alert(
-        "Başarılı!", 
-        publishMode === 'now' 
-          ? "Gönderiniz seçili platformlarda anında paylaşıldı." 
-          : "Gönderiniz planlandı ve zamanı gelince paylaşılacak."
-      );
-    }
+
+      const viaFlowAi = !!flowShareRef.current;
+      if (!viaFlowAi) {
+        Alert.alert(
+          "Başarılı!", 
+          publishMode === 'now' 
+            ? "Gönderiniz seçili platformlarda anında paylaşıldı." 
+            : "Gönderiniz planlandı ve zamanı gelince paylaşılacak."
+        );
+      }
+      return true;
+    Alert.alert(
+      "Başarılı!", 
+      publishMode === 'now' 
+        ? "Gönderiniz seçili platformlarda anında paylaşıldı." 
+        : "Gönderiniz planlandı ve zamanı gelince paylaşılacak."
+    );
     return true;
   };
 

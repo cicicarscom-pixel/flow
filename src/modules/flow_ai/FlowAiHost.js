@@ -17,6 +17,7 @@ import { FLOW_GUIDES } from './flowAiGuides';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { flowAiShareHandoff } from './flowAiShareHandoff';
+import { useFlowVoice } from './useFlowVoice';
 
 // Uygulama kökünde (NavigationContainer içinde) durur: ekran değişince panel ve konuşma KAPANMAZ.
 // Panel, Modal değil kaplamadır; üstündeki alan dokunmayı alttaki ekrana geçirir.
@@ -40,6 +41,9 @@ function formatWhen(preview) {
 export default function FlowAiHost({ navigationRef }) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const voice = useFlowVoice();
+  const [voiceReplies, setVoiceReplies] = useState(false);
+  const lastWasVoice = useRef(false);
   const [open, setOpen] = useState(false);
   const [attachmentMeta, setAttachmentMeta] = useState(null);
   const [shareJobPending, setShareJobPending] = useState(null);
@@ -74,23 +78,31 @@ export default function FlowAiHost({ navigationRef }) {
   }, []);
 
   useEffect(() => {
+    if (!open) voice.stopSpeaking();
+  }, [open]);
+
+  useEffect(() => {
     const unSub = subscribeFlowEvents((name, payload) => {
       if (name === 'share-result') {
         if (payload.ok) {
-          push('assistant', shareJobPending?.scheduledLocal ? t('flowAi.share.scheduled') : t('flowAi.share.done'));
+          const msg = shareJobPending?.scheduledLocal ? t('flowAi.share.scheduled') : t('flowAi.share.done');
+          push('assistant', msg);
+          if (voiceReplies || lastWasVoice.current) voice.speak(msg);
           setShareJobPending(null);
           setAttachmentMeta(null);
           setShareConfirmState('IDLE');
           flowAiShareHandoff.clear();
         } else {
-          push('error', t('flowAi.share.failed', { message: payload.message || '' }));
+          const msg = t('flowAi.share.failed', { message: payload.message || '' });
+          push('error', msg);
+          if (voiceReplies || lastWasVoice.current) voice.speak(msg);
           setShareJobPending(null);
           setShareConfirmState('IDLE');
         }
       }
     });
     return unSub;
-  }, [push, shareJobPending, t]);
+  }, [push, shareJobPending, t, voiceReplies]);
 
   const handleAttach = async () => {
     try {
@@ -131,6 +143,8 @@ export default function FlowAiHost({ navigationRef }) {
   };
 
   const send = useCallback(async (override) => {
+    voice.stopSpeaking();
+    if (typeof override === 'string') lastWasVoice.current = false;
     setPlatformPick(null);
     const text = (typeof override === 'string' ? override : input).trim();
     if (!text || busy) return;
@@ -141,6 +155,7 @@ export default function FlowAiHost({ navigationRef }) {
       const res = await FlowAiService.chat(text, conversationId.current, attachmentMeta);
       conversationId.current = res.conversationId;
       push('assistant', res.reply);
+      if (voiceReplies || lastWasVoice.current) voice.speak(res.reply);
       setPending(res.pendingActions || []);
       
       const actions = res.clientActions || [];
@@ -168,7 +183,7 @@ export default function FlowAiHost({ navigationRef }) {
     } finally {
       setBusy(false);
     }
-  }, [input, busy, navigationRef, push, t, attachmentMeta, shareJobPending]);
+  }, [input, busy, navigationRef, push, t, attachmentMeta, shareJobPending, voiceReplies]);
 
   const decide = useCallback(async (action, approve) => {
     setBusy(true);
@@ -191,6 +206,34 @@ export default function FlowAiHost({ navigationRef }) {
       setBusy(false);
     }
   }, [push, t]);
+
+  const handleVoiceFinal = async (text) => {
+    const norm = text.toLowerCase().replace(/[.!?,]/g, '').trim();
+    const YES = ['evet', 'onayla', 'onaylıyorum', 'tamam', 'olur', 'paylaş', 'yes', 'ja'];
+    const NO = ['hayır', 'vazgeç', 'iptal', 'istemiyorum', 'no', 'nein'];
+    
+    if (shareJobPending && YES.includes(norm)) { 
+      if (!busy) {
+        const r = await flowAiShareHandoff.confirm(); 
+        setShareConfirmState(r); 
+      }
+      return; 
+    }
+    if (shareJobPending && NO.includes(norm)) { 
+      if (!busy) {
+        setShareJobPending(null);
+        setAttachmentMeta(null);
+        setShareConfirmState('IDLE');
+        flowAiShareHandoff.clear();
+      }
+      return; 
+    }
+    if (pending.length === 1 && YES.includes(norm)) { if (!busy) decide(pending[0], true); return; }
+    if (pending.length === 1 && NO.includes(norm)) { if (!busy) decide(pending[0], false); return; }
+    
+    setInput('');
+    send(text);
+  };
 
   // FA6: panel açılınca (en fazla dakikada bir) öneri kartlarını yükle. Hata sessizdir: kart yoksa panel normal çalışır.
   useEffect(() => {
@@ -315,6 +358,9 @@ export default function FlowAiHost({ navigationRef }) {
             <Text style={{ color: '#fff', fontWeight: '600', fontSize: 14 }}>{t('flowAi.title')}</Text>
             <Text style={{ color: '#3FB950', fontSize: 12 }}>{t('flowAi.online')}</Text>
           </View>
+          <TouchableOpacity onPress={() => setVoiceReplies(v => !v)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ padding: 6, marginRight: 8 }} accessibilityLabel={voiceReplies ? t('flowAi.voice.repliesOn') : t('flowAi.voice.repliesOff')}>
+            <Ionicons name={voiceReplies ? "volume-high" : "volume-mute"} size={20} color={voiceReplies ? "#3FB950" : "#8B949E"} />
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => setOpen(false)} accessibilityLabel={t('flowAi.close')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ padding: 6 }}>
             <Ionicons name="close" size={20} color="#8B949E" />
           </TouchableOpacity>
@@ -493,18 +539,52 @@ export default function FlowAiHost({ navigationRef }) {
           <TouchableOpacity onPress={handleAttach} disabled={busy} style={{ marginRight: 8, padding: 4 }}>
             <Ionicons name="add-circle-outline" size={24} color="#8B949E" />
           </TouchableOpacity>
-          <TextInput
-            testID="flow_ai_input"
-            value={input}
-            onChangeText={setInput}
-            onSubmitEditing={() => send()}
-            editable={!busy}
-            placeholder={t('flowAi.placeholder')}
-            placeholderTextColor="#65707D"
-            maxLength={4000}
-            style={{ flex: 1, color: '#fff', backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}
-          />
-          <TouchableOpacity testID="flow_ai_send" onPress={() => send()} disabled={busy || !input.trim()} style={{ marginLeft: 8, opacity: busy || !input.trim() ? 0.5 : 1 }}>
+          {voice.supported && (
+            <TouchableOpacity 
+              onPress={() => {
+                if (voice.listening) {
+                  voice.stop();
+                } else {
+                  lastWasVoice.current = true;
+                  voice.start({ 
+                    onPartial: setInput, 
+                    onFinal: handleVoiceFinal, 
+                    onError: (err) => {
+                      if (err === 'permission') {
+                        push('error', t('flowAi.voice.permissionDenied'));
+                      } else {
+                        push('error', t('flowAi.voice.unsupported'));
+                      }
+                    } 
+                  });
+                }
+              }} 
+              disabled={busy} 
+              style={{ marginRight: 8, padding: 4 }}
+            >
+              <Ionicons name={voice.listening ? "mic-circle" : "mic"} size={24} color={voice.listening ? "#F85149" : "#8B949E"} />
+            </TouchableOpacity>
+          )}
+          
+          {voice.listening ? (
+            <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, justifyContent: 'center' }}>
+              <Text style={{ color: '#8B949E' }}>{input || t('flowAi.voice.listening')}</Text>
+            </View>
+          ) : (
+            <TextInput
+              testID="flow_ai_input"
+              value={input}
+              onChangeText={setInput}
+              onSubmitEditing={() => { lastWasVoice.current = false; send(); }}
+              editable={!busy}
+              placeholder={t('flowAi.placeholder')}
+              placeholderTextColor="#65707D"
+              maxLength={4000}
+              style={{ flex: 1, color: '#fff', backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}
+            />
+          )}
+          
+          <TouchableOpacity testID="flow_ai_send" onPress={() => { lastWasVoice.current = false; send(); }} disabled={busy || !input.trim()} style={{ marginLeft: 8, opacity: busy || !input.trim() ? 0.5 : 1 }}>
             <LinearGradient colors={['#3B82F6', '#9D5CFF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name="send" size={17} color="#fff" />
             </LinearGradient>

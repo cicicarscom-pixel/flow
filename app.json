@@ -42,7 +42,14 @@
       "expo-status-bar",
       "expo-web-browser",
       "expo-localization",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Flow AI'a sesli komut verebilmeniz için mikrofon kullanılır.",
+          "speechRecognitionPermission": "Flow AI'a sesli komut verebilmeniz için mikrofon kullanılır."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": false,

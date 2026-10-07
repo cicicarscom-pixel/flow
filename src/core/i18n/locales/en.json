@@ -836,6 +836,13 @@
     "button": "Update"
   },
   "flowAi": {
+    "voice": {
+      "listening": "Listening…",
+      "permissionDenied": "Microphone permission was denied. You can allow it in settings.",
+      "repliesOn": "Voice replies on",
+      "repliesOff": "Voice replies off",
+      "unsupported": "Speech recognition is not available on this device."
+    },
     "title": "Flow AI",
     "orbLabel": "Flow Ai",
     "online": "● Online",

@@ -1383,6 +1383,11 @@ Mobil (`flow`) tarafında "Canlı Fetch" mimarisi (bkz. Adım 5, Sosyal Medya Ba
 8. **Flow & FlowWeb - İptal ve Kalıcı Silme Arayüzü:** Randevu listelerinde kullanılmak üzere iptal ve silme işlemleri RPC (cancel_appointment, delete_appointment) üzerinden backend ile tam entegre edildi. Web tarafında iptal nedenleri ve durum bildirimleri kartta soluk rozetler olarak gösterilirken, mobilde kart içine ActionSheet ('⋮') eklendi.
 9. **Flow (Mobil) - Gelen Kutusu Zil Yönlendirmesi:** DashboardScreen'deki bildirim çanının yanlışlıkla 'Sosyal Medya' sekmesine yönlendirmesi sorunu düzeltilip, doğrudan ana gezinme yığını (Stack) seviyesine taşınan 'Inbox > Bildirimler' sekmesine yönlendirildi. Tanımsız kalan eski load data (fetchAppointments) fonksiyonları temizlendi.
 
+### [07.10.2026] Flow AI Mobil Panel - Sesli Komut ve Yanıt (FA8)
+- `expo-speech` ve `expo-speech-recognition` kullanılarak Flow AI asistanına mikrofon (sesli dinleme) desteği eklendi.
+- Sesle "evet" veya "hayır" diyerek paylaşımları asistan üzerinden onaylama/reddetme mekanizması kuruldu.
+- `useFlowVoice` kancası ile sesli konuşma (TTS) entegrasyonu sağlandı, başlığa sesi açıp kapatma düğmesi kondu.
+
 ### [07.10.2026] Flow AI Mobil Panel - Video Paylaşım Aracı (FA7)
 - Flow AI mobil paneline video ekleme ve handoff yeteneği kazandırıldı.
 - share_video eylemi ile AiUretim ekranının doldurulması ve onay mekanizması kuruldu.
