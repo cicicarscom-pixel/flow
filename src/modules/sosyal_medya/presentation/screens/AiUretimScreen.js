@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { flowAiShareHandoff } from '../../flow_ai/flowAiShareHandoff';
-import { emitFlowEvent } from '../../flow_ai/flowAiEvents';
+import { flowAiShareHandoff } from '../../../flow_ai/flowAiShareHandoff';
+import { emitFlowEvent } from '../../../flow_ai/flowAiEvents';
 import { 
   View, 
   Text, 
@@ -429,7 +429,7 @@ export default function AiUretimScreen({ route, navigation }) {
 
     if (allowedPlatforms.length === 0) {
       Alert.alert(t('sosyalMedya.alerts.info'), "Lütfen en az bir platform seçin.");
-      return;
+      return false;
     }
 
     let contentToShare = localText || t('sosyalMedya.generate.fallbackContent');
@@ -454,7 +454,7 @@ export default function AiUretimScreen({ route, navigation }) {
       } catch (err) {
         Alert.alert("Hata", "Tarih formatı hatalı. Lütfen 'GÜN.AY.YIL SAAT:DAKİKA' (örn: 16.08.2026 16:26) şeklinde girin.");
         setIsSharing(false);
-        return;
+        return false;
       }
     }
 
@@ -613,6 +613,7 @@ export default function AiUretimScreen({ route, navigation }) {
         ? "Gönderiniz seçili platformlarda anında paylaşıldı." 
         : "Gönderiniz planlandı ve zamanı gelince paylaşılacak."
     );
+    return true;
   };
 
   const handleShareRef = useRef(null);
@@ -639,10 +640,10 @@ export default function AiUretimScreen({ route, navigation }) {
   const handleShare = async () => {
     let progressInterval;
     const shareError = (msg) => {
-      if (route?.params?.flowAiShare) emitFlowEvent({ type: 'share-result', ok: false, message: msg });
+      if (route?.params?.flowAiShare) emitFlowEvent('share-result', { ok: false, message: msg });
     };
     const shareSuccess = () => {
-      if (route?.params?.flowAiShare) emitFlowEvent({ type: 'share-result', ok: true });
+      if (route?.params?.flowAiShare) emitFlowEvent('share-result', { ok: true });
     };
 
     try {
@@ -682,15 +683,15 @@ export default function AiUretimScreen({ route, navigation }) {
       const currentContentType = localImage ? mediaType : 'text';
       
       // Otonom yönlendirmeyi başlatan ana fonksiyonu çağır
-      try {
-        await publishPost(zernioAccounts, currentContentType);
-      } catch (e) {
-        throw e; // publishPost içindeki hata (mesela exception varsa) catch bloğuna düşsün
+      const ok = await publishPost(zernioAccounts, currentContentType);
+      
+      if (ok === false) {
+        clearInterval(progressInterval);
+        setIsSharing(false);
+        setUploadProgress(0);
+        shareError(t('flowAi.share.failed', { message: '' }));
+        return;
       }
-
-      // If publishPost shows an alert and returns early without throwing, it's a bit tricky,
-      // but usually handoff passes validated data, so publishPost will succeed.
-      // We assume it's successful if it doesn't throw.
 
       clearInterval(progressInterval);
       setUploadProgress(100);

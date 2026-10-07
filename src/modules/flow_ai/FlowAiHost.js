@@ -15,7 +15,7 @@ import { dispatchClientAction } from './flowAiActions';
 import { subscribeFlowEvents, subscribeGuideStart } from './flowAiEvents';
 import { FLOW_GUIDES } from './flowAiGuides';
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { flowAiShareHandoff } from './flowAiShareHandoff';
 
 // Uygulama kökünde (NavigationContainer içinde) durur: ekran değişince panel ve konuşma KAPANMAZ.
@@ -72,12 +72,12 @@ export default function FlowAiHost({ navigationRef }) {
   }, []);
 
   useEffect(() => {
-    const unSub = subscribeFlowEvents((e) => {
-      if (e.type === 'share-result') {
-        if (e.ok) {
+    const unSub = subscribeFlowEvents((name, payload) => {
+      if (name === 'share-result') {
+        if (payload.ok) {
           push('assistant', shareJobPending?.scheduledLocal ? t('flowAi.share.scheduled') : t('flowAi.share.done'));
         } else {
-          push('error', t('flowAi.share.failed', { message: e.message || '' }));
+          push('error', t('flowAi.share.failed', { message: payload.message || '' }));
         }
         setShareJobPending(null);
         setAttachmentMeta(null);
@@ -103,6 +103,10 @@ export default function FlowAiHost({ navigationRef }) {
           const info = await FileSystem.getInfoAsync(asset.uri);
           if (info.exists) sizeBytes = info.size;
         }
+        if (!sizeBytes || sizeBytes <= 0) {
+          push('error', t('flowAi.share.unreadable'));
+          return;
+        }
         
         const meta = {
           kind: 'video',
@@ -110,7 +114,7 @@ export default function FlowAiHost({ navigationRef }) {
           durationSec: asset.duration / 1000,
           width: asset.width,
           height: asset.height,
-          sizeBytes: sizeBytes || 0,
+          sizeBytes: sizeBytes,
           fileName: (asset.fileName || asset.uri.split('/').pop() || 'video.mp4').substring(0, 120),
           uri: asset.uri
         };
