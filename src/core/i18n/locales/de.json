@@ -841,7 +841,10 @@
       "permissionDenied": "Mikrofonberechtigung wurde verweigert. Sie können sie in den Einstellungen erlauben.",
       "repliesOn": "Sprachantworten an",
       "repliesOff": "Sprachantworten aus",
-      "unsupported": "Spracherkennung ist auf diesem Gerät nicht verfügbar."
+      "unsupported": "Spracherkennung ist auf diesem Gerät nicht verfügbar.",
+      "serviceMissing": "Der Spracherkennungsdienst wurde nicht gefunden. Stellen Sie sicher, dass die Google-App installiert und aktiviert ist.",
+      "languageMissing": "Das Sprachpaket ist nicht installiert. Laden Sie es in den Einstellungen herunter.",
+      "network": "Die Spracherkennung benötigt eine Internetverbindung."
     },
     "title": "Flow AI",
     "orbLabel": "Flow Ai",

@@ -57,8 +57,9 @@ export function useFlowVoice() {
 
   useSpeechRecognitionEvent('error', (event) => {
     setListening(false);
+    if (event.error === 'no-speech' || event.error === 'aborted') return;
     if (errorCallbackRef.current) {
-      errorCallbackRef.current(event.error);
+      errorCallbackRef.current({ code: event.error, message: event.message });
     }
   });
 
@@ -78,7 +79,7 @@ export function useFlowVoice() {
     try {
       const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
       if (!granted) {
-        if (onError) onError('permission');
+        if (onError) onError({ code: 'permission' });
         return;
       }
       
@@ -86,9 +87,10 @@ export function useFlowVoice() {
         lang: getLocaleForSpeech(),
         interimResults: true,
         continuous: false,
+        androidRecognitionServicePackage: 'com.google.android.googlequicksearchbox',
       });
     } catch (e) {
-      if (onError) onError(e.message || 'error');
+      if (onError) onError({ code: 'start-failed', message: e.message });
     }
   };
 
@@ -117,6 +119,15 @@ export function useFlowVoice() {
   };
 
   useEffect(() => {
+    (async () => {
+      try {
+        const available = await ExpoSpeechRecognitionModule.isRecognitionAvailable();
+        if (!available) setSupported(false);
+      } catch (e) {
+        console.warn('[FlowAI voice]', e);
+        setSupported(false);
+      }
+    })();
     return () => {
       ExpoSpeechRecognitionModule.abort();
       Speech.stop();

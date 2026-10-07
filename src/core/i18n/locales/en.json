@@ -841,7 +841,10 @@
       "permissionDenied": "Microphone permission was denied. You can allow it in settings.",
       "repliesOn": "Voice replies on",
       "repliesOff": "Voice replies off",
-      "unsupported": "Speech recognition is not available on this device."
+      "unsupported": "Speech recognition is not available on this device.",
+      "serviceMissing": "Speech recognition service was not found. Make sure the Google app is installed and enabled.",
+      "languageMissing": "The speech language pack is not installed. Download it in settings.",
+      "network": "Speech recognition needs an internet connection."
     },
     "title": "Flow AI",
     "orbLabel": "Flow Ai",

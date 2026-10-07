@@ -538,9 +538,12 @@ export default function FlowAiHost({ navigationRef }) {
           <TouchableOpacity onPress={handleAttach} disabled={busy} style={{ marginRight: 8, padding: 4 }}>
             <Ionicons name="add-circle-outline" size={24} color="#8B949E" />
           </TouchableOpacity>
-          {voice.supported && (
             <TouchableOpacity 
               onPress={() => {
+                if (voice.supported === false) {
+                  push('error', t('flowAi.voice.serviceMissing'));
+                  return;
+                }
                 if (voice.listening) {
                   voice.stop();
                 } else {
@@ -549,10 +552,17 @@ export default function FlowAiHost({ navigationRef }) {
                     onPartial: setInput, 
                     onFinal: handleVoiceFinal, 
                     onError: (err) => {
-                      if (err === 'permission') {
+                      console.warn('[FlowAI voice]', err);
+                      if (err.code === 'permission' || err.code === 'not-allowed') {
                         push('error', t('flowAi.voice.permissionDenied'));
+                      } else if (err.code === 'service-not-allowed' || err.code === 'start-failed') {
+                        push('error', t('flowAi.voice.serviceMissing'));
+                      } else if (err.code === 'language-not-supported') {
+                        push('error', t('flowAi.voice.languageMissing'));
+                      } else if (err.code === 'network') {
+                        push('error', t('flowAi.voice.network'));
                       } else {
-                        push('error', t('flowAi.voice.unsupported'));
+                        push('error', t('flowAi.voice.unsupported') + ` (${err.code})`);
                       }
                     } 
                   });
@@ -563,7 +573,6 @@ export default function FlowAiHost({ navigationRef }) {
             >
               <Ionicons name={voice.listening ? "mic-circle" : "mic"} size={24} color={voice.listening ? "#F85149" : "#8B949E"} />
             </TouchableOpacity>
-          )}
           
           {voice.listening ? (
             <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, justifyContent: 'center' }}>
