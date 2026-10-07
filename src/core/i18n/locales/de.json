@@ -865,7 +865,11 @@
       "wait": "Informationen werden ausgefüllt, bitte warten...",
       "done": "Video erfolgreich geteilt.",
       "scheduled": "Video zum Teilen geplant.",
-      "failed": "Teilen konnte nicht gestartet werden: {{message}}"
+      "failed": "Teilen konnte nicht gestartet werden: {{message}}",
+      "pickTitle": "Auf welchen Konten sollen wir posten?",
+      "pickContinue": "Weiter",
+      "pickedPrefix": "Ausgewählte Konten",
+      "failedShort": "Teilen konnte nicht abgeschlossen werden"
     },
     "publish": {
       "title": "Wartet auf Veröffentlichungsfreigabe",

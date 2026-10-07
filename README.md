@@ -1386,3 +1386,5 @@ Mobil (`flow`) tarafında "Canlı Fetch" mimarisi (bkz. Adım 5, Sosyal Medya Ba
 ### [07.10.2026] Flow AI Mobil Panel - Video Paylaşım Aracı (FA7)
 - Flow AI mobil paneline video ekleme ve handoff yeteneği kazandırıldı.
 - share_video eylemi ile AiUretim ekranının doldurulması ve onay mekanizması kuruldu.
+- Flow AI panelinde hesap seçici (picker) kartı (web ile senkron) oluşturuldu.
+- Sosyal medya paylaşım ekranı (AiUretimScreen), oturum kapalıyken (app ilk açıldığında) takılı kalıp kullanıcıya "Hesap bağlayın" hatası vermemesi için odak (focus) anında hesap listesini yeniden güncelleyecek şekilde onarıldı.

@@ -267,39 +267,47 @@ export default function AiUretimScreen({ route, navigation }) {
 
   // Fetch connected accounts on mount
 
-  React.useEffect(() => {
-    const fetchAccounts = async () => {
-      const { data: session } = await supabase.auth.getSession();
-      const userId = session?.session?.user?.id || session?.user?.id;
-      if (!userId) return;
+  const loadAccounts = React.useCallback(async () => {
+    const { data: session } = await supabase.auth.getSession();
+    const userId = session?.session?.user?.id || session?.user?.id;
+    if (!userId) return [];
 
-      const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', userId).maybeSingle();
-      const organizationId = orgMember?.organization_id || userId;
+    const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', userId).maybeSingle();
+    const organizationId = orgMember?.organization_id || userId;
 
-      if (organizationId) {
-        try {
-          const { data } = await supabase
-            .schema('integration')
-            .from('social_accounts')
-            .select('*')
-            .eq('organization_id', organizationId)
-            .eq('is_active', true);
-            
-          const accounts = data || [];
-          setZernioAccounts(accounts);
+    if (organizationId) {
+      try {
+        const { data } = await supabase
+          .schema('integration')
+          .from('social_accounts')
+          .select('*')
+          .eq('organization_id', organizationId)
+          .eq('is_active', true);
           
-          const initialSelected = {};
-          accounts.forEach(acc => {
-            initialSelected[acc.platform] = true;
-          });
-          setSelectedPlatforms(initialSelected);
-        } catch(e) {
-          console.warn("Failed to fetch accounts", e);
-        }
+        const accounts = data || [];
+        setZernioAccounts(accounts);
+        
+        const initialSelected = {};
+        accounts.forEach(acc => {
+          initialSelected[acc.platform] = true;
+        });
+        setSelectedPlatforms(prev => Object.keys(prev).length ? prev : initialSelected);
+        return accounts;
+      } catch(e) {
+        console.warn("Failed to fetch accounts", e);
       }
-    };
-    fetchAccounts();
+    }
+    return [];
   }, []);
+
+  React.useEffect(() => {
+    loadAccounts();
+  }, [loadAccounts]);
+
+  React.useEffect(() => {
+    const unsub = navigation?.addListener?.('focus', () => { loadAccounts(); });
+    return unsub;
+  }, [navigation, loadAccounts]);
 
   // Update local and persisted state when route params change
   React.useEffect(() => {
@@ -670,7 +678,10 @@ export default function AiUretimScreen({ route, navigation }) {
         return;
       }
 
-      if (zernioAccounts.length === 0) {
+      let accountsNow = zernioAccounts;
+      if (accountsNow.length === 0) accountsNow = await loadAccounts();
+
+      if (accountsNow.length === 0) {
         clearInterval(progressInterval);
         Alert.alert(t('sosyalMedya.alerts.info'), t('sosyalMedya.alerts.connectAccountFirst'));
         setIsSharing(false);
@@ -683,13 +694,13 @@ export default function AiUretimScreen({ route, navigation }) {
       const currentContentType = localImage ? mediaType : 'text';
       
       // Otonom yönlendirmeyi başlatan ana fonksiyonu çağır
-      const ok = await publishPost(zernioAccounts, currentContentType);
+      const ok = await publishPost(accountsNow, currentContentType);
       
       if (ok === false) {
         clearInterval(progressInterval);
         setIsSharing(false);
         setUploadProgress(0);
-        shareError(t('flowAi.share.failed', { message: '' }));
+        shareError(t('flowAi.share.failedShort'));
         return;
       }
 

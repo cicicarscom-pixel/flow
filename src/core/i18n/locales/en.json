@@ -865,7 +865,11 @@
       "wait": "Filling information, please wait...",
       "done": "Video shared successfully.",
       "scheduled": "Video share scheduled.",
-      "failed": "Failed to start sharing: {{message}}"
+      "failed": "Failed to start sharing: {{message}}",
+      "pickTitle": "Which accounts should we post to?",
+      "pickContinue": "Continue",
+      "pickedPrefix": "Selected accounts",
+      "failedShort": "Sharing could not be completed"
     },
     "publish": {
       "title": "Waiting for publish approval",

@@ -44,6 +44,8 @@ export default function FlowAiHost({ navigationRef }) {
   const [attachmentMeta, setAttachmentMeta] = useState(null);
   const [shareJobPending, setShareJobPending] = useState(null);
   const [shareConfirmState, setShareConfirmState] = useState('IDLE');
+  const [platformPick, setPlatformPick] = useState(null);
+  const [pickSel, setPickSel] = useState({});
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState([]); // {id, role:'user'|'assistant'|'error', text}
@@ -76,13 +78,15 @@ export default function FlowAiHost({ navigationRef }) {
       if (name === 'share-result') {
         if (payload.ok) {
           push('assistant', shareJobPending?.scheduledLocal ? t('flowAi.share.scheduled') : t('flowAi.share.done'));
+          setShareJobPending(null);
+          setAttachmentMeta(null);
+          setShareConfirmState('IDLE');
+          flowAiShareHandoff.clear();
         } else {
           push('error', t('flowAi.share.failed', { message: payload.message || '' }));
+          setShareJobPending(null);
+          setShareConfirmState('IDLE');
         }
-        setShareJobPending(null);
-        setAttachmentMeta(null);
-        setShareConfirmState('IDLE');
-        flowAiShareHandoff.clear();
       }
     });
     return unSub;
@@ -127,6 +131,7 @@ export default function FlowAiHost({ navigationRef }) {
   };
 
   const send = useCallback(async (override) => {
+    setPlatformPick(null);
     const text = (typeof override === 'string' ? override : input).trim();
     if (!text || busy) return;
     setInput('');
@@ -145,6 +150,12 @@ export default function FlowAiHost({ navigationRef }) {
           const { caption, platforms, skipped, scheduledLocal, timezone } = a;
           const job = { caption, platforms, skipped: skipped || [], scheduledLocal: scheduledLocal || null, timezone };
           setShareJobPending(job);
+        } else if (a?.type === 'pick_platforms') {
+          const opts = (Array.isArray(a.options) ? a.options : []).slice(0, 10).filter((o) => o && typeof o.platform === 'string' && typeof o.eligible === 'boolean');
+          if (opts.length > 0) {
+            setPlatformPick(opts.map((o) => ({ platform: o.platform, handle: typeof o.handle === 'string' ? o.handle : '', eligible: o.eligible, reason: typeof o.reason === 'string' ? o.reason : undefined })));
+            setPickSel(Object.fromEntries(opts.filter((o) => o.eligible).map((o) => [o.platform, true])));
+          }
         }
         dispatchClientAction(a, navigationRef);
       });
@@ -410,6 +421,58 @@ export default function FlowAiHost({ navigationRef }) {
                 setAttachmentMeta(null);
                 setShareConfirmState('IDLE');
               }} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 10, borderRadius: 12, alignItems: 'center' }}>
+                <Text style={{ color: '#fff', fontWeight: '700' }}>{t('flowAi.share.cancel')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {platformPick && (
+          <View style={{ marginHorizontal: 12, marginBottom: 6, padding: 10, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(0,218,243,0.15)' }}>
+            <Text style={{ color: '#00DAF3', fontWeight: '600', fontSize: 12, marginBottom: 8 }}>{t('flowAi.share.pickTitle')}</Text>
+            
+            <View style={{ gap: 6, marginBottom: 12 }}>
+              {platformPick.map((o, i) => (
+                <TouchableOpacity
+                  key={i}
+                  disabled={!o.eligible}
+                  onPress={() => setPickSel(s => ({ ...s, [o.platform]: !s[o.platform] }))}
+                  style={{
+                    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+                    paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+                    backgroundColor: pickSel[o.platform] ? 'rgba(0,218,243,0.1)' : 'rgba(255,255,255,0.03)',
+                    opacity: o.eligible ? 1 : 0.5
+                  }}
+                >
+                  <View style={{ flexDirection: 'column' }}>
+                    <Text style={{ fontWeight: '600', fontSize: 13, color: o.eligible ? '#fff' : 'rgba(255,255,255,0.3)' }}>
+                      {o.platform.charAt(0).toUpperCase() + o.platform.slice(1)} {o.handle ? <Text style={{ opacity: 0.6, fontWeight: '400' }}>@{o.handle}</Text> : null}
+                    </Text>
+                    {!o.eligible && o.reason && (
+                      <Text style={{ fontSize: 11, color: '#FF7A59', marginTop: 2 }}>{o.reason}</Text>
+                    )}
+                  </View>
+                  {pickSel[o.platform] && <Text style={{ color: '#00DAF3', fontSize: 16 }}>✓</Text>}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={{ flexDirection: 'row', marginTop: 8 }}>
+              <TouchableOpacity
+                disabled={!Object.values(pickSel).some(Boolean)}
+                onPress={() => {
+                  const names = Object.keys(pickSel).filter((k) => pickSel[k]);
+                  setPlatformPick(null);
+                  send(`${t('flowAi.share.pickedPrefix')}: ${names.join(', ')}`);
+                }}
+                style={{ flex: 1, backgroundColor: '#00DAF3', paddingVertical: 10, borderRadius: 12, alignItems: 'center', marginRight: 6, opacity: Object.values(pickSel).some(Boolean) ? 1 : 0.5 }}
+              >
+                <Text style={{ color: '#000', fontWeight: '700' }}>{t('flowAi.share.pickContinue')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setPlatformPick(null)}
+                style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.08)', paddingVertical: 10, borderRadius: 12, alignItems: 'center' }}
+              >
                 <Text style={{ color: '#fff', fontWeight: '700' }}>{t('flowAi.share.cancel')}</Text>
               </TouchableOpacity>
             </View>

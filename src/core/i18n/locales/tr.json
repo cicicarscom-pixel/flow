@@ -857,7 +857,11 @@
       "wait": "Bilgiler dolduruluyor, lütfen bekleyin...",
       "done": "Video başarıyla paylaşıldı.",
       "scheduled": "Video paylaşımı planlandı.",
-      "failed": "Paylaşım başlatılamadı: {{message}}"
+      "failed": "Paylaşım başlatılamadı: {{message}}",
+      "pickTitle": "Hangi hesaplarda paylaşalım?",
+      "pickContinue": "Devam",
+      "pickedPrefix": "Seçilen hesaplar",
+      "failedShort": "Paylaşım tamamlanamadı"
     },
     "publish": {
       "title": "Yayın onayı bekliyor",
