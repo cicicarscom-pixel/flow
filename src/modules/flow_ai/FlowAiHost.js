@@ -47,6 +47,7 @@ export default function FlowAiHost({ navigationRef }) {
   const voiceRef = useRef(voice);
   voiceRef.current = voice;
   const exitVoiceChatRef = useRef(null);
+  const resumeAfterBgRef = useRef(false);
   const latest = useRef({});
   const voiceChatRef = useRef(false);
   const voiceSessionRef = useRef(0);
@@ -103,6 +104,7 @@ export default function FlowAiHost({ navigationRef }) {
       push('assistant', '[ses] kapandı: ' + (reason || 'bilinmiyor'));
     }
     voiceChatRef.current = false;
+    resumeAfterBgRef.current = false;
     voiceSessionRef.current += 1;
     setVoiceChat(false);
     transition('IDLE');
@@ -127,16 +129,6 @@ export default function FlowAiHost({ navigationRef }) {
   useEffect(() => {
     if (!open) exitVoiceChatRef.current?.('panel-kapandi');
   }, [open]);
-
-  useEffect(() => {
-    const sub = AppState.addEventListener('change', (st) => {
-      if (st === 'background' || st === 'inactive') {
-        if (VOICE_DEBUG) push('assistant', '[ses] appstate: ' + st);
-        exitVoiceChatRef.current?.('appstate:' + st);
-      }
-    });
-    return () => sub.remove();
-  }, []);
 
   useEffect(() => {
     return () => exitVoiceChatRef.current?.('unmount');
@@ -458,7 +450,7 @@ export default function FlowAiHost({ navigationRef }) {
     return () => clearTimeout(timer);
   }, [guide, navigationRef]);
 
-  latest.current = { pending, shareJobPending, busy, send, decide, attachmentMeta, input };
+  latest.current = { pending, shareJobPending, busy, send, decide, attachmentMeta, input, voicePhase };
   exitVoiceChatRef.current = exitVoiceChat;
   handleVoiceFinalRef.current = handleVoiceFinal;
   handleVoiceErrorRef.current = handleVoiceError;

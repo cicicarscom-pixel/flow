@@ -51,11 +51,11 @@ export function useFlowVoice() {
   });
 
   useSpeechRecognitionEvent('result', (event) => {
-    traceRef.current?.('olay: result (isFinal: ' + (event.results[0]?.isFinal) + ') ' + (event.results[0]?.transcript?.substring(0, 25) || ''));
+    traceRef.current?.('olay: result (isFinal: ' + event.isFinal + ') ' + (event.results[0]?.transcript?.substring(0, 25) || ''));
     const result = event.results[0];
     if (!result) return;
     
-    if (result.isFinal) {
+    if (event.isFinal) {
       setListening(false);
       if (startCallbackRef.current) {
         startCallbackRef.current(result.transcript.trim());
