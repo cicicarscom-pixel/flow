@@ -43,8 +43,14 @@ export default function FlowAiHost({ navigationRef }) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const voice = useFlowVoice();
-  const [voiceReplies, setVoiceReplies] = useState(false);
-  const lastWasVoice = useRef(false);
+  const voiceChatRef = useRef(false);
+  const voiceSessionRef = useRef(0);
+  const silenceCount = useRef(0);
+  const confirmArmedRef = useRef(null);
+  const [voiceChat, setVoiceChat] = useState(false);
+  const [voicePhase, setVoicePhase] = useState('IDLE');
+
+  useEffect(() => { voiceChatRef.current = voiceChat; }, [voiceChat]);
   const [open, setOpen] = useState(false);
   const [attachmentMeta, setAttachmentMeta] = useState(null);
   const [shareJobPending, setShareJobPending] = useState(null);
@@ -73,6 +79,35 @@ export default function FlowAiHost({ navigationRef }) {
     })
   ).current;
   const [guide, setGuide] = useState(null); // {key, step} — rehber modu
+
+  const transition = useCallback((to) => {
+    setVoicePhase(prev => {
+      if (to === 'IDLE') return to;
+      if (prev === 'IDLE' && to === 'LISTENING') return to;
+      if (prev === 'LISTENING' && (to === 'PROCESSING' || to === 'LISTENING')) return to;
+      if (prev === 'PROCESSING' && (to === 'SPEAKING' || to === 'LISTENING')) return to;
+      if (prev === 'SPEAKING' && to === 'LISTENING') return to;
+      return prev;
+    });
+  }, []);
+
+  const exitVoiceChat = useCallback(() => {
+    voiceSessionRef.current += 1;
+    setVoiceChat(false);
+    transition('IDLE');
+    voice.stop();
+    voice.stopSpeaking();
+    setInput('');
+  }, [voice, transition]);
+
+  const speakThen = useCallback((text, next) => {
+    transition('SPEAKING');
+    const sid = voiceSessionRef.current;
+    voice.speak(text, () => {
+      if (sid !== voiceSessionRef.current || !voiceChatRef.current) return;
+      if (next) next();
+    });
+  }, [voice, transition]);
 
   const push = useCallback((role, text) => {
     setMessages((m) => [...m, { id: String(++seq.current), role, text }]);
@@ -143,32 +178,6 @@ export default function FlowAiHost({ navigationRef }) {
     }
   };
 
-  const handleVoiceError = useCallback((err) => {
-    console.warn('[FlowAI voice]', err);
-    const suffix = ` (${err.code}${err.message ? ': ' + err.message : ''})`;
-    if (err.code === 'permission' || err.code === 'not-allowed') {
-      push('error', t('flowAi.voice.permissionDenied') + suffix);
-    } else if (err.code === 'service-not-allowed' || err.code === 'start-failed') {
-      push('error', t('flowAi.voice.serviceMissing') + suffix);
-    } else if (err.code === 'language-not-supported') {
-      push('error', t('flowAi.voice.languageMissing') + suffix);
-    } else if (err.code === 'network') {
-      push('error', t('flowAi.voice.network') + suffix);
-    } else {
-      push('error', t('flowAi.voice.unsupported') + suffix);
-    }
-    exitVoiceChat();
-  }, [push, t, exitVoiceChat]);
-
-  const speakThen = useCallback((text, next) => {
-    transition('SPEAKING');
-    const sid = voiceSessionRef.current;
-    voice.speak(text, () => {
-      if (sid !== voiceSessionRef.current || !voiceChatRef.current) return;
-      if (next) next();
-    });
-  }, [voice, transition]);
-
   const startListening = useCallback(() => {
     if (!voiceChatRef.current) return;
     const sid = voiceSessionRef.current;
@@ -182,7 +191,7 @@ export default function FlowAiHost({ navigationRef }) {
         onSilence: handleSilence
       });
     }, 400);
-  }, [voice, transition, handleVoiceError]);
+  }, [voice, transition]); // handleVoiceFinal, handleVoiceError, handleSilence rely on refs or are hoisted via careful ordering
 
   const handleSilence = useCallback(() => {
     const sid = voiceSessionRef.current;
@@ -202,7 +211,78 @@ export default function FlowAiHost({ navigationRef }) {
     startListening();
   }, [startListening]);
 
-  const send = useCallback(async (override) => {
+  const handleVoiceError = useCallback((err) => {
+    console.warn('[FlowAI voice]', err);
+    const suffix = ` (${err.code}${err.message ? ': ' + err.message : ''})`;
+    if (err.code === 'permission' || err.code === 'not-allowed') {
+      push('error', t('flowAi.voice.permissionDenied') + suffix);
+    } else if (err.code === 'service-not-allowed' || err.code === 'start-failed') {
+      push('error', t('flowAi.voice.serviceMissing') + suffix);
+    } else if (err.code === 'language-not-supported') {
+      push('error', t('flowAi.voice.languageMissing') + suffix);
+    } else if (err.code === 'network') {
+      push('error', t('flowAi.voice.network') + suffix);
+    } else {
+      push('error', t('flowAi.voice.unsupported') + suffix);
+    }
+    exitVoiceChat();
+  }, [push, t, exitVoiceChat]);
+
+  const handleVoiceFinal = async (text) => {
+    const sid = voiceSessionRef.current;
+    if (sid !== voiceSessionRef.current || !voiceChatRef.current) return;
+    const norm = text.toLowerCase().replace(/[.!?,]/g, '').trim();
+    
+    const END = ['kapat', 'bitir', 'sohbeti bitir', 'sesli sohbeti kapat', 'dur', 'çıkış', 'kapat sohbeti'];
+    if (END.includes(norm)) {
+      speakThen(t('flowAi.voice.chat.closedByUser'), exitVoiceChat);
+      return;
+    }
+
+    const YES = ['evet', 'onayla', 'onaylıyorum', 'tamam', 'olur', 'paylaş', 'yes', 'ja'];
+    const NO = ['hayır', 'vazgeç', 'iptal', 'istemiyorum', 'no', 'nein'];
+    
+    if (shareJobPending && YES.includes(norm) && confirmArmedRef.current === 'share') { 
+      if (!busy) {
+        confirmArmedRef.current = null;
+        const r = await flowAiShareHandoff.confirm(); 
+        setShareConfirmState(r); 
+      }
+      return; 
+    }
+    if (shareJobPending && NO.includes(norm) && confirmArmedRef.current === 'share') { 
+      if (!busy) {
+        confirmArmedRef.current = null;
+        setShareJobPending(null);
+        setAttachmentMeta(null);
+        setShareConfirmState('IDLE');
+        flowAiShareHandoff.clear();
+        speakThen(t('flowAi.rejected'), startListening);
+      }
+      return; 
+    }
+    if (pending.length === 1 && YES.includes(norm) && confirmArmedRef.current === pending[0].id) { 
+      if (!busy) {
+        confirmArmedRef.current = null;
+        decide(pending[0], true); 
+      }
+      return; 
+    }
+    if (pending.length === 1 && NO.includes(norm) && confirmArmedRef.current === pending[0].id) { 
+      if (!busy) {
+        confirmArmedRef.current = null;
+        decide(pending[0], false); 
+      }
+      return; 
+    }
+    
+    confirmArmedRef.current = null;
+    silenceCount.current = 0;
+    setInput('');
+    send(text, { voice: true });
+  };
+
+  const send = useCallback(async (override, opts) => {
     voice.stopSpeaking();
     setPlatformPick(null);
     const text = (typeof override === 'string' ? override : input).trim();
@@ -210,25 +290,37 @@ export default function FlowAiHost({ navigationRef }) {
     setInput('');
     push('user', text);
     setBusy(true);
+    if (opts?.voice) transition('PROCESSING');
+    
+    const sid = voiceSessionRef.current;
+    
     try {
-      const res = await FlowAiService.chat(text, conversationId.current, attachmentMeta);
+      const res = await FlowAiService.chat(text, conversationId.current, attachmentMeta, opts);
+      if (opts?.voice && sid !== voiceSessionRef.current) return;
+      
       conversationId.current = res.conversationId;
       push('assistant', res.reply);
-      if (voiceReplies || lastWasVoice.current) voice.speak(res.reply);
+      
       setPending(res.pendingActions || []);
+      
+      let shouldSpeakReply = opts?.voice;
       
       const actions = res.clientActions || [];
       actions.forEach((a) => {
         if (a?.type === 'share_video') {
-          // It's dispatched via actions, we also intercept it here to set pending state
           const { caption, platforms, skipped, scheduledLocal, timezone } = a;
           const job = { caption, platforms, skipped: skipped || [], scheduledLocal: scheduledLocal || null, timezone };
           setShareJobPending(job);
+          if (opts?.voice) {
+            shouldSpeakReply = false;
+            confirmArmedRef.current = 'share';
+            speakThen(t('flowAi.voice.chat.shareSummary', { platforms: job.platforms.join(', '), when: job.scheduledLocal || t('flowAi.voice.chat.now'), caption: job.caption }), startListening);
+          }
         } else if (a?.type === 'pick_platforms') {
-          const opts = (Array.isArray(a.options) ? a.options : []).slice(0, 10).filter((o) => o && typeof o.platform === 'string' && typeof o.eligible === 'boolean');
-          if (opts.length > 0) {
-            setPlatformPick(opts.map((o) => ({ platform: o.platform, handle: typeof o.handle === 'string' ? o.handle : '', eligible: o.eligible, reason: typeof o.reason === 'string' ? o.reason : undefined })));
-            setPickSel(Object.fromEntries(opts.filter((o) => o.eligible).map((o) => [o.platform, true])));
+          const oarr = (Array.isArray(a.options) ? a.options : []).slice(0, 10).filter((o) => o && typeof o.platform === 'string' && typeof o.eligible === 'boolean');
+          if (oarr.length > 0) {
+            setPlatformPick(oarr.map((o) => ({ platform: o.platform, handle: typeof o.handle === 'string' ? o.handle : '', eligible: o.eligible, reason: typeof o.reason === 'string' ? o.reason : undefined })));
+            setPickSel(Object.fromEntries(oarr.filter((o) => o.eligible).map((o) => [o.platform, true])));
           }
         }
         dispatchClientAction(a, navigationRef);
@@ -237,12 +329,21 @@ export default function FlowAiHost({ navigationRef }) {
       if (actions.some((a) => a?.type === 'open_post_draft') && !(res.pendingActions || []).length && !actions.some(a => a?.type === 'share_video')) {
         setOpen(false);
       }
+
+      if (opts?.voice && shouldSpeakReply) {
+        if (res.pendingActions && res.pendingActions.length === 1) {
+          confirmArmedRef.current = res.pendingActions[0].id;
+        }
+        speakThen(res.reply, startListening);
+      }
     } catch (e) {
+      if (opts?.voice && sid !== voiceSessionRef.current) return;
       push('error', e.code === 'DAILY_LIMIT' ? t('flowAi.dailyLimit', { limit: e.limit ?? '' }) : t('flowAi.error'));
+      if (opts?.voice) speakThen(t('flowAi.error'), startListening);
     } finally {
       setBusy(false);
     }
-  }, [input, busy, navigationRef, push, t, attachmentMeta, shareJobPending, voiceReplies]);
+  }, [input, busy, navigationRef, push, t, attachmentMeta, shareJobPending, transition, startListening, speakThen]);
 
   const decide = useCallback(async (action, approve) => {
     setBusy(true);
@@ -270,33 +371,7 @@ export default function FlowAiHost({ navigationRef }) {
     }
   }, [push, t]);
 
-  const handleVoiceFinal = async (text) => {
-    const norm = text.toLowerCase().replace(/[.!?,]/g, '').trim();
-    const YES = ['evet', 'onayla', 'onaylıyorum', 'tamam', 'olur', 'paylaş', 'yes', 'ja'];
-    const NO = ['hayır', 'vazgeç', 'iptal', 'istemiyorum', 'no', 'nein'];
-    
-    if (shareJobPending && YES.includes(norm)) { 
-      if (!busy) {
-        const r = await flowAiShareHandoff.confirm(); 
-        setShareConfirmState(r); 
-      }
-      return; 
-    }
-    if (shareJobPending && NO.includes(norm)) { 
-      if (!busy) {
-        setShareJobPending(null);
-        setAttachmentMeta(null);
-        setShareConfirmState('IDLE');
-        flowAiShareHandoff.clear();
-      }
-      return; 
-    }
-    if (pending.length === 1 && YES.includes(norm)) { if (!busy) decide(pending[0], true); return; }
-    if (pending.length === 1 && NO.includes(norm)) { if (!busy) decide(pending[0], false); return; }
-    
-    setInput('');
-    send(text);
-  };
+  
 
   // FA6: panel açılınca (en fazla dakikada bir) öneri kartlarını yükle. Hata sessizdir: kart yoksa panel normal çalışır.
   useEffect(() => {
@@ -421,9 +496,7 @@ export default function FlowAiHost({ navigationRef }) {
             <Text style={{ color: '#fff', fontWeight: '600', fontSize: 14 }}>{t('flowAi.title')}</Text>
             <Text style={{ color: '#3FB950', fontSize: 12 }}>{t('flowAi.online')}</Text>
           </View>
-          <TouchableOpacity onPress={() => setVoiceReplies(v => !v)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ padding: 6, marginRight: 8 }} accessibilityLabel={voiceReplies ? t('flowAi.voice.repliesOn') : t('flowAi.voice.repliesOff')}>
-            <Ionicons name={voiceReplies ? "volume-high" : "volume-mute"} size={20} color={voiceReplies ? "#3FB950" : "#8B949E"} />
-          </TouchableOpacity>
+          
           <TouchableOpacity onPress={() => setOpen(false)} accessibilityLabel={t('flowAi.close')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ padding: 6 }}>
             <Ionicons name="close" size={20} color="#8B949E" />
           </TouchableOpacity>
@@ -648,69 +721,6 @@ export default function FlowAiHost({ navigationRef }) {
             </TouchableOpacity>
           </>
         )}
-        </View>
-      </View>
-    </KeyboardAvoidingView>
-  );
-} disabled={busy} style={{ marginRight: 8, padding: 4 }}>
-            <Ionicons name="add-circle-outline" size={24} color="#8B949E" />
-          </TouchableOpacity>
-            <TouchableOpacity 
-              onPress={() => {
-                if (voice.listening) {
-                  voice.stop();
-                } else {
-                  lastWasVoice.current = true;
-                  voice.start({ 
-                    onPartial: setInput, 
-                    onFinal: handleVoiceFinal, 
-                    onError: (err) => {
-                      console.warn('[FlowAI voice]', err);
-                      const suffix = ` (${err.code}${err.message ? ': ' + err.message : ''})`;
-                      if (err.code === 'permission' || err.code === 'not-allowed') {
-                        push('error', t('flowAi.voice.permissionDenied') + suffix);
-                      } else if (err.code === 'service-not-allowed' || err.code === 'start-failed') {
-                        push('error', t('flowAi.voice.serviceMissing') + suffix);
-                      } else if (err.code === 'language-not-supported') {
-                        push('error', t('flowAi.voice.languageMissing') + suffix);
-                      } else if (err.code === 'network') {
-                        push('error', t('flowAi.voice.network') + suffix);
-                      } else {
-                        push('error', t('flowAi.voice.unsupported') + suffix);
-                      }
-                    } 
-                  });
-                }
-              }} 
-              disabled={busy} 
-              style={{ marginRight: 8, padding: 4 }}
-            >
-              <Ionicons name={voice.listening ? "mic-circle" : "mic"} size={24} color={voice.listening ? "#F85149" : "#8B949E"} />
-            </TouchableOpacity>
-          
-          {voice.listening ? (
-            <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, justifyContent: 'center' }}>
-              <Text style={{ color: '#8B949E' }}>{input || t('flowAi.voice.listening')}</Text>
-            </View>
-          ) : (
-            <TextInput
-              testID="flow_ai_input"
-              value={input}
-              onChangeText={setInput}
-              onSubmitEditing={() => { lastWasVoice.current = false; send(); }}
-              editable={!busy}
-              placeholder={t('flowAi.placeholder')}
-              placeholderTextColor="#65707D"
-              maxLength={4000}
-              style={{ flex: 1, color: '#fff', backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}
-            />
-          )}
-          
-          <TouchableOpacity testID="flow_ai_send" onPress={() => { lastWasVoice.current = false; send(); }} disabled={busy || !input.trim()} style={{ marginLeft: 8, opacity: busy || !input.trim() ? 0.5 : 1 }}>
-            <LinearGradient colors={['#3B82F6', '#9D5CFF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="send" size={17} color="#fff" />
-            </LinearGradient>
-          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>
