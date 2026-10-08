@@ -124,6 +124,7 @@ export default function FlowAiHost({ navigationRef }) {
   }, [transition]);
 
   const push = useCallback((role, text) => {
+    if (role === 'user') atBottomRef.current = true;
     setMessages((m) => [...m, { id: String(++seq.current), role, text }]);
   }, []);
 
