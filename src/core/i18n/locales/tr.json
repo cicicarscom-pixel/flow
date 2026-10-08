@@ -954,6 +954,17 @@
     "title": "WhatsApp randevu hatırlatma",
     "desc": "Onaylı randevulardan yaklaşık 1 gün önce müşteriye WhatsApp'tan otomatik hatırlatma gönderir.",
     "ownerOnly": "Bu ayarı yalnızca işletme sahibi değiştirebilir.",
-    "saveFailed": "Ayar kaydedilemedi. Lütfen tekrar deneyin."
+    "saveFailed": "Ayar kaydedilemedi. Lütfen tekrar deneyin.",
+    "languageLabel": "Mesaj dili",
+    "messageLabel": "Hatırlatma metni",
+    "placeholdersHint": "Metne eklemek için dokunun. Bu alanlar mesaj gönderilirken müşterinin bilgileriyle dolar:",
+    "honorificHint": "İpucu: Hitap (Sayın, Bay/Bayan, Mr., Herr…) kendi metninize siz yazın. Müşterinin cinsiyeti tahmin edilmez.",
+    "previewLabel": "Önizleme (örnek bilgilerle)",
+    "save": "Metni Kaydet",
+    "saved": "Kaydedildi",
+    "resetDefault": "Varsayılan metne dön",
+    "unknownPlaceholder": "Bilinmeyen alan: {{list}}. Yalnızca listedeki alanları kullanın.",
+    "tooLong": "Metin en fazla 700 karakter olabilir.",
+    "ph": {"name": "ad soyad", "first_name": "ilk ad", "business": "işletme", "date": "tarih", "time": "saat", "doctor": "uzman", "service": "işlem"}
   }
 }

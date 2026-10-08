@@ -962,6 +962,17 @@
     "title": "WhatsApp-Terminerinnerung",
     "desc": "Sendet Kunden etwa 1 Tag vor bestätigten Terminen automatisch eine WhatsApp-Erinnerung.",
     "ownerOnly": "Nur der Inhaber kann diese Einstellung ändern.",
-    "saveFailed": "Einstellung konnte nicht gespeichert werden. Bitte erneut versuchen."
+    "saveFailed": "Einstellung konnte nicht gespeichert werden. Bitte erneut versuchen.",
+    "languageLabel": "Sprache der Nachricht",
+    "messageLabel": "Erinnerungstext",
+    "placeholdersHint": "Zum Einfügen antippen. Diese Felder werden beim Senden mit den Daten des Kunden gefüllt:",
+    "honorificHint": "Tipp: Schreiben Sie die Anrede (Herr, Frau, Sehr geehrte…) selbst in Ihren Text. Das Geschlecht des Kunden wird nie erraten.",
+    "previewLabel": "Vorschau (mit Beispieldaten)",
+    "save": "Text speichern",
+    "saved": "Gespeichert",
+    "resetDefault": "Auf Standardtext zurücksetzen",
+    "unknownPlaceholder": "Unbekanntes Feld: {{list}}. Verwenden Sie nur die aufgeführten Felder.",
+    "tooLong": "Der Text darf höchstens 700 Zeichen lang sein.",
+    "ph": {"name": "vollständiger Name", "first_name": "Vorname", "business": "Unternehmen", "date": "Datum", "time": "Uhrzeit", "doctor": "Mitarbeiter", "service": "Leistung"}
   }
 }

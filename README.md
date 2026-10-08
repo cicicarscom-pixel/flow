@@ -302,6 +302,7 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 ---
 
 ## 🆕 Son Güncellemeler (08.10.2026 - WhatsApp hatırlatma)
+- 08.10.2026 — WhatsApp hatırlatma metni: işletme kendi metnini yazar, mesaj dilini seçer (tr/en/de/fr/es); hitap (Sayın/Mr./Herr…) metne işletme tarafından yazılır, kodda sabit değildir.
 - 08.10.2026 — Bot Yönetimi: "WhatsApp randevu hatırlatma" düğmesi eklendi (yalnız işletme sahibi değiştirir; varsayılan kapalı). Açıkken onaylı randevulara 24 saat önce WhatsApp'tan otomatik hatırlatma gider.
 - 08.10.2026 — Profil: "Profili Kaydet" düğmesi yalnız değişiklik varken etkin; kaydedince "Kaydedildi" yazıp pasif kalır, bir alan değişince yeniden etkinleşir.
 

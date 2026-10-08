@@ -962,6 +962,17 @@
     "title": "WhatsApp appointment reminders",
     "desc": "Automatically sends customers a WhatsApp reminder about 1 day before confirmed appointments.",
     "ownerOnly": "Only the business owner can change this setting.",
-    "saveFailed": "Could not save the setting. Please try again."
+    "saveFailed": "Could not save the setting. Please try again.",
+    "languageLabel": "Message language",
+    "messageLabel": "Reminder message",
+    "placeholdersHint": "Tap to insert. These fields are filled with the customer's details when the message is sent:",
+    "honorificHint": "Tip: write any form of address (Mr., Mrs., Dear, Herr…) in your own text. The customer's gender is never guessed.",
+    "previewLabel": "Preview (with sample details)",
+    "save": "Save message",
+    "saved": "Saved",
+    "resetDefault": "Reset to default message",
+    "unknownPlaceholder": "Unknown field: {{list}}. Use only the listed fields.",
+    "tooLong": "The message can be at most 700 characters.",
+    "ph": {"name": "full name", "first_name": "first name", "business": "business", "date": "date", "time": "time", "doctor": "staff", "service": "service"}
   }
 }

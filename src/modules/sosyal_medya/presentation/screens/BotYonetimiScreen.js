@@ -43,6 +43,7 @@ import {
   DialSlider
 } from '../../../persona_engine';
 
+import ReminderTemplateEditor from '../components/ReminderTemplateEditor';
 import { container } from '../../../../core/container';
 import { ManageBotUseCase } from '@application/useCases/ManageBotUseCase';
 const botUseCase = container.resolve(ManageBotUseCase);
@@ -938,6 +939,11 @@ export default function BotYonetimiScreen() {
                         style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
                       />
                     </View>
+                    {reminderEnabled ? (
+                      <View className="mb-4">
+                        <ReminderTemplateEditor />
+                      </View>
+                    ) : null}
 
                     <View className="flex-row justify-between items-center border-t border-white/5 pt-4">
                       <View className="flex-1 mr-4">
