@@ -303,6 +303,7 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ## 🆕 Son Güncellemeler (08.10.2026 - WhatsApp hatırlatma)
 - 08.10.2026 — Bot Yönetimi: "WhatsApp randevu hatırlatma" düğmesi eklendi (yalnız işletme sahibi değiştirir; varsayılan kapalı). Açıkken onaylı randevulara 24 saat önce WhatsApp'tan otomatik hatırlatma gider.
+- 08.10.2026 — Profil: "Profili Kaydet" düğmesi yalnız değişiklik varken etkin; kaydedince "Kaydedildi" yazıp pasif kalır, bir alan değişince yeniden etkinleşir.
 
 ## 🆕 Son Güncellemeler (06.10.2026 - WAHA Bot)
 - WhatsApp durum sorgusunda 'bot kurulmamış' durumu hata sayılmaz (yeni kullanıcı).

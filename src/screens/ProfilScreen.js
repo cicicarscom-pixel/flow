@@ -86,6 +86,18 @@ export default function ProfilScreen() {
   const { showActionSheetWithOptions } = useActionSheet();
   const [heroImageUrl, setHeroImageUrl] = useState(null);
 
+  // Kaydet düğmesi: yalnız kaydedilmemiş değişiklik varken etkin; kaydedince "Kaydedildi" yazıp pasif kalır.
+  const [savedKey, setSavedKey] = useState(null);
+  const [justSaved, setJustSaved] = useState(false);
+  const formKey = JSON.stringify([businessName, authorizedPerson, category, phone, addressData, avatar, heroImageUrl, vkn, taxOffice]);
+  const isDirty = savedKey !== null && formKey !== savedKey;
+  useEffect(() => {
+    if (!loading && savedKey === null) setSavedKey(formKey);
+  }, [loading]);
+  useEffect(() => {
+    if (isDirty) setJustSaved(false);
+  }, [isDirty]);
+
   const fetchProfileData = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -192,6 +204,7 @@ export default function ProfilScreen() {
     }
   };
 const handleSave = async () => {
+    const keyAtSave = formKey;
     setSaving(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -235,7 +248,8 @@ const handleSave = async () => {
           }
         }
         
-        Alert.alert(t('profil.saveSuccessTitle'), t('profil.saveSuccessMessage'));
+        setSavedKey(keyAtSave);
+        setJustSaved(true);
       } else {
         Alert.alert(t('profil.noSessionTitle'), t('profil.noSessionMessage'));
       }
@@ -444,9 +458,10 @@ const handleSave = async () => {
 
               {/* Gradient Button */}
               <CustomButton
-                title={t('profil.save')}
+                title={justSaved && !isDirty ? t('profil.saved') : t('profil.save')}
                 onPress={handleSave}
                 isLoading={saving}
+                disabled={!isDirty}
                 className="mb-4"
               />
 
