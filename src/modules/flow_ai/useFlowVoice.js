@@ -35,6 +35,8 @@ export function useFlowVoice() {
   const traceRef = useRef(null);
   const startedAtRef = useRef(0);
   const tracePackageRef = useRef(null);
+  const lastTranscriptRef = useRef('');
+  const finalDeliveredRef = useRef(false);
 
   useSpeechRecognitionEvent('start', () => {
     setListening(true);
@@ -48,6 +50,10 @@ export function useFlowVoice() {
   useSpeechRecognitionEvent('end', () => {
     setListening(false);
     traceRef.current?.('olay: end');
+    if (!finalDeliveredRef.current && lastTranscriptRef.current) {
+      finalDeliveredRef.current = true;
+      if (startCallbackRef.current) startCallbackRef.current(lastTranscriptRef.current.trim());
+    }
   });
 
   useSpeechRecognitionEvent('result', (event) => {
@@ -55,7 +61,10 @@ export function useFlowVoice() {
     const result = event.results[0];
     if (!result) return;
     
+    lastTranscriptRef.current = result.transcript || '';
+    
     if (event.isFinal) {
+      finalDeliveredRef.current = true;
       setListening(false);
       if (startCallbackRef.current) {
         startCallbackRef.current(result.transcript.trim());
@@ -99,6 +108,8 @@ export function useFlowVoice() {
     silenceCallbackRef.current = onSilence;
     traceRef.current = onTrace;
     startedAtRef.current = Date.now();
+    lastTranscriptRef.current = '';
+    finalDeliveredRef.current = false;
 
     try {
       const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
@@ -133,6 +144,7 @@ export function useFlowVoice() {
   };
 
   const stop = () => {
+    finalDeliveredRef.current = true;
     ExpoSpeechRecognitionModule.abort();
     setListening(false);
   };

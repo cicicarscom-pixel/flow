@@ -211,6 +211,25 @@ export default function FlowAiHost({ navigationRef }) {
     }, 400);
   }, [transition]);
 
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (st) => {
+      if (VOICE_DEBUG) push('assistant', '[ses] appstate: ' + st);
+      if (!voiceChatRef.current) return;
+      if (st === 'background') {
+        if (latest.current.voicePhase === 'LISTENING') {
+          resumeAfterBgRef.current = true;
+          voiceRef.current.stop();
+        }
+      } else if (st === 'active') {
+        if (resumeAfterBgRef.current) {
+          resumeAfterBgRef.current = false;
+          startListening();
+        }
+      }
+    });
+    return () => sub.remove();
+  }, [push, startListening]);
+
   const handleSilence = useCallback(() => {
     const sid = voiceSessionRef.current;
     if (sid !== voiceSessionRef.current || !voiceChatRef.current) return;
