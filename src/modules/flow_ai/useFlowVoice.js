@@ -122,6 +122,11 @@ export function useFlowVoice() {
         lang: getLocaleForSpeech(),
         interimResults: true,
         continuous: false,
+        androidIntentOptions: {
+          EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS: 2500,
+          EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS: 2500,
+          EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 2000,
+        },
       };
       
       const list = servicesRef.current;

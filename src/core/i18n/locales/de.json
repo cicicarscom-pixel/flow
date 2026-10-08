@@ -889,7 +889,8 @@
       "pickTitle": "Auf welchen Konten sollen wir posten?",
       "pickContinue": "Weiter",
       "pickedPrefix": "Ausgewählte Konten",
-      "failedShort": "Teilen konnte nicht abgeschlossen werden"
+      "failedShort": "Teilen konnte nicht abgeschlossen werden",
+      "duplicate": "Dieses Video mit diesem Text wurde auf diesem Konto in den letzten 24 Stunden bereits veröffentlicht oder geplant. Ändere den Text und versuche es erneut."
     },
     "publish": {
       "title": "Wartet auf Veröffentlichungsfreigabe",

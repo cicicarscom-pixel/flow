@@ -148,7 +148,8 @@ export default function FlowAiHost({ navigationRef }) {
           setShareConfirmState('IDLE');
           flowAiShareHandoff.clear();
         } else {
-          const msg = t('flowAi.share.failed', { message: payload.message || '' });
+          const isDup = /already (scheduled|posted)|exact content/i.test(payload.message || '');
+          const msg = isDup ? t('flowAi.share.duplicate') : t('flowAi.share.failed', { message: payload.message || '' });
           push('error', msg);
           if (voiceChatRef.current) speakThen(msg, startListening);
           setShareJobPending(null);

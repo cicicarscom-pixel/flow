@@ -889,7 +889,8 @@
       "pickTitle": "Which accounts should we post to?",
       "pickContinue": "Continue",
       "pickedPrefix": "Selected accounts",
-      "failedShort": "Sharing could not be completed"
+      "failedShort": "Sharing could not be completed",
+      "duplicate": "This exact video and text was already posted or scheduled on this account in the last 24 hours. Change the text and try again."
     },
     "publish": {
       "title": "Waiting for publish approval",

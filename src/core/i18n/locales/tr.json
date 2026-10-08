@@ -881,7 +881,8 @@
       "pickTitle": "Hangi hesaplarda paylaşalım?",
       "pickContinue": "Devam",
       "pickedPrefix": "Seçilen hesaplar",
-      "failedShort": "Paylaşım tamamlanamadı"
+      "failedShort": "Paylaşım tamamlanamadı",
+      "duplicate": "Bu video ve metin son 24 saat içinde bu hesapta zaten paylaşılmış ya da zamanlanmış. Metni değiştirip tekrar deneyin."
     },
     "publish": {
       "title": "Yayın onayı bekliyor",
