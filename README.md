@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (08.10.2026 - WhatsApp hatırlatma)
+- 08.10.2026 — Bot Yönetimi: "WhatsApp randevu hatırlatma" düğmesi eklendi (yalnız işletme sahibi değiştirir; varsayılan kapalı). Açıkken onaylı randevulara 24 saat önce WhatsApp'tan otomatik hatırlatma gider.
+
 ## 🆕 Son Güncellemeler (06.10.2026 - WAHA Bot)
 - WhatsApp durum sorgusunda 'bot kurulmamış' durumu hata sayılmaz (yeni kullanıcı).
 

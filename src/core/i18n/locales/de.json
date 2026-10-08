@@ -956,5 +956,11 @@
     "adminBlocked": "Administratorkonten können hier nicht gelöscht werden.",
     "error": "Das Konto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
     "privacy": "Datenschutzerklärung"
+  },
+  "reminders": {
+    "title": "WhatsApp-Terminerinnerung",
+    "desc": "Sendet Kunden etwa 1 Tag vor bestätigten Terminen automatisch eine WhatsApp-Erinnerung.",
+    "ownerOnly": "Nur der Inhaber kann diese Einstellung ändern.",
+    "saveFailed": "Einstellung konnte nicht gespeichert werden. Bitte erneut versuchen."
   }
 }

@@ -179,6 +179,7 @@ export default function BotYonetimiScreen() {
   const [timezone, setTimezone] = useState("Europe/Istanbul");
   const [appointmentModuleEnabled, setAppointmentModuleEnabled] = useState(true);
   const [multiCalendarEnabled, setMultiCalendarEnabled] = useState(false);
+  const [reminderEnabled, setReminderEnabled] = useState(false);
 
   // Karakter (Persona): artık web ile aynı kaynaktan, canlı olarak
   // ai_personas'tan çekiliyor (bkz. fetchInitialData) — eski hardcoded
@@ -325,6 +326,33 @@ export default function BotYonetimiScreen() {
       }
     } catch (e) {
       console.warn('Auto save error', e);
+    }
+  };
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const { data } = await supabase.rpc('get_reminder_settings');
+        if (alive && data?.status === 'SUCCESS') setReminderEnabled(!!data.enabled);
+      } catch (e) {
+        console.warn('Reminder settings load error', e);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  const handleReminderSave = async (newValue) => {
+    setReminderEnabled(newValue);
+    try {
+      const { data, error } = await supabase.rpc('set_reminder_settings', { p_enabled: newValue });
+      if (error || data?.status !== 'SUCCESS') {
+        setReminderEnabled(!newValue);
+        Alert.alert(t('sosyalMedya.alerts.error'), data?.status === 'FORBIDDEN' ? t('reminders.ownerOnly') : t('reminders.saveFailed'));
+      }
+    } catch (e) {
+      setReminderEnabled(!newValue);
+      Alert.alert(t('sosyalMedya.alerts.error'), t('reminders.saveFailed'));
     }
   };
 
@@ -891,6 +919,20 @@ export default function BotYonetimiScreen() {
                       <Switch
                         value={multiCalendarEnabled}
                         onValueChange={(val) => { setMultiCalendarEnabled(val); handleMultiCalendarSave(val); }}
+                        trackColor={{ false: '#34303C', true: '#22B573' }}
+                        thumbColor="#ffffff"
+                        style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+                      />
+                    </View>
+
+                    <View className="flex-row justify-between items-center border-t border-white/5 pt-4 mb-4">
+                      <View className="flex-1 pr-2">
+                        <Text className="text-white text-sm font-bold mb-1">{t('reminders.title')}</Text>
+                        <Text className="text-gray-400 text-[10px] leading-3">{t('reminders.desc')}</Text>
+                      </View>
+                      <Switch
+                        value={reminderEnabled}
+                        onValueChange={handleReminderSave}
                         trackColor={{ false: '#34303C', true: '#22B573' }}
                         thumbColor="#ffffff"
                         style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}

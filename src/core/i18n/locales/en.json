@@ -956,5 +956,11 @@
     "adminBlocked": "Administrator accounts cannot be deleted here.",
     "error": "Could not delete the account. Please try again.",
     "privacy": "Privacy Policy"
+  },
+  "reminders": {
+    "title": "WhatsApp appointment reminders",
+    "desc": "Automatically sends customers a WhatsApp reminder about 1 day before confirmed appointments.",
+    "ownerOnly": "Only the business owner can change this setting.",
+    "saveFailed": "Could not save the setting. Please try again."
   }
 }

@@ -948,5 +948,11 @@
     "adminBlocked": "Yönetici hesapları buradan silinemez.",
     "error": "Hesap silinemedi. Lütfen tekrar deneyin.",
     "privacy": "Gizlilik Politikası"
+  },
+  "reminders": {
+    "title": "WhatsApp randevu hatırlatma",
+    "desc": "Onaylı randevulardan yaklaşık 1 gün önce müşteriye WhatsApp'tan otomatik hatırlatma gönderir.",
+    "ownerOnly": "Bu ayarı yalnızca işletme sahibi değiştirebilir.",
+    "saveFailed": "Ayar kaydedilemedi. Lütfen tekrar deneyin."
   }
 }
