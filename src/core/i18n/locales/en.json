@@ -844,7 +844,17 @@
       "unsupported": "Speech recognition is not available on this device.",
       "serviceMissing": "Speech recognition service was not found. Make sure the Google app is installed and enabled.",
       "languageMissing": "The speech language pack is not installed. Download it in settings.",
-      "network": "Speech recognition needs an internet connection."
+      "network": "Speech recognition needs an internet connection.",
+      "chat": {
+        "listening": "Listening…",
+        "thinking": "Thinking…",
+        "speaking": "Speaking…",
+        "end": "Stop",
+        "closing": "Closing voice chat.",
+        "closedByUser": "Okay, voice chat closed.",
+        "now": "now",
+        "shareSummary": "I will post to {{platforms}}. When: {{when}}. Text: {{caption}}. Do you confirm?"
+      }
     },
     "title": "Flow AI",
     "orbLabel": "Flow Ai",

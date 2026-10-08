@@ -836,7 +836,17 @@
       "unsupported": "Bu cihazda ses tanıma kullanılamıyor.",
       "serviceMissing": "Telefonda ses tanıma hizmeti bulunamadı. Google uygulamasının kurulu ve etkin olduğundan emin olun.",
       "languageMissing": "Türkçe ses tanıma paketi yüklü değil. Ayarlardan Türkçe dil paketini indirin.",
-      "network": "Ses tanıma için internet bağlantısı gerekiyor."
+      "network": "Ses tanıma için internet bağlantısı gerekiyor.",
+      "chat": {
+        "listening": "Dinliyorum…",
+        "thinking": "Düşünüyorum…",
+        "speaking": "Konuşuyorum…",
+        "end": "Bitir",
+        "closing": "Sesli sohbeti kapatıyorum.",
+        "closedByUser": "Tamam, sesli sohbeti kapattım.",
+        "now": "hemen",
+        "shareSummary": "{{platforms}} hesaplarında paylaşacağım. Zaman: {{when}}. Metin: {{caption}}. Onaylıyor musun?"
+      }
     },
     "title": "Flow AI",
     "orbLabel": "Flow Ai",

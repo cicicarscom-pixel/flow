@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   FlatList, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View,
+  AppState,
   Animated, PanResponder,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -87,7 +88,7 @@ export default function FlowAiHost({ navigationRef }) {
         if (payload.ok) {
           const msg = shareJobPending?.scheduledLocal ? t('flowAi.share.scheduled') : t('flowAi.share.done');
           push('assistant', msg);
-          if (voiceReplies || lastWasVoice.current) voice.speak(msg);
+          if (voiceChatRef.current) speakThen(msg, startListening);
           setShareJobPending(null);
           setAttachmentMeta(null);
           setShareConfirmState('IDLE');
@@ -95,7 +96,7 @@ export default function FlowAiHost({ navigationRef }) {
         } else {
           const msg = t('flowAi.share.failed', { message: payload.message || '' });
           push('error', msg);
-          if (voiceReplies || lastWasVoice.current) voice.speak(msg);
+          if (voiceChatRef.current) speakThen(msg, startListening);
           setShareJobPending(null);
           setShareConfirmState('IDLE');
         }
@@ -141,6 +142,65 @@ export default function FlowAiHost({ navigationRef }) {
       push('error', t('flowAi.share.unreadable'));
     }
   };
+
+  const handleVoiceError = useCallback((err) => {
+    console.warn('[FlowAI voice]', err);
+    const suffix = ` (${err.code}${err.message ? ': ' + err.message : ''})`;
+    if (err.code === 'permission' || err.code === 'not-allowed') {
+      push('error', t('flowAi.voice.permissionDenied') + suffix);
+    } else if (err.code === 'service-not-allowed' || err.code === 'start-failed') {
+      push('error', t('flowAi.voice.serviceMissing') + suffix);
+    } else if (err.code === 'language-not-supported') {
+      push('error', t('flowAi.voice.languageMissing') + suffix);
+    } else if (err.code === 'network') {
+      push('error', t('flowAi.voice.network') + suffix);
+    } else {
+      push('error', t('flowAi.voice.unsupported') + suffix);
+    }
+    exitVoiceChat();
+  }, [push, t, exitVoiceChat]);
+
+  const speakThen = useCallback((text, next) => {
+    transition('SPEAKING');
+    const sid = voiceSessionRef.current;
+    voice.speak(text, () => {
+      if (sid !== voiceSessionRef.current || !voiceChatRef.current) return;
+      if (next) next();
+    });
+  }, [voice, transition]);
+
+  const startListening = useCallback(() => {
+    if (!voiceChatRef.current) return;
+    const sid = voiceSessionRef.current;
+    setTimeout(() => {
+      if (sid !== voiceSessionRef.current || !voiceChatRef.current) return;
+      transition('LISTENING');
+      voice.start({
+        onPartial: setInput,
+        onFinal: handleVoiceFinal,
+        onError: handleVoiceError,
+        onSilence: handleSilence
+      });
+    }, 400);
+  }, [voice, transition, handleVoiceError]);
+
+  const handleSilence = useCallback(() => {
+    const sid = voiceSessionRef.current;
+    if (sid !== voiceSessionRef.current || !voiceChatRef.current) return;
+    silenceCount.current += 1;
+    if (silenceCount.current === 1) {
+      startListening();
+    } else {
+      speakThen(t('flowAi.voice.chat.closing'), exitVoiceChat);
+    }
+  }, [speakThen, startListening, exitVoiceChat, t]);
+
+  const enterVoiceChat = useCallback(() => {
+    voiceSessionRef.current += 1;
+    silenceCount.current = 0;
+    setVoiceChat(true);
+    startListening();
+  }, [startListening]);
 
   const send = useCallback(async (override) => {
     voice.stopSpeaking();
@@ -190,11 +250,15 @@ export default function FlowAiHost({ navigationRef }) {
       const res = approve ? await FlowAiService.approve(action.id, action.payloadHash) : await FlowAiService.reject(action.id);
       setPending((p) => p.filter((x) => x.id !== action.id));
       if (approve && res.status === 'EXECUTED' && action.toolName === 'publish_post') {
-        push('assistant', t(res.result?.data?.scheduled ? 'flowAi.publish.scheduled' : 'flowAi.publish.published'));
+        const msg = t(res.result?.data?.scheduled ? 'flowAi.publish.scheduled' : 'flowAi.publish.published');
+        push('assistant', msg);
+        if (voiceChatRef.current) speakThen(msg, startListening);
       } else if (approve && res.status !== 'EXECUTED') {
         const code = res.result?.status || res.status;
         const key = PUBLISH_ERRORS[code];
-        push('error', t(key || 'flowAi.notApplied'));
+        const msg = t(key || 'flowAi.notApplied');
+        push('error', msg);
+        if (voiceChatRef.current) speakThen(msg, startListening);
       } else {
         const ok = res.status === 'EXECUTED' || res.status === 'REJECTED';
         push(ok ? 'assistant' : 'error', t(ok ? (approve ? 'flowAi.approved' : 'flowAi.rejected') : 'flowAi.notApplied'));
@@ -535,7 +599,60 @@ export default function FlowAiHost({ navigationRef }) {
         )}
 
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)' }}>
-          <TouchableOpacity onPress={handleAttach} disabled={busy} style={{ marginRight: 8, padding: 4 }}>
+          {voiceChat ? (
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, marginRight: 8 }}>
+            <Animated.View style={{ opacity: voicePhase === 'LISTENING' ? 1 : 0.5, marginRight: 8 }}>
+              <Ionicons name="mic" size={16} color={voicePhase === 'LISTENING' ? "#F85149" : "#8B949E"} />
+            </Animated.View>
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <Text style={{ color: '#8B949E', fontSize: 13, marginBottom: 2 }}>
+                {voicePhase === 'LISTENING' ? t('flowAi.voice.chat.listening') : 
+                 voicePhase === 'PROCESSING' ? t('flowAi.voice.chat.thinking') :
+                 voicePhase === 'SPEAKING' ? t('flowAi.voice.chat.speaking') : ''}
+              </Text>
+              {voicePhase === 'LISTENING' && input ? <Text style={{ color: '#fff', fontSize: 14 }} numberOfLines={1}>{input}</Text> : null}
+            </View>
+            <TouchableOpacity onPress={exitVoiceChat} style={{ backgroundColor: 'rgba(248,81,73,0.15)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 }}>
+              <Text style={{ color: '#F85149', fontWeight: '600', fontSize: 12 }}>{t('flowAi.voice.chat.end')}</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            <TouchableOpacity onPress={handleAttach} disabled={busy} style={{ marginRight: 8, padding: 4 }}>
+              <Ionicons name="add-circle-outline" size={24} color="#8B949E" />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={enterVoiceChat} 
+              disabled={busy} 
+              style={{ marginRight: 8, padding: 4 }}
+            >
+              <Ionicons name="mic" size={24} color="#8B949E" />
+            </TouchableOpacity>
+            
+            <TextInput
+              testID="flow_ai_input"
+              value={input}
+              onChangeText={setInput}
+              onSubmitEditing={() => send()}
+              editable={!busy}
+              placeholder={t('flowAi.placeholder')}
+              placeholderTextColor="#65707D"
+              maxLength={4000}
+              style={{ flex: 1, color: '#fff', backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10 }}
+            />
+            
+            <TouchableOpacity testID="flow_ai_send" onPress={() => send()} disabled={busy || !input.trim()} style={{ marginLeft: 8, opacity: busy || !input.trim() ? 0.5 : 1 }}>
+              <LinearGradient colors={['#3B82F6', '#9D5CFF']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="send" size={17} color="#fff" />
+              </LinearGradient>
+            </TouchableOpacity>
+          </>
+        )}
+        </View>
+      </View>
+    </KeyboardAvoidingView>
+  );
+} disabled={busy} style={{ marginRight: 8, padding: 4 }}>
             <Ionicons name="add-circle-outline" size={24} color="#8B949E" />
           </TouchableOpacity>
             <TouchableOpacity 

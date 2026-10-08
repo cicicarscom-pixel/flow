@@ -844,7 +844,17 @@
       "unsupported": "Spracherkennung ist auf diesem Gerät nicht verfügbar.",
       "serviceMissing": "Der Spracherkennungsdienst wurde nicht gefunden. Stellen Sie sicher, dass die Google-App installiert und aktiviert ist.",
       "languageMissing": "Das Sprachpaket ist nicht installiert. Laden Sie es in den Einstellungen herunter.",
-      "network": "Die Spracherkennung benötigt eine Internetverbindung."
+      "network": "Die Spracherkennung benötigt eine Internetverbindung.",
+      "chat": {
+        "listening": "Ich höre zu…",
+        "thinking": "Ich denke nach…",
+        "speaking": "Ich spreche…",
+        "end": "Beenden",
+        "closing": "Ich beende den Sprachchat.",
+        "closedByUser": "Okay, Sprachchat beendet.",
+        "now": "sofort",
+        "shareSummary": "Ich poste auf {{platforms}}. Zeit: {{when}}. Text: {{caption}}. Bestätigen Sie?"
+      }
     },
     "title": "Flow AI",
     "orbLabel": "Flow Ai",

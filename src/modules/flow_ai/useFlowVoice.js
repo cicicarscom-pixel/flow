@@ -31,6 +31,8 @@ export function useFlowVoice() {
   const partialCallbackRef = useRef(null);
   const errorCallbackRef = useRef(null);
 
+  const silenceCallbackRef = useRef(null);
+
   useSpeechRecognitionEvent('start', () => {
     setListening(true);
   });
@@ -57,7 +59,11 @@ export function useFlowVoice() {
 
   useSpeechRecognitionEvent('error', (event) => {
     setListening(false);
-    if (event.error === 'no-speech' || event.error === 'aborted') return;
+    if (event.error === 'no-speech') {
+      if (silenceCallbackRef.current) silenceCallbackRef.current();
+      return;
+    }
+    if (event.error === 'aborted') return;
     if (errorCallbackRef.current) {
       errorCallbackRef.current({ code: event.error, message: event.message });
     }
@@ -69,12 +75,13 @@ export function useFlowVoice() {
     return 'tr-TR';
   };
 
-  const start = async ({ onPartial, onFinal, onError }) => {
+  const start = async ({ onPartial, onFinal, onError, onSilence }) => {
     stopSpeaking();
     
     startCallbackRef.current = onFinal;
     partialCallbackRef.current = onPartial;
     errorCallbackRef.current = onError;
+    silenceCallbackRef.current = onSilence;
 
     try {
       const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
@@ -112,17 +119,29 @@ export function useFlowVoice() {
     setSpeaking(false);
   };
 
-  const speak = (text) => {
+  const speak = (text, onDoneCallback) => {
     stopSpeaking();
     const cleaned = cleanForSpeech(text);
-    if (!cleaned) return;
+    if (!cleaned) {
+      if (onDoneCallback) onDoneCallback();
+      return;
+    }
     
+    let doneCalled = false;
+    const finish = () => {
+      setSpeaking(false);
+      if (!doneCalled) {
+        doneCalled = true;
+        if (onDoneCallback) onDoneCallback();
+      }
+    };
+
     setSpeaking(true);
     Speech.speak(cleaned, {
       language: getLocaleForSpeech(),
-      onDone: () => setSpeaking(false),
-      onError: () => setSpeaking(false),
-      onStopped: () => setSpeaking(false),
+      onDone: finish,
+      onError: finish,
+      onStopped: finish,
     });
   };
 

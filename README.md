@@ -1383,10 +1383,13 @@ Mobil (`flow`) tarafında "Canlı Fetch" mimarisi (bkz. Adım 5, Sosyal Medya Ba
 8. **Flow & FlowWeb - İptal ve Kalıcı Silme Arayüzü:** Randevu listelerinde kullanılmak üzere iptal ve silme işlemleri RPC (cancel_appointment, delete_appointment) üzerinden backend ile tam entegre edildi. Web tarafında iptal nedenleri ve durum bildirimleri kartta soluk rozetler olarak gösterilirken, mobilde kart içine ActionSheet ('⋮') eklendi.
 9. **Flow (Mobil) - Gelen Kutusu Zil Yönlendirmesi:** DashboardScreen'deki bildirim çanının yanlışlıkla 'Sosyal Medya' sekmesine yönlendirmesi sorunu düzeltilip, doğrudan ana gezinme yığını (Stack) seviyesine taşınan 'Inbox > Bildirimler' sekmesine yönlendirildi. Tanımsız kalan eski load data (fetchAppointments) fonksiyonları temizlendi.
 
-### [08.10.2026] Flow AI Mobil Panel - Ses Tanıma Hata Tanısı
-- Ses tanıma hatalarında (hizmet yok, dil paketi eksik, izin vb.) gerçek hata kodlarının yakalanıp çevrilmiş detaylı mesajların (serviceMissing, languageMissing vb.) kullanıcıya gösterilmesi sağlandı.
-- Xiaomi gibi cihazlarda varsayılan ses servisi olmaması (isRecognitionAvailable = false) sorununa karşı engel kaldırıldı. Cihazdaki desteklenen servisler taranarak (Google vb.) başlatma işlemi güvenilir hale getirildi. Hata anında tüm kod/mesaj içeriği artık kullanıcı arayüzüne (toast) ve loglara yazılıyor.
-- `ExpoSpeechRecognitionModule` içe aktarım (import) hatası düzeltilerek paketin asıl nesnesine erişim sağlandı. Doğrudan tanımsız (`undefined`) nesne çağrılarından kaynaklanan başlangıç hataları giderildi.
+### [08.10.2026] Flow AI Mobil Panel - Eller Serbest Sesli Sohbet (Durum Makinesi)
+- Mikrofona bir kez basıldığında diyalogun sürekli (eller serbest) devam etmesi sağlandı (dinleme → düşünme → sesli okuma → tekrar dinleme).
+- Ek korumalar (voiceSessionId ile geç okuma yarışını önleme, durum makinesi, sesli iptal, "evet/hayır" onayı için silahlandırma) eklendi. Ses çubuğu arayüzü eklendi.
+- Önceki ses tanıma düzeltmeleri:
+  - Hata kodlarının yakalanıp detaylı çevrilmesi.
+  - Cihazdaki desteklenen servisler taranarak (Google vb.) yedek başlatma.
+  - `ExpoSpeechRecognitionModule` içe aktarım hatasının giderilmesi.
 
 ### [07.10.2026] Flow AI Mobil Panel - Sesli Komut ve Yanıt (FA8)
 - `expo-speech` ve `expo-speech-recognition` kullanılarak Flow AI asistanına mikrofon (sesli dinleme) desteği eklendi.
