@@ -540,10 +540,6 @@ export default function FlowAiHost({ navigationRef }) {
           </TouchableOpacity>
             <TouchableOpacity 
               onPress={() => {
-                if (voice.supported === false) {
-                  push('error', t('flowAi.voice.serviceMissing'));
-                  return;
-                }
                 if (voice.listening) {
                   voice.stop();
                 } else {
@@ -553,16 +549,17 @@ export default function FlowAiHost({ navigationRef }) {
                     onFinal: handleVoiceFinal, 
                     onError: (err) => {
                       console.warn('[FlowAI voice]', err);
+                      const suffix = ` (${err.code}${err.message ? ': ' + err.message : ''})`;
                       if (err.code === 'permission' || err.code === 'not-allowed') {
-                        push('error', t('flowAi.voice.permissionDenied'));
+                        push('error', t('flowAi.voice.permissionDenied') + suffix);
                       } else if (err.code === 'service-not-allowed' || err.code === 'start-failed') {
-                        push('error', t('flowAi.voice.serviceMissing'));
+                        push('error', t('flowAi.voice.serviceMissing') + suffix);
                       } else if (err.code === 'language-not-supported') {
-                        push('error', t('flowAi.voice.languageMissing'));
+                        push('error', t('flowAi.voice.languageMissing') + suffix);
                       } else if (err.code === 'network') {
-                        push('error', t('flowAi.voice.network'));
+                        push('error', t('flowAi.voice.network') + suffix);
                       } else {
-                        push('error', t('flowAi.voice.unsupported') + ` (${err.code})`);
+                        push('error', t('flowAi.voice.unsupported') + suffix);
                       }
                     } 
                   });

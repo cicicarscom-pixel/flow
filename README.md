@@ -1385,6 +1385,7 @@ Mobil (`flow`) tarafında "Canlı Fetch" mimarisi (bkz. Adım 5, Sosyal Medya Ba
 
 ### [08.10.2026] Flow AI Mobil Panel - Ses Tanıma Hata Tanısı
 - Ses tanıma hatalarında (hizmet yok, dil paketi eksik, izin vb.) gerçek hata kodlarının yakalanıp çevrilmiş detaylı mesajların (serviceMissing, languageMissing vb.) kullanıcıya gösterilmesi sağlandı.
+- Xiaomi gibi cihazlarda varsayılan ses servisi olmaması (isRecognitionAvailable = false) sorununa karşı engel kaldırıldı. Cihazdaki desteklenen servisler taranarak (Google vb.) başlatma işlemi güvenilir hale getirildi. Hata anında tüm kod/mesaj içeriği artık kullanıcı arayüzüne (toast) ve loglara yazılıyor.
 
 ### [07.10.2026] Flow AI Mobil Panel - Sesli Komut ve Yanıt (FA8)
 - `expo-speech` ve `expo-speech-recognition` kullanılarak Flow AI asistanına mikrofon (sesli dinleme) desteği eklendi.

@@ -83,14 +83,22 @@ export function useFlowVoice() {
         return;
       }
       
-      await ExpoSpeechRecognitionModule.start({
+      let options = {
         lang: getLocaleForSpeech(),
         interimResults: true,
         continuous: false,
-        androidRecognitionServicePackage: 'com.google.android.googlequicksearchbox',
-      });
+      };
+      const list = servicesRef.current;
+      if (list && list.length > 0) {
+        if (list.includes('com.google.android.googlequicksearchbox')) {
+          options.androidRecognitionServicePackage = 'com.google.android.googlequicksearchbox';
+        } else {
+          options.androidRecognitionServicePackage = list[0];
+        }
+      }
+      await ExpoSpeechRecognitionModule.start(options);
     } catch (e) {
-      if (onError) onError({ code: 'start-failed', message: e.message });
+      if (onError) onError({ code: e.code || 'start-failed', message: e.message });
     }
   };
 
@@ -118,14 +126,24 @@ export function useFlowVoice() {
     });
   };
 
+  const servicesRef = useRef(null);
+
   useEffect(() => {
     (async () => {
       try {
         const available = await ExpoSpeechRecognitionModule.isRecognitionAvailable();
-        if (!available) setSupported(false);
+        console.warn('[FlowAI voice] isRecognitionAvailable', available);
       } catch (e) {
         console.warn('[FlowAI voice]', e);
-        setSupported(false);
+      }
+      try {
+        if (typeof ExpoSpeechRecognitionModule.getSpeechRecognitionServices === 'function') {
+          const list = await ExpoSpeechRecognitionModule.getSpeechRecognitionServices();
+          servicesRef.current = list;
+          console.warn('[FlowAI voice] services', list);
+        }
+      } catch (e) {
+        console.warn('[FlowAI voice] services error', e);
       }
     })();
     return () => {
