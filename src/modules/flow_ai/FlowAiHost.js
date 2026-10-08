@@ -23,7 +23,7 @@ import { useFlowVoice } from './useFlowVoice';
 // Uygulama kökünde (NavigationContainer içinde) durur: ekran değişince panel ve konuşma KAPANMAZ.
 // Panel, Modal değil kaplamadır; üstündeki alan dokunmayı alttaki ekrana geçirir.
 // publish_post onay sonrası hata kodları → çeviri anahtarı
-const VOICE_DEBUG = true;
+const VOICE_DEBUG = false;
 const PUBLISH_ERRORS = {
   PUBLISH_FAILED: 'flowAi.publish.failed',
   DRAFT_CHANGED: 'flowAi.publish.changed',
@@ -106,7 +106,6 @@ export default function FlowAiHost({ navigationRef }) {
       push('assistant', '[ses] kapandı: ' + (reason || 'bilinmiyor'));
     }
     voiceChatRef.current = false;
-    
     voiceSessionRef.current += 1;
     setVoiceChat(false);
     transition('IDLE');
@@ -214,22 +213,22 @@ export default function FlowAiHost({ navigationRef }) {
     }, 400);
   }, [transition]);
 
-  useEffect(() => {
-  const sub = AppState.addEventListener('change', (st) => {
-    if (VOICE_DEBUG) push('assistant', '[ses] appstate: ' + st);
-    if (st === 'background') {
-      if (voiceChatRef.current && !bgTimerRef.current) {
-        bgTimerRef.current = setTimeout(() => {
-          bgTimerRef.current = null;
-          exitVoiceChatRef.current?.('arkaplan-4sn');
-        }, 4000);
+    useEffect(() => {
+    const sub = AppState.addEventListener('change', (st) => {
+      if (VOICE_DEBUG) push('assistant', '[ses] appstate: ' + st);
+      if (st === 'background') {
+        if (voiceChatRef.current && !bgTimerRef.current) {
+          bgTimerRef.current = setTimeout(() => {
+            bgTimerRef.current = null;
+            exitVoiceChatRef.current?.('arkaplan-4sn');
+          }, 4000);
+        }
+      } else if (st === 'active') {
+        if (bgTimerRef.current) { clearTimeout(bgTimerRef.current); bgTimerRef.current = null; }
       }
-    } else if (st === 'active') {
-      if (bgTimerRef.current) { clearTimeout(bgTimerRef.current); bgTimerRef.current = null; }
-    }
-  });
-  return () => { sub.remove(); if (bgTimerRef.current) { clearTimeout(bgTimerRef.current); bgTimerRef.current = null; } };
-}, [push]);
+    });
+    return () => { sub.remove(); if (bgTimerRef.current) { clearTimeout(bgTimerRef.current); bgTimerRef.current = null; } };
+  }, [push]);
 
   const handleSilence = useCallback(() => {
     const sid = voiceSessionRef.current;
@@ -365,8 +364,10 @@ export default function FlowAiHost({ navigationRef }) {
     
     const { pending, shareJobPending, busy, send, decide, attachmentMeta } = latest.current;
 
-    const END = ['kapat', 'bitir', 'sohbeti bitir', 'sesli sohbeti kapat', 'dur', 'çıkış', 'kapat sohbeti'];
-    if (END.includes(norm)) {
+    const words = norm.split(/\s+/).filter(Boolean);
+    const END_WORDS = ['bitir', 'kapat', 'çıkış', 'görüşürüz', 'dur'];
+    const isEnd = words.length > 0 && words.length <= 4 && words.some((w) => END_WORDS.includes(w));
+    if (isEnd) {
       speakThen(t('flowAi.voice.chat.closedByUser'), () => exitVoiceChatRef.current?.('bitirme-sozu'));
       return;
     }

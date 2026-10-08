@@ -583,6 +583,7 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 - 08.10.2026 — Sesli sohbet: konuşma sonucu ("isFinal") doğru okunuyor; uygulama kısa süre arka plana geçince sohbet kapanmıyor, dinleme duraklayıp sürüyor.
 - 08.10.2026 — Flow AI sohbeti: yukarı kaydırınca en sona atlama düzeltildi (yalnız en alttayken otomatik kayar).
 - 08.10.2026 — Sesli sohbet: kısa süreli arka plan bildirimi dinlemeyi durdurmuyor (dinle-durdur-başlat döngüsü giderildi); 4 sn'den uzun arka planda sohbet kapanır.
+- 08.10.2026 — Sesli sohbet: tanı satırları kapatıldı; "tamam bitir" gibi kısa cümlelerle sohbet kapanıyor.
 
 ## 🆕 Son Güncellemeler (Eylül 2026 - Zombi Post ve Zernio Unpublish Düzeltmeleri)
 
