@@ -73,6 +73,7 @@ export default function FlowAiHost({ navigationRef }) {
   const cardsAt = useRef(0);
   const conversationId = useRef(null);
   const listRef = useRef(null);
+  const atBottomRef = useRef(true);
   const seq = useRef(0);
   const pan = useRef(new Animated.ValueXY()).current;
   const panResponder = useRef(
@@ -552,7 +553,14 @@ export default function FlowAiHost({ navigationRef }) {
           ref={listRef}
           data={messages}
           keyExtractor={(m) => m.id}
-          onContentSizeChange={() => listRef.current?.scrollToEnd?.({ animated: true })}
+          scrollEventThrottle={100}
+          onScroll={(e) => {
+            const { contentOffset, layoutMeasurement, contentSize } = e.nativeEvent;
+            atBottomRef.current = contentOffset.y + layoutMeasurement.height >= contentSize.height - 80;
+          }}
+          onContentSizeChange={() => {
+            if (atBottomRef.current) listRef.current?.scrollToEnd?.({ animated: true });
+          }}
           contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 10 }}
           ListEmptyComponent={
             <View>
