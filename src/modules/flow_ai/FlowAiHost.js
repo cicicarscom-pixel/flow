@@ -23,6 +23,7 @@ import { useFlowVoice } from './useFlowVoice';
 // Uygulama kökünde (NavigationContainer içinde) durur: ekran değişince panel ve konuşma KAPANMAZ.
 // Panel, Modal değil kaplamadır; üstündeki alan dokunmayı alttaki ekrana geçirir.
 // publish_post onay sonrası hata kodları → çeviri anahtarı
+const VOICE_DEBUG = true;
 const PUBLISH_ERRORS = {
   PUBLISH_FAILED: 'flowAi.publish.failed',
   DRAFT_CHANGED: 'flowAi.publish.changed',
@@ -97,7 +98,10 @@ export default function FlowAiHost({ navigationRef }) {
     });
   }, []);
 
-  const exitVoiceChat = useCallback(() => {
+  const exitVoiceChat = useCallback((reason) => {
+    if (VOICE_DEBUG && voiceChatRef.current) {
+      push('assistant', '[ses] kapandı: ' + (reason || 'bilinmiyor'));
+    }
     voiceChatRef.current = false;
     voiceSessionRef.current += 1;
     setVoiceChat(false);
@@ -105,7 +109,7 @@ export default function FlowAiHost({ navigationRef }) {
     voiceRef.current.stop();
     voiceRef.current.stopSpeaking();
     setInput('');
-  }, [transition]);
+  }, [transition, push]);
 
   const speakThen = useCallback((text, next) => {
     transition('SPEAKING');
@@ -121,18 +125,21 @@ export default function FlowAiHost({ navigationRef }) {
   }, []);
 
   useEffect(() => {
-    if (!open) exitVoiceChatRef.current?.();
+    if (!open) exitVoiceChatRef.current?.('panel-kapandi');
   }, [open]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (st) => {
-      if (st === 'background' || st === 'inactive') exitVoiceChatRef.current?.();
+      if (st === 'background' || st === 'inactive') {
+        if (VOICE_DEBUG) push('assistant', '[ses] appstate: ' + st);
+        exitVoiceChatRef.current?.('appstate:' + st);
+      }
     });
     return () => sub.remove();
   }, []);
 
   useEffect(() => {
-    return () => exitVoiceChatRef.current?.();
+    return () => exitVoiceChatRef.current?.('unmount');
   }, []);
 
   useEffect(() => {
@@ -206,7 +213,8 @@ export default function FlowAiHost({ navigationRef }) {
         onPartial: setInput,
         onFinal: (txt) => handleVoiceFinalRef.current?.(txt),
         onError: (err) => handleVoiceErrorRef.current?.(err),
-        onSilence: () => handleSilenceRef.current?.()
+        onSilence: () => handleSilenceRef.current?.(),
+        onTrace: VOICE_DEBUG ? (m) => push('assistant', '[ses] ' + m) : undefined
       });
     }, 400);
   }, [transition]);
@@ -218,7 +226,7 @@ export default function FlowAiHost({ navigationRef }) {
     if (silenceCount.current === 1) {
       startListening();
     } else {
-      speakThen(t('flowAi.voice.chat.closing'), exitVoiceChat);
+      speakThen(t('flowAi.voice.chat.closing'), () => exitVoiceChatRef.current?.('sessizlik-x2'));
     }
   }, [speakThen, startListening, exitVoiceChat, t]);
 
@@ -244,11 +252,11 @@ export default function FlowAiHost({ navigationRef }) {
     } else {
       push('error', t('flowAi.voice.unsupported') + suffix);
     }
-    exitVoiceChat();
-  }, [push, t, exitVoiceChat]);
+    exitVoiceChatRef.current?.('hata:' + err.code);
+  }, [push, t]);
 
   const send = useCallback(async (override, opts) => {
-    if (!opts?.voice) exitVoiceChat();
+    if (!opts?.voice) exitVoiceChatRef.current?.('yazildi');
     
     voiceRef.current.stopSpeaking();
     setPlatformPick(null);
@@ -347,7 +355,7 @@ export default function FlowAiHost({ navigationRef }) {
 
     const END = ['kapat', 'bitir', 'sohbeti bitir', 'sesli sohbeti kapat', 'dur', 'çıkış', 'kapat sohbeti'];
     if (END.includes(norm)) {
-      speakThen(t('flowAi.voice.chat.closedByUser'), exitVoiceChatRef.current);
+      speakThen(t('flowAi.voice.chat.closedByUser'), () => exitVoiceChatRef.current?.('bitirme-sozu'));
       return;
     }
 
@@ -712,7 +720,7 @@ export default function FlowAiHost({ navigationRef }) {
               </Text>
               {voicePhase === 'LISTENING' && input ? <Text style={{ color: '#fff', fontSize: 14 }} numberOfLines={1}>{input}</Text> : null}
             </View>
-            <TouchableOpacity onPress={exitVoiceChat} style={{ backgroundColor: 'rgba(248,81,73,0.15)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 }}>
+            <TouchableOpacity onPress={() => exitVoiceChatRef.current?.('bitir-dugmesi')} style={{ backgroundColor: 'rgba(248,81,73,0.15)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 }}>
               <Text style={{ color: '#F85149', fontWeight: '600', fontSize: 12 }}>{t('flowAi.voice.chat.end')}</Text>
             </TouchableOpacity>
           </View>

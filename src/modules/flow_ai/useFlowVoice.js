@@ -32,16 +32,26 @@ export function useFlowVoice() {
   const errorCallbackRef = useRef(null);
 
   const silenceCallbackRef = useRef(null);
+  const traceRef = useRef(null);
+  const startedAtRef = useRef(0);
+  const tracePackageRef = useRef(null);
 
   useSpeechRecognitionEvent('start', () => {
     setListening(true);
+    traceRef.current?.('olay: start');
   });
+  useSpeechRecognitionEvent('audiostart', () => traceRef.current?.('olay: audiostart'));
+  useSpeechRecognitionEvent('speechstart', () => traceRef.current?.('olay: speechstart'));
+  useSpeechRecognitionEvent('speechend', () => traceRef.current?.('olay: speechend'));
+  useSpeechRecognitionEvent('audioend', () => traceRef.current?.('olay: audioend'));
 
   useSpeechRecognitionEvent('end', () => {
     setListening(false);
+    traceRef.current?.('olay: end');
   });
 
   useSpeechRecognitionEvent('result', (event) => {
+    traceRef.current?.('olay: result (isFinal: ' + (event.results[0]?.isFinal) + ') ' + (event.results[0]?.transcript?.substring(0, 25) || ''));
     const result = event.results[0];
     if (!result) return;
     
@@ -59,8 +69,13 @@ export function useFlowVoice() {
 
   useSpeechRecognitionEvent('error', (event) => {
     setListening(false);
+    traceRef.current?.('olay: error (' + event.error + ' - ' + event.message + ')');
     if (event.error === 'no-speech') {
-      if (silenceCallbackRef.current) silenceCallbackRef.current();
+      if (Date.now() - startedAtRef.current < 1500) {
+         if (errorCallbackRef.current) errorCallbackRef.current({ code: 'hemen-sessizlik', message: 'paket: ' + (tracePackageRef.current || 'varsayılan') });
+      } else {
+         if (silenceCallbackRef.current) silenceCallbackRef.current();
+      }
       return;
     }
     if (event.error === 'aborted') return;
@@ -75,13 +90,15 @@ export function useFlowVoice() {
     return 'tr-TR';
   };
 
-  const start = async ({ onPartial, onFinal, onError, onSilence }) => {
+  const start = async ({ onPartial, onFinal, onError, onSilence, onTrace }) => {
     stopSpeaking();
     
     startCallbackRef.current = onFinal;
     partialCallbackRef.current = onPartial;
     errorCallbackRef.current = onError;
     silenceCallbackRef.current = onSilence;
+    traceRef.current = onTrace;
+    startedAtRef.current = Date.now();
 
     try {
       const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
@@ -95,14 +112,20 @@ export function useFlowVoice() {
         interimResults: true,
         continuous: false,
       };
+      
       const list = servicesRef.current;
       if (list && list.length > 0) {
         if (list.includes('com.google.android.googlequicksearchbox')) {
           options.androidRecognitionServicePackage = 'com.google.android.googlequicksearchbox';
-        } else {
-          options.androidRecognitionServicePackage = list[0];
         }
       }
+      tracePackageRef.current = options.androidRecognitionServicePackage;
+      
+      if (onTrace) {
+        onTrace('servis listesi: ' + JSON.stringify(list));
+        onTrace('seçilen paket: ' + (options.androidRecognitionServicePackage || 'varsayılan'));
+      }
+
       await ExpoSpeechRecognitionModule.start(options);
     } catch (e) {
       if (onError) onError({ code: e.code || 'start-failed', message: e.message });
