@@ -47,7 +47,7 @@ export default function FlowAiHost({ navigationRef }) {
   const voiceRef = useRef(voice);
   voiceRef.current = voice;
   const exitVoiceChatRef = useRef(null);
-  const resumeAfterBgRef = useRef(false);
+  const bgTimerRef = useRef(null);
   const latest = useRef({});
   const voiceChatRef = useRef(false);
   const voiceSessionRef = useRef(0);
@@ -101,11 +101,12 @@ export default function FlowAiHost({ navigationRef }) {
   }, []);
 
   const exitVoiceChat = useCallback((reason) => {
+    if (bgTimerRef.current) { clearTimeout(bgTimerRef.current); bgTimerRef.current = null; }
     if (VOICE_DEBUG && voiceChatRef.current) {
       push('assistant', '[ses] kapandı: ' + (reason || 'bilinmiyor'));
     }
     voiceChatRef.current = false;
-    resumeAfterBgRef.current = false;
+    
     voiceSessionRef.current += 1;
     setVoiceChat(false);
     transition('IDLE');
@@ -214,23 +215,21 @@ export default function FlowAiHost({ navigationRef }) {
   }, [transition]);
 
   useEffect(() => {
-    const sub = AppState.addEventListener('change', (st) => {
-      if (VOICE_DEBUG) push('assistant', '[ses] appstate: ' + st);
-      if (!voiceChatRef.current) return;
-      if (st === 'background') {
-        if (latest.current.voicePhase === 'LISTENING') {
-          resumeAfterBgRef.current = true;
-          voiceRef.current.stop();
-        }
-      } else if (st === 'active') {
-        if (resumeAfterBgRef.current) {
-          resumeAfterBgRef.current = false;
-          startListening();
-        }
+  const sub = AppState.addEventListener('change', (st) => {
+    if (VOICE_DEBUG) push('assistant', '[ses] appstate: ' + st);
+    if (st === 'background') {
+      if (voiceChatRef.current && !bgTimerRef.current) {
+        bgTimerRef.current = setTimeout(() => {
+          bgTimerRef.current = null;
+          exitVoiceChatRef.current?.('arkaplan-4sn');
+        }, 4000);
       }
-    });
-    return () => sub.remove();
-  }, [push, startListening]);
+    } else if (st === 'active') {
+      if (bgTimerRef.current) { clearTimeout(bgTimerRef.current); bgTimerRef.current = null; }
+    }
+  });
+  return () => { sub.remove(); if (bgTimerRef.current) { clearTimeout(bgTimerRef.current); bgTimerRef.current = null; } };
+}, [push]);
 
   const handleSilence = useCallback(() => {
     const sid = voiceSessionRef.current;
