@@ -50,7 +50,9 @@ export default function FlowAiHost({ navigationRef }) {
   const [voiceChat, setVoiceChat] = useState(false);
   const [voicePhase, setVoicePhase] = useState('IDLE');
 
-  useEffect(() => { voiceChatRef.current = voiceChat; }, [voiceChat]);
+  const handleVoiceFinalRef = useRef(null);
+  const handleVoiceErrorRef = useRef(null);
+  const handleSilenceRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [attachmentMeta, setAttachmentMeta] = useState(null);
   const [shareJobPending, setShareJobPending] = useState(null);
@@ -84,7 +86,7 @@ export default function FlowAiHost({ navigationRef }) {
     setVoicePhase(prev => {
       if (to === 'IDLE') return to;
       if (prev === 'IDLE' && to === 'LISTENING') return to;
-      if (prev === 'LISTENING' && (to === 'PROCESSING' || to === 'LISTENING')) return to;
+      if (prev === 'LISTENING' && (to === 'PROCESSING' || to === 'LISTENING' || to === 'SPEAKING')) return to; // Added LISTENING->SPEAKING
       if (prev === 'PROCESSING' && (to === 'SPEAKING' || to === 'LISTENING')) return to;
       if (prev === 'SPEAKING' && to === 'LISTENING') return to;
       return prev;
@@ -92,6 +94,7 @@ export default function FlowAiHost({ navigationRef }) {
   }, []);
 
   const exitVoiceChat = useCallback(() => {
+    voiceChatRef.current = false;
     voiceSessionRef.current += 1;
     setVoiceChat(false);
     transition('IDLE');
@@ -114,8 +117,21 @@ export default function FlowAiHost({ navigationRef }) {
   }, []);
 
   useEffect(() => {
-    if (!open) voice.stopSpeaking();
-  }, [open]);
+    if (!open) {
+      voice.stopSpeaking();
+      exitVoiceChat();
+    }
+  }, [open, exitVoiceChat, voice]);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (st) => {
+      if (st === 'background' || st === 'inactive') exitVoiceChat();
+    });
+    return () => {
+      sub.remove();
+      exitVoiceChat();
+    };
+  }, [exitVoiceChat]);
 
   useEffect(() => {
     const unSub = subscribeFlowEvents((name, payload) => {
@@ -138,7 +154,7 @@ export default function FlowAiHost({ navigationRef }) {
       }
     });
     return unSub;
-  }, [push, shareJobPending, t, voiceReplies]);
+  }, [push, shareJobPending, t]);
 
   const handleAttach = async () => {
     try {
@@ -186,12 +202,12 @@ export default function FlowAiHost({ navigationRef }) {
       transition('LISTENING');
       voice.start({
         onPartial: setInput,
-        onFinal: handleVoiceFinal,
-        onError: handleVoiceError,
-        onSilence: handleSilence
+        onFinal: (txt) => handleVoiceFinalRef.current?.(txt),
+        onError: (err) => handleVoiceErrorRef.current?.(err),
+        onSilence: () => handleSilenceRef.current?.()
       });
     }, 400);
-  }, [voice, transition]); // handleVoiceFinal, handleVoiceError, handleSilence rely on refs or are hoisted via careful ordering
+  }, [voice, transition]);
 
   const handleSilence = useCallback(() => {
     const sid = voiceSessionRef.current;
@@ -205,6 +221,7 @@ export default function FlowAiHost({ navigationRef }) {
   }, [speakThen, startListening, exitVoiceChat, t]);
 
   const enterVoiceChat = useCallback(() => {
+    voiceChatRef.current = true;
     voiceSessionRef.current += 1;
     silenceCount.current = 0;
     setVoiceChat(true);
@@ -228,61 +245,9 @@ export default function FlowAiHost({ navigationRef }) {
     exitVoiceChat();
   }, [push, t, exitVoiceChat]);
 
-  const handleVoiceFinal = async (text) => {
-    const sid = voiceSessionRef.current;
-    if (sid !== voiceSessionRef.current || !voiceChatRef.current) return;
-    const norm = text.toLowerCase().replace(/[.!?,]/g, '').trim();
-    
-    const END = ['kapat', 'bitir', 'sohbeti bitir', 'sesli sohbeti kapat', 'dur', 'çıkış', 'kapat sohbeti'];
-    if (END.includes(norm)) {
-      speakThen(t('flowAi.voice.chat.closedByUser'), exitVoiceChat);
-      return;
-    }
-
-    const YES = ['evet', 'onayla', 'onaylıyorum', 'tamam', 'olur', 'paylaş', 'yes', 'ja'];
-    const NO = ['hayır', 'vazgeç', 'iptal', 'istemiyorum', 'no', 'nein'];
-    
-    if (shareJobPending && YES.includes(norm) && confirmArmedRef.current === 'share') { 
-      if (!busy) {
-        confirmArmedRef.current = null;
-        const r = await flowAiShareHandoff.confirm(); 
-        setShareConfirmState(r); 
-      }
-      return; 
-    }
-    if (shareJobPending && NO.includes(norm) && confirmArmedRef.current === 'share') { 
-      if (!busy) {
-        confirmArmedRef.current = null;
-        setShareJobPending(null);
-        setAttachmentMeta(null);
-        setShareConfirmState('IDLE');
-        flowAiShareHandoff.clear();
-        speakThen(t('flowAi.rejected'), startListening);
-      }
-      return; 
-    }
-    if (pending.length === 1 && YES.includes(norm) && confirmArmedRef.current === pending[0].id) { 
-      if (!busy) {
-        confirmArmedRef.current = null;
-        decide(pending[0], true); 
-      }
-      return; 
-    }
-    if (pending.length === 1 && NO.includes(norm) && confirmArmedRef.current === pending[0].id) { 
-      if (!busy) {
-        confirmArmedRef.current = null;
-        decide(pending[0], false); 
-      }
-      return; 
-    }
-    
-    confirmArmedRef.current = null;
-    silenceCount.current = 0;
-    setInput('');
-    send(text, { voice: true });
-  };
-
   const send = useCallback(async (override, opts) => {
+    if (!opts?.voice) exitVoiceChat();
+    
     voice.stopSpeaking();
     setPlatformPick(null);
     const text = (typeof override === 'string' ? override : input).trim();
@@ -343,7 +308,7 @@ export default function FlowAiHost({ navigationRef }) {
     } finally {
       setBusy(false);
     }
-  }, [input, busy, navigationRef, push, t, attachmentMeta, shareJobPending, transition, startListening, speakThen]);
+  }, [input, busy, navigationRef, push, t, attachmentMeta, shareJobPending, transition, startListening, speakThen, exitVoiceChat]);
 
   const decide = useCallback(async (action, approve) => {
     setBusy(true);
@@ -371,7 +336,33 @@ export default function FlowAiHost({ navigationRef }) {
     }
   }, [push, t]);
 
-  
+  const handleVoiceFinal = async (text) => {
+    const norm = text.toLowerCase().replace(/[.!?,]/g, '').trim();
+    const YES = ['evet', 'onayla', 'onaylıyorum', 'tamam', 'olur', 'paylaş', 'yes', 'ja'];
+    const NO = ['hayır', 'vazgeç', 'iptal', 'istemiyorum', 'no', 'nein'];
+    
+    if (shareJobPending && YES.includes(norm)) { 
+      if (!busy) {
+        const r = await flowAiShareHandoff.confirm(); 
+        setShareConfirmState(r); 
+      }
+      return; 
+    }
+    if (shareJobPending && NO.includes(norm)) { 
+      if (!busy) {
+        setShareJobPending(null);
+        setAttachmentMeta(null);
+        setShareConfirmState('IDLE');
+        flowAiShareHandoff.clear();
+      }
+      return; 
+    }
+    if (pending.length === 1 && YES.includes(norm)) { if (!busy) decide(pending[0], true); return; }
+    if (pending.length === 1 && NO.includes(norm)) { if (!busy) decide(pending[0], false); return; }
+    
+    setInput('');
+    send(text);
+  };
 
   // FA6: panel açılınca (en fazla dakikada bir) öneri kartlarını yükle. Hata sessizdir: kart yoksa panel normal çalışır.
   useEffect(() => {
