@@ -12,10 +12,6 @@ export function extractTime(dateStr: string): string {
   return "";
 }
 
-function toDateString(date: Date): string {
-  return date.toISOString().split("T")[0];
-}
-
 export interface UseAppointmentsResult {
   daySchedule: any[];
   refreshDaySchedule: (calId?: string) => Promise<void>;
