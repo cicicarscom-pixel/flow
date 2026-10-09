@@ -64,8 +64,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "3914afac-6620-4e3f-9000-4c003a57df58"
+        "projectId": "bb7e7d28-5325-4a50-ae1e-7b134bdda455"
       }
-    }
+    },
+    "owner": "workigom"
   }
 }
