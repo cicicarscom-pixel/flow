@@ -47,7 +47,10 @@
       "shareFailedMessage": "Ihr Beitrag konnte nicht geteilt werden. Überprüfen Sie Ihre Kontoverbindungen.",
       "shareSuccessMessage": "Ihr Inhalt wurde erfolgreich auf den ausgewählten Plattformen geteilt!",
       "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten.",
-      "imageSelectError": "Beim Auswählen des Bildes ist ein Problem aufgetreten."
+      "imageSelectError": "Beim Auswählen des Bildes ist ein Problem aufgetreten.",
+      "disconnectTitle": "Verbindung trennen",
+      "disconnectConfirm": "Möchten Sie die Verbindung zu Ihrem {{platform}}-Konto wirklich trennen?",
+      "disconnected": "Kontoverbindung getrennt."
     },
     "ui": {
       "title": "Social Media KI",
@@ -61,7 +64,8 @@
       "sync": "Synchronisieren",
       "active": "Aktiv",
       "noAccountsYet": "Sie haben noch kein verbundenes Konto.",
-      "connectNewAccount": "Neues Konto verbinden"
+      "connectNewAccount": "Neues Konto verbinden",
+      "shareCenterDesc": "Social-Media-Beiträge erstellen und teilen"
     },
     "inbox": {
       "selectedCount": "{{count}} ausgewählt",
@@ -77,7 +81,8 @@
         "comments": "Kommentare",
         "reviews": "Bewertungen"
       },
-      "selectAll": "Alle auswählen"
+      "selectAll": "Alle auswählen",
+      "selected": "Ausgewählt"
     },
     "bot": {
       "title": "Bot-Verwaltung",
@@ -263,7 +268,18 @@
       "liRepostTip2": "Der ursprüngliche Beitrag wird unter Ihrem Text eingebettet. Medien werden bei einem Repost nicht unterstützt.",
       "tweetN": "Tweet {{n}}",
       "addTweet": "+ Tweet hinzufügen {{n}}"
-    }
+    },
+    "chat": {
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "typeMessage": "Nachricht schreiben..."
+    },
+    "assistant": "Social-Media-Assistent",
+    "assistantDesc": "KI antwortet auf DMs und Kommentare",
+    "notConnected": "Noch nicht verbunden",
+    "connectAccount": "Konto verbinden",
+    "connected": "Verbunden",
+    "disconnect": "Verbindung trennen"
   },
   "muhasebe": {
     "aiMuhasebe": {
@@ -289,7 +305,12 @@
       "mockBank1": "Garanti BBVA",
       "mockBank2": "Andere Bank",
       "incomePercentage": "{{percent}}% Einnahmen",
-      "expensePercentage": "{{percent}}% Ausgaben"
+      "expensePercentage": "{{percent}}% Ausgaben",
+      "netBalance": "NETTOSALDO",
+      "thisMonthIncome": "Einnahmen diesen Monat",
+      "thisMonthExpense": "Ausgaben diesen Monat",
+      "receivable": "Forderungen",
+      "payable": "Verbindlichkeiten"
     },
     "odemeTakvimi": {
       "title": "Zahlungskalender",
@@ -381,7 +402,9 @@
         "genericError": "Ein Fehler ist aufgetreten.",
         "cancelSuccess": "Termin erfolgreich abgesagt.",
         "deleteSuccess": "Termin erfolgreich gelöscht."
-      }
+      },
+      "addAppointment": "Neuen Termin hinzufügen",
+      "saveAppointment": "Termin erstellen"
     },
     "block": {
       "reserve": "Reservieren",
@@ -405,7 +428,14 @@
       "confirmRemove": "Diese Reservierung entfernen?",
       "alreadyBlocked": "Diese Zeit ist bereits reserviert",
       "noteLabel": "Notiz (optional)",
-      "notePlaceholder": "Kurze Notiz schreiben…"
+      "notePlaceholder": "Kurze Notiz schreiben…",
+      "scope": "Umfang",
+      "selectedDoctor": "Ausgewählter Arzt",
+      "entireClinic": "Gesamte Praxis",
+      "duration": "Dauer",
+      "start": "Beginn",
+      "end": "Ende",
+      "reasonLabel": "Grund"
     }
   },
   "personas": {
@@ -471,7 +501,8 @@
       "german": "Deutsch",
       "systemDefault": "Automatisch (Gerätesprache)"
     },
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "disconnect": "Trennen"
   },
   "profil": {
     "title": "Profileinstellungen",
@@ -621,7 +652,8 @@
       "quickActionsTitle": "Schnellaktionen",
       "sendMessage": "Nachricht senden",
       "viewDocuments": "Dokumente ansehen",
-      "disconnect": "Verbindung trennen"
+      "disconnect": "Verbindung trennen",
+      "viewInvoices": "Rechnungen"
     },
     "screenTitle": "Mein Steuerberater",
     "pendingTitle": "Ihre Verbindungsanfrage wurde gesendet",

@@ -257,7 +257,7 @@ export default function MuhasebecimScreen({ navigation }) {
     const dateStr = firm?.connected_at ? new Date(firm.connected_at).toLocaleDateString() : '';
     return (
     <View style={styles.stateContainer}>
-      <Text style={styles.headerTitle}>{t('muhasebecimScreen.connected.title')}</Text>
+      <Text style={styles.headerTitle}>{t('muhasebecimScreen.screenTitle')}</Text>
       
       <View style={styles.profileCard}>
         <View style={styles.profileRow}>
@@ -274,27 +274,27 @@ export default function MuhasebecimScreen({ navigation }) {
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>{t('muhasebecimScreen.connected.actionsTitle')}</Text>
+      <Text style={styles.sectionTitle}>{t('muhasebecimScreen.connected.quickActionsTitle')}</Text>
       <View style={styles.quickActionsGrid}>
         <TouchableOpacity style={styles.quickActionBtn}>
           <View style={styles.quickActionIcon}>
             <MaterialIcons name="receipt" size={24} color={COLORS.textPrimary} />
           </View>
-          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.actionInvoices')}</Text>
+          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.viewInvoices')}</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.quickActionBtn}>
           <View style={styles.quickActionIcon}>
             <MaterialIcons name="description" size={24} color={COLORS.textPrimary} />
           </View>
-          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.actionDocuments')}</Text>
+          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.viewDocuments')}</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.quickActionBtn}>
           <View style={styles.quickActionIcon}>
             <MaterialIcons name="chat" size={24} color={COLORS.textPrimary} />
           </View>
-          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.actionMessage')}</Text>
+          <Text style={styles.quickActionText}>{t('muhasebecimScreen.connected.sendMessage')}</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.quickActionBtn} onPress={handleDisconnect} disabled={isLoading}>

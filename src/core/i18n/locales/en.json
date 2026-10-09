@@ -47,7 +47,10 @@
       "shareFailedMessage": "Could not share your post. Check your account connections.",
       "shareSuccessMessage": "Your content has been successfully shared on selected platforms!",
       "unexpectedError": "An unexpected error occurred.",
-      "imageSelectError": "An error occurred while selecting the image."
+      "imageSelectError": "An error occurred while selecting the image.",
+      "disconnectTitle": "Disconnect",
+      "disconnectConfirm": "Are you sure you want to disconnect your {{platform}} account?",
+      "disconnected": "Account disconnected."
     },
     "ui": {
       "title": "Social Media AI",
@@ -61,7 +64,8 @@
       "sync": "Sync",
       "active": "Active",
       "noAccountsYet": "You don't have any connected accounts yet.",
-      "connectNewAccount": "Connect New Account"
+      "connectNewAccount": "Connect New Account",
+      "shareCenterDesc": "Create and share social media posts"
     },
     "inbox": {
       "selectedCount": "{{count}} Selected",
@@ -77,7 +81,8 @@
         "comments": "Comments",
         "reviews": "Reviews"
       },
-      "selectAll": "Select All"
+      "selectAll": "Select All",
+      "selected": "Selected"
     },
     "bot": {
       "title": "Bot Management",
@@ -263,7 +268,18 @@
       "liRepostTip2": "The original post is embedded below your text. Media is not supported in a repost.",
       "tweetN": "Tweet {{n}}",
       "addTweet": "+ add tweet {{n}}"
-    }
+    },
+    "chat": {
+      "delete": "Delete",
+      "edit": "Edit",
+      "typeMessage": "Type a message..."
+    },
+    "assistant": "Social Media Assistant",
+    "assistantDesc": "Let AI reply to DMs and comments",
+    "notConnected": "Not connected yet",
+    "connectAccount": "Connect Account",
+    "connected": "Connected",
+    "disconnect": "Disconnect"
   },
   "muhasebe": {
     "aiMuhasebe": {
@@ -289,7 +305,12 @@
       "mockBank1": "Garanti BBVA",
       "mockBank2": "Other Bank",
       "incomePercentage": "{{percent}}% Income",
-      "expensePercentage": "{{percent}}% Expense"
+      "expensePercentage": "{{percent}}% Expense",
+      "netBalance": "NET BALANCE",
+      "thisMonthIncome": "Income This Month",
+      "thisMonthExpense": "Expenses This Month",
+      "receivable": "Receivable",
+      "payable": "Payable"
     },
     "odemeTakvimi": {
       "title": "Payment Calendar",
@@ -381,7 +402,9 @@
         "genericError": "An error occurred.",
         "cancelSuccess": "Appointment cancelled successfully.",
         "deleteSuccess": "Appointment deleted successfully."
-      }
+      },
+      "addAppointment": "Add New Appointment",
+      "saveAppointment": "Create Appointment"
     },
     "block": {
       "reserve": "Reserve",
@@ -405,7 +428,14 @@
       "confirmRemove": "Remove this reservation?",
       "alreadyBlocked": "This time is already reserved",
       "noteLabel": "Note (optional)",
-      "notePlaceholder": "Write a short note…"
+      "notePlaceholder": "Write a short note…",
+      "scope": "Scope",
+      "selectedDoctor": "Selected doctor",
+      "entireClinic": "Whole clinic",
+      "duration": "Duration",
+      "start": "Start",
+      "end": "End",
+      "reasonLabel": "Reason"
     }
   },
   "personas": {
@@ -471,7 +501,8 @@
       "german": "Deutsch",
       "systemDefault": "Automatic (Device Language)"
     },
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "disconnect": "Disconnect"
   },
   "profil": {
     "title": "Profile Settings",
@@ -621,7 +652,8 @@
       "quickActionsTitle": "Quick Actions",
       "sendMessage": "Send Message",
       "viewDocuments": "View Documents",
-      "disconnect": "Disconnect"
+      "disconnect": "Disconnect",
+      "viewInvoices": "Invoices"
     },
     "screenTitle": "My Accountant",
     "pendingTitle": "Your connection request was sent",

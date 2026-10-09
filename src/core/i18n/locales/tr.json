@@ -47,7 +47,10 @@
       "shareFailedMessage": "Gönderiniz paylaşılamadı. Hesap bağlantılarınızı kontrol edin.",
       "shareSuccessMessage": "İçeriğiniz seçili platformlarda başarıyla paylaşıldı!",
       "unexpectedError": "Beklenmeyen bir hata oluştu.",
-      "imageSelectError": "Resim seçilirken bir sorun oluştu."
+      "imageSelectError": "Resim seçilirken bir sorun oluştu.",
+      "disconnectTitle": "Bağlantıyı Kes",
+      "disconnectConfirm": "{{platform}} hesabınızın bağlantısını kesmek istediğinize emin misiniz?",
+      "disconnected": "Hesap bağlantısı kesildi."
     },
     "ui": {
       "title": "Sosyal Medya AI",
@@ -61,7 +64,8 @@
       "sync": "Senkronize Et",
       "active": "Aktif",
       "noAccountsYet": "Henüz bağlı bir hesabınız bulunmuyor.",
-      "connectNewAccount": "Yeni Hesap Bağla"
+      "connectNewAccount": "Yeni Hesap Bağla",
+      "shareCenterDesc": "Sosyal medya gönderileri oluşturun ve paylaşın"
     },
     "inbox": {
       "selectedCount": "{{count}} Seçildi",
@@ -77,7 +81,8 @@
         "comments": "Yorumlar",
         "reviews": "Değerlendirmeler"
       },
-      "selectAll": "Tümünü Seç"
+      "selectAll": "Tümünü Seç",
+      "selected": "Seçildi"
     },
     "bot": {
       "title": "Bot Yönetimi",
@@ -263,7 +268,18 @@
       "liRepostTip2": "Orijinal gönderi, metninizin altına gömülür. Medya, bir yeniden paylaşımda (repost) desteklenmez.",
       "tweetN": "Tweet {{n}}",
       "addTweet": "+ tweet ekle {{n}}"
-    }
+    },
+    "chat": {
+      "delete": "Sil",
+      "edit": "Düzenle",
+      "typeMessage": "Mesaj yazın..."
+    },
+    "assistant": "Sosyal Medya Asistanı",
+    "assistantDesc": "Yapay zeka DM ve yorumlara yanıt versin",
+    "notConnected": "Henüz bağlanmadı",
+    "connectAccount": "Hesap Bağla",
+    "connected": "Bağlı",
+    "disconnect": "Bağlantıyı Kes"
   },
   "muhasebe": {
     "aiMuhasebe": {
@@ -289,7 +305,12 @@
       "mockBank1": "Garanti BBVA",
       "mockBank2": "Diğer Banka",
       "incomePercentage": "%{{percent}} Gelir",
-      "expensePercentage": "%{{percent}} Gider"
+      "expensePercentage": "%{{percent}} Gider",
+      "netBalance": "NET BAKİYE",
+      "thisMonthIncome": "Bu Ay Gelir",
+      "thisMonthExpense": "Bu Ay Gider",
+      "receivable": "Alacak",
+      "payable": "Borç"
     },
     "odemeTakvimi": {
       "title": "Ödeme Takvimi",
@@ -381,7 +402,9 @@
         "genericError": "Bir hata oluştu.",
         "cancelSuccess": "Randevu başarıyla iptal edildi.",
         "deleteSuccess": "Randevu başarıyla silindi."
-      }
+      },
+      "addAppointment": "Yeni Randevu Ekle",
+      "saveAppointment": "Randevu Oluştur"
     },
     "block": {
       "reserve": "Rezerve et",
@@ -405,7 +428,14 @@
       "confirmRemove": "Bu rezervasyon kaldırılsın mı?",
       "alreadyBlocked": "Bu saat zaten rezerve",
       "noteLabel": "Not (isteğe bağlı)",
-      "notePlaceholder": "Kısa bir not yazın…"
+      "notePlaceholder": "Kısa bir not yazın…",
+      "scope": "Kapsam",
+      "selectedDoctor": "Seçili doktor",
+      "entireClinic": "Tüm klinik",
+      "duration": "Süre",
+      "start": "Başlangıç",
+      "end": "Bitiş",
+      "reasonLabel": "Neden"
     }
   },
   "personas": {
@@ -471,7 +501,8 @@
       "german": "Deutsch",
       "systemDefault": "Cihaz Diline Göre Otomatik"
     },
-    "cancel": "İptal"
+    "cancel": "İptal",
+    "disconnect": "Kes"
   },
   "profil": {
     "title": "Profil Ayarları",
@@ -621,7 +652,8 @@
       "quickActionsTitle": "Hızlı Eylemler",
       "sendMessage": "Mesaj Gönder",
       "viewDocuments": "Belgeleri Gör",
-      "disconnect": "Bağlantıyı Kes"
+      "disconnect": "Bağlantıyı Kes",
+      "viewInvoices": "Faturalar"
     },
     "screenTitle": "Muhasebecim",
     "pendingTitle": "Bağlantı isteğiniz gönderildi",

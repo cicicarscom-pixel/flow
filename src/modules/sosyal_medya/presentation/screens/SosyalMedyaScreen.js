@@ -281,7 +281,7 @@ export default function SosyalMedyaScreen({ navigation }) {
   const handleDisconnect = (accountId, platform) => {
     Alert.alert(
       t('sosyalMedya.alerts.disconnectTitle', 'Bağlantıyı Kes'),
-      t('sosyalMedya.alerts.disconnectConfirm', `${platform} hesabınızın bağlantısını kesmek istediğinize emin misiniz?`),
+      t('sosyalMedya.alerts.disconnectConfirm', { platform }),
       [
         { text: t('common.cancel', 'İptal'), style: 'cancel' },
         { 
