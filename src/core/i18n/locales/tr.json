@@ -60,7 +60,8 @@
       "yourAccounts": "Eklediğiniz Hesaplarınız",
       "sync": "Senkronize Et",
       "active": "Aktif",
-      "noAccountsYet": "Henüz bağlı bir hesabınız bulunmuyor."
+      "noAccountsYet": "Henüz bağlı bir hesabınız bulunmuyor.",
+      "connectNewAccount": "Yeni Hesap Bağla"
     },
     "inbox": {
       "selectedCount": "{{count}} Seçildi",
@@ -75,7 +76,8 @@
         "messages": "Mesajlar",
         "comments": "Yorumlar",
         "reviews": "Değerlendirmeler"
-      }
+      },
+      "selectAll": "Tümünü Seç"
     },
     "bot": {
       "title": "Bot Yönetimi",
@@ -183,7 +185,84 @@
       "responseTimeMin": "12 dk",
       "responseTimeAnalysis": "Yanıt Süresi Analizi",
       "firstResponseText": "Müşteri mesajına ilk yanıtın verilmesi",
-      "greatSpeed": "Harika bir hızdasınız!"
+      "greatSpeed": "Harika bir hızdasınız!",
+      "cards": {
+        "avgEngRate": "Ort. Etkileşim Oranı",
+        "formatVideoImage": "Format (Video/Görsel)",
+        "bestPost": "En İyi Gönderi",
+        "followerGrowth": "Takipçi Büyümesi (Follower History)",
+        "followerGrowthSub": "Kümülatif takipçi gelişimi",
+        "topPosts": "En İyi Performanslı Gönderiler",
+        "topPostsSub": "En çok etkileşim alan gönderileriniz",
+        "platformBreakdown": "Platform Kırılımı",
+        "bestTimes": "Paylaşım İçin En İyi Zamanlar",
+        "bestTimesSub": "Haftanın günleri ve saatlere göre ortalama etkileşim yoğunluğu",
+        "contentDecay": "İçerik Ömrü (Content Decay)",
+        "contentDecaySub": "Gönderi sonrası etkileşimlerin dağılımı",
+        "frequencyVsER": "Paylaşım Sıklığı vs Etkileşim Oranı",
+        "frequencyVsERSub": "Haftalık gönderi sayısının ortalama etkileşim oranına etkisi",
+        "engagementCount": "{{count}} Etkileşim"
+      },
+      "cols": {
+        "views": "Görüntülenme",
+        "likes": "Beğeni",
+        "post": "Gönderi",
+        "comments": "Yorum",
+        "shares": "Paylaşım",
+        "saves": "Kaydetme",
+        "clicks": "Tıklama",
+        "followers": "Takipçi",
+        "impressionsShort": "Göst.",
+        "reach": "Erişim",
+        "erShort": "EO%",
+        "platform": "Platform"
+      }
+    },
+    "aiUretim": {
+      "connectedAccounts": "Bağlantılı Hesaplar (Platformlar)",
+      "noAccounts": "Henüz bağlı bir hesap yok.",
+      "connectAccount": "Hesap Bağla",
+      "titleOptional": "Başlık (Opsiyonel)",
+      "tagsOptional": "Etiketler (Opsiyonel)",
+      "visibility": "Görünürlük",
+      "category": "Kategori",
+      "customCaptionOptional": "Özel Açıklama (Opsiyonel)",
+      "storyNoticeMedia": "İçerik 24 saat sonra kaybolur. Medya (görsel veya video) gerektirir.",
+      "firstCommentOptional": "İlk Yorum (Opsiyonel)",
+      "storyNoticeText": "İçerik 24 saat sonra kaybolur. Sınırlı metin desteği.",
+      "markAsAi": "AI ile üretildi olarak işaretle",
+      "markAsAiHint": "Instagram'ın AI içerik etiketini ekler. Medya tamamen veya büyük oranda AI ile oluşturulduğunda kullanın.",
+      "insert": "Ekle",
+      "repostLinkedIn": "Bir LinkedIn gönderisini yeniden paylaş",
+      "disableLinkPreview": "Bağlantı önizlemesini kapat",
+      "thread": "Zincir (thread)",
+      "threadHintTweet": "Ana metin ilk tweet olur. Altına zincir eklenebilir.",
+      "remove": "Kaldır",
+      "tiktokDraft": "TikTok taslaklarına kaydet",
+      "tiktokDraftHint": "Video direkt yayınlanmaz, taslak olarak yüklenir. İsterseniz TikTok üzerinden müzik ekleyip yayınlayabilirsiniz.",
+      "pinterestTitleHint": "Zorunlu değildir. Boş bırakılırsa ana metnin ilk satırı başlık yapılır.",
+      "targetLinkOptional": "Hedef Bağlantı (Opsiyonel)",
+      "pinterestLinkHint": "Pin'e tıklandığında gidilecek URL bağlantısını belirler.",
+      "threadHintPost": "Ana metin ilk gönderi olur. Altına zincir eklenebilir.",
+      "callToAction": "Harekete Geçirici Mesaj",
+      "eventDetails": "Etkinlik Ayrıntıları",
+      "spoiler": "Spoiler",
+      "inboxReplies": "Gelen Kutusuna Yanıtlar",
+      "sendSilently": "Sessiz Gönder (Bildirimsiz)",
+      "publishing": "Yayınlama",
+      "scheduled": "Planlı",
+      "now": "Şimdi",
+      "dateTimeFormat": "Tarih ve saat (GG.AA.YYYY SS:DD)",
+      "timezone": "Saat dilimi",
+      "selectCategory": "Kategori Seçin",
+      "selectTimezone": "Saat Dilimi Seçin",
+      "liMentionTip1": "Kişi etiketlemeleri (person mentions) LinkedIn hesabınızın en az bir organizasyonun yöneticisi olmasını gerektirir (LinkedIn API kısıtlaması).",
+      "liMentionTip2": "Organizasyon etiketlemeleri (örn. @Microsoft) bu gereksinim olmadan çalışır.",
+      "liMentionTip3": "Görünen isim (display name), etiketin tıklanabilir olması için profilleriyle tam olarak eşleşmelidir.",
+      "liRepostTip1": "Gönderinin \"Gönderi bağlantısını kopyala\" (Copy link to post) seçeneği ile bağlantıyı alın (adres çubuğundaki bağlantı çalışmaz).",
+      "liRepostTip2": "Orijinal gönderi, metninizin altına gömülür. Medya, bir yeniden paylaşımda (repost) desteklenmez.",
+      "tweetN": "Tweet {{n}}",
+      "addTweet": "+ tweet ekle {{n}}"
     }
   },
   "muhasebe": {
@@ -841,7 +920,15 @@
     },
     "notes": "Notlar",
     "saved": "Kaydedildi",
-    "notesPlaceholder": "Müşteri için not ekleyin..."
+    "notesPlaceholder": "Müşteri için not ekleyin...",
+    "detail": {
+      "call": "Ara",
+      "appointment": "Randevu",
+      "history": "Randevu Geçmişi",
+      "noAppointments": "Randevu bulunamadı."
+    },
+    "fullName": "İsim Soyisim",
+    "phoneLabel": "Telefon (+90 5XX ...)"
   },
   "updateGate": {
     "title": "Güncelleme gerekli",
@@ -986,6 +1073,14 @@
     "resetDefault": "Varsayılan metne dön",
     "unknownPlaceholder": "Bilinmeyen alan: {{list}}. Yalnızca listedeki alanları kullanın.",
     "tooLong": "Metin en fazla 700 karakter olabilir.",
-    "ph": {"name": "ad soyad", "first_name": "ilk ad", "business": "işletme", "date": "tarih", "time": "saat", "doctor": "uzman", "service": "işlem"}
+    "ph": {
+      "name": "ad soyad",
+      "first_name": "ilk ad",
+      "business": "işletme",
+      "date": "tarih",
+      "time": "saat",
+      "doctor": "uzman",
+      "service": "işlem"
+    }
   }
 }

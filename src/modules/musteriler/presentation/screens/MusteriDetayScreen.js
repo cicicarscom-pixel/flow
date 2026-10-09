@@ -107,10 +107,10 @@ export default function MusteriDetayScreen({ route, navigation }) {
               <Text style={{ color: '#fff', fontWeight: 'bold' }}>WhatsApp</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => Linking.openURL(`tel:+${cleanPhone}`)} style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', paddingVertical: 12, borderRadius: 12, alignItems: 'center' }}>
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>Ara</Text>
+              <Text style={{ color: '#fff', fontWeight: 'bold' }}>{t('musteriler.detail.call')}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('MainTabs', { screen: 'Ai Asistan', params: { screen: 'RandevuMain' } })} style={{ flex: 1, backgroundColor: '#3b82f6', paddingVertical: 12, borderRadius: 12, alignItems: 'center' }}>
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>Randevu</Text>
+              <Text style={{ color: '#fff', fontWeight: 'bold' }}>{t('musteriler.detail.appointment')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -132,8 +132,8 @@ export default function MusteriDetayScreen({ route, navigation }) {
           {/* Notes */}
           <View style={{ marginBottom: 24 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>Notlar</Text>
-              {saved && <Text style={{ color: '#7ddba8', fontSize: 12 }}>Kaydedildi</Text>}
+              <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>{t('musteriler.notes')}</Text>
+              {saved && <Text style={{ color: '#7ddba8', fontSize: 12 }}>{t('musteriler.saved')}</Text>}
             </View>
             <TextInput
               value={notes}
@@ -148,11 +148,11 @@ export default function MusteriDetayScreen({ route, navigation }) {
 
           {/* Appointments */}
           <View>
-            <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', marginBottom: 12 }}>Randevu Geçmişi</Text>
+            <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', marginBottom: 12 }}>{t('musteriler.detail.history')}</Text>
             {loading ? (
               <ActivityIndicator size="small" color="#FF7A59" />
             ) : appointments.length === 0 ? (
-              <Text style={{ color: '#A79E96', fontSize: 13 }}>Randevu bulunamadı.</Text>
+              <Text style={{ color: '#A79E96', fontSize: 13 }}>{t('musteriler.detail.noAppointments')}</Text>
             ) : (
               appointments.map(appt => (
                 <View key={appt.id} style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: 16, borderRadius: 12, marginBottom: 12, borderLeftWidth: 3, borderLeftColor: appt.status === 'Approved' ? '#22c55e' : appt.status === 'Pending' ? '#eab308' : '#6b7280' }}>

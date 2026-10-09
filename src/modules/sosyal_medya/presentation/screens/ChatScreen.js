@@ -315,7 +315,7 @@ export default function ChatScreen({ route, navigation }) {
             <TouchableOpacity onPress={() => { setIsSelectionMode(false); setSelectedItems([]); }} className="mr-4">
               <Ionicons name="close" size={24} color="#F6F1EC" />
             </TouchableOpacity>
-            <Text className="text-[#F6F1EC] font-bold text-[16px]">{selectedItems.length} Seçildi</Text>
+            <Text className="text-[#F6F1EC] font-bold text-[16px]">{t('sosyalMedya.inbox.selectedCount', { count: selectedItems.length })}</Text>
           </View>
           <TouchableOpacity 
             onPress={handleDeleteSelected} 
@@ -323,7 +323,7 @@ export default function ChatScreen({ route, navigation }) {
             className={`flex-row items-center px-4 py-2 rounded-lg border ${selectedItems.length > 0 ? 'bg-[#EF4444]/20 border-[#EF4444]/40' : 'bg-white/5 border-white/10'}`}
           >
             <Feather name="trash-2" size={16} color={selectedItems.length > 0 ? "#EF4444" : "#A79E96"} />
-            <Text className={`ml-2 text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#A79E96]'}`}>Sil</Text>
+            <Text className={`ml-2 text-[14px] font-bold ${selectedItems.length > 0 ? 'text-[#EF4444]' : 'text-[#A79E96]'}`}>{t('sosyalMedya.inbox.delete')}</Text>
           </TouchableOpacity>
         </View>
       )}

@@ -458,7 +458,7 @@ export default function SosyalMedyaScreen({ navigation }) {
 
         {/* Add Account Panel */}
         <View style={{ marginBottom: 32, marginTop: 12 }}>
-          <Text className="text-[#F6F1EC] text-[18px] font-semibold mb-4">Yeni Hesap Bağla</Text>
+          <Text className="text-[#F6F1EC] text-[18px] font-semibold mb-4">{t('sosyalMedya.ui.connectNewAccount')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16, paddingRight: 20, paddingLeft: 4 }}>
             {PLATFORMS_DATA.map((p) => {
                return (

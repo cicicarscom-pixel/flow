@@ -162,13 +162,13 @@ export default function MusterilerScreen({ navigation }) {
               <TouchableOpacity onPress={() => setIsAddOpen(false)}><MaterialIcons name="close" size={24} color="#A79E96" /></TouchableOpacity>
             </View>
             
-            <Text style={{ color: '#A79E96', fontSize: 12, marginBottom: 8 }}>İsim Soyisim</Text>
+            <Text style={{ color: '#A79E96', fontSize: 12, marginBottom: 8 }}>{t('musteriler.fullName')}</Text>
             <TextInput 
               value={addName} onChangeText={setAddName} 
               style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, color: '#fff', padding: 16, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }} 
             />
             
-            <Text style={{ color: '#A79E96', fontSize: 12, marginBottom: 8 }}>Telefon (+90 5XX ...)</Text>
+            <Text style={{ color: '#A79E96', fontSize: 12, marginBottom: 8 }}>{t('musteriler.phoneLabel')}</Text>
             <TextInput 
               value={addPhone} onChangeText={setAddPhone} keyboardType="phone-pad"
               style={{ backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, color: '#fff', padding: 16, marginBottom: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }} 

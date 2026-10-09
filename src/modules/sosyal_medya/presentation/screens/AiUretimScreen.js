@@ -1072,13 +1072,13 @@ export default function AiUretimScreen({ route, navigation }) {
         {/* Platforms Section */}
         <FlowHighlight screen="ai_uretim" id="platform_selector" scrollRef={scrollRef} scrollYRef={scrollYRef} style={{ marginTop: 24, marginBottom: 24 }}>
         <View>
-          <Text className="text-[#A79E96] text-xs font-medium mb-3">Bağlantılı Hesaplar (Platformlar)</Text>
+          <Text className="text-[#A79E96] text-xs font-medium mb-3">{t('sosyalMedya.aiUretim.connectedAccounts')}</Text>
           
           {zernioAccounts.length === 0 ? (
             <View className="items-center p-4 bg-[#2A2631]/30 rounded-lg border border-white/5">
-              <Text className="text-[#A79E96]/70 text-xs mb-2">Henüz bağlı bir hesap yok.</Text>
+              <Text className="text-[#A79E96]/70 text-xs mb-2">{t('sosyalMedya.aiUretim.noAccounts')}</Text>
               <TouchableOpacity onPress={() => navigation.navigate('SosyalMedya')}>
-                <Text className="text-[#22B573] text-xs font-medium">Hesap Bağla</Text>
+                <Text className="text-[#22B573] text-xs font-medium">{t('sosyalMedya.aiUretim.connectAccount')}</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -1135,7 +1135,7 @@ export default function AiUretimScreen({ route, navigation }) {
                <Text className="text-[#F6F1EC] text-sm font-semibold ml-2">YouTube</Text>
             </View>
             
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">Başlık (Opsiyonel)</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.titleOptional')}</Text>
             <TextInput 
                value={ytTitle} onChangeText={setYtTitle}
                placeholder="Custom title for your video..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1144,14 +1144,14 @@ export default function AiUretimScreen({ route, navigation }) {
             />
             <Text className="text-[#A79E96]/50 text-[10px] text-right mb-2">{ytTitle.length}/100</Text>
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">tags (optional)</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.tagsOptional')}</Text>
             <TextInput 
                value={ytTags} onChangeText={setYtTags}
                placeholder="Type a tag and press Enter..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-4"
             />
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">visibility</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.visibility')}</Text>
             <View className="flex-row rounded-lg border border-white/5 mb-4 overflow-hidden">
                {['Public', 'Unlisted', 'Private'].map((opt) => (
                  <TouchableOpacity 
@@ -1165,7 +1165,7 @@ export default function AiUretimScreen({ route, navigation }) {
                ))}
             </View>
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">category</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.category')}</Text>
             <TouchableOpacity 
                onPress={() => setYtCategoryModalVisible(true)}
                className="flex-row items-center justify-between bg-[#201D24]/50 rounded-lg border border-white/5 px-3 py-3 mb-4"
@@ -1174,7 +1174,7 @@ export default function AiUretimScreen({ route, navigation }) {
                <MaterialIcons name="keyboard-arrow-down" size={18} color="#A79E96" />
             </TouchableOpacity>
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">Özel Açıklama (Opsiyonel)</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">{t('sosyalMedya.aiUretim.customCaptionOptional')}</Text>
             <TextInput 
                value={ytCustomCaption} onChangeText={setYtCustomCaption}
                placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1206,10 +1206,10 @@ export default function AiUretimScreen({ route, navigation }) {
             </View>
 
             {fbFormat === 'Story' && (
-               <Text className="text-[#A79E96]/70 text-[11px] mb-4">İçerik 24 saat sonra kaybolur. Medya (görsel veya video) gerektirir.</Text>
+               <Text className="text-[#A79E96]/70 text-[11px] mb-4">{t('sosyalMedya.aiUretim.storyNoticeMedia')}</Text>
             )}
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">İlk Yorum (Opsiyonel)</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.firstCommentOptional')}</Text>
             <TextInput 
                value={fbFirstComment} onChangeText={setFbFirstComment}
                placeholder="İlk yoruma eklemek istediğiniz bağlantı veya notu girin..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1218,7 +1218,7 @@ export default function AiUretimScreen({ route, navigation }) {
             />
             <Text className="text-[#A79E96]/50 text-[10px] text-right mb-4">{fbFirstComment.length}/8000</Text>
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">Özel Açıklama (Opsiyonel)</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.customCaptionOptional')}</Text>
             <TextInput 
                value={fbCustomCaption} onChangeText={setFbCustomCaption}
                placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1249,7 +1249,7 @@ export default function AiUretimScreen({ route, navigation }) {
                </View>
             </View>
 
-            <Text className="text-[#A79E96]/70 text-[11px] mb-4">İçerik 24 saat sonra kaybolur. Sınırlı metin desteği.</Text>
+            <Text className="text-[#A79E96]/70 text-[11px] mb-4">{t('sosyalMedya.aiUretim.storyNoticeText')}</Text>
 
             <TouchableOpacity 
                onPress={() => setIgAiLabel(!igAiLabel)}
@@ -1259,12 +1259,12 @@ export default function AiUretimScreen({ route, navigation }) {
                   {igAiLabel && <MaterialIcons name="check" size={12} color="#1C3327" />}
                </View>
                <View className="flex-1">
-                 <Text className="text-[#F6F1EC] text-[13px] font-medium">AI ile üretildi olarak işaretle</Text>
-                 <Text className="text-[#A79E96]/70 text-[11px] mt-1">Instagram'ın AI içerik etiketini ekler. Medya tamamen veya büyük oranda AI ile oluşturulduğunda kullanın.</Text>
+                 <Text className="text-[#F6F1EC] text-[13px] font-medium">{t('sosyalMedya.aiUretim.markAsAi')}</Text>
+                 <Text className="text-[#A79E96]/70 text-[11px] mt-1">{t('sosyalMedya.aiUretim.markAsAiHint')}</Text>
                </View>
             </TouchableOpacity>
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">İlk Yorum (Opsiyonel)</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.firstCommentOptional')}</Text>
             <TextInput 
                value={igFirstComment} onChangeText={setIgFirstComment}
                placeholder="İlk yoruma eklemek istediğiniz bağlantı veya notu girin..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1273,7 +1273,7 @@ export default function AiUretimScreen({ route, navigation }) {
             />
             <Text className="text-[#A79E96]/50 text-[10px] text-right mb-4">{igFirstComment.length}/2200</Text>
 
-            <Text className="text-[#A79E96] text-xs font-medium mb-1">Özel Açıklama (Opsiyonel)</Text>
+            <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.customCaptionOptional')}</Text>
             <TextInput 
                value={igCustomCaption} onChangeText={setIgCustomCaption}
                placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1304,13 +1304,13 @@ export default function AiUretimScreen({ route, navigation }) {
              {showLiMentionTooltip && (
                 <View className="bg-[#2A2631] border border-white/10 rounded-lg p-3 mb-2 z-20">
                    <Text className="text-white text-[11px] mb-2 leading-4">
-                     Kişi etiketlemeleri (person mentions) LinkedIn hesabınızın en az bir organizasyonun yöneticisi olmasını gerektirir (LinkedIn API kısıtlaması).
+                     {t('sosyalMedya.aiUretim.liMentionTip1')}
                    </Text>
                    <Text className="text-white text-[11px] mb-2 leading-4">
-                     Organizasyon etiketlemeleri (örn. @Microsoft) bu gereksinim olmadan çalışır.
+                     {t('sosyalMedya.aiUretim.liMentionTip2')}
                    </Text>
                    <Text className="text-white text-[11px] leading-4">
-                     Görünen isim (display name), etiketin tıklanabilir olması için profilleriyle tam olarak eşleşmelidir.
+                     {t('sosyalMedya.aiUretim.liMentionTip3')}
                    </Text>
                 </View>
              )}
@@ -1338,13 +1338,13 @@ export default function AiUretimScreen({ route, navigation }) {
                   accessibilityRole="button"
                   accessibilityLabel="Etiketi metne ekle"
                 >
-                  <Text className={`text-xs font-medium ${(liMentionUsername || liMentionDisplayName) ? 'text-white' : 'text-[#A79E96]/50'}`}>Insert</Text>
+                  <Text className={`text-xs font-medium ${(liMentionUsername || liMentionDisplayName) ? 'text-white' : 'text-[#A79E96]/50'}`}>{t('sosyalMedya.aiUretim.insert')}</Text>
                 </TouchableOpacity>
              </View>
 
              {/* Repost section */}
              <View className="flex-row items-center mb-1 z-10 mt-2">
-                <Text className="text-[#A79E96] text-xs font-medium mr-1">Repost a LinkedIn post</Text>
+                <Text className="text-[#A79E96] text-xs font-medium mr-1">{t('sosyalMedya.aiUretim.repostLinkedIn')}</Text>
                 <TouchableOpacity onPress={() => setShowLiRepostTooltip(!showLiRepostTooltip)}>
                    <MaterialIcons name="info-outline" size={14} color="#A79E96" />
                 </TouchableOpacity>
@@ -1352,10 +1352,10 @@ export default function AiUretimScreen({ route, navigation }) {
              {showLiRepostTooltip && (
                 <View className="bg-[#2A2631] border border-white/10 rounded-lg p-3 mb-2 z-10">
                    <Text className="text-white text-[11px] mb-2 leading-4">
-                     Gönderinin "Gönderi bağlantısını kopyala" (Copy link to post) seçeneği ile bağlantıyı alın (adres çubuğundaki bağlantı çalışmaz).
+                     {t('sosyalMedya.aiUretim.liRepostTip1')}
                    </Text>
                    <Text className="text-white text-[11px] leading-4">
-                     Orijinal gönderi, metninizin altına gömülür. Medya, bir yeniden paylaşımda (repost) desteklenmez.
+                     {t('sosyalMedya.aiUretim.liRepostTip2')}
                    </Text>
                 </View>
              )}
@@ -1373,10 +1373,10 @@ export default function AiUretimScreen({ route, navigation }) {
                 <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${liDisableLinkPreview ? 'bg-[#22B573] border-[#22B573]' : 'border-[#A79E96]/50 bg-transparent'}`}>
                    {liDisableLinkPreview && <MaterialIcons name="check" size={12} color="#1C3327" />}
                 </View>
-                <Text className="text-[#F6F1EC] text-[13px]">Disable link preview</Text>
+                <Text className="text-[#F6F1EC] text-[13px]">{t('sosyalMedya.aiUretim.disableLinkPreview')}</Text>
              </TouchableOpacity>
 
-             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">İlk Yorum (Opsiyonel)</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">{t('sosyalMedya.aiUretim.firstCommentOptional')}</Text>
              <TextInput 
                 value={liFirstComment} onChangeText={setLiFirstComment}
                 placeholder="Add a İlk Yorum (Opsiyonel) to boost engagement." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1385,7 +1385,7 @@ export default function AiUretimScreen({ route, navigation }) {
              />
              <Text className="text-[#A79E96]/50 text-[10px] text-right mb-4">{liFirstComment.length}/1250</Text>
 
-             <Text className="text-[#A79E96] text-xs font-medium mb-1">Özel Açıklama (Opsiyonel)</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.customCaptionOptional')}</Text>
              <TextInput 
                 value={liCustomCaption} onChangeText={setLiCustomCaption}
                 placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1408,7 +1408,7 @@ export default function AiUretimScreen({ route, navigation }) {
 
              {/* Thread Toggle */}
              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-[#A79E96] text-xs font-medium">thread</Text>
+                <Text className="text-[#A79E96] text-xs font-medium">{t('sosyalMedya.aiUretim.thread')}</Text>
                 <TouchableOpacity
                    activeOpacity={0.8} onPress={() => setTwIsThread(!twIsThread)}
                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -1423,16 +1423,16 @@ export default function AiUretimScreen({ route, navigation }) {
              
              {twIsThread && (
                 <View className="mb-4">
-                   <Text className="text-[#A79E96]/70 text-[10px] mb-3">Ana metin ilk tweet olur. Altına zincir eklenebilir.</Text>
+                   <Text className="text-[#A79E96]/70 text-[10px] mb-3">{t('sosyalMedya.aiUretim.threadHintTweet')}</Text>
                    
                    {twThreadTweets.map((tweet, index) => (
                       <View key={tweet.id} className="bg-[#2A2631] border border-white/5 rounded-lg p-3 mb-2">
                          <View className="flex-row justify-between items-center mb-2">
-                            <Text className="text-[#A79E96] text-xs font-medium text-dashed">Tweet {index + 2}</Text>
+                            <Text className="text-[#A79E96] text-xs font-medium text-dashed">{t('sosyalMedya.aiUretim.tweetN', { n: index + 2 })}</Text>
                             <View className="flex-row items-center">
                                <Text className="text-[#A79E96]/50 text-[10px] mr-2">{tweet.content.length}/280</Text>
                                <TouchableOpacity onPress={() => removeTweet(tweet.id)}>
-                                  <Text className="text-[#F59E0B] text-[10px]">remove</Text>
+                                  <Text className="text-[#F59E0B] text-[10px]">{t('sosyalMedya.aiUretim.remove')}</Text>
                                </TouchableOpacity>
                             </View>
                          </View>
@@ -1449,12 +1449,12 @@ export default function AiUretimScreen({ route, navigation }) {
                    ))}
                    
                    <TouchableOpacity onPress={addTweet} className="py-2">
-                      <Text className="text-[#A79E96] text-xs">+ add tweet {twThreadTweets.length + 2}</Text>
+                      <Text className="text-[#A79E96] text-xs">{t('sosyalMedya.aiUretim.addTweet', { n: twThreadTweets.length + 2 })}</Text>
                    </TouchableOpacity>
                 </View>
              )}
 
-             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">Özel Açıklama (Opsiyonel)</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">{t('sosyalMedya.aiUretim.customCaptionOptional')}</Text>
              <TextInput 
                 value={twCustomCaption} onChangeText={setTwCustomCaption}
                 placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1485,12 +1485,12 @@ export default function AiUretimScreen({ route, navigation }) {
                    {ttSaveToInbox && <MaterialIcons name="check" size={12} color="#1C3327" />}
                 </View>
                 <View className="flex-1">
-                  <Text className="text-[#F6F1EC] text-xs font-semibold mb-1">TikTok taslaklarına kaydet</Text>
-                  <Text className="text-[#A79E96]/80 text-[10px] leading-4">Video direkt yayınlanmaz, taslak olarak yüklenir. İsterseniz TikTok üzerinden müzik ekleyip yayınlayabilirsiniz.</Text>
+                  <Text className="text-[#F6F1EC] text-xs font-semibold mb-1">{t('sosyalMedya.aiUretim.tiktokDraft')}</Text>
+                  <Text className="text-[#A79E96]/80 text-[10px] leading-4">{t('sosyalMedya.aiUretim.tiktokDraftHint')}</Text>
                 </View>
              </TouchableOpacity>
 
-             <Text className="text-[#A79E96] text-xs font-medium mb-1">Özel Açıklama (Opsiyonel)</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.customCaptionOptional')}</Text>
              <TextInput 
                value={ttCustomCaption} onChangeText={setTtCustomCaption}
                placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1512,15 +1512,15 @@ export default function AiUretimScreen({ route, navigation }) {
                  <Text className="text-[#F6F1EC] font-semibold text-sm">Pinterest</Text>
                </View>
 
-               <Text className="text-[#A79E96] text-xs font-medium mb-1">Başlık (Opsiyonel)</Text>
+               <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.titleOptional')}</Text>
                <TextInput 
                  value={pinTitle} onChangeText={setPinTitle}
                  placeholder="Pin'iniz için özel bir başlık girin..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
                  className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1"
                />
-               <Text className="text-[#A79E96]/60 text-[10px] mb-4">Zorunlu değildir. Boş bırakılırsa ana metnin ilk satırı başlık yapılır.</Text>
+               <Text className="text-[#A79E96]/60 text-[10px] mb-4">{t('sosyalMedya.aiUretim.pinterestTitleHint')}</Text>
 
-               <Text className="text-[#A79E96] text-xs font-medium mb-1">Hedef Bağlantı (Opsiyonel)</Text>
+               <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.targetLinkOptional')}</Text>
                <TextInput 
                  value={pinLink} onChangeText={setPinLink}
                  placeholder="https://example.com" placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1528,9 +1528,9 @@ export default function AiUretimScreen({ route, navigation }) {
                  autoCapitalize="none"
                  className="bg-[#201D24]/50 border border-white/5 rounded-lg text-[#F6F1EC] text-sm px-3 py-2 mb-1"
                />
-               <Text className="text-[#A79E96]/60 text-[10px] mb-4">Pin'e tıklandığında gidilecek URL bağlantısını belirler.</Text>
+               <Text className="text-[#A79E96]/60 text-[10px] mb-4">{t('sosyalMedya.aiUretim.pinterestLinkHint')}</Text>
 
-               <Text className="text-[#A79E96] text-xs font-medium mb-1">Özel Açıklama (Opsiyonel)</Text>
+               <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.customCaptionOptional')}</Text>
                <TextInput 
                  value={pinCustomCaption} onChangeText={setPinCustomCaption}
                  placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1552,7 +1552,7 @@ export default function AiUretimScreen({ route, navigation }) {
 
              {/* Thread Toggle */}
              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-[#A79E96] text-xs font-medium">thread</Text>
+                <Text className="text-[#A79E96] text-xs font-medium">{t('sosyalMedya.aiUretim.thread')}</Text>
                 <TouchableOpacity
                    activeOpacity={0.8} onPress={() => setBskyIsThread(!bskyIsThread)}
                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -1565,10 +1565,10 @@ export default function AiUretimScreen({ route, navigation }) {
                 </TouchableOpacity>
              </View>
              {bskyIsThread && (
-                <Text className="text-[#A79E96]/70 text-[10px] mb-4">Ana metin ilk gönderi olur. Altına zincir eklenebilir.</Text>
+                <Text className="text-[#A79E96]/70 text-[10px] mb-4">{t('sosyalMedya.aiUretim.threadHintPost')}</Text>
              )}
 
-             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">Özel Açıklama (Opsiyonel)</Text>
+             <Text className="text-[#A79E96] text-xs font-medium mb-1 mt-2">{t('sosyalMedya.aiUretim.customCaptionOptional')}</Text>
              <TextInput
                 value={bskyCustomCaption} onChangeText={setBskyCustomCaption}
                 placeholder="Ana metni kullanmak için boş bırakın..." placeholderTextColor="rgba(185, 202, 203, 0.5)"
@@ -1601,7 +1601,7 @@ export default function AiUretimScreen({ route, navigation }) {
 
              {(gbpPostType === 'STANDARD' || gbpPostType === 'EVENT') && (
                <View className="mb-3">
-                 <Text className="text-[#A79E96] text-xs font-medium mb-1">Call To Action</Text>
+                 <Text className="text-[#A79E96] text-xs font-medium mb-1">{t('sosyalMedya.aiUretim.callToAction')}</Text>
                  <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row mb-2">
                     {['NONE', 'LEARN_MORE', 'BOOK', 'ORDER', 'SHOP', 'SIGN_UP', 'CALL'].map(cta => (
                       <TouchableOpacity 
@@ -1626,7 +1626,7 @@ export default function AiUretimScreen({ route, navigation }) {
 
              {gbpPostType === 'EVENT' && (
                <View className="mb-2 bg-[#2A2631]/30 p-2 rounded-lg border border-white/5">
-                  <Text className="text-[#A79E96] text-[10px] font-medium mb-1">Event Details</Text>
+                  <Text className="text-[#A79E96] text-[10px] font-medium mb-1">{t('sosyalMedya.aiUretim.eventDetails')}</Text>
                   <TextInput value={gbpEventTitle} onChangeText={setGbpEventTitle} placeholder="Event Title" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="bg-[#201D24]/50 border border-white/5 rounded text-[#F6F1EC] text-xs px-2 py-1.5 mb-2" />
                   <View className="flex-row space-x-2">
                     <TextInput value={gbpEventStartDate} onChangeText={setGbpEventStartDate} placeholder="Start YYYY-MM-DD" placeholderTextColor="rgba(185, 202, 203, 0.5)" className="flex-1 bg-[#201D24]/50 border border-white/5 rounded text-[#F6F1EC] text-xs px-2 py-1.5 mr-1" />
@@ -1682,13 +1682,13 @@ export default function AiUretimScreen({ route, navigation }) {
                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${redditSpoiler ? 'bg-[#FF4500] border-[#FF4500]' : 'border-[#A79E96]/50 bg-transparent'}`}>
                       {redditSpoiler && <MaterialIcons name="check" size={12} color="#fff" />}
                    </View>
-                   <Text className="text-[#F6F1EC] text-xs">Spoiler</Text>
+                   <Text className="text-[#F6F1EC] text-xs">{t('sosyalMedya.aiUretim.spoiler')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={0.8} onPress={() => setRedditSendReplies(!redditSendReplies)} className="flex-row items-center">
                    <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${redditSendReplies ? 'bg-[#FF4500] border-[#FF4500]' : 'border-[#A79E96]/50 bg-transparent'}`}>
                       {redditSendReplies && <MaterialIcons name="check" size={12} color="#fff" />}
                    </View>
-                   <Text className="text-[#F6F1EC] text-xs">Inbox Replies</Text>
+                   <Text className="text-[#F6F1EC] text-xs">{t('sosyalMedya.aiUretim.inboxReplies')}</Text>
                 </TouchableOpacity>
              </View>
           </View>
@@ -1710,32 +1710,32 @@ export default function AiUretimScreen({ route, navigation }) {
                 <View className={`w-4 h-4 rounded-sm border mr-2 items-center justify-center ${tgDisableNotification ? 'bg-[#2AABEE] border-[#2AABEE]' : 'border-[#A79E96]/50 bg-transparent'}`}>
                    {tgDisableNotification && <MaterialIcons name="check" size={12} color="#fff" />}
                 </View>
-                <Text className="text-[#F6F1EC] text-xs">Send Silently (No Notification)</Text>
+                <Text className="text-[#F6F1EC] text-xs">{t('sosyalMedya.aiUretim.sendSilently')}</Text>
              </TouchableOpacity>
           </View>
         )}
 
         {/* Publishing Options Section */}
         <View className="mb-6">
-          <Text className="text-[#A79E96] text-xs font-medium mb-3">yayıncılık</Text>
+          <Text className="text-[#A79E96] text-xs font-medium mb-3">{t('sosyalMedya.aiUretim.publishing')}</Text>
           <View className="flex-row bg-[#2A2631]/50 rounded-lg p-1 mb-4 border border-white/5">
              <TouchableOpacity 
                onPress={() => setPublishMode('schedule')}
                className={`flex-1 items-center py-2 rounded-md ${publishMode === 'schedule' ? 'bg-[#34303C]' : ''}`}
              >
-               <Text className={`text-sm ${publishMode === 'schedule' ? 'text-white' : 'text-[#A79E96]'}`}>Planlı</Text>
+               <Text className={`text-sm ${publishMode === 'schedule' ? 'text-white' : 'text-[#A79E96]'}`}>{t('sosyalMedya.aiUretim.scheduled')}</Text>
              </TouchableOpacity>
              <TouchableOpacity 
                onPress={() => setPublishMode('now')}
                className={`flex-1 items-center py-2 rounded-md ${publishMode === 'now' ? 'bg-[#34303C]' : ''}`}
              >
-               <Text className={`text-sm ${publishMode === 'now' ? 'text-white' : 'text-[#A79E96]'}`}>Şimdi</Text>
+               <Text className={`text-sm ${publishMode === 'now' ? 'text-white' : 'text-[#A79E96]'}`}>{t('sosyalMedya.aiUretim.now')}</Text>
              </TouchableOpacity>
           </View>
 
           {publishMode === 'schedule' && (
             <>
-              <Text className="text-[#A79E96] text-xs font-medium mb-2">tarih & saat (GG.AA.YYYY SS:DD)</Text>
+              <Text className="text-[#A79E96] text-xs font-medium mb-2">{t('sosyalMedya.aiUretim.dateTimeFormat')}</Text>
               <View className="flex-row items-center justify-between bg-[#2A2631]/50 rounded-lg border border-white/5 p-3 mb-4">
                  <TextInput
                    value={scheduleDate}
@@ -1748,7 +1748,7 @@ export default function AiUretimScreen({ route, navigation }) {
                  <MaterialIcons name="calendar-today" size={18} color="#A79E96" />
               </View>
 
-              <Text className="text-[#A79E96] text-xs font-medium mb-2">timezone</Text>
+              <Text className="text-[#A79E96] text-xs font-medium mb-2">{t('sosyalMedya.aiUretim.timezone')}</Text>
               <TouchableOpacity 
                 onPress={() => setTimezoneModalVisible(true)}
                 className="flex-row items-center justify-between bg-[#2A2631]/50 rounded-lg border border-white/5 p-3 mb-4"
@@ -1822,7 +1822,7 @@ export default function AiUretimScreen({ route, navigation }) {
         <View className="flex-1 bg-black/80 justify-end">
           <View className="bg-[#2A2631] rounded-t-3xl h-[60%]">
             <View className="flex-row justify-between items-center p-5 border-b border-white/10">
-              <Text className="text-[#F6F1EC] text-lg font-semibold">Kategori Seçin</Text>
+              <Text className="text-[#F6F1EC] text-lg font-semibold">{t('sosyalMedya.aiUretim.selectCategory')}</Text>
               <TouchableOpacity onPress={() => setYtCategoryModalVisible(false)}>
                 <MaterialIcons name="close" size={24} color="#A79E96" />
               </TouchableOpacity>
@@ -1858,7 +1858,7 @@ export default function AiUretimScreen({ route, navigation }) {
         <View className="flex-1 bg-black/80 justify-end">
           <View className="bg-[#2A2631] rounded-t-3xl h-[60%]">
             <View className="flex-row justify-between items-center p-5 border-b border-white/10">
-              <Text className="text-[#F6F1EC] text-lg font-semibold">Timezone Seçin</Text>
+              <Text className="text-[#F6F1EC] text-lg font-semibold">{t('sosyalMedya.aiUretim.selectTimezone')}</Text>
               <TouchableOpacity onPress={() => setTimezoneModalVisible(false)}>
                 <MaterialIcons name="close" size={24} color="#A79E96" />
               </TouchableOpacity>

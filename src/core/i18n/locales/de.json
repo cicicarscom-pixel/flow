@@ -60,7 +60,8 @@
       "yourAccounts": "Ihre verbundenen Konten",
       "sync": "Synchronisieren",
       "active": "Aktiv",
-      "noAccountsYet": "Sie haben noch kein verbundenes Konto."
+      "noAccountsYet": "Sie haben noch kein verbundenes Konto.",
+      "connectNewAccount": "Neues Konto verbinden"
     },
     "inbox": {
       "selectedCount": "{{count}} ausgewählt",
@@ -75,7 +76,8 @@
         "messages": "Nachrichten",
         "comments": "Kommentare",
         "reviews": "Bewertungen"
-      }
+      },
+      "selectAll": "Alle auswählen"
     },
     "bot": {
       "title": "Bot-Verwaltung",
@@ -183,7 +185,84 @@
       "responseTimeMin": "12 Min",
       "responseTimeAnalysis": "Antwortzeitanalyse",
       "firstResponseText": "Erste Antwort auf Kundennachricht",
-      "greatSpeed": "Sie sind super schnell!"
+      "greatSpeed": "Sie sind super schnell!",
+      "cards": {
+        "avgEngRate": "Ø Interaktionsrate",
+        "formatVideoImage": "Format (Video/Bild)",
+        "bestPost": "Bester Beitrag",
+        "followerGrowth": "Follower-Wachstum (Follower History)",
+        "followerGrowthSub": "Kumulative Follower-Entwicklung",
+        "topPosts": "Leistungsstärkste Beiträge",
+        "topPostsSub": "Ihre Beiträge mit der höchsten Interaktion",
+        "platformBreakdown": "Plattform-Aufschlüsselung",
+        "bestTimes": "Beste Zeiten zum Veröffentlichen",
+        "bestTimesSub": "Durchschnittliche Interaktion nach Wochentag und Uhrzeit",
+        "contentDecay": "Lebensdauer von Inhalten (Content Decay)",
+        "contentDecaySub": "Verteilung der Interaktionen nach der Veröffentlichung",
+        "frequencyVsER": "Veröffentlichungshäufigkeit vs. Interaktionsrate",
+        "frequencyVsERSub": "Einfluss der wöchentlichen Beitragszahl auf die durchschnittliche Interaktionsrate",
+        "engagementCount": "{{count}} Interaktionen"
+      },
+      "cols": {
+        "views": "Aufrufe",
+        "likes": "Gefällt mir",
+        "post": "Beitrag",
+        "comments": "Kommentare",
+        "shares": "Geteilt",
+        "saves": "Gespeichert",
+        "clicks": "Klicks",
+        "followers": "Follower",
+        "impressionsShort": "Impr.",
+        "reach": "Reichweite",
+        "erShort": "ER%",
+        "platform": "Plattform"
+      }
+    },
+    "aiUretim": {
+      "connectedAccounts": "Verbundene Konten (Plattformen)",
+      "noAccounts": "Noch kein Konto verbunden.",
+      "connectAccount": "Konto verbinden",
+      "titleOptional": "Titel (optional)",
+      "tagsOptional": "Tags (optional)",
+      "visibility": "Sichtbarkeit",
+      "category": "Kategorie",
+      "customCaptionOptional": "Eigene Beschreibung (optional)",
+      "storyNoticeMedia": "Der Inhalt verschwindet nach 24 Stunden. Medien (Bild oder Video) erforderlich.",
+      "firstCommentOptional": "Erster Kommentar (optional)",
+      "storyNoticeText": "Der Inhalt verschwindet nach 24 Stunden. Eingeschränkte Textunterstützung.",
+      "markAsAi": "Als KI-generiert markieren",
+      "markAsAiHint": "Fügt das KI-Inhaltslabel von Instagram hinzu. Verwenden Sie es, wenn die Medien ganz oder überwiegend mit KI erstellt wurden.",
+      "insert": "Einfügen",
+      "repostLinkedIn": "Einen LinkedIn-Beitrag erneut teilen",
+      "disableLinkPreview": "Link-Vorschau deaktivieren",
+      "thread": "Thread",
+      "threadHintTweet": "Der Haupttext wird zum ersten Tweet. Darunter kann ein Thread ergänzt werden.",
+      "remove": "Entfernen",
+      "tiktokDraft": "In TikTok-Entwürfen speichern",
+      "tiktokDraftHint": "Das Video wird nicht direkt veröffentlicht, sondern als Entwurf hochgeladen. Sie können in TikTok Musik hinzufügen und es selbst veröffentlichen.",
+      "pinterestTitleHint": "Nicht erforderlich. Bleibt das Feld leer, wird die erste Zeile des Haupttexts als Titel verwendet.",
+      "targetLinkOptional": "Ziel-Link (optional)",
+      "pinterestLinkHint": "Legt die URL fest, die beim Klick auf den Pin geöffnet wird.",
+      "threadHintPost": "Der Haupttext wird zum ersten Beitrag. Darunter kann ein Thread ergänzt werden.",
+      "callToAction": "Handlungsaufforderung",
+      "eventDetails": "Veranstaltungsdetails",
+      "spoiler": "Spoiler",
+      "inboxReplies": "Antworten im Posteingang",
+      "sendSilently": "Stumm senden (ohne Benachrichtigung)",
+      "publishing": "Veröffentlichung",
+      "scheduled": "Geplant",
+      "now": "Jetzt",
+      "dateTimeFormat": "Datum & Uhrzeit (TT.MM.JJJJ HH:MM)",
+      "timezone": "Zeitzone",
+      "selectCategory": "Kategorie auswählen",
+      "selectTimezone": "Zeitzone auswählen",
+      "liMentionTip1": "Personenerwähnungen erfordern, dass Ihr LinkedIn-Konto Administrator mindestens einer Organisation ist (Einschränkung der LinkedIn-API).",
+      "liMentionTip2": "Organisationserwähnungen (z. B. @Microsoft) funktionieren ohne diese Voraussetzung.",
+      "liMentionTip3": "Der Anzeigename muss exakt mit dem Profil übereinstimmen, damit die Erwähnung anklickbar ist.",
+      "liRepostTip1": "Holen Sie den Link über die Option „Link zum Beitrag kopieren“ des Beitrags (der Link in der Adressleiste funktioniert nicht).",
+      "liRepostTip2": "Der ursprüngliche Beitrag wird unter Ihrem Text eingebettet. Medien werden bei einem Repost nicht unterstützt.",
+      "tweetN": "Tweet {{n}}",
+      "addTweet": "+ Tweet hinzufügen {{n}}"
     }
   },
   "muhasebe": {
@@ -849,7 +928,15 @@
     },
     "notes": "Notizen",
     "saved": "Gespeichert",
-    "notesPlaceholder": "Notiz zum Kunden hinzufügen..."
+    "notesPlaceholder": "Notiz zum Kunden hinzufügen...",
+    "detail": {
+      "call": "Anrufen",
+      "appointment": "Termin",
+      "history": "Terminverlauf",
+      "noAppointments": "Keine Termine gefunden."
+    },
+    "fullName": "Vor- und Nachname",
+    "phoneLabel": "Telefon (+90 5XX ...)"
   },
   "updateGate": {
     "title": "Update erforderlich",
@@ -994,6 +1081,14 @@
     "resetDefault": "Auf Standardtext zurücksetzen",
     "unknownPlaceholder": "Unbekanntes Feld: {{list}}. Verwenden Sie nur die aufgeführten Felder.",
     "tooLong": "Der Text darf höchstens 700 Zeichen lang sein.",
-    "ph": {"name": "vollständiger Name", "first_name": "Vorname", "business": "Unternehmen", "date": "Datum", "time": "Uhrzeit", "doctor": "Mitarbeiter", "service": "Leistung"}
+    "ph": {
+      "name": "vollständiger Name",
+      "first_name": "Vorname",
+      "business": "Unternehmen",
+      "date": "Datum",
+      "time": "Uhrzeit",
+      "doctor": "Mitarbeiter",
+      "service": "Leistung"
+    }
   }
 }

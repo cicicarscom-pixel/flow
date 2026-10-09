@@ -488,7 +488,7 @@ export default function AnalyticsScreen({ navigation }) {
              <GlassCard style={{ flex: 1, marginLeft: 6, padding: 12, borderRadius: 12 }}>
                <View className="flex-row items-center mb-1">
                  <Ionicons name="analytics" size={12} color="#A79E96" style={{ marginRight: 4 }} />
-                 <Text className="text-[#A79E96] text-[10px]">Avg. Eng. Rate</Text>
+                 <Text className="text-[#A79E96] text-[10px]">{t('sosyalMedya.analytics.cards.avgEngRate')}</Text>
                </View>
                <Text className="text-[#22B573] text-[16px] font-bold">%{overallEr}</Text>
              </GlassCard>
@@ -511,7 +511,7 @@ export default function AnalyticsScreen({ navigation }) {
             <GlassCard style={{ flex: 1, marginRight: 6, padding: 12, borderRadius: 12 }}>
               <View className="flex-row items-center mb-1">
                 <Ionicons name="pie-chart" size={12} color="#A79E96" style={{ marginRight: 4 }} />
-                <Text className="text-[#A79E96] text-[10px]">Format (Video/Görsel)</Text>
+                <Text className="text-[#A79E96] text-[10px]">{t('sosyalMedya.analytics.cards.formatVideoImage')}</Text>
               </View>
               <View className="flex-row items-baseline">
                 <Text className="text-[#E8A8CD] text-[16px] font-bold">{formatVideo}</Text>
@@ -538,13 +538,13 @@ export default function AnalyticsScreen({ navigation }) {
               <GlassCard style={{ flex: 1, marginLeft: 6, padding: 12, borderRadius: 12 }}>
                 <View className="flex-row items-center mb-1">
                   <Ionicons name="star" size={12} color="#FFD700" style={{ marginRight: 4 }} />
-                  <Text className="text-[#A79E96] text-[10px]">En İyi Gönderi</Text>
+                  <Text className="text-[#A79E96] text-[10px]">{t('sosyalMedya.analytics.cards.bestPost')}</Text>
                 </View>
                 <Text className="text-[#F6F1EC] text-[11px] font-bold mb-1" numberOfLines={1}>
                   {bestPost.content || bestPost.title || 'Görsel Gönderi'}
                 </Text>
                 <Text className="text-[#FFD700] text-[9px] font-bold">
-                  {totalE} Etkileşim
+                  {t('sosyalMedya.analytics.cards.engagementCount', { count: totalE })}
                 </Text>
               </GlassCard>
             );
@@ -554,7 +554,7 @@ export default function AnalyticsScreen({ navigation }) {
             <GlassCard style={{ flex: 1, marginLeft: 6, padding: 12, borderRadius: 12 }}>
               <View className="flex-row items-center mb-1">
                 <Ionicons name="star" size={12} color="#A79E96" style={{ marginRight: 4 }} />
-                <Text className="text-[#A79E96] text-[10px]">En İyi Gönderi</Text>
+                <Text className="text-[#A79E96] text-[10px]">{t('sosyalMedya.analytics.cards.bestPost')}</Text>
               </View>
               <Text className="text-[#F6F1EC] text-[16px] font-bold">--</Text>
             </GlassCard>
@@ -568,9 +568,9 @@ export default function AnalyticsScreen({ navigation }) {
           <Text className="text-[#F6F1EC] text-[14px] font-bold">{t('sosyalMedya.analytics.engagementImpressions')}</Text>
           <View className="flex-row items-center">
              <View className="w-2 h-2 rounded-full bg-[#22B573] mr-1" />
-             <Text className="text-[#A79E96] text-[8px] mr-3">Views</Text>
+             <Text className="text-[#A79E96] text-[8px] mr-3">{t('sosyalMedya.analytics.cols.views')}</Text>
              <View className="w-2 h-2 rounded-full bg-[#C2478D] mr-1" />
-             <Text className="text-[#A79E96] text-[8px]">Likes</Text>
+             <Text className="text-[#A79E96] text-[8px]">{t('sosyalMedya.analytics.cols.likes')}</Text>
           </View>
         </View>
         <Text className="text-[#A79E96] text-[10px] mb-4">{t('sosyalMedya.analytics.changeOverTime')}</Text>
@@ -628,9 +628,9 @@ export default function AnalyticsScreen({ navigation }) {
           <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
             <View className="flex-row items-center mb-1">
               <Ionicons name="trending-up" size={14} color={chartColor} style={{ marginRight: 4 }} />
-              <Text className="text-[#F6F1EC] text-[14px] font-bold">Takipçi Büyümesi (Follower History)</Text>
+              <Text className="text-[#F6F1EC] text-[14px] font-bold">{t('sosyalMedya.analytics.cards.followerGrowth')}</Text>
             </View>
-            <Text className="text-[#A79E96] text-[10px] mb-4">Kümülatif takipçi gelişimi</Text>
+            <Text className="text-[#A79E96] text-[10px] mb-4">{t('sosyalMedya.analytics.cards.followerGrowthSub')}</Text>
             
             <View style={{marginLeft: -20}}>
               <LineChart
@@ -685,23 +685,23 @@ export default function AnalyticsScreen({ navigation }) {
           tablosunda (bkz. width: 1090 deseni) zaten kullanılan yöntem. */}
       {zernioData.postAnalytics && zernioData.postAnalytics.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
-          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Top Performing Posts</Text>
-          <Text className="text-[#A79E96] text-[10px] mb-3">En çok etkileşim alan gönderileriniz</Text>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.cards.topPosts')}</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-3">{t('sosyalMedya.analytics.cards.topPostsSub')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={true}>
             <View style={{ width: 898 }}>
               {/* Header */}
               <View className="flex-row items-center pb-2 mb-2 border-b border-white/10">
-                <Text className="text-[#A79E96] text-[10px] font-bold" style={{ width: 190 }}>Gönderi</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Beğeni</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>Yorum</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>Paylaşım</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>Kaydetme</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>Tıklama</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 96 }}>Görüntülenme</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Takipçi</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Impr.</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Erişim</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 56 }}>ER%</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold" style={{ width: 190 }}>{t('sosyalMedya.analytics.cols.post')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>{t('sosyalMedya.analytics.cols.likes')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>{t('sosyalMedya.analytics.cols.comments')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>{t('sosyalMedya.analytics.cols.shares')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>{t('sosyalMedya.analytics.cols.saves')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>{t('sosyalMedya.analytics.cols.clicks')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 96 }}>{t('sosyalMedya.analytics.cols.views')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>{t('sosyalMedya.analytics.cols.followers')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>{t('sosyalMedya.analytics.cols.impressionsShort')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>{t('sosyalMedya.analytics.cols.reach')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 56 }}>{t('sosyalMedya.analytics.cols.erShort')}</Text>
               </View>
               {/* Rows */}
               {[...zernioData.postAnalytics]
@@ -774,22 +774,22 @@ export default function AnalyticsScreen({ navigation }) {
           Aynı yatay-kaydırılabilir-tablo deseni burada da kullanılıyor. */}
       {zernioData.platformBreakdown && zernioData.platformBreakdown.length > 0 && selectedPlatform.id === 'all' && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
-          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-3">Platform Kırılımı</Text>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-3">{t('sosyalMedya.analytics.cards.platformBreakdown')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={true}>
             <View style={{ width: 832 }}>
               {/* Header */}
               <View className="flex-row items-center pb-2 mb-2 border-b border-white/10">
-                <Text className="text-[#A79E96] text-[10px] font-bold" style={{ width: 130 }}>Platform</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>Gönderi</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Beğeni</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>Yorum</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>Paylaşım</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>Kaydetme</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>Tıklama</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 96 }}>Görüntülenme</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Impr.</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>Erişim</Text>
-                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 56 }}>ER%</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold" style={{ width: 130 }}>{t('sosyalMedya.analytics.cols.platform')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>{t('sosyalMedya.analytics.cols.post')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>{t('sosyalMedya.analytics.cols.likes')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>{t('sosyalMedya.analytics.cols.comments')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>{t('sosyalMedya.analytics.cols.shares')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 74 }}>{t('sosyalMedya.analytics.cols.saves')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 64 }}>{t('sosyalMedya.analytics.cols.clicks')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 96 }}>{t('sosyalMedya.analytics.cols.views')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>{t('sosyalMedya.analytics.cols.impressionsShort')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 70 }}>{t('sosyalMedya.analytics.cols.reach')}</Text>
+                <Text className="text-[#A79E96] text-[10px] font-bold text-right" style={{ width: 56 }}>{t('sosyalMedya.analytics.cols.erShort')}</Text>
               </View>
               {/* Rows */}
               {zernioData.platformBreakdown.map((p, idx) => {
@@ -852,8 +852,8 @@ export default function AnalyticsScreen({ navigation }) {
           avg_engagement/maxEngagement, taban 0.1) web ile birebir aynıdır. */}
       {zernioData.bestTimes && zernioData.bestTimes.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
-          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Paylaşım İçin En İyi Zamanlar</Text>
-          <Text className="text-[#A79E96] text-[10px] mb-4">Haftanın günleri ve saatlere göre ortalama etkileşim yoğunluğu</Text>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.cards.bestTimes')}</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-4">{t('sosyalMedya.analytics.cards.bestTimesSub')}</Text>
           {(() => {
             const dayNames = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
             const cellSize = 22;
@@ -926,8 +926,8 @@ export default function AnalyticsScreen({ navigation }) {
       {/* Phase 5: Content Decay */}
       {zernioData.contentDecay && zernioData.contentDecay.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
-          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">İçerik Ömrü (Content Decay)</Text>
-          <Text className="text-[#A79E96] text-[10px] mb-4">Gönderi sonrası etkileşimlerin dağılımı</Text>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.cards.contentDecay')}</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-4">{t('sosyalMedya.analytics.cards.contentDecaySub')}</Text>
           <View style={{marginLeft: -10}}>
             <BarChart
               data={[...zernioData.contentDecay].sort((a,b) => a.bucket_order - b.bucket_order).map(b => ({
@@ -965,8 +965,8 @@ export default function AnalyticsScreen({ navigation }) {
           yeniden üretildi. */}
       {zernioData.postingFrequency && zernioData.postingFrequency.length > 0 && (
         <AnimatedBorderCard marginBottom={16} colors={['rgba(255,255,255,0.2)', '#201D24']}>
-          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">Paylaşım Sıklığı vs Etkileşim Oranı</Text>
-          <Text className="text-[#A79E96] text-[10px] mb-4">Haftalık gönderi sayısının ortalama etkileşim oranına etkisi</Text>
+          <Text className="text-[#F6F1EC] text-[14px] font-bold mb-1">{t('sosyalMedya.analytics.cards.frequencyVsER')}</Text>
+          <Text className="text-[#A79E96] text-[10px] mb-4">{t('sosyalMedya.analytics.cards.frequencyVsERSub')}</Text>
           {(() => {
             const chartHeight = 220;
             const chartWidth = Math.max(width - 40 - 32 - 36, 160); // ekran px-5 (40) + kart padding (32) + Y ekseni etiket alanı (36)

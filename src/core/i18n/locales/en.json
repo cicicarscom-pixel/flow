@@ -60,7 +60,8 @@
       "yourAccounts": "Your Connected Accounts",
       "sync": "Sync",
       "active": "Active",
-      "noAccountsYet": "You don't have any connected accounts yet."
+      "noAccountsYet": "You don't have any connected accounts yet.",
+      "connectNewAccount": "Connect New Account"
     },
     "inbox": {
       "selectedCount": "{{count}} Selected",
@@ -75,7 +76,8 @@
         "messages": "Messages",
         "comments": "Comments",
         "reviews": "Reviews"
-      }
+      },
+      "selectAll": "Select All"
     },
     "bot": {
       "title": "Bot Management",
@@ -183,7 +185,84 @@
       "responseTimeMin": "12 min",
       "responseTimeAnalysis": "Response Time Analysis",
       "firstResponseText": "First response to customer message",
-      "greatSpeed": "You're at great speed!"
+      "greatSpeed": "You're at great speed!",
+      "cards": {
+        "avgEngRate": "Avg. Eng. Rate",
+        "formatVideoImage": "Format (Video/Image)",
+        "bestPost": "Best Post",
+        "followerGrowth": "Follower Growth (Follower History)",
+        "followerGrowthSub": "Cumulative follower growth",
+        "topPosts": "Top Performing Posts",
+        "topPostsSub": "Your posts with the most engagement",
+        "platformBreakdown": "Platform Breakdown",
+        "bestTimes": "Best Times to Post",
+        "bestTimesSub": "Average engagement by day of week and hour",
+        "contentDecay": "Content Lifespan (Content Decay)",
+        "contentDecaySub": "Distribution of engagement after posting",
+        "frequencyVsER": "Posting Frequency vs Engagement Rate",
+        "frequencyVsERSub": "Effect of weekly post count on average engagement rate",
+        "engagementCount": "{{count}} engagements"
+      },
+      "cols": {
+        "views": "Views",
+        "likes": "Likes",
+        "post": "Post",
+        "comments": "Comments",
+        "shares": "Shares",
+        "saves": "Saves",
+        "clicks": "Clicks",
+        "followers": "Followers",
+        "impressionsShort": "Impr.",
+        "reach": "Reach",
+        "erShort": "ER%",
+        "platform": "Platform"
+      }
+    },
+    "aiUretim": {
+      "connectedAccounts": "Connected Accounts (Platforms)",
+      "noAccounts": "No connected account yet.",
+      "connectAccount": "Connect Account",
+      "titleOptional": "Title (Optional)",
+      "tagsOptional": "Tags (optional)",
+      "visibility": "Visibility",
+      "category": "Category",
+      "customCaptionOptional": "Custom Caption (Optional)",
+      "storyNoticeMedia": "Content disappears after 24 hours. Requires media (image or video).",
+      "firstCommentOptional": "First Comment (Optional)",
+      "storyNoticeText": "Content disappears after 24 hours. Limited text support.",
+      "markAsAi": "Mark as AI-generated",
+      "markAsAiHint": "Adds Instagram's AI content label. Use it when the media is fully or largely created with AI.",
+      "insert": "Insert",
+      "repostLinkedIn": "Repost a LinkedIn post",
+      "disableLinkPreview": "Disable link preview",
+      "thread": "Thread",
+      "threadHintTweet": "The main text becomes the first tweet. A thread can be added below.",
+      "remove": "Remove",
+      "tiktokDraft": "Save to TikTok drafts",
+      "tiktokDraftHint": "The video is not published directly; it is uploaded as a draft. You can add music in TikTok and publish it yourself.",
+      "pinterestTitleHint": "Not required. If left empty, the first line of the main text becomes the title.",
+      "targetLinkOptional": "Destination Link (Optional)",
+      "pinterestLinkHint": "Sets the URL opened when the pin is clicked.",
+      "threadHintPost": "The main text becomes the first post. A thread can be added below.",
+      "callToAction": "Call To Action",
+      "eventDetails": "Event Details",
+      "spoiler": "Spoiler",
+      "inboxReplies": "Inbox Replies",
+      "sendSilently": "Send Silently (No Notification)",
+      "publishing": "Publishing",
+      "scheduled": "Scheduled",
+      "now": "Now",
+      "dateTimeFormat": "Date & time (DD.MM.YYYY HH:MM)",
+      "timezone": "Timezone",
+      "selectCategory": "Select Category",
+      "selectTimezone": "Select Timezone",
+      "liMentionTip1": "Person mentions require your LinkedIn account to be an admin of at least one organization (LinkedIn API restriction).",
+      "liMentionTip2": "Organization mentions (e.g. @Microsoft) work without this requirement.",
+      "liMentionTip3": "The display name must match their profile exactly for the mention to be clickable.",
+      "liRepostTip1": "Get the link with the post's \"Copy link to post\" option (the link in the address bar does not work).",
+      "liRepostTip2": "The original post is embedded below your text. Media is not supported in a repost.",
+      "tweetN": "Tweet {{n}}",
+      "addTweet": "+ add tweet {{n}}"
     }
   },
   "muhasebe": {
@@ -849,7 +928,15 @@
     },
     "notes": "Notes",
     "saved": "Saved",
-    "notesPlaceholder": "Add a note for this customer..."
+    "notesPlaceholder": "Add a note for this customer...",
+    "detail": {
+      "call": "Call",
+      "appointment": "Appointment",
+      "history": "Appointment History",
+      "noAppointments": "No appointments found."
+    },
+    "fullName": "Full name",
+    "phoneLabel": "Phone (+90 5XX ...)"
   },
   "updateGate": {
     "title": "Update required",
@@ -994,6 +1081,14 @@
     "resetDefault": "Reset to default message",
     "unknownPlaceholder": "Unknown field: {{list}}. Use only the listed fields.",
     "tooLong": "The message can be at most 700 characters.",
-    "ph": {"name": "full name", "first_name": "first name", "business": "business", "date": "date", "time": "time", "doctor": "staff", "service": "service"}
+    "ph": {
+      "name": "full name",
+      "first_name": "first name",
+      "business": "business",
+      "date": "date",
+      "time": "time",
+      "doctor": "staff",
+      "service": "service"
+    }
   }
 }
