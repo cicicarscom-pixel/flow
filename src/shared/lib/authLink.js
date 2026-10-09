@@ -28,7 +28,7 @@ function readParams(url) {
 export function parseAuthLink(url) {
   if (!url) return null;
   let p;
-  try { p = readParams(url); } catch (e) { return null; }
+  try { p = readParams(url); } catch { return null; }
   if (p.error || p.error_code) return { kind: 'error', code: p.error_code || p.error || 'unknown' };
   if (p.type === 'signup') return { kind: 'verified' };
   return null;

@@ -12,7 +12,6 @@ import {
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlobalAppBar, supabase } from '../shared';
-import { appointmentSentence } from '../lib/appointmentSentence';
 
 const COLORS = {
   background: '#17151A',

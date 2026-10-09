@@ -3,7 +3,6 @@ import { todayInTimezone } from "../../../../lib/dates";
 import { container } from "../../../../core/container";
 import { SupabaseAppointmentRepository } from "@infrastructure/repositories/SupabaseAppointmentRepository";
 import { Appointment } from "@domain/entities/Appointment";
-import { AppointmentStatus } from "@domain/enums/AppointmentStatus";
 
 export function extractTime(dateStr: string): string {
   if (!dateStr) return "";

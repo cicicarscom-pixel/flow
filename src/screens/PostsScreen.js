@@ -1,28 +1,13 @@
 /* eslint-disable i18next/no-literal-string */
 import React, { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  View,
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  FlatList, 
-  ScrollView,
-  ImageBackground,
-  Animated,
-  Easing,
-  Image,
-  Modal,
-  Alert
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, ImageBackground, Animated, Easing, Image, Modal, Alert } from 'react-native';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { supabase , GlobalAppBar } from '../shared';
-import { CustomButton } from '../shared';
-import { CustomInput } from '../shared';
+import { supabase , GlobalAppBar , CustomButton } from '../shared';
 
 // Glassmorphism Card Wrapper
 const GlassCard = ({ children, style }) => (

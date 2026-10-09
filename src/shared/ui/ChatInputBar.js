@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/refs */
 import React, { useState, useRef, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Animated, StyleSheet, Keyboard, Platform } from 'react-native';
-import { MaterialIcons, Feather } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ChatInputBar({

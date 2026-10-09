@@ -35,7 +35,7 @@ const PUBLISH_ERRORS = {
 function formatWhen(preview) {
   try {
     return new Date(preview.scheduledFor).toLocaleString(undefined, { timeZone: preview.timezone, dateStyle: 'medium', timeStyle: 'short' });
-  } catch (e) {
+  } catch {
     return String(preview.scheduledFor || '');
   }
 }
@@ -202,7 +202,7 @@ export default function FlowAiHost({ navigationRef }) {
         setAttachmentMeta(meta);
         flowAiShareHandoff.attach(meta);
       }
-    } catch (e) {
+    } catch {
       push('error', t('flowAi.share.unreadable'));
     } finally {
       pickingRef.current = false;
@@ -364,7 +364,7 @@ export default function FlowAiHost({ navigationRef }) {
         const ok = res.status === 'EXECUTED' || res.status === 'REJECTED';
         push(ok ? 'assistant' : 'error', t(ok ? (approve ? 'flowAi.approved' : 'flowAi.rejected') : 'flowAi.notApplied'));
       }
-    } catch (e) {
+    } catch {
       push('error', t('flowAi.error'));
     } finally {
       setBusy(false);

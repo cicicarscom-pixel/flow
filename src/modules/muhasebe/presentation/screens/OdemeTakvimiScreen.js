@@ -1,7 +1,9 @@
 import { formatMoney } from '../../../../lib/money';
+import { todayInTimezone, monthRangeYmd } from '../../../../lib/dates';
+import { getCurrentOrgId } from '../../../../lib/org';
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, TouchableOpacity, ScrollView, ImageBackground, StyleSheet, FlatList, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, FlatList, ActivityIndicator, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -18,6 +20,7 @@ export default function OdemeTakvimiScreen({ navigation }) {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedDays, setExpandedDays] = useState({});
+  const [orgTimezone, setOrgTimezone] = useState('Europe/Istanbul');
 
   const flatListRef = useRef(null);
   
@@ -26,9 +29,8 @@ export default function OdemeTakvimiScreen({ navigation }) {
     const y = currentDate.getFullYear();
     const m = currentDate.getMonth();
     
-    // adjust for timezone safely to get YYYY-MM-DD
-    const p_from = new Date(Date.UTC(y, m, 1)).toISOString().split("T")[0];
-    const p_to = new Date(Date.UTC(y, m + 1, 0)).toISOString().split("T")[0];
+    // Ay sınırları saat diliminden bağımsız düz metin olarak üretilir (src/lib/dates.ts)
+    const { from: p_from, to: p_to } = monthRangeYmd(`${y}-${String(m + 1).padStart(2, '0')}-01`);
 
     const { data, error } = await supabase.rpc("get_payment_calendar", { p_from, p_to });
     if (!error && data) {
@@ -42,6 +44,16 @@ export default function OdemeTakvimiScreen({ navigation }) {
   useEffect(() => {
     loadData();
   }, [currentDate]);
+
+  // "Bugün" işaretçisi cihazın değil işletmenin saat dilimine göre hesaplanır
+  useEffect(() => {
+    (async () => {
+      const orgId = await getCurrentOrgId(supabase);
+      if (!orgId) return;
+      const { data: org } = await supabase.from('organizations').select('timezone').eq('id', orgId).maybeSingle();
+      if (org?.timezone) setOrgTimezone(org.timezone);
+    })();
+  }, []);
 
   const setStatus = async (id, status) => {
     const { error } = await supabase.rpc("set_transaction_payment_status", { p_id: id, p_status: status });
@@ -67,7 +79,7 @@ export default function OdemeTakvimiScreen({ navigation }) {
   const m = currentDate.getMonth();
   const daysInMonth = new Date(y, m + 1, 0).getDate();
   const monthName = currentDate.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' });
-  const todayStr = new Date(todayDate.getTime() - (todayDate.getTimezoneOffset() * 60000)).toISOString().split("T")[0];
+  const todayStr = todayInTimezone(orgTimezone);
 
   const grouped = transactions.reduce((acc, t) => {
     if (!acc[t.day]) acc[t.day] = [];

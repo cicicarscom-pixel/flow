@@ -15,7 +15,7 @@ function weekdayName(dayIndex, lng) {
   // 2023-01-01 bir Pazar'dır → dayIndex 0 = Pazar.
   try {
     return new Date(Date.UTC(2023, 0, 1 + Number(dayIndex))).toLocaleDateString(lng, { weekday: 'long', timeZone: 'UTC' });
-  } catch (e) {
+  } catch {
     return '';
   }
 }
@@ -24,7 +24,7 @@ function dateLabel(ymd, lng) {
   try {
     const [y, m, d] = String(ymd).split('-').map(Number);
     return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString(lng, { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' });
-  } catch (e) {
+  } catch {
     return String(ymd);
   }
 }

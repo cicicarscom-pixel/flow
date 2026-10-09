@@ -2,24 +2,7 @@
 /* eslint-disable i18next/no-literal-string */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity, 
-  TextInput, 
-  Switch,
-  ImageBackground, 
-  Image,
-  StyleSheet, 
-  ActivityIndicator, 
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Modal,
-  Animated,
-  Easing
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Switch, ImageBackground, StyleSheet, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Modal, Animated, Easing } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -351,7 +334,7 @@ export default function BotYonetimiScreen() {
         setReminderEnabled(!newValue);
         Alert.alert(t('sosyalMedya.alerts.error'), data?.status === 'FORBIDDEN' ? t('reminders.ownerOnly') : t('reminders.saveFailed'));
       }
-    } catch (e) {
+    } catch {
       setReminderEnabled(!newValue);
       Alert.alert(t('sosyalMedya.alerts.error'), t('reminders.saveFailed'));
     }

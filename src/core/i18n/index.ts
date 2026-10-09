@@ -49,7 +49,7 @@ i18n
 //   2. Kullanıcı Profil ekranından manuel olarak bir dil seçerse → o seçim
 //      hem anında uygulanır hem de kalıcı olarak hatırlanır, sonraki
 //      açılışlarda cihaz dili ne olursa olsun kullanıcının seçimi geçerlidir.
-let languageReadyResolve;
+let languageReadyResolve: ((value?: unknown) => void) | undefined;
 export const languageReady = new Promise((resolve) => {
   languageReadyResolve = resolve;
 });
@@ -63,7 +63,7 @@ export const languageReady = new Promise((resolve) => {
   } catch (e) {
     console.warn('Kaydedilmiş dil tercihi okunamadı:', e);
   } finally {
-    languageReadyResolve();
+    languageReadyResolve?.();
   }
 })();
 
@@ -71,7 +71,7 @@ export const languageReady = new Promise((resolve) => {
 // kullanılır. `useTranslation()` kullanan tüm bileşenler `i18n.changeLanguage`
 // çağrıldığında otomatik olarak yeniden render olur (react-i18next context'i
 // üzerinden) — ekstra bir state/refresh mantığına gerek yoktur.
-export const setAppLanguage = async (languageCode) => {
+export const setAppLanguage = async (languageCode: string) => {
   if (!SUPPORTED_LANGUAGES.includes(languageCode)) return;
   await i18n.changeLanguage(languageCode);
   try {

@@ -88,7 +88,7 @@ export default function InvoiceSummaryCard({ invoice, todayYmd, onScan }) {
     const [y, m, d] = String(ymd).slice(0, 10).split('-').map(Number);
     try {
       return new Intl.DateTimeFormat(locale, { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, d)));
-    } catch (e) {
+    } catch {
       return String(ymd).slice(0, 10);
     }
   };

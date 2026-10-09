@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-  Alert,
-} from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
 import { GlobalAppBar } from '../../../../shared';
 import { useTranslation } from 'react-i18next';
 
@@ -94,7 +85,7 @@ export default function MuhasebecimScreen({ navigation }) {
         } else {
           Alert.alert('', t('muhasebecimScreen.actionError'));
         }
-      } catch (err) {
+      } catch {
         Alert.alert('', t('muhasebecimScreen.actionError'));
       } finally {
         setIsLoading(false);
@@ -121,7 +112,7 @@ export default function MuhasebecimScreen({ navigation }) {
       } else {
         Alert.alert('', t('muhasebecimScreen.actionError'));
       }
-    } catch (err) {
+    } catch {
       Alert.alert('', t('muhasebecimScreen.actionError'));
     } finally {
       setIsLoading(false);
@@ -135,7 +126,7 @@ export default function MuhasebecimScreen({ navigation }) {
       const { data, error } = await supabase.rpc('cancel_accountant_request');
       if (error) throw error;
       checkConnection();
-    } catch (err) {
+    } catch {
       Alert.alert('', t('muhasebecimScreen.actionError'));
       setIsLoading(false);
     }
@@ -157,7 +148,7 @@ export default function MuhasebecimScreen({ navigation }) {
               const { error } = await supabase.rpc('disconnect_current_accountant', { p_reason: 'User request' });
               if (error) throw error;
               checkConnection();
-            } catch (err) {
+            } catch {
               Alert.alert('', t('muhasebecimScreen.actionError'));
               setIsLoading(false);
             }

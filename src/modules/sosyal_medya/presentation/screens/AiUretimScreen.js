@@ -31,7 +31,6 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase , GlobalAppBar } from '../../../../shared';
-import { CustomButton } from '../../../../shared';
 import { PLATFORM_MEDIA_RULES } from '../../domain/platformRules';
 import { FlowHighlight, useAiUretimFlowEvents } from '../../../flow_ai';
 
@@ -463,7 +462,7 @@ export default function AiUretimScreen({ route, navigation }) {
         const dateParts = parts[0].split('.');
         const timeParts = parts[1].split(':');
         finalScheduledFor = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}T${timeParts[0].padStart(2, '0')}:${timeParts[1].padStart(2, '0')}:00`;
-      } catch (err) {
+      } catch {
         Alert.alert("Hata", "Tarih formatı hatalı. Lütfen 'GÜN.AY.YIL SAAT:DAKİKA' (örn: 16.08.2026 16:26) şeklinde girin.");
         setIsSharing(false);
         return false;
@@ -586,7 +585,7 @@ export default function AiUretimScreen({ route, navigation }) {
            try {
               const errJson = await postError.context.json();
               actualError = errJson.error || actualError;
-           } catch(e) {}
+           } catch {}
         }
         throw new Error(actualError);
       }

@@ -1,20 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  FlatList, 
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
-  Modal,
-  TouchableWithoutFeedback,
-  Alert
-} from 'react-native';
-import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, ImageBackground, KeyboardAvoidingView, Platform, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
+import { Ionicons, Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase , ChatInputBar , GlobalAppBar } from '../../../../shared';
 

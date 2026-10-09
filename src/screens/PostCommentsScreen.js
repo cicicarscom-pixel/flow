@@ -1,22 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  View, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  FlatList, 
-  ImageBackground, 
-  Image,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  Modal,
-  TouchableWithoutFeedback,
-  Pressable,
-  Alert
-} from 'react-native';
-import { Ionicons, MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, ImageBackground, Image, TextInput, KeyboardAvoidingView, Modal, TouchableWithoutFeedback, Pressable, Alert } from 'react-native';
+import { Ionicons, Feather } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase , GlobalAppBar } from '../shared';
@@ -213,7 +198,7 @@ export default function PostCommentsScreen({ route, navigation }) {
               const deletedIds = deletedStr ? JSON.parse(deletedStr) : [];
               if (!deletedIds.includes(commentId)) deletedIds.push(commentId);
               await AsyncStorage.setItem('deleted_comments', JSON.stringify(deletedIds));
-            } catch (e) {}
+            } catch {}
             
             if (isUuid) {
               const { error } = await supabase.from('comments').delete().eq('id', commentId);
@@ -262,7 +247,7 @@ export default function PostCommentsScreen({ route, navigation }) {
               const deletedIds = deletedStr ? JSON.parse(deletedStr) : [];
               const newDeleted = [...new Set([...deletedIds, ...selectedItems])];
               await AsyncStorage.setItem('deleted_comments', JSON.stringify(newDeleted));
-            } catch (e) {}
+            } catch {}
 
             let hasError = false;
             if (uuids.length > 0) {
@@ -411,7 +396,7 @@ export default function PostCommentsScreen({ route, navigation }) {
                errorMsg = t("postCommentsScreen.alerts.alreadyRepliedError") || "Bu yoruma zaten bir DM gönderilmiş.";
            }
         }
-      } catch (err) {}
+      } catch {}
       alert((t('postCommentsScreen.alerts.errorSendingPrivateReply') || 'DM gönderilirken hata oluştu: ') + errorMsg);
     }
   };

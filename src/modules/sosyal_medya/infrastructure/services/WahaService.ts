@@ -112,7 +112,7 @@ export class WahaService implements IWahaService {
       const { data, error } = await supabase.functions.invoke('waha-session', { body });
       if (error) {
         let code = 'WAHA_ERROR';
-        try { code = (await (error as any).context?.json?.())?.error || code; } catch (_) { /* gövde okunamadı */ }
+        try { code = (await (error as any).context?.json?.())?.error || code; } catch { /* gövde okunamadı */ }
         if (code === 'BOT_NOT_SETUP' && body.action === 'status') {
           return { data: null, error: null };
         }

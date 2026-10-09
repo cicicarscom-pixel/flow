@@ -102,7 +102,7 @@ export default function ReminderTemplateEditor() {
       } else {
         setError(t('reminders.saveFailed'));
       }
-    } catch (e) {
+    } catch {
       setError(t('reminders.saveFailed'));
     } finally {
       setSaving(false);

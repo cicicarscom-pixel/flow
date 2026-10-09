@@ -1,30 +1,13 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  FlatList, 
-  ImageBackground, 
-  Image,
-  Animated,
-  Easing,
-  ActivityIndicator,
-  Alert,
-  RefreshControl,
-  DeviceEventEmitter,
-  TextInput
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, ImageBackground, Image, Animated, Easing, ActivityIndicator, Alert, RefreshControl, DeviceEventEmitter } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase , GlobalAppBar } from '../../../../shared';
-import { CustomButton } from '../../../../shared';
-import { CustomInput } from '../../../../shared';
+import { supabase , GlobalAppBar , CustomButton } from '../../../../shared';
 import BildirimlerScreen from '../../../../screens/BildirimlerScreen';
 
 
@@ -620,7 +603,7 @@ const YorumlarTab = ({ navigation }) => {
       });
       
       setLoading(false);
-    } catch (e) {
+    } catch {
       setLoading(false);
     }
 

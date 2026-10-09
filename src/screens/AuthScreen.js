@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Alert, Image, StyleSheet, Dimensions, Scr
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../shared/lib/supabase';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { CustomButton, CustomInput } from '../shared';
 import * as WebBrowser from 'expo-web-browser';
 import { PRIVACY_POLICY_URL } from '../shared/lib/legalUrls';

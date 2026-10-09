@@ -1,32 +1,17 @@
 import { formatMoney } from '../lib/money';
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity, 
-  Image,
-  ImageBackground,
-  StyleSheet, 
-  Switch,
-  Animated,
-  Dimensions, Platform, TouchableWithoutFeedback, Alert, ActivityIndicator, Modal
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, Switch, Animated, Dimensions, Platform, TouchableWithoutFeedback, Alert, ActivityIndicator , AppState } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
-import CustomButton from '../shared/ui/CustomButton';
-import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons , Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
-import { AppState } from 'react-native';
 import { todayInTimezone, addDaysYmd, monthRangeYmd } from '../lib/dates';
 import { appointmentSentence } from '../lib/appointmentSentence';
 import { supabase } from '../shared/lib/supabase';
 import { container } from '../core/container';
 import { AppointmentStatus } from '../modules/randevu/domain/enums/AppointmentStatus';
 import { extractTime } from '../modules/randevu/presentation/hooks/useAppointments';
-import { Ionicons } from '@expo/vector-icons';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';

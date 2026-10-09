@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, ImageBackground, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { decode } from 'base64-arraybuffer';
-import { GlobalAppBar , supabase } from '../shared';
+import { GlobalAppBar , supabase , CustomButton , CustomInput } from '../shared';
 
-import { CustomButton } from '../shared';
-import { CustomInput } from '../shared';
 import AddressSelector from '../shared/ui/AddressSelector';
 import DeleteAccountSection from '../shared/ui/DeleteAccountSection';
 import { setAppLanguage, getSavedLanguageOverride } from '../core/i18n';

@@ -126,7 +126,7 @@ export default function IsletmemScreen({ navigation }) {
         } else {
           setMonthSummaries(prev => ({ ...prev, [selectedMonth]: { income: 0, expense: 0, balance: 0 } }));
         }
-      } catch (err) {
+      } catch {
         setMonthSummaries(prev => ({ ...prev, [selectedMonth]: { income: 0, expense: 0, balance: 0 } }));
       }
     };
@@ -166,7 +166,7 @@ export default function IsletmemScreen({ navigation }) {
         } else {
           setInsight(t('isletmemScreen.insights.unavailable'));
         }
-      } catch (e) {
+      } catch {
         setInsight(t('isletmemScreen.insights.error'));
       } finally {
         setIsInsightLoading(false);

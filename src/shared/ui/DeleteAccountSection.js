@@ -29,7 +29,7 @@ export default function DeleteAccountSection({ email }) {
       }
       // Kullanıcı sunucuda artık yok: global çıkış 403 verir, yalnız yerel oturumu kapat.
       await supabase.auth.signOut({ scope: 'local' });
-    } catch (e) {
+    } catch {
       Alert.alert(t('accountDelete.title'), t('accountDelete.error'));
     } finally {
       setBusy(false);

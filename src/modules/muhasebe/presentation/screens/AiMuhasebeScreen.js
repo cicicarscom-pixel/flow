@@ -1,6 +1,6 @@
 import { formatAmount } from '../../../../lib/money';
 /* eslint-disable react-hooks/refs */
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, StyleSheet, Animated, Easing } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';

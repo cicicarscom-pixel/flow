@@ -1,32 +1,14 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Image, 
-  TextInput, 
-  ScrollView,
-  StyleSheet,
-  Platform,
-  Dimensions,
-  ImageBackground,
-  Animated,
-  Easing,
-  Alert, 
-  ActivityIndicator,
-  Share,
-  Switch
-} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, ImageBackground, Animated, Alert, ActivityIndicator, Switch } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { supabase , AnimatedBorderCard , GlobalAppBar } from '../../../../shared';
+import { supabase , AnimatedBorderCard , GlobalAppBar , CustomButton } from '../../../../shared';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 
-import { CustomButton } from '../../../../shared';
 import { getCurrentOrgId } from '../../../../lib/org';
 const { width } = Dimensions.get('window');
 
@@ -324,7 +306,7 @@ export default function SosyalMedyaScreen({ navigation }) {
                await fetchAccountsFromZernio();
                
                Alert.alert(t('sosyalMedya.alerts.success', 'Başarılı'), t('sosyalMedya.alerts.disconnected', 'Hesap bağlantısı kesildi.'));
-            } catch (err) {
+            } catch {
                Alert.alert(t('sosyalMedya.alerts.error', 'Hata'), t('sosyalMedya.alerts.disconnectError', 'Bağlantı kesilirken bir sorun oluştu.'));
             } finally {
                setIsLoadingAccounts(false);

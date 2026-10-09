@@ -16,6 +16,7 @@ export class Appointment {
   private readonly _bookingToken: string;
   private readonly _calendarId: string | null;
   private readonly _customerRequestRaw: string | null;
+  private readonly _cancelReason: string | null;
   private _services?: string[];
   private _calendarName?: string | null;
 
@@ -54,6 +55,7 @@ export class Appointment {
     this._bookingToken = data.bookingToken;
     this._calendarId = data.calendarId || null;
     this._customerRequestRaw = data.customerRequestRaw || null;
+    this._cancelReason = data.cancelReason || null;
     this._services = data.services;
     this._calendarName = data.calendarName || null;
   }
@@ -75,6 +77,7 @@ export class Appointment {
   get customerRequestRaw(): string | null { return this._customerRequestRaw; }
   get services(): string[] | undefined { return this._services; }
   set services(val: string[] | undefined) { this._services = val; }
-  get calendarName(): string | null { return this._calendarName; }
+  get cancelReason(): string | null { return this._cancelReason; }
+  get calendarName(): string | null { return this._calendarName ?? null; }
   set calendarName(val: string | null | undefined) { this._calendarName = val; }
 }
