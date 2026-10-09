@@ -1,7 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Speech from 'expo-speech';
-import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
+
+// Native modul APK'da yoksa (eski/farkli derleme) uygulama acilista cokmesin:
+// sesli komut devre disi kalir, geri kalan uygulama calisir.
+let ExpoSpeechRecognitionModule = null;
+let useSpeechRecognitionEvent = () => {};
+try {
+  const speechRecognition = require('expo-speech-recognition');
+  ExpoSpeechRecognitionModule = speechRecognition.ExpoSpeechRecognitionModule;
+  useSpeechRecognitionEvent = speechRecognition.useSpeechRecognitionEvent;
+} catch (e) {
+  console.warn('[FlowAI voice] expo-speech-recognition native modulu yok', e?.message);
+}
 
 function cleanForSpeech(text) {
   if (!text) return '';
@@ -111,6 +122,11 @@ export function useFlowVoice() {
     lastTranscriptRef.current = '';
     finalDeliveredRef.current = false;
 
+    if (!ExpoSpeechRecognitionModule) {
+      if (onError) onError({ code: 'unavailable' });
+      return;
+    }
+
     try {
       const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
       if (!granted) {
@@ -150,7 +166,7 @@ export function useFlowVoice() {
 
   const stop = () => {
     finalDeliveredRef.current = true;
-    ExpoSpeechRecognitionModule.abort();
+    ExpoSpeechRecognitionModule?.abort();
     setListening(false);
   };
 
@@ -188,6 +204,10 @@ export function useFlowVoice() {
   const servicesRef = useRef(null);
 
   useEffect(() => {
+    if (!ExpoSpeechRecognitionModule) {
+      setSupported(false);
+      return () => Speech.stop();
+    }
     (async () => {
       try {
         const available = await ExpoSpeechRecognitionModule.isRecognitionAvailable();
