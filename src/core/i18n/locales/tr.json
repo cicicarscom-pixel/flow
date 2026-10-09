@@ -791,7 +791,12 @@
     },
     "appointmentNotifications": {
       "title": "Randevu Bildirimleri",
-      "unknownCustomer": "Bir müşteri"
+      "unknownCustomer": "Bir müşteri",
+      "clear": "Raporları Temizle",
+      "clearTitle": "Raporlar silinsin mi?",
+      "clearConfirm": "Randevu bildirim raporları silinecek. Bu işlem geri alınamaz. Randevularınız ve müşteri konuşmalarınız silinmez.",
+      "clearCancel": "Vazgeç",
+      "clearFailed": "Raporlar temizlenemedi. Biraz sonra tekrar deneyin."
     }
   },
   "header": {

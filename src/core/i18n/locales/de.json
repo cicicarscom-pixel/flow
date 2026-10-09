@@ -793,7 +793,12 @@
       "title": "Terminbenachrichtigungen",
       "unknownCustomer": "Ein Kunde",
       "sentence": "{{name}} hat einen Termin am {{when}} gebucht",
-      "sentenceWithResource": "{{name}} hat einen Termin bei {{resource}} am {{when}} gebucht"
+      "sentenceWithResource": "{{name}} hat einen Termin bei {{resource}} am {{when}} gebucht",
+      "clear": "Berichte löschen",
+      "clearTitle": "Berichte löschen?",
+      "clearConfirm": "Die Terminbenachrichtigungen werden gelöscht. Das kann nicht rückgängig gemacht werden. Ihre Termine und Kundengespräche werden nicht gelöscht.",
+      "clearCancel": "Abbrechen",
+      "clearFailed": "Die Berichte konnten nicht gelöscht werden. Bitte versuchen Sie es gleich noch einmal."
     }
   },
   "notifications": {

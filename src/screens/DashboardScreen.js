@@ -190,7 +190,7 @@ const { width: screenWidth } = Dimensions.get('window');
 const innerWidth = screenWidth - 2; // Compensate for left/right borders (1px each)
 
 
-const AppointmentNotifications = ({ navigation, onRead }) => {
+const AppointmentNotifications = ({ navigation, onRead, onCleared }) => {
   const { t, i18n } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -231,6 +231,31 @@ const AppointmentNotifications = ({ navigation, onRead }) => {
     if (targetDate) {
       navigation.navigate('Ai Asistan', { screen: 'RandevuMain', params: { date: targetDate } });
     }
+  };
+
+  // Yalnız randevu bildirimleri silinir (sunucu RPC'si kimliği kendisi çözer); randevular ve konuşmalar silinmez.
+  const handleClear = () => {
+    Alert.alert(
+      t('dashboardScreen.appointmentNotifications.clearTitle'),
+      t('dashboardScreen.appointmentNotifications.clearConfirm'),
+      [
+        { text: t('dashboardScreen.appointmentNotifications.clearCancel'), style: 'cancel' },
+        {
+          text: t('dashboardScreen.appointmentNotifications.clear'),
+          style: 'destructive',
+          onPress: async () => {
+            const { data, error } = await supabase.rpc('clear_appointment_notifications');
+            if (error || data?.status !== 'SUCCESS') {
+              console.warn('Clear notifs error', error || data);
+              Alert.alert(t('dashboardScreen.appointmentNotifications.clearFailed'));
+              return;
+            }
+            setNotifications([]);
+            if (onCleared) onCleared();
+          }
+        }
+      ]
+    );
   };
 
   if (loading) return <ActivityIndicator size="small" color="#00F2FE" />;
@@ -275,6 +300,10 @@ const AppointmentNotifications = ({ navigation, onRead }) => {
           </TouchableOpacity>
         );
       })}
+      <TouchableOpacity onPress={handleClear} style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(248,81,73,0.35)', backgroundColor: 'rgba(248,81,73,0.1)' }}>
+        <Ionicons name="trash-outline" size={14} color="#FF7A70" />
+        <Text style={{ color: '#FF7A70', fontSize: 12, fontWeight: '700', marginLeft: 6 }}>{t('dashboardScreen.appointmentNotifications.clear')}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -1032,7 +1061,7 @@ export default function DashboardScreen({ navigation }) {
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>{t('dashboardScreen.appointmentNotifications.title')}</Text>
             </View>
-            <AppointmentNotifications navigation={navigation} onRead={() => setUnreadCount(prev => Math.max(0, prev - 1))} />
+            <AppointmentNotifications navigation={navigation} onRead={() => setUnreadCount(prev => Math.max(0, prev - 1))} onCleared={() => setUnreadCount(0)} />
             {recentActivities.length > 0 && (
             <>
             {/* Son Aktiviteler */}

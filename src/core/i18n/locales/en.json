@@ -793,7 +793,12 @@
       "title": "Appointment Notifications",
       "unknownCustomer": "A customer",
       "sentence": "{{name}} booked an appointment on {{when}}",
-      "sentenceWithResource": "{{name}} booked an appointment with {{resource}} on {{when}}"
+      "sentenceWithResource": "{{name}} booked an appointment with {{resource}} on {{when}}",
+      "clear": "Clear reports",
+      "clearTitle": "Delete the reports?",
+      "clearConfirm": "The appointment notification reports will be deleted. This cannot be undone. Your appointments and customer conversations are not deleted.",
+      "clearCancel": "Cancel",
+      "clearFailed": "Couldn't clear the reports. Please try again shortly."
     }
   },
   "notifications": {
