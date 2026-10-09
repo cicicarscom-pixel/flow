@@ -958,6 +958,7 @@
     "error": "Das Konto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
     "privacy": "Datenschutzerklärung"
   },
+  "liveTestInfo": "Dieser Testchat hat kein Gedächtnis: Jede Nachricht wird wie die erste Begegnung eines Kunden mit dem Assistenten behandelt. Frühere Nachrichten werden nicht gemerkt; er dient nur dazu, den ersten Eindruck des Assistenten zu testen. Es wird kein echter Termin angelegt und keine Nachricht verschickt.",
   "reminders": {
     "title": "WhatsApp-Terminerinnerung",
     "desc": "Sendet Kunden etwa 1 Tag vor bestätigten Terminen automatisch eine WhatsApp-Erinnerung.",

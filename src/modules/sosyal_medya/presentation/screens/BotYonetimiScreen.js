@@ -994,6 +994,11 @@ export default function BotYonetimiScreen() {
                     </View>
                   </View>
 
+                  <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingVertical: 10, backgroundColor: 'rgba(59,130,246,0.08)', borderBottomWidth: 1, borderBottomColor: 'rgba(59,130,246,0.18)' }}>
+                    <Ionicons name="information-circle-outline" size={16} color="#9CC2FF" style={{ marginTop: 1 }} />
+                    <Text style={{ flex: 1, marginLeft: 8, color: '#9CC2FF', fontSize: 11, lineHeight: 16 }}>{t('liveTestInfo')}</Text>
+                  </View>
+
                   {/* Chat Simulator View */}
                   <View className="p-4 bg-black/20" style={{ height: 260 }}>
                     <ScrollView 

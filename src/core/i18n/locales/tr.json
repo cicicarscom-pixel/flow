@@ -950,6 +950,7 @@
     "error": "Hesap silinemedi. Lütfen tekrar deneyin.",
     "privacy": "Gizlilik Politikası"
   },
+  "liveTestInfo": "Bu test sohbeti hafızasızdır: her mesaj, müşterinin asistanla ilk karşılaşması gibi değerlendirilir. Önceki mesajlar hatırlanmaz; yalnızca asistanın ilk izlenimini denemek içindir. Gerçek randevu açılmaz, kimseye mesaj gitmez.",
   "reminders": {
     "title": "WhatsApp randevu hatırlatma",
     "desc": "Onaylı randevulardan yaklaşık 1 gün önce müşteriye WhatsApp'tan otomatik hatırlatma gönderir.",

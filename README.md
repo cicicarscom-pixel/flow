@@ -302,6 +302,7 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 ---
 
 ## 🆕 Son Güncellemeler (09.10.2026 - Sesli sohbet)
+- 09.10.2026 — Canlı Test bilgilendirmesi: Bot Yönetimi'ndeki Canlı Test kartına "hafızasızdır, her mesaj ilk karşılaşma gibi değerlendirilir; gerçek randevu açılmaz, mesaj gitmez" notu eklendi (tr/en/de).
 - 09.10.2026 — Flow AI sesli sohbet: dinleme/konuşma sırasında da dosya (video) ekleme düğmesi görünür (web ile aynı). Seçici açıkken dinleme/okuma durur, sohbet kapanmaz; seçimden dönünce dinleme sürer.
 
 ## 🆕 Son Güncellemeler (08.10.2026 - WhatsApp hatırlatma)
