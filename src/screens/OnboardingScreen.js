@@ -50,12 +50,10 @@ export default function OnboardingScreen({ navigation }) {
       setError('Kaydedilirken bir hata oluştu: ' + rpcError.message);
       setSubmitting(false);
     } else {
-      // Refresh session to trigger App.js check
-      const { data } = await supabase.auth.refreshSession();
-      if (!data.session) {
-         // fallback
-         navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
-      }
+      // Session'ı yenile (JWT vb. güncellemeler için)
+      await supabase.auth.refreshSession();
+      setSubmitting(false);
+      navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
     }
   };
 
