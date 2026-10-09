@@ -110,7 +110,10 @@ bash scripts/ci/check-names.sh src App.js
 node scripts/ci/check-assets.mjs src App.js
 node scripts/ci/i18n-parity.mjs src/core/i18n/locales scripts/ci/i18n-parity-ignore.json tr en de
 node scripts/ci/check-root-map.mjs
+npx tsc --noEmit -p .
+node scripts/ci/eslint-ratchet.mjs scripts/ci/eslint-baseline.json src App.js
 ```
+`tsc` çıktısı boş olmalı. ESLint çıtası: hata/uyarı sayısı `scripts/ci/eslint-baseline.json` tabanını AŞAMAZ; sayı düşerse taban düşürülür (yükseltmek yasak). Yerel çalıştırma için önce `npm ci`.
 
 ## 6. Açık işler (özet)
 

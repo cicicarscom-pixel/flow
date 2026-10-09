@@ -8,6 +8,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
       - name: BOM yok
         run: bash scripts/ci/check-bom.sh
       - name: Kök dizin haritası (STRUCTURE.md)
@@ -20,3 +21,9 @@ jobs:
         run: node scripts/ci/i18n-parity.mjs src/core/i18n/locales scripts/ci/i18n-parity-ignore.json tr en de
       - name: JSON geçerli
         run: for f in src/core/i18n/locales/*.json app.json package.json; do node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || exit 1; done
+      - name: Bağımlılıklar (npm ci)
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Tip denetimi (tsc)
+        run: npx tsc --noEmit -p .
+      - name: ESLint çıtası (hata/uyarı sayısı tabanı aşamaz)
+        run: node scripts/ci/eslint-ratchet.mjs scripts/ci/eslint-baseline.json src App.js
