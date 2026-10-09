@@ -301,6 +301,9 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 
 ---
 
+## 🆕 Son Güncellemeler (09.10.2026 - Sesli sohbet)
+- 09.10.2026 — Flow AI sesli sohbet: dinleme/konuşma sırasında da dosya (video) ekleme düğmesi görünür (web ile aynı). Seçici açıkken dinleme/okuma durur, sohbet kapanmaz; seçimden dönünce dinleme sürer.
+
 ## 🆕 Son Güncellemeler (08.10.2026 - WhatsApp hatırlatma)
 - 08.10.2026 — WhatsApp hatırlatma metni: işletme kendi metnini yazar, mesaj dilini seçer (tr/en/de/fr/es); hitap (Sayın/Mr./Herr…) metne işletme tarafından yazılır, kodda sabit değildir.
 - 08.10.2026 — Bot Yönetimi: "WhatsApp randevu hatırlatma" düğmesi eklendi (yalnız işletme sahibi değiştirir; varsayılan kapalı). Açıkken onaylı randevulara 24 saat önce WhatsApp'tan otomatik hatırlatma gider.

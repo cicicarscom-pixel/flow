@@ -50,6 +50,7 @@ export default function FlowAiHost({ navigationRef }) {
   const bgTimerRef = useRef(null);
   const latest = useRef({});
   const voiceChatRef = useRef(false);
+  const pickingRef = useRef(false); // video seçici açıkken uygulama arka plana düşer; sesli sohbet kapanmasın
   const voiceSessionRef = useRef(0);
   const silenceCount = useRef(0);
   const confirmArmedRef = useRef(null);
@@ -161,6 +162,14 @@ export default function FlowAiHost({ navigationRef }) {
   }, [push, shareJobPending, t]);
 
   const handleAttach = async () => {
+    // Sesli sohbet açıkken de eklenebilir: seçici süresince dinleme/okuma durur, dönünce dinleme sürer.
+    const inVoice = voiceChatRef.current;
+    if (inVoice) {
+      pickingRef.current = true;
+      voiceSessionRef.current += 1; // bekleyen okuma/dinleme geri çağrıları geçersiz
+      voiceRef.current.stop();
+      voiceRef.current.stopSpeaking();
+    }
     try {
       const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['videos'], allowsEditing: false, quality: 1 });
       if (!res.canceled && res.assets && res.assets.length > 0) {
@@ -195,6 +204,10 @@ export default function FlowAiHost({ navigationRef }) {
       }
     } catch (e) {
       push('error', t('flowAi.share.unreadable'));
+    } finally {
+      pickingRef.current = false;
+      if (bgTimerRef.current) { clearTimeout(bgTimerRef.current); bgTimerRef.current = null; }
+      if (inVoice && voiceChatRef.current) startListening();
     }
   };
 
@@ -218,7 +231,7 @@ export default function FlowAiHost({ navigationRef }) {
     const sub = AppState.addEventListener('change', (st) => {
       if (VOICE_DEBUG) push('assistant', '[ses] appstate: ' + st);
       if (st === 'background') {
-        if (voiceChatRef.current && !bgTimerRef.current) {
+        if (voiceChatRef.current && !bgTimerRef.current && !pickingRef.current) {
           bgTimerRef.current = setTimeout(() => {
             bgTimerRef.current = null;
             exitVoiceChatRef.current?.('arkaplan-4sn');
@@ -729,6 +742,10 @@ export default function FlowAiHost({ navigationRef }) {
 
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 10, paddingBottom: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)' }}>
           {voiceChat ? (
+          <>
+          <TouchableOpacity testID="flow_ai_attach_voice" onPress={handleAttach} disabled={busy} style={{ marginRight: 8, padding: 4, opacity: busy ? 0.5 : 1 }}>
+            <Ionicons name="add-circle-outline" size={24} color="#8B949E" />
+          </TouchableOpacity>
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.035)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.05)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, marginRight: 8 }}>
             <Animated.View style={{ opacity: voicePhase === 'LISTENING' ? 1 : 0.5, marginRight: 8 }}>
               <Ionicons name="mic" size={16} color={voicePhase === 'LISTENING' ? "#F85149" : "#8B949E"} />
@@ -745,6 +762,7 @@ export default function FlowAiHost({ navigationRef }) {
               <Text style={{ color: '#F85149', fontWeight: '600', fontSize: 12 }}>{t('flowAi.voice.chat.end')}</Text>
             </TouchableOpacity>
           </View>
+          </>
         ) : (
           <>
             <TouchableOpacity onPress={handleAttach} disabled={busy} style={{ marginRight: 8, padding: 4 }}>
