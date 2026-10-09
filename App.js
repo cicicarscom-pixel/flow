@@ -9,6 +9,8 @@ import { ForceUpdateGate } from './src/modules/app_update';
 import AuthScreen from './src/screens/AuthScreen';
 import VerifyEmailScreen from './src/screens/VerifyEmailScreen';
 import { supabase } from './src/shared';
+import { parseAuthLink } from './src/shared/lib/authLink';
+import * as Linking from 'expo-linking';
 import React, { useState, useEffect } from 'react';
 
 import { registerRootComponent } from 'expo';
@@ -18,6 +20,7 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 export default function App() {
   const [session, setSession] = useState(null);
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState(null);
+  const [authNotice, setAuthNotice] = useState(null); // e-posta doğrulama bağlantısından dönüş: { kind: 'verified' } | { kind: 'error', code }
   const navigationRef = useNavigationContainerRef();
   const [routeName, setRouteName] = useState(null);
 
@@ -32,6 +35,24 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // E-posta doğrulama bağlantısı uygulamayı açınca: doğrulandıysa GİRİŞ ekranına yönlendir (oturum KURULMAZ; kullanıcı girişi kendisi yapar).
+  useEffect(() => {
+    const handleUrl = (url) => {
+      const parsed = parseAuthLink(url);
+      if (!parsed) return;
+      setPendingVerificationEmail(null);
+      setAuthNotice(parsed);
+    };
+    Linking.getInitialURL().then(handleUrl).catch(() => {});
+    const sub = Linking.addEventListener('url', (event) => handleUrl(event.url));
+    return () => sub.remove();
+  }, []);
+
+  // Oturum açılınca bildirim temizlenir.
+  useEffect(() => {
+    if (session && session.user) setAuthNotice(null);
+  }, [session]);
 
   return (
     <ActionSheetProvider>
@@ -51,7 +72,11 @@ export default function App() {
           ) : pendingVerificationEmail ? (
             <VerifyEmailScreen emailFromProps={pendingVerificationEmail} onClear={() => setPendingVerificationEmail(null)} />
           ) : (
-            <AuthScreen onSignUpSuccess={(email) => setPendingVerificationEmail(email)} />
+            <AuthScreen
+              onSignUpSuccess={(email) => setPendingVerificationEmail(email)}
+              onNeedsVerification={(email) => setPendingVerificationEmail(email)}
+              notice={authNotice}
+            />
           )}
         </NavigationContainer>
         </ForceUpdateGate>

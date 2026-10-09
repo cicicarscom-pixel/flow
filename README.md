@@ -302,6 +302,7 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 ---
 
 ## 🆕 Son Güncellemeler (09.10.2026 - Sesli sohbet)
+- 09.10.2026 — E-posta doğrulama akışı (mobil): doğrulama bağlantısı uygulamayı açınca kullanıcı GİRİŞ ekranına yönlendirilir ve "E-postanız doğrulandı" bildirimi görür (süresi dolmuş/kullanılmış bağlantı için ayrı mesaj); doğrulanmamış hesapla girişte ham İngilizce hata yerine Doğrulama ekranı açılır; Doğrulama ekranı tr/en/de çevrildi; kayıtta `locale` gönderilir (e-posta şablonu dile göre seçilir). Yeni: `src/shared/lib/authLink.js`.
 - 09.10.2026 — Temizlik (Kalite Faz 2): kullanılmayan ve hatalı `CommunicationLogsTable.js` (tüm konuşma kayıtlarını silen eski "Raporları Temizle"), `useCommunicationLogs.ts`, `CustomerMapper.ts` ve kullanılmayan `toDateString` (UTC gün kayması) silindi; bu dosyalardaki 2 tip hatası da ortadan kalktı.
 - 09.10.2026 — Anasayfa Randevu Bildirimleri randevularla senkron: silinen veya iptal edilen randevuların bildirimi artık listede ve zil sayacında görünmez (`get_appointment_notifications`, `count_unread_appointment_notifications`).
 - 09.10.2026 — Anasayfa "Randevu Bildirimleri": "Raporları Temizle" düğmesi (onay sorar; yalnız randevu bildirimlerini siler, randevular ve müşteri konuşmaları silinmez). Veritabanı: `clear_appointment_notifications()`.

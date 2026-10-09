@@ -587,7 +587,22 @@
     "signupButton": "Kayıt Ol",
     "noAccountText": "Hesabınız yok mu? ",
     "hasAccountText": "Zaten hesabınız var mı? ",
-    "privacyLink": "Gizlilik Politikası"
+    "privacyLink": "Gizlilik Politikası",
+    "notice": {
+      "verified": "E-postanız doğrulandı! Şimdi giriş yapabilirsiniz.",
+      "expired": "Doğrulama bağlantısının süresi dolmuş ya da daha önce kullanılmış. Giriş yapmayı deneyin; olmuyorsa doğrulama e-postasını yeniden isteyin.",
+      "linkError": "Doğrulama bağlantısı işlenemedi. Lütfen yeniden deneyin."
+    }
+  },
+  "verifyEmail": {
+    "title": "E-postanızı Doğrulayın",
+    "description": "E-posta adresinize bir doğrulama bağlantısı gönderdik. Devam etmek için bağlantıya tıklayın; sonra uygulama sizi giriş ekranına yönlendirecek.",
+    "checkStatus": "Durumu Kontrol Et",
+    "checkHint": "Hesabınızı doğruladıysanız \"Giriş Ekranına Dön\" düğmesiyle giriş yapın.",
+    "resend": "Tekrar Gönder",
+    "resent": "Doğrulama e-postası tekrar gönderildi.",
+    "resendError": "Hata: {{message}}",
+    "backToLogin": "Giriş Ekranına Dön"
   },
   "aiAssistantScreen": {
     "initialMessages": {

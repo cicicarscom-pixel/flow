@@ -587,7 +587,22 @@
     "signupButton": "Registrieren",
     "noAccountText": "Sie haben noch kein Konto? ",
     "hasAccountText": "Sie haben bereits ein Konto? ",
-    "privacyLink": "Datenschutzerklärung"
+    "privacyLink": "Datenschutzerklärung",
+    "notice": {
+      "verified": "Ihre E-Mail-Adresse ist bestätigt! Sie können sich jetzt anmelden.",
+      "expired": "Der Bestätigungslink ist abgelaufen oder wurde bereits verwendet. Versuchen Sie sich anzumelden; falls das nicht klappt, fordern Sie eine neue Bestätigungs-E-Mail an.",
+      "linkError": "Der Bestätigungslink konnte nicht verarbeitet werden. Bitte versuchen Sie es erneut."
+    }
+  },
+  "verifyEmail": {
+    "title": "E-Mail bestätigen",
+    "description": "Wir haben einen Bestätigungslink an Ihre E-Mail-Adresse gesendet. Tippen Sie auf den Link, um fortzufahren; die App führt Sie danach zur Anmeldung.",
+    "checkStatus": "Status prüfen",
+    "checkHint": "Wenn Sie Ihr Konto bestätigt haben, melden Sie sich über „Zurück zur Anmeldung“ an.",
+    "resend": "Erneut senden",
+    "resent": "Die Bestätigungs-E-Mail wurde erneut gesendet.",
+    "resendError": "Fehler: {{message}}",
+    "backToLogin": "Zurück zur Anmeldung"
   },
   "aiAssistantScreen": {
     "initialMessages": {

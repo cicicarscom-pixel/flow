@@ -15,8 +15,8 @@ WebBrowser.maybeCompleteAuthSession();
 
 const { width, height } = Dimensions.get('window');
 
-export default function AuthScreen({ onSignUpSuccess }) {
-  const { t } = useTranslation();
+export default function AuthScreen({ onSignUpSuccess, notice, onNeedsVerification }) {
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -87,7 +87,11 @@ export default function AuthScreen({ onSignUpSuccess }) {
       email: email,
       password: password,
     });
-    if (error) Alert.alert(t('authScreen.errors.loginTitle'), error.message);
+    if (error) {
+      // E-posta henüz doğrulanmamışsa ham İngilizce hata yerine doğrulama ekranına yönlendir (yeniden gönderme orada).
+      if (error.code === 'email_not_confirmed' && onNeedsVerification) onNeedsVerification(email);
+      else Alert.alert(t('authScreen.errors.loginTitle'), error.message);
+    }
     setLoading(false);
   }
 
@@ -107,6 +111,7 @@ export default function AuthScreen({ onSignUpSuccess }) {
       options: {
         emailRedirectTo: makeRedirectUri(),
         data: {
+          locale: i18n.language, // e-posta şablonu dile göre seçilir (Supabase şablonu .Data.locale okur)
           phone: phone,
           display_name: name,
           full_name: name,
@@ -174,6 +179,16 @@ export default function AuthScreen({ onSignUpSuccess }) {
         {/* GLASSMORPHISM CARD */}
         <View style={styles.glassCard} className="rounded-3xl p-6 shadow-2xl">
           
+          {notice ? (
+            <View style={[styles.noticeBox, notice.kind === 'verified' ? styles.noticeOk : styles.noticeWarn]}>
+              <Text style={styles.noticeText}>
+                {notice.kind === 'verified'
+                  ? t('authScreen.notice.verified')
+                  : (notice.code === 'otp_expired' ? t('authScreen.notice.expired') : t('authScreen.notice.linkError'))}
+              </Text>
+            </View>
+          ) : null}
+
           <Text className="text-white text-2xl font-bold mb-6 text-center">
             {isLogin ? t('authScreen.title.login') : t('authScreen.title.signup')}
           </Text>
@@ -268,6 +283,10 @@ export default function AuthScreen({ onSignUpSuccess }) {
 }
 
 const styles = StyleSheet.create({
+  noticeBox: { borderRadius: 12, padding: 12, marginBottom: 16, borderWidth: 1 },
+  noticeOk: { backgroundColor: 'rgba(34,181,115,0.12)', borderColor: 'rgba(34,181,115,0.5)' },
+  noticeWarn: { backgroundColor: 'rgba(255,122,89,0.12)', borderColor: 'rgba(255,122,89,0.5)' },
+  noticeText: { color: '#fff', fontSize: 13, lineHeight: 19, textAlign: 'center' },
   logoContainer: {
     width: '100%',
     height: 90,

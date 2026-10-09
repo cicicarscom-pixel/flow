@@ -587,7 +587,22 @@
     "signupButton": "Sign Up",
     "noAccountText": "Don't have an account? ",
     "hasAccountText": "Already have an account? ",
-    "privacyLink": "Privacy Policy"
+    "privacyLink": "Privacy Policy",
+    "notice": {
+      "verified": "Your email is verified! You can sign in now.",
+      "expired": "The verification link has expired or was already used. Try signing in; if that fails, request a new verification email.",
+      "linkError": "The verification link could not be processed. Please try again."
+    }
+  },
+  "verifyEmail": {
+    "title": "Verify your email",
+    "description": "We sent a verification link to your email address. Tap the link to continue; the app will then take you to the sign-in screen.",
+    "checkStatus": "Check status",
+    "checkHint": "If you have verified your account, use \"Back to sign in\" to log in.",
+    "resend": "Resend",
+    "resent": "The verification email was sent again.",
+    "resendError": "Error: {{message}}",
+    "backToLogin": "Back to sign in"
   },
   "aiAssistantScreen": {
     "initialMessages": {

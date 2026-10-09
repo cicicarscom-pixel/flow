@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { supabase } from '../shared';
-import * as Linking from 'expo-linking';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { makeRedirectUri } from 'expo-auth-session';
+import { useTranslation } from 'react-i18next';
 
 export default function VerifyEmailScreen({ emailFromProps, onClear }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState(emailFromProps || '');
   const [resending, setResending] = useState(false);
   const [message, setMessage] = useState('');
@@ -17,20 +18,6 @@ export default function VerifyEmailScreen({ emailFromProps, onClear }) {
         if (user) setEmail(user.email);
       });
     }
-
-    // Handle deep link (when user clicks email link and returns to app)
-    const handleDeepLink = (event) => {
-      const url = event.url;
-      if (url) {
-        // Just refresh the session when app opens from any link
-        supabase.auth.getSession();
-      }
-    };
-    const linkSubscription = Linking.addEventListener('url', handleDeepLink);
-
-    return () => {
-      linkSubscription.remove();
-    };
   }, []);
 
   const handleResend = async () => {
@@ -47,9 +34,9 @@ export default function VerifyEmailScreen({ emailFromProps, onClear }) {
     });
 
     if (error) {
-      setMessage('Hata: ' + error.message);
+      setMessage(t('verifyEmail.resendError', { message: error.message }));
     } else {
-      setMessage('Doğrulama e-postası tekrar gönderildi.');
+      setMessage(t('verifyEmail.resent'));
     }
     
     setResending(false);
@@ -59,7 +46,7 @@ export default function VerifyEmailScreen({ emailFromProps, onClear }) {
     setMessage('');
     // If they verified on another device or the deep link didn't work,
     // they need to log in to get a session.
-    setMessage('Hesabınızı doğruladıysanız, lütfen Giriş Ekranına Dön butonuna tıklayarak giriş yapın.');
+    setMessage(t('verifyEmail.checkHint'));
   };
 
   return (
@@ -69,19 +56,19 @@ export default function VerifyEmailScreen({ emailFromProps, onClear }) {
           <MaterialCommunityIcons name="email-check-outline" size={32} color="#3b82f6" />
         </View>
         
-        <Text style={styles.title}>E-postanızı Doğrulayın</Text>
+        <Text style={styles.title}>{t('verifyEmail.title')}</Text>
         
         {email && <Text style={styles.emailText}>{email}</Text>}
         
         <Text style={styles.description}>
-          E-posta adresinize bir doğrulama linki gönderdik. Devam etmek için lütfen e-postanızı onaylayın.
+          {t('verifyEmail.description')}
         </Text>
 
         <TouchableOpacity 
           style={styles.button} 
           onPress={handleCheckStatus}
         >
-          <Text style={styles.buttonText}>Durumu Kontrol Et</Text>
+          <Text style={styles.buttonText}>{t('verifyEmail.checkStatus')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
@@ -92,7 +79,7 @@ export default function VerifyEmailScreen({ emailFromProps, onClear }) {
           {resending ? (
             <ActivityIndicator color="#3b82f6" />
           ) : (
-            <Text style={styles.outlineButtonText}>Tekrar Gönder</Text>
+            <Text style={styles.outlineButtonText}>{t('verifyEmail.resend')}</Text>
           )}
         </TouchableOpacity>
 
@@ -101,7 +88,7 @@ export default function VerifyEmailScreen({ emailFromProps, onClear }) {
             style={[styles.outlineButton, { borderColor: 'rgba(255,255,255,0.5)' }]} 
             onPress={onClear}
           >
-            <Text style={styles.outlineButtonText}>Giriş Ekranına Dön</Text>
+            <Text style={styles.outlineButtonText}>{t('verifyEmail.backToLogin')}</Text>
           </TouchableOpacity>
         )}
         
