@@ -302,6 +302,7 @@ Kullanıcıların sosyal medya (Facebook, Instagram vb.) hesaplarını Workigom 
 ---
 
 ## 🆕 Son Güncellemeler (09.10.2026 - Sesli sohbet)
+- 09.10.2026 — Anasayfa Randevu Bildirimleri randevularla senkron: silinen veya iptal edilen randevuların bildirimi artık listede ve zil sayacında görünmez (`get_appointment_notifications`, `count_unread_appointment_notifications`).
 - 09.10.2026 — Anasayfa "Randevu Bildirimleri": "Raporları Temizle" düğmesi (onay sorar; yalnız randevu bildirimlerini siler, randevular ve müşteri konuşmaları silinmez). Veritabanı: `clear_appointment_notifications()`.
 - 09.10.2026 — Canlı Test bilgilendirmesi: Bot Yönetimi'ndeki Canlı Test kartına "hafızasızdır, her mesaj ilk karşılaşma gibi değerlendirilir; gerçek randevu açılmaz, mesaj gitmez" notu eklendi (tr/en/de).
 - 09.10.2026 — Flow AI sesli sohbet: dinleme/konuşma sırasında da dosya (video) ekleme düğmesi görünür (web ile aynı). Seçici açıkken dinleme/okuma durur, sohbet kapanmaz; seçimden dönünce dinleme sürer.

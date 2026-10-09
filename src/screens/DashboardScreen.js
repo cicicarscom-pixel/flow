@@ -199,12 +199,8 @@ const AppointmentNotifications = ({ navigation, onRead, onCleared }) => {
   const fetchNotifs = async () => {
     try {
       setErrorMsg(null);
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('id, created_at, is_read, metadata')
-        .eq('type', 'appointment_created')
-        .order('created_at', { ascending: false })
-        .limit(10);
+      // Tek doğru kaynak: silinen/iptal edilen randevuların bildirimleri gelmez (sunucu RPC'si).
+      const { data, error } = await supabase.rpc('get_appointment_notifications', { p_limit: 10 });
       if (error) throw error;
       setNotifications(data || []);
     } catch (e) {
@@ -370,13 +366,10 @@ export default function DashboardScreen({ navigation }) {
 
     const fetchUnreadNotifications = async () => {
       try {
-        const { count, error } = await supabase
-          .from('notifications')
-          .select('id', { count: 'exact', head: true })
-          .eq('type', 'appointment_created')
-          .eq('is_read', false);
+        // Tek doğru kaynak: silinen/iptal edilen randevuların bildirimleri sayılmaz (sunucu RPC'si).
+        const { data, error } = await supabase.rpc('count_unread_appointment_notifications');
         if (error) throw error;
-        setUnreadCount(count || 0);
+        setUnreadCount(Number(data) || 0);
       } catch (e) {
         console.warn('Unread count error:', e);
       }
