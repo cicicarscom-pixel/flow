@@ -79,7 +79,8 @@
       "tabs": {
         "messages": "Mesajlar",
         "comments": "Yorumlar",
-        "reviews": "Değerlendirmeler"
+        "reviews": "Değerlendirmeler",
+        "notifications": "Bildirimler"
       },
       "selectAll": "Tümünü Seç",
       "selected": "Seçildi"
@@ -577,8 +578,9 @@
   "isletmemScreen": {
     "badges": {
       "paid": "Ödendi",
-      "partial": "Bekliyor",
-      "unpaid": "Devretti",
+      "partial": "Kısmi",
+      "unpaid": "Ödenmedi",
+      "pending": "Beklemede",
       "unknown": "Bilinmiyor"
     },
     "insights": {
@@ -663,6 +665,7 @@
     "disconnectConfirm": "{{firm}} ile bağlantınız kesilecek. Müşaviriniz belgelerinize artık erişemeyecek. Emin misiniz?",
     "connectedSince": "Bağlantı tarihi: {{date}}",
     "codeNotFound": "Bu koda ait müşavir bulunamadı.",
+    "rateLimited": "Çok sık denediniz. Lütfen biraz bekleyip tekrar deneyin.",
     "alreadyConnected": "Bu müşavirle zaten bağlısınız.",
     "actionError": "Bir hata oluştu, lütfen tekrar deneyin."
   },

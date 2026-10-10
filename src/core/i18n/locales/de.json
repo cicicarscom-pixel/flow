@@ -79,7 +79,8 @@
       "tabs": {
         "messages": "Nachrichten",
         "comments": "Kommentare",
-        "reviews": "Bewertungen"
+        "reviews": "Bewertungen",
+        "notifications": "Benachrichtigungen"
       },
       "selectAll": "Alle auswählen",
       "selected": "Ausgewählt"
@@ -577,8 +578,9 @@
   "isletmemScreen": {
     "badges": {
       "paid": "Bezahlt",
-      "partial": "Ausstehend",
-      "unpaid": "Überfällig",
+      "partial": "Teilweise",
+      "unpaid": "Unbezahlt",
+      "pending": "Ausstehend",
       "unknown": "Unbekannt"
     },
     "insights": {
@@ -663,6 +665,7 @@
     "disconnectConfirm": "Ihre Verbindung mit {{firm}} wird beendet; Ihr Berater hat keinen Zugriff mehr auf Ihre Dokumente. Sind Sie sicher?",
     "connectedSince": "Verbunden seit: {{date}}",
     "codeNotFound": "Für diesen Code wurde kein Berater gefunden.",
+    "rateLimited": "Zu viele Versuche. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
     "alreadyConnected": "Sie sind bereits mit diesem Berater verbunden.",
     "actionError": "Ein Fehler ist aufgetreten, bitte erneut versuchen."
   },

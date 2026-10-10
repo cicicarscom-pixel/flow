@@ -79,7 +79,8 @@
       "tabs": {
         "messages": "Messages",
         "comments": "Comments",
-        "reviews": "Reviews"
+        "reviews": "Reviews",
+        "notifications": "Notifications"
       },
       "selectAll": "Select All",
       "selected": "Selected"
@@ -577,8 +578,9 @@
   "isletmemScreen": {
     "badges": {
       "paid": "Paid",
-      "partial": "Pending",
-      "unpaid": "Overdue",
+      "partial": "Partial",
+      "unpaid": "Unpaid",
+      "pending": "Pending",
       "unknown": "Unknown"
     },
     "insights": {
@@ -663,6 +665,7 @@
     "disconnectConfirm": "Your connection with {{firm}} will end and your advisor will no longer access your documents. Are you sure?",
     "connectedSince": "Connected since: {{date}}",
     "codeNotFound": "No advisor found for this code.",
+    "rateLimited": "You tried too often. Please wait a moment and try again.",
     "alreadyConnected": "You are already connected to this advisor.",
     "actionError": "Something went wrong, please try again."
   },

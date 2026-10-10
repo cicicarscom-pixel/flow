@@ -77,7 +77,7 @@ export default function AnalyticsScreen({ navigation }) {
         supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('profile_id', organizationId),
         supabase.from('messages').select('*', { count: 'exact', head: true }).eq('direction', 'incoming').eq('profile_id', organizationId),
         supabase.from('messages').select('*', { count: 'exact', head: true }).eq('direction', 'outgoing').eq('profile_id', organizationId),
-        supabase.schema('integration').from('social_accounts').select('zernio_account_id, platform').eq('organization_id', organizationId).eq('is_active', true)
+        supabase.schema('integration').from('social_accounts').select('zernio_account_id, platform').eq('organization_id', organizationId).eq('is_active', true).eq('needs_reconnection', false)
       ]);
 
       setStats({
@@ -258,16 +258,6 @@ export default function AnalyticsScreen({ navigation }) {
               label: v.end_time ? v.end_time.substring(5,10) : ''
             }));
             newZernioData.totalFollowers = newZernioData.followerStats[newZernioData.followerStats.length-1]?.value || 0;
-          }
-        }
-      } else if (selectedPlatform.id === 'youtube') {
-        if (singleAccountId) {
-          const actualYt = await invokeZernio('get-youtube-daily-views', accountPayload).catch(() => ({}));
-          if (actualYt.rows) {
-             newZernioData.timelineData = actualYt.rows.map(r => ({
-               value: parseInt(r[1]),
-               label: r[0]
-             }));
           }
         }
       } else if (selectedPlatform.id === 'tiktok') {

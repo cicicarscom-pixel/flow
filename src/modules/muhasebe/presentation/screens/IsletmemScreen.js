@@ -11,6 +11,7 @@ const formatCurrency = (amount, locale = 'tr-TR') => formatAmount(amount, locale
 
 const getBadge = (status, t) => {
   switch (status) {
+    case 'pending': return { bg: 'rgba(255, 255, 255, 0.1)', text: '#E8D5A3', label: t('isletmemScreen.badges.pending') };
     case 'paid': return { bg: 'rgba(75, 226, 119, 0.2)', text: '#22B573', label: t('isletmemScreen.badges.paid') };
     case 'partial': return { bg: 'rgba(255, 180, 171, 0.2)', text: '#FCA5A5', label: t('isletmemScreen.badges.partial') };
     case 'unpaid': return { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', label: t('isletmemScreen.badges.unpaid') };
@@ -275,12 +276,12 @@ export default function IsletmemScreen({ navigation }) {
 
               return (
                 <TouchableOpacity key={item.id || idx} className="flex-row items-center justify-between p-3 bg-[#2A2631] rounded-xl mb-2">
-                  <View className="flex-row items-center gap-3">
+                  <View className="flex-row items-center gap-3 flex-1 mr-3">
                     <View className="w-10 h-10 rounded-lg bg-[#34303C] flex items-center justify-center">
                       <MaterialIcons name={item.type === 'income' || item.type === 'sales' ? 'rocket-launch' : 'payments'} size={20} color={item.type === 'income' || item.type === 'sales' ? '#22B573' : '#EF4444'} />
                     </View>
-                    <View>
-                      <Text className="text-[#F6F1EC] text-sm font-semibold">{item.title || (item.type === 'income' || item.type === 'sales' ? t('isletmemScreen.defaultIncomeTitle') : t('isletmemScreen.defaultExpenseTitle'))}</Text>
+                    <View className="flex-1">
+                      <Text className="text-[#F6F1EC] text-sm font-semibold" numberOfLines={2} ellipsizeMode="tail">{item.title || (item.type === 'income' || item.type === 'sales' ? t('isletmemScreen.defaultIncomeTitle') : t('isletmemScreen.defaultExpenseTitle'))}</Text>
                       <View className="flex-row items-center mt-1">
                         <Text className="text-[#A79E96] text-[10px] font-['JetBrainsMono-Medium']">{dateStr} • </Text>
                         <View style={{ backgroundColor: badge.bg, paddingHorizontal: 4, paddingVertical: 2, borderRadius: 4, marginLeft: 2 }}>
@@ -289,7 +290,7 @@ export default function IsletmemScreen({ navigation }) {
                       </View>
                     </View>
                   </View>
-                  <View className="items-end">
+                  <View className="items-end shrink-0">
                     <Text className={`text-xs font-medium font-['JetBrainsMono-Medium'] ${item.type === 'income' || item.type === 'sales' ? 'text-[#22B573]' : 'text-[#EF4444]'}`}>
                       {item.type === 'income' || item.type === 'sales' ? '+' : '-'} ₺{formatCurrency(amount, i18n.language)}
                     </Text>

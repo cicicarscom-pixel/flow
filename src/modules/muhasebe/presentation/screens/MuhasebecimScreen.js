@@ -82,6 +82,8 @@ export default function MuhasebecimScreen({ navigation }) {
           setStep('verified');
         } else if (data?.status === 'CODE_NOT_FOUND') {
           Alert.alert('', t('muhasebecimScreen.codeNotFound'));
+        } else if (data?.status === 'RATE_LIMITED') {
+          Alert.alert('', t('muhasebecimScreen.rateLimited'));
         } else {
           Alert.alert('', t('muhasebecimScreen.actionError'));
         }
@@ -109,6 +111,8 @@ export default function MuhasebecimScreen({ navigation }) {
         checkConnection();
       } else if (data?.status === 'CODE_NOT_FOUND') {
         Alert.alert('', t('muhasebecimScreen.codeNotFound'));
+      } else if (data?.status === 'RATE_LIMITED') {
+        Alert.alert('', t('muhasebecimScreen.rateLimited'));
       } else {
         Alert.alert('', t('muhasebecimScreen.actionError'));
       }

@@ -375,13 +375,7 @@ export default function PostsScreen({ navigation }) {
 
                 {/* Bottom line: Metrics & Actions */}
                 <View className="flex-row items-center justify-between mt-2 pt-2 border-t border-white/5">
-                  <View className="flex-row items-center">
-                    <View className="flex-row items-center mr-3"><Feather name="heart" size={12} color="#A79E96" /><Text className="text-[#A79E96] text-[10px] ml-1">{item.metrics?.likes ?? item.likes ?? '-'}</Text></View>
-                    <View className="flex-row items-center mr-3"><Feather name="message-circle" size={12} color="#A79E96" /><Text className="text-[#A79E96] text-[10px] ml-1">{item.metrics?.comments ?? item.comments ?? '-'}</Text></View>
-                    <View className="flex-row items-center mr-3"><Feather name="share-2" size={12} color="#A79E96" /><Text className="text-[#A79E96] text-[10px] ml-1">{item.metrics?.shares ?? item.shares ?? '-'}</Text></View>
-                    <View className="flex-row items-center mr-3"><Feather name="bookmark" size={12} color="#A79E96" /><Text className="text-[#A79E96] text-[10px] ml-1">{item.metrics?.saves ?? item.saves ?? '-'}</Text></View>
-                    <View className="flex-row items-center"><Feather name="mouse-pointer" size={12} color="#A79E96" /><Text className="text-[#A79E96] text-[10px] ml-1">{item.metrics?.clicks ?? item.clicks ?? '-'}</Text></View>
-                  </View>
+                  <View />
                   
                   <View className="flex-row items-center">
                     {item.status === 'failed' && (

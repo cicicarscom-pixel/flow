@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase, CustomButton } from '../../../../../shared';
-import { DeviceEventEmitter, Alert, ActivityIndicator, View, TouchableOpacity, Text, FlatList } from 'react-native';
+import { DeviceEventEmitter, Alert, ActivityIndicator, View, TouchableOpacity, Text, FlatList, Image } from 'react-native';
 import { styles } from './inboxStyles';
 import { Ionicons, Feather, MaterialIcons } from '@expo/vector-icons';
 import { GlassCard } from './inboxShared';
@@ -13,6 +13,7 @@ export const MesajlarTab = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
+  const picturesFetched = useRef(false);
 
   const fetchConversations = async () => {
     try {
@@ -42,6 +43,30 @@ export const MesajlarTab = ({ navigation }) => {
       });
       
       setConversations(enhancedData);
+
+      // Profil resmi olmayan sohbetler için resimleri Zernio'dan bir kez tamamla (web ile aynı kaynak).
+      if (!picturesFetched.current && enhancedData.some(c => !c.participant_picture)) {
+        picturesFetched.current = true;
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            const { data: orgMember } = await supabase.from('organization_members').select('organization_id').eq('user_id', session.user.id).maybeSingle();
+            const orgId = orgMember?.organization_id || session.user.id;
+            const { data: picRes } = await supabase.functions.invoke('zernio-client', {
+              body: { action: 'get-inbox-pictures', payload: { organizationId: orgId } }
+            });
+            const pictures = picRes?.data?.pictures || picRes?.pictures || {};
+            if (Object.keys(pictures).length > 0) {
+              setConversations(prev => prev.map(c => ({
+                ...c,
+                participant_picture: c.participant_picture || pictures[c.zernio_conversation_id] || pictures[c.id] || null
+              })));
+            }
+          }
+        } catch (picErr) {
+          console.log('Conversation pictures fetch error:', picErr);
+        }
+      }
     } catch (e) {
       console.log('Conversations fetch error:', e);
     } finally {
@@ -187,7 +212,16 @@ export const MesajlarTab = ({ navigation }) => {
                   )}
                   <View className="flex-row items-center flex-1">
                     <View className="w-12 h-12 rounded-full bg-white/10 items-center justify-center mr-3 relative">
-                      <Ionicons name={item.platform === 'instagram' ? 'logo-instagram' : 'logo-facebook'} size={24} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} />
+                      {item.participant_picture ? (
+                        <>
+                          <Image source={{ uri: item.participant_picture }} style={{ width: 48, height: 48, borderRadius: 24 }} />
+                          <View className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#17151A] items-center justify-center">
+                            <Ionicons name={item.platform === 'instagram' ? 'logo-instagram' : 'logo-facebook'} size={13} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} />
+                          </View>
+                        </>
+                      ) : (
+                        <Ionicons name={item.platform === 'instagram' ? 'logo-instagram' : 'logo-facebook'} size={24} color={item.platform === 'instagram' ? '#E8A8CD' : '#22B573'} />
+                      )}
                       {item.unread_count > 0 && (
                         <View className="absolute -top-1 -right-1 bg-[#C2478D] w-5 h-5 rounded-full items-center justify-center border border-[#17151A]">
                           <Text className="text-white text-[10px] font-bold">{item.unread_count}</Text>

@@ -269,7 +269,7 @@ export default function ChatScreen({ route, navigation }) {
           }}
           delayLongPress={500}
           activeOpacity={0.7}
-          style={{ flexShrink: 1, flexDirection: 'row', ...(isSelectionMode ? { flex: 1 } : {}) }}
+          style={{ flexShrink: 1, maxWidth: '88%', flexDirection: 'row', ...(isSelectionMode ? { flex: 1 } : {}) }}
         >
           <GlassBubble isOwn={isOwn} style={selectedItems.includes(item.id) ? { borderColor: '#C2478D', borderWidth: 1 } : {}}>
             <Text className="text-[#F6F1EC] text-[14px] leading-5">{item.content}</Text>
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   glassBubble: {
-    maxWidth: '80%',
+    flexShrink: 1,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderWidth: 1,

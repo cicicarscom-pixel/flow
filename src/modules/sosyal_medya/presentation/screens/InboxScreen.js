@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { View, StyleSheet, ImageBackground, DeviceEventEmitter } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, DeviceEventEmitter } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlobalAppBar } from '../../../../shared';
@@ -10,6 +10,14 @@ import { YorumlarTab } from './inbox/YorumlarTab';
 
 
 const Tab = createMaterialTopTabNavigator();
+
+// Dört sekme dar ekrana sığsın diye etiket tek satır; gerekirse yazı küçülür.
+const renderTabLabel = (text) => {
+  const TabLabel = ({ color }) => (
+    <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={{ color, fontSize: 11, fontWeight: 'bold' }}>{text}</Text>
+  );
+  return TabLabel;
+};
 
 // MAIN SCREEN
 
@@ -47,13 +55,14 @@ export default function InboxScreen({ navigation }) {
           tabBarActiveTintColor: '#22B573',
           tabBarInactiveTintColor: '#A79E96',
           tabBarIndicatorStyle: { backgroundColor: '#22B573', height: 3, borderRadius: 4 },
+          tabBarItemStyle: { paddingHorizontal: 2 },
           tabBarLabelStyle: { fontSize: 11, fontWeight: 'bold', textTransform: 'none' },
         }}
       >
-        <Tab.Screen name="Mesajlar" component={MesajlarTab} options={{ tabBarLabel: t('sosyalMedya.inbox.tabs.messages') }} />
-        <Tab.Screen name="Yorumlar" component={YorumlarTab} options={{ tabBarLabel: t('sosyalMedya.inbox.tabs.comments') }} />
-        <Tab.Screen name="Bildirimler" component={BildirimlerTab} options={{ tabBarLabel: 'Bildirimler' }} />
-        <Tab.Screen name="Değerlendirmeler" component={DegerlendirmelerTab} options={{ tabBarLabel: t('sosyalMedya.inbox.tabs.reviews') }} />
+        <Tab.Screen name="Mesajlar" component={MesajlarTab} options={{ tabBarLabel: renderTabLabel(t('sosyalMedya.inbox.tabs.messages')) }} />
+        <Tab.Screen name="Yorumlar" component={YorumlarTab} options={{ tabBarLabel: renderTabLabel(t('sosyalMedya.inbox.tabs.comments')) }} />
+        <Tab.Screen name="Bildirimler" component={BildirimlerTab} options={{ tabBarLabel: renderTabLabel(t('sosyalMedya.inbox.tabs.notifications')) }} />
+        <Tab.Screen name="Değerlendirmeler" component={DegerlendirmelerTab} options={{ tabBarLabel: renderTabLabel(t('sosyalMedya.inbox.tabs.reviews')) }} />
       </Tab.Navigator>
     </SafeAreaView>
   );
