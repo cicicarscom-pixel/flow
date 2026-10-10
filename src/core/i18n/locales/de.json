@@ -381,6 +381,11 @@
     "randevuScreen": {
       "monthYear": "November, 2025",
       "dailyAvailability": "Tägliche Verfügbarkeit",
+      "slotPast": "Diese Zeit ist vorbei. Wähle für einen neuen Termin eine spätere Zeit.",
+      "manageCalendars": "Kalender bearbeiten",
+      "addCalendar": "Neuer Kalender/Mitarbeiter",
+      "newCalendarTitle": "Neuer Kalender",
+      "newCalendarPlaceholder": "Name des neuen Kalenders/Mitarbeiters eingeben",
       "busy": "Belegt",
       "free": "Frei",
       "morning": "Morgen",

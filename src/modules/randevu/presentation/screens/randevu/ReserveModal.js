@@ -2,13 +2,15 @@ import React from 'react';
 import { Modal, KeyboardAvoidingView, Platform, View, Text, TouchableOpacity, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import { styles } from './randevuStyles';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function ReserveModal({ activeCalendarId, add30Mins, calendars, createCalendarBlock, isSaving, refreshDaySchedule, reserveDurationType, reserveError, reserveModal, reserveNote, reserveReason, reserveScope, selectedDate, setIsSaving, setReserveConflicts, setReserveDurationType, setReserveError, setReserveModal, setReserveNote, setReserveReason, setReserveScope, t }) {
+  const insets = useSafeAreaInsets();
   return (
     <Modal visible={reserveModal.visible} transparent animationType="slide" onRequestClose={() => setReserveModal({ visible: false, time: '', endTime: '' })}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { maxHeight: '90%' }]}>
+          <View style={[styles.modalContent, { maxHeight: '90%', paddingBottom: 20 + Math.max(insets.bottom, 16) }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{t('randevu.block.title', { defaultValue: 'Saati Rezerve Et' })}</Text>
               <TouchableOpacity onPress={() => setReserveModal({ visible: false, time: '', endTime: '' })}>

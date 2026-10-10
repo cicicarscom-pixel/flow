@@ -3,12 +3,14 @@ import React from 'react';
 import { Modal, View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { styles } from './randevuStyles';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function ManageCalendarsModal({ calendars, deleteCalendar, isManageModalVisible, setIsManageModalVisible, setPromptConfig, updateCalendar }) {
+  const insets = useSafeAreaInsets();
   return (
     <Modal visible={isManageModalVisible} transparent animationType="fade">
       <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+        <View style={[styles.modalContent, { paddingBottom: 20 + Math.max(insets.bottom, 16) }]}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Takvim / Personel Yönetimi</Text>
             <TouchableOpacity onPress={() => setIsManageModalVisible(false)}>

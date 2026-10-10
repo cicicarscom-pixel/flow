@@ -381,6 +381,11 @@
     "randevuScreen": {
       "monthYear": "November, 2025",
       "dailyAvailability": "Daily Availability",
+      "slotPast": "This time has passed. Pick a later time for a new appointment.",
+      "manageCalendars": "Edit Calendars",
+      "addCalendar": "New Calendar/Staff",
+      "newCalendarTitle": "New Calendar",
+      "newCalendarPlaceholder": "Enter the new calendar/staff name",
       "busy": "Busy",
       "free": "Free",
       "morning": "Morning",

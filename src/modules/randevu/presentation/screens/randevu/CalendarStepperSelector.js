@@ -1,26 +1,28 @@
-/* eslint-disable i18next/no-literal-string */
 import React from 'react';
 import { View, TouchableOpacity, Text, Alert } from 'react-native';
 import { styles } from './randevuStyles';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export function CalendarStepperSelector({ activeCalendarId, calendars, createCalendar, setActiveCalendarId, setIsManageModalVisible, setPromptConfig }) {
+  const { t } = useTranslation();
   return (
     <View style={{ marginHorizontal: 20, marginBottom: 16 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 14, gap: 16, width: '100%' }}>
         <TouchableOpacity 
             onPress={() => setIsManageModalVisible(true)}
-            style={{ width: '45%', maxWidth: 160, alignItems: 'center', paddingVertical: 10, backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(239, 68, 68, 0.3)' }}
+            style={{ flex: 1, maxWidth: 200, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, paddingVertical: 10, paddingHorizontal: 8, backgroundColor: 'rgba(255, 255, 255, 0.06)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.18)' }}
           >
-            <Text style={{ color: '#ef4444', fontSize: 14, fontWeight: '500' }}>Düzenle</Text>
+            <Ionicons name="create-outline" size={16} color="#F6F1EC" />
+            <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={{ color: '#F6F1EC', fontSize: 14, fontWeight: '500', flexShrink: 1 }}>{t('randevu.randevuScreen.manageCalendars')}</Text>
           </TouchableOpacity>
         
         <TouchableOpacity 
           onPress={() => {
             setPromptConfig({
               visible: true,
-              title: "Yeni Takvim",
-              placeholder: "Yeni takvim/personel adını girin",
+              title: t('randevu.randevuScreen.newCalendarTitle'),
+              placeholder: t('randevu.randevuScreen.newCalendarPlaceholder'),
               value: "",
               onSave: (name) => {
                 if (name && name.trim()) {
@@ -29,9 +31,10 @@ export function CalendarStepperSelector({ activeCalendarId, calendars, createCal
               }
             });
           }}
-          style={{ width: '45%', maxWidth: 160, alignItems: 'center', paddingVertical: 10, backgroundColor: 'rgba(34, 181, 115, 0.1)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(34, 181, 115, 0.3)' }}
+          style={{ flex: 1, maxWidth: 200, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, paddingVertical: 10, paddingHorizontal: 8, backgroundColor: 'rgba(34, 181, 115, 0.1)', borderRadius: 20, borderWidth: 1, borderColor: 'rgba(34, 181, 115, 0.3)' }}
         >
-          <Text style={{ color: '#22B573', fontSize: 14, fontWeight: '500' }}>+ Yeni Ekle</Text>
+          <Ionicons name="add" size={18} color="#22B573" />
+          <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={{ color: '#22B573', fontSize: 14, fontWeight: '500', flexShrink: 1 }}>{t('randevu.randevuScreen.addCalendar')}</Text>
         </TouchableOpacity>
       </View>
     

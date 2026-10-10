@@ -381,6 +381,11 @@
     "randevuScreen": {
       "monthYear": "Kasım, 2025",
       "dailyAvailability": "Günlük Müsaitlik",
+      "slotPast": "Bu saat geçti. Yeni randevu için ileri bir saat seç.",
+      "manageCalendars": "Takvimleri Düzenle",
+      "addCalendar": "Yeni Takvim/Personel",
+      "newCalendarTitle": "Yeni Takvim",
+      "newCalendarPlaceholder": "Yeni takvim/personel adını girin",
       "busy": "Dolu",
       "free": "Boş",
       "morning": "Sabah",

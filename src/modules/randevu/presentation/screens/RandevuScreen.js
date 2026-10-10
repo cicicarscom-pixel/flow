@@ -356,8 +356,8 @@ export default function RandevuScreen() {
         
         {/* Custom Prompt Modal */}
         <Modal visible={promptConfig.visible} transparent animationType="fade">
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.modalOverlay, { justifyContent: 'flex-start', paddingTop: insets.top + 90, paddingHorizontal: 16 }]}>
+            <View style={[styles.modalContent, { borderRadius: 24, paddingBottom: 20 }]}>
               <Text style={styles.modalTitle}>{promptConfig.title}</Text>
               <TextInput
                  style={[styles.modalInput, { marginTop: 20 }]}

@@ -49,7 +49,7 @@ export function FinanceAndSocialSection({ financeStats, formatCurrency, hasSocia
         <InvoiceSummaryCard
           invoice={latestInvoice}
           todayYmd={todayInTimezone(orgTz)}
-          onScan={() => navigation.navigate('Muhasebe', { screen: 'VeriGirisi' })}
+          onScan={() => navigation.navigate('AiChat', { transactionType: 'expense' })}
         />
       </CustomGlassCard>
       

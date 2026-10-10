@@ -106,6 +106,8 @@ export function SlotsHeatmapCard({ activeCalendarId, add30Mins, daySchedule, del
                           else refreshDaySchedule(activeCalendarId || undefined);
                         }
                       });
+                    } else if (status === 'past') {
+                      Alert.alert('', t('randevu.randevuScreen.slotPast'));
                     }
                   }}
                   style={[styles.heatCell, { backgroundColor: bg, borderColor: border, opacity, minWidth: 46, minHeight: 40 }]}

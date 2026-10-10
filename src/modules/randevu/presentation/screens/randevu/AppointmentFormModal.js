@@ -4,8 +4,10 @@ import { Modal, KeyboardAvoidingView, Platform, View, TouchableOpacity, ScrollVi
 import { styles } from './randevuStyles';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function AppointmentFormModal({ availableModalHours, calendars, handleSaveAppointment, isModalVisible, isSaving, newApptCalendarId, newApptName, newApptNote, newApptPhone, newApptService, newApptTime, selectedDate, services, setIsModalVisible, setNewApptCalendarId, setNewApptName, setNewApptNote, setNewApptPhone, setNewApptService, setNewApptTime, setSelectedDate, setShowCalendarDropdown, setShowDatePicker, showCalendarDropdown, showDatePicker, t }) {
+  const insets = useSafeAreaInsets();
   return (
     <Modal
     visible={isModalVisible}
@@ -19,7 +21,7 @@ export function AppointmentFormModal({ availableModalHours, calendars, handleSav
     >
       <View style={styles.modalOverlay}>
         <View style={[styles.modalContent, { 
-          backgroundColor: '#201D24', padding: 32, borderRadius: 32, 
+          backgroundColor: '#201D24', padding: 32, paddingBottom: 32 + Math.max(insets.bottom, 16), borderRadius: 32, 
           borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
           shadowColor: '#000', shadowOffset: { width: 0, height: 24 }, 
           shadowOpacity: 0.4, shadowRadius: 48, elevation: 10,
