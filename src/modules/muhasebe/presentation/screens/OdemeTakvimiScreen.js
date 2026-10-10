@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, FlatList, ActivityIndicator, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useSafeActionSheet as useActionSheet } from '../../../../lib/useSafeActionSheet';
 import { supabase, GlobalAppBar } from '../../../../shared';
 
 const { width } = Dimensions.get('window');

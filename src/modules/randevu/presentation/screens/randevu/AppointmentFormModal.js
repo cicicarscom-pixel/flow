@@ -17,7 +17,7 @@ export function AppointmentFormModal({ availableModalHours, calendars, handleSav
     >
     <KeyboardAvoidingView 
       style={{ flex: 1 }} 
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior="padding"
     >
       <View style={styles.modalOverlay}>
         <View style={[styles.modalContent, { 

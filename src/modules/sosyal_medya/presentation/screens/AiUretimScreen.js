@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { flowAiShareHandoff } from '../../../flow_ai/flowAiShareHandoff';
 import { emitFlowEvent } from '../../../flow_ai/flowAiEvents';
-import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, Dimensions, ImageBackground, Platform, Alert, ActivityIndicator, KeyboardAvoidingView, Keyboard, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, Dimensions, ImageBackground, Alert, ActivityIndicator, KeyboardAvoidingView, Keyboard, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useVideoPlayer } from 'expo-video';
@@ -814,7 +814,7 @@ export default function AiUretimScreen({ route, navigation }) {
 
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
-        behavior={Platform.OS === 'ios' ? 'padding' : (Platform.Version < 30 ? 'padding' : undefined)}
+        behavior="padding"
       >
         <ScrollView ref={scrollRef} onScroll={(e) => { scrollYRef.current = e.nativeEvent.contentOffset.y; }} scrollEventThrottle={16} className="flex-1 px-5 pt-6" contentContainerStyle={{ paddingBottom: 130 }} keyboardShouldPersistTaps="handled">
         

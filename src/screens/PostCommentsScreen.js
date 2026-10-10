@@ -5,6 +5,7 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase , GlobalAppBar } from '../shared';
+import { PostVideoThumbnail, isVideoUrl } from '../shared/ui/PostVideoThumbnail';
 const getPlatformIcon = (platform) => {
   switch (platform?.toLowerCase()) {
     case 'instagram': return <Ionicons name="logo-instagram" size={12} color="#E8A8CD" />;
@@ -590,7 +591,13 @@ export default function PostCommentsScreen({ route, navigation }) {
         {post && (
           <View className="px-4 py-4 bg-[#201D24]/80 border-b border-white/10 flex-row items-center">
             {post.media_urls && post.media_urls[0] && (
-              <Image source={{ uri: post.media_urls[0] }} className="w-12 h-12 rounded bg-white/10 mr-3" />
+              isVideoUrl(post.media_urls[0]) ? (
+                <View className="w-12 h-12 rounded overflow-hidden mr-3">
+                  <PostVideoThumbnail uri={post.media_urls[0]} />
+                </View>
+              ) : (
+                <Image source={{ uri: post.media_urls[0] }} className="w-12 h-12 rounded bg-white/10 mr-3" />
+              )
             )}
             <View className="flex-1">
               <Text className="text-[#A79E96] text-[12px]" numberOfLines={2} ellipsizeMode="tail">{post.content || post.title || t('postCommentsScreen.noContent')}</Text>

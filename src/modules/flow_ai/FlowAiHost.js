@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  KeyboardAvoidingView, Platform, Text, TouchableOpacity, View,
+  KeyboardAvoidingView, Text, TouchableOpacity, View,
   AppState,
   Animated, PanResponder,
 } from 'react-native';
@@ -514,7 +514,7 @@ export default function FlowAiHost({ navigationRef }) {
   return (
     <KeyboardAvoidingView
       pointerEvents="box-none"
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior="padding"
       style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0, justifyContent: 'flex-end' }}
     >
       <View

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, TouchableOpacity, Alert, Image, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Image, StyleSheet, Dimensions, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../shared/lib/supabase';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -157,7 +157,7 @@ export default function AuthScreen({ onSignUpSuccess, notice, onNeedsVerificatio
 
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior="padding"
       >
         <ScrollView 
           contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }}

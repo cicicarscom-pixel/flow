@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import React from 'react';
-import { Modal, KeyboardAvoidingView, Platform, View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { Modal, KeyboardAvoidingView, View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { styles } from './botStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomInput } from '../../../../../shared';
@@ -15,7 +15,7 @@ export function DriveModal({ connectedFolderId, disconnectingFolder, driveLink, 
     >
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior="padding"
       >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent} className="bg-[#2A2631] border border-white/10">

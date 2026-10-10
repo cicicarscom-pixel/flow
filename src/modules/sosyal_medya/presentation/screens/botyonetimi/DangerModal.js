@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import React from 'react';
-import { Modal, KeyboardAvoidingView, Platform, View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Modal, KeyboardAvoidingView, View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 export function DangerModal({ RESET_CONFIRM_WORD, dangerConfirmText, dangerLoading, dangerModal, handleDataReset, setDangerConfirmText, setDangerModal }) {
   return (
@@ -12,7 +12,7 @@ export function DangerModal({ RESET_CONFIRM_WORD, dangerConfirmText, dangerLoadi
     >
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior="padding"
       >
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <View

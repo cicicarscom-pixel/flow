@@ -2,7 +2,7 @@
 /* eslint-disable i18next/no-literal-string */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, ScrollView, ImageBackground, StyleSheet, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Animated, Easing } from 'react-native';
+import { View, ScrollView, ImageBackground, StyleSheet, ActivityIndicator, Alert, KeyboardAvoidingView, Animated, Easing } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -518,7 +518,7 @@ export default function BotYonetimiScreen() {
   return (
     <KeyboardAvoidingView 
       style={{ flex: 1 }} 
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior="padding"
     >
       <View className="flex-1 bg-[#201D24]">
         <ImageBackground 

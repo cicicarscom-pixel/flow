@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './inboxStyles';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { getPlatformIconName } from './inboxShared';
+import { PostVideoThumbnail, isVideoUrl } from '../../../../../shared/ui/PostVideoThumbnail';
 
 export const YorumlarTab = ({ navigation }) => {
   const { t } = useTranslation();
@@ -646,7 +647,11 @@ export const YorumlarTab = ({ navigation }) => {
               className="mb-4 p-4 rounded-xl border border-white/5 flex-row items-center bg-white/5"
             >
               <View className="relative">
-                {item.picture ? (
+                {item.picture && isVideoUrl(item.picture) ? (
+                  <View className="w-16 h-16 rounded-lg overflow-hidden">
+                    <PostVideoThumbnail uri={item.picture} />
+                  </View>
+                ) : item.picture ? (
                   <Image source={{ uri: item.picture }} className="w-16 h-16 rounded-lg bg-[#201D24]" />
                 ) : (
                   <View className="w-16 h-16 rounded-lg bg-[#201D24] items-center justify-center border border-white/5">

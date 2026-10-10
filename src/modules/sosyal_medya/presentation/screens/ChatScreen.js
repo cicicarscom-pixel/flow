@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, ImageBackground, KeyboardAvoidingView, Platform, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, ImageBackground, KeyboardAvoidingView, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase , ChatInputBar , GlobalAppBar } from '../../../../shared';
@@ -331,7 +331,7 @@ export default function ChatScreen({ route, navigation }) {
       {/* Chat Messages */}
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
-        behavior={Platform.OS === 'ios' ? 'padding' : (Platform.Version < 30 ? 'padding' : undefined)}
+        behavior="padding"
       >
         <FlatList
           ref={flatListRef}

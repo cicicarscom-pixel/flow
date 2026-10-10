@@ -4,7 +4,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image, ImageBackground, Style
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useSafeActionSheet as useActionSheet } from '../lib/useSafeActionSheet';
 import { decode } from 'base64-arraybuffer';
 import { GlobalAppBar , supabase , CustomButton , CustomInput } from '../shared';
 

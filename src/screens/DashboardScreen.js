@@ -10,7 +10,7 @@ import { supabase } from '../shared/lib/supabase';
 import { container } from '../core/container';
 import { AppointmentStatus } from '../modules/randevu/domain/enums/AppointmentStatus';
 import { extractTime } from '../modules/randevu/presentation/hooks/useAppointments';
-import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useSafeActionSheet as useActionSheet } from '../lib/useSafeActionSheet';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';

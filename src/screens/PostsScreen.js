@@ -2,12 +2,12 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, ImageBackground, Animated, Easing, Image, Modal, Alert } from 'react-native';
-import { Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { useVideoPlayer, VideoView } from 'expo-video';
 import { supabase , GlobalAppBar , CustomButton } from '../shared';
+import { PostVideoThumbnail } from '../shared/ui/PostVideoThumbnail';
 
 // Glassmorphism Card Wrapper
 const GlassCard = ({ children, style }) => (
@@ -15,38 +15,6 @@ const GlassCard = ({ children, style }) => (
     {children}
   </View>
 );
-
-// 17.09.2026: Web tarafında (posts/page.tsx) video gönderilerin küçük resmi
-// (thumbnail) doğrudan bir <video muted playsInline> etiketiyle gösteriliyor —
-// tarayıcı otomatik olarak ilk kareyi render ediyor. Mobilde bunun karşılığı
-// yoktu; önceki kod sadece düz siyah bir kutu + play ikonu gösteriyordu, gerçek
-// video karesi hiç render edilmiyordu. `AiUretimScreen.js`'de zaten kullanılan
-// `expo-video`'nun `useVideoPlayer`/`VideoView` çiftiyle (yeni bir bağımlılık
-// eklemeden) aynı "ilk kareyi göster" davranışı elde ediliyor: player hiç
-// `.play()` edilmiyor (sessiz/duraklatılmış kalıyor), native video view yine de
-// 0. saniyedeki kareyi decode edip gösteriyor — web'deki <video> davranışının
-// mobil eşdeğeri.
-const PostVideoThumbnail = ({ uri }) => {
-  const player = useVideoPlayer(uri, (p) => {
-    p.muted = true;
-    p.loop = false;
-  });
-
-  return (
-    <View className="w-full h-full items-center justify-center bg-black border border-white/10 rounded-lg" style={{ overflow: 'hidden' }}>
-      <VideoView
-        player={player}
-        style={{ width: '100%', height: '100%' }}
-        contentFit="cover"
-        nativeControls={false}
-        pointerEvents="none"
-      />
-      <View style={StyleSheet.absoluteFillObject} className="items-center justify-center bg-black/20">
-        <MaterialIcons name="play-arrow" size={24} color="#fff" />
-      </View>
-    </View>
-  );
-};
 
 // Animated Border Card
 const AnimatedBorderCard = ({ children, style, colors, padding = 16, borderRadius = 12, marginBottom = 0 }) => {

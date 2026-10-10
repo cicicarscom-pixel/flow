@@ -1,12 +1,12 @@
 /* eslint-disable i18next/no-literal-string, no-unused-vars */
 import React, { useState, useRef, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, Animated, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, Animated, Modal, TextInput, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useSafeActionSheet as useActionSheet } from '../../../../lib/useSafeActionSheet';
 import { useAppointments } from '../hooks/useAppointments';
 import { useCalendars } from '../hooks/useCalendars';
 import { AppointmentStatus } from '@domain/enums/AppointmentStatus';
@@ -356,7 +356,7 @@ export default function RandevuScreen() {
         
         {/* Custom Prompt Modal */}
         <Modal visible={promptConfig.visible} transparent animationType="fade">
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.modalOverlay, { justifyContent: 'flex-start', paddingTop: insets.top + 90, paddingHorizontal: 16 }]}>
+          <KeyboardAvoidingView behavior="padding" style={[styles.modalOverlay, { justifyContent: 'flex-start', paddingTop: insets.top + 90, paddingHorizontal: 16 }]}>
             <View style={[styles.modalContent, { borderRadius: 24, paddingBottom: 20 }]}>
               <Text style={styles.modalTitle}>{promptConfig.title}</Text>
               <TextInput
